@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { Trade, Stats } from '@/types'
 import Link from 'next/link'
+import TradeModal from '@/components/TradeModal'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const TIME_FILTERS = ['יום', 'שבוע', 'חודש', 'שנה']
@@ -16,6 +17,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
   const [equityCurve, setEquityCurve] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -151,7 +153,8 @@ export default function DashboardPage() {
           </div>
         ) : trades.map(trade => (
           <div key={trade.id} style={{ display: 'grid', gridTemplateColumns: '36px 1fr 100px 100px 80px 80px', padding: '12px 16px', borderBottom: '1px solid var(--border)', fontSize: '13px', gap: '8px', alignItems: 'center', cursor: 'pointer', transition: 'background 0.2s' }}
-            onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
+            onClick={() => setSelectedTrade(trade)}
+              onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
             onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
           >
             <div style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', background: trade.direction === 'long' ? '#10b98122' : '#ef444422', color: trade.direction === 'long' ? 'var(--green)' : 'var(--red)' }}>
@@ -168,6 +171,16 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      </div>
+
+      {selectedTrade && (
+        <TradeModal
+          trade={selectedTrade}
+          onClose={() => setSelectedTrade(null)}
+          onUpdate={() => { setSelectedTrade(null); loadData() }}
+        />
+      )}
 
       <style>{`@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr) !important; } }`}</style>
     </div>

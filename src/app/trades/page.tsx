@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import Link from 'next/link'
+import TradeModal from '@/components/TradeModal'
 
 export default function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
   const supabase = createClient()
 
@@ -87,6 +89,7 @@ export default function TradesPage() {
               padding: '12px 16px', borderBottom: '1px solid var(--border)',
               fontSize: '13px', gap: '8px', alignItems: 'center',
               cursor: 'pointer', transition: 'background 0.2s',
+            }}  onClick={() => setSelectedTrade(trade)}
             }}
               onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
