@@ -236,7 +236,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       <div style={{ marginRight: '220px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div style={{ padding: '24px' }}>{children}</div>
+        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>{children}</div>
       </div>
 
       <style>{`
