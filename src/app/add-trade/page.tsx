@@ -268,7 +268,7 @@ export default function AddTradePage() {
       </div>
 
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
-        <StepIndicator />
+        {!isManual && <StepIndicator />}
 
         {/* ─── STEP 1: UPLOAD ─── */}
         {step === 1 && (
