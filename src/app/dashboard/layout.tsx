@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
+import { AppProvider, useApp } from '@/lib/app-context'
+import { t } from '@/lib/translations'
 import Link from 'next/link'
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
@@ -16,30 +18,23 @@ function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#4a7fff'
 }
 
-const NAV_ITEMS = [
-  { href: '/dashboard', icon: '⬛', label: 'דשבורד' },
-  { href: '/add-trade', icon: '＋', label: 'הוספת עסקה' },
-  { href: '/trades', icon: '≡', label: 'כל העסקאות' },
-  { href: '/stats', icon: '↗', label: 'סטטיסטיקות' },
-]
-const BOTTOM_NAV = [
-  { href: '/portfolios', icon: '◈', label: 'הגדרות תיקים' },
-  { href: '/settings', icon: '⚙', label: 'הגדרות אישיות' },
-]
-
 function Header({ sidebarOpen, setSidebarOpen }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
+  const { language } = useApp()
+  const tr = t[language]
   const [showMenu, setShowMenu] = useState(false)
   const pathname = usePathname()
 
   const PAGE_TITLES: Record<string, string> = {
-    '/dashboard': 'דשבורד',
-    '/add-trade': 'הוספת עסקה',
-    '/trades': 'כל העסקאות',
-    '/stats': 'סטטיסטיקות',
-    '/portfolios': 'הגדרות תיקים',
-    '/settings': 'הגדרות אישיות',
+    '/dashboard': tr.dashboard,
+    '/add-trade': tr.addTrade,
+    '/trades': tr.allTrades,
+    '/stats': tr.statistics,
+    '/portfolios': tr.portfolioSettings,
+    '/settings': tr.personalSettings,
   }
+
+  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : 'var(--text3)'
 
   return (
     <div style={{
@@ -58,37 +53,31 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
       </button>
 
-      {/* Page title + portfolio name */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ fontSize: '16px', fontWeight: '600' }}>
-          {PAGE_TITLES[pathname] || ''}
-        </div>
+        <div style={{ fontSize: '16px', fontWeight: '600' }}>{PAGE_TITLES[pathname] || ''}</div>
         {activePortfolio && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: '6px',
-            background: `${getPortfolioColor(activePortfolio)}18`,
-            border: `1px solid ${getPortfolioColor(activePortfolio)}44`,
+            background: `${dotColor}18`, border: `1px solid ${dotColor}44`,
             borderRadius: '20px', padding: '3px 12px',
-            fontSize: '12px', color: getPortfolioColor(activePortfolio), fontWeight: '500',
+            fontSize: '12px', color: dotColor, fontWeight: '500',
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: getPortfolioColor(activePortfolio), boxShadow: `0 0 6px ${getPortfolioColor(activePortfolio)}` }} />
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 6px ${dotColor}` }} />
             {activePortfolio.name}
           </div>
         )}
       </div>
 
-      {/* Portfolio switcher */}
       <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           background: 'var(--bg3)', border: '1px solid var(--border)',
           borderRadius: 'var(--radius-sm)', padding: '6px 12px',
           fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
-          transition: 'border 0.2s',
         }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio ? getPortfolioColor(activePortfolio) : 'var(--text3)', boxShadow: activePortfolio ? `0 0 6px ${getPortfolioColor(activePortfolio)}` : 'none' }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor, boxShadow: activePortfolio ? `0 0 6px ${dotColor}` : 'none' }} />
           <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {activePortfolio ? activePortfolio.name : 'בחר תיק'}
+            {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
           </span>
           <span style={{ fontSize: '10px', color: 'var(--text3)' }}>▼</span>
         </div>
@@ -97,40 +86,32 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           <>
             <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
-              position: 'absolute', top: '44px', left: 0,
+              position: 'absolute', top: '44px', [language === 'en' ? 'right' : 'left']: 0,
               background: 'var(--bg2)', border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)', zIndex: 200, minWidth: '200px',
               boxShadow: '0 8px 24px #00000066', overflow: 'hidden',
             }}>
               {portfolios.length === 0 ? (
                 <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text3)' }}>
-                  אין תיקים — <Link href="/portfolios" style={{ color: 'var(--blue)' }}>צור תיק</Link>
+                  {tr.noPortfolios} — <Link href="/portfolios" style={{ color: 'var(--blue)' }}>{tr.createPortfolio}</Link>
                 </div>
-              ) : (
-                portfolios.map(p => (
-                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
-                    padding: '12px 16px', fontSize: '13px', cursor: 'pointer',
-                    background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
-                    color: activePortfolio?.id === p.id ? 'var(--blue)' : 'var(--text)',
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    transition: 'background 0.2s', borderBottom: '1px solid var(--border)',
-                  }}>
-                    <div style={{
-                      width: '8px', height: '8px', borderRadius: '50%',
-                      background: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--border2)',
-                    }} />
-                    <span style={{ flex: 1 }}>{p.name}</span>
-                    {activePortfolio?.id === p.id && <span style={{ fontSize: '12px' }}>✓</span>}
-                  </div>
-                ))
-              )}
+              ) : portfolios.map(p => (
+                <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
+                  padding: '12px 16px', fontSize: '13px', cursor: 'pointer',
+                  background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
+                  color: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--text)',
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  transition: 'background 0.2s', borderBottom: '1px solid var(--border)',
+                }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--border2)' }} />
+                  <span style={{ flex: 1 }}>{p.name}</span>
+                  {activePortfolio?.id === p.id && <span>✓</span>}
+                </div>
+              ))}
               <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 16px', fontSize: '13px', color: 'var(--blue)',
-                textDecoration: 'none', transition: 'background 0.2s',
-              }}>
-                <span>＋</span> תיק חדש
-              </Link>
+                padding: '12px 16px', fontSize: '13px', color: 'var(--blue)', textDecoration: 'none',
+              }}><span>＋</span> {tr.newPortfolio}</Link>
             </div>
           </>
         )}
@@ -141,6 +122,19 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
 
 function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
   const pathname = usePathname()
+  const { language } = useApp()
+  const tr = t[language]
+
+  const NAV_ITEMS = [
+    { href: '/dashboard', icon: '⬛', label: tr.dashboard },
+    { href: '/add-trade', icon: '＋', label: tr.addTrade },
+    { href: '/trades', icon: '≡', label: tr.allTrades },
+    { href: '/stats', icon: '↗', label: tr.statistics },
+  ]
+  const BOTTOM_NAV = [
+    { href: '/portfolios', icon: '◈', label: tr.portfolioSettings },
+    { href: '/settings', icon: '⚙', label: tr.personalSettings },
+  ]
 
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
@@ -155,10 +149,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
         transition: 'all 0.2s', marginBottom: '2px', position: 'relative',
       }}>
         {active && <div style={{
-          position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
+          position: 'absolute',
+          [language === 'en' ? 'right' : 'left']: 0,
+          top: '50%', transform: 'translateY(-50%)',
           width: '3px', height: '20px',
           background: 'linear-gradient(var(--blue), var(--purple))',
-          borderRadius: '0 2px 2px 0',
+          borderRadius: language === 'en' ? '2px 0 0 2px' : '0 2px 2px 0',
         }} />}
         <span style={{ fontSize: '16px', width: '20px', textAlign: 'center' }}>{icon}</span>
         {label}
@@ -193,7 +189,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
           color: 'var(--red)', fontSize: '14px', cursor: 'pointer',
           background: 'transparent', border: 'none', width: '100%',
           fontFamily: 'Rubik, sans-serif', marginBottom: '8px',
-        }}>↩ יציאה</button>
+        }}>↩ {tr.logout}</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px' }}>
           <div style={{
             width: '34px', height: '34px', borderRadius: '50%',
@@ -207,9 +203,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '13px', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {user?.user_metadata?.full_name || user?.email || 'משתמש'}
+              {user?.user_metadata?.full_name || user?.email || 'User'}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)' }}>חשבון חינמי</div>
+            <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{tr.freeAccount}</div>
           </div>
         </div>
       </div>
@@ -220,6 +216,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const { language } = useApp()
   const router = useRouter()
   const supabase = createClient()
 
@@ -232,27 +229,32 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/auth/login')
   }
 
+  const isRTL = language === 'he'
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: '#00000066', zIndex: 99 }} />}
 
       <div style={{
         width: '220px', minHeight: '100vh', background: 'var(--bg2)',
-        borderLeft: '1px solid var(--border)', position: 'fixed', right: 0, top: 0, zIndex: 100,
+        [isRTL ? 'borderLeft' : 'borderRight']: '1px solid var(--border)',
+        position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease',
       }} className="sidebar-el">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} handleSignOut={handleSignOut} />
       </div>
 
-      <div style={{ marginRight: '220px', flex: 1, minWidth: 0 }} className="main-content">
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '220px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div style={{ padding: '24px' }}>{children}</div>
+        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>{children}</div>
       </div>
 
       <style>{`
         @media (max-width: 640px) {
-          .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : 'translateX(100%)'}; }
-          .main-content { margin-right: 0 !important; }
+          .sidebar-el { transform: ${sidebarOpen
+            ? 'translateX(0)'
+            : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
+          .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
         }
         @media (min-width: 641px) { .sidebar-el { transform: translateX(0) !important; } }
