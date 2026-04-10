@@ -212,25 +212,6 @@ export default function DashboardPage() {
         }}>＋ עסקה חדשה</Link>
       </div>
 
-      {/* Portfolio tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        {portfolios.map(p => (
-          <button key={p.id} onClick={() => setActivePortfolio(p.id)} style={{
-            padding: '6px 14px', borderRadius: '20px', fontSize: '13px',
-            cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
-            border: `1px solid ${activePortfolio === p.id ? 'var(--blue)' : 'var(--border)'}`,
-            background: activePortfolio === p.id ? 'var(--blue3)' : 'transparent',
-            color: activePortfolio === p.id ? 'var(--blue)' : 'var(--text2)',
-            transition: 'all 0.2s',
-          }}>{p.name}</button>
-        ))}
-        <Link href="/portfolios" style={{
-          padding: '6px 14px', borderRadius: '20px', fontSize: '13px',
-          border: '1px dashed var(--border)', color: 'var(--text3)',
-          textDecoration: 'none', display: 'flex', alignItems: 'center',
-        }}>+ תיק חדש</Link>
-      </div>
-
       {/* Trades table */}
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
         {/* Header */}
