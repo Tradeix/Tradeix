@@ -5,21 +5,25 @@ import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import Link from 'next/link'
 import TradeModal from '@/components/TradeModal'
+import { usePortfolio } from '@/lib/portfolio-context'
 
 export default function TradesPage() {
+  const { activePortfolio } = usePortfolio()
   const [trades, setTrades] = useState<Trade[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
 
-  useEffect(() => { loadTrades() }, [filter])
+  useEffect(() => { if (activePortfolio) loadTrades() }, [activePortfolio, filter])
 
   async function loadTrades() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    let query = supabase.from('trades').select('*').eq('user_id', user.id).order('traded_at', { ascending: false })
+    let query = supabase.from('trades').select('*')
+      .eq('portfolio_id', activePortfolio!.id)
+      .order('traded_at', { ascending: false })
     if (filter !== 'all') query = query.eq('outcome', filter)
     const { data } = await query
     if (data) setTrades(data)
@@ -40,11 +44,7 @@ export default function TradesPage() {
 
       {/* Filter */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        {[
-          { key: 'all', label: 'הכל' },
-          { key: 'win', label: '✓ WIN' },
-          { key: 'loss', label: '✕ LOSS' },
-        ].map(({ key, label }) => (
+        {[{ key: 'all', label: 'הכל' }, { key: 'win', label: '✓ WIN' }, { key: 'loss', label: '✕ LOSS' }].map(({ key, label }) => (
           <button key={key} onClick={() => setFilter(key as any)} style={{
             padding: '6px 14px', borderRadius: '20px', fontSize: '13px',
             cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
@@ -73,9 +73,7 @@ export default function TradesPage() {
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.3 }}>📊</div>
             <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>אין עסקאות עדיין</div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '20px' }}>
-              הוסף את העסקה הראשונה שלך
-            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '20px' }}>הוסף את העסקה הראשונה שלך</div>
             <Link href="/add-trade" style={{
               background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
               color: '#fff', padding: '10px 20px', borderRadius: 'var(--radius-sm)',
@@ -84,13 +82,15 @@ export default function TradesPage() {
           </div>
         ) : (
           trades.map(trade => (
-            <div key={trade.id} style={{
-              display: 'grid', gridTemplateColumns: '36px 1fr 110px 90px 80px 90px 90px',
-              padding: '12px 16px', borderBottom: '1px solid var(--border)',
-              fontSize: '13px', gap: '8px', alignItems: 'center',
-              cursor: 'pointer', transition: 'background 0.2s',
-            }}  onClick={() => setSelectedTrade(trade)}
-            }}
+            <div
+              key={trade.id}
+              onClick={() => setSelectedTrade(trade)}
+              style={{
+                display: 'grid', gridTemplateColumns: '36px 1fr 110px 90px 80px 90px 90px',
+                padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                fontSize: '13px', gap: '8px', alignItems: 'center',
+                cursor: 'pointer', transition: 'background 0.2s',
+              }}
               onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
             >
@@ -111,10 +111,9 @@ export default function TradesPage() {
               <div style={{ fontWeight: '600', color: trade.pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
                 {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
               </div>
-              <div style={{
-                display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
-                fontSize: '11px', background: 'var(--bg4)', color: 'var(--text2)',
-              }}>1:{trade.rr_ratio?.toFixed(1)}</div>
+              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', background: 'var(--bg4)', color: 'var(--text2)' }}>
+                1:{trade.rr_ratio?.toFixed(1)}
+              </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
                 {new Date(trade.traded_at).toLocaleDateString('he-IL')}
               </div>
@@ -125,6 +124,14 @@ export default function TradesPage() {
           ))
         )}
       </div>
+
+      {selectedTrade && (
+        <TradeModal
+          trade={selectedTrade}
+          onClose={() => setSelectedTrade(null)}
+          onUpdate={() => { setSelectedTrade(null); loadTrades() }}
+        />
+      )}
     </div>
   )
 }

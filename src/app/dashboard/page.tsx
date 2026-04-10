@@ -5,8 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { Trade, Stats } from '@/types'
 import Link from 'next/link'
-import TradeModal from '@/components/TradeModal'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import TradeModal from '@/components/TradeModal'
 
 const TIME_FILTERS = ['יום', 'שבוע', 'חודש', 'שנה']
 
@@ -14,10 +14,13 @@ export default function DashboardPage() {
   const { activePortfolio } = usePortfolio()
   const [timeFilter, setTimeFilter] = useState('חודש')
   const [trades, setTrades] = useState<Trade[]>([])
-  const [stats, setStats] = useState<Stats>({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
+  const [stats, setStats] = useState<Stats>({
+    totalTrades: 0, wins: 0, losses: 0, winRate: 0,
+    totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
+  })
   const [equityCurve, setEquityCurve] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -55,7 +58,10 @@ export default function DashboardPage() {
         })
         const curve = allTrades.reduce((acc: any[], t: any, i: number) => {
           const prev = i === 0 ? 0 : acc[i - 1].value
-          acc.push({ date: new Date(t.traded_at).toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' }), value: Math.round(prev + (t.pnl || 0)) })
+          acc.push({
+            date: new Date(t.traded_at).toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' }),
+            value: Math.round(prev + (t.pnl || 0)),
+          })
           return acc
         }, [])
         setEquityCurve(curve)
@@ -63,7 +69,9 @@ export default function DashboardPage() {
         setStats({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
         setEquityCurve([])
       }
-    } finally { setLoading(false) }
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!activePortfolio && !loading) {
@@ -72,13 +80,20 @@ export default function DashboardPage() {
         <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.4 }}>📁</div>
         <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>אין תיקים פתוחים</div>
         <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>צור תיק ראשון כדי להתחיל</div>
-        <Link href="/portfolios" style={{ background: 'linear-gradient(135deg, var(--blue), var(--blue2))', color: '#fff', padding: '12px 24px', borderRadius: 'var(--radius-sm)', textDecoration: 'none', fontSize: '14px', fontWeight: '500' }}>+ צור תיק חדש</Link>
+        <Link href="/portfolios" style={{
+          background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
+          color: '#fff', padding: '12px 24px', borderRadius: 'var(--radius-sm)',
+          textDecoration: 'none', fontSize: '14px', fontWeight: '500',
+        }}>+ צור תיק חדש</Link>
       </div>
     )
   }
 
-  const StatCard = ({ label, value, color }: any) => (
-    <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px', position: 'relative', overflow: 'hidden' }}>
+  const StatCard = ({ label, value, color }: { label: string; value: any; color: string }) => (
+    <div style={{
+      background: 'var(--bg2)', border: '1px solid var(--border)',
+      borderRadius: 'var(--radius)', padding: '16px', position: 'relative', overflow: 'hidden',
+    }}>
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(90deg, ${color}, transparent)` }} />
       <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</div>
       <div style={{ fontSize: '24px', fontWeight: '700', color }}>{value}</div>
@@ -140,7 +155,12 @@ export default function DashboardPage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div style={{ fontSize: '15px', fontWeight: '600' }}>עסקאות אחרונות</div>
-        <Link href="/add-trade" style={{ background: 'linear-gradient(135deg, var(--blue), var(--blue2))', color: '#fff', padding: '8px 16px', borderRadius: 'var(--radius-sm)', textDecoration: 'none', fontSize: '13px', fontWeight: '500', boxShadow: '0 0 20px var(--blueglow)' }}>＋ עסקה חדשה</Link>
+        <Link href="/add-trade" style={{
+          background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
+          color: '#fff', padding: '8px 16px', borderRadius: 'var(--radius-sm)',
+          textDecoration: 'none', fontSize: '13px', fontWeight: '500',
+          boxShadow: '0 0 20px var(--blueglow)',
+        }}>＋ עסקה חדשה</Link>
       </div>
 
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
@@ -149,29 +169,32 @@ export default function DashboardPage() {
         </div>
         {trades.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px' }}>
-            אין עסקאות עדיין — <Link href="/add-trade" style={{ color: 'var(--blue)', textDecoration: 'none' }}>הוסף עסקה ראשונה</Link>
+            אין עסקאות עדיין —{' '}
+            <Link href="/add-trade" style={{ color: 'var(--blue)', textDecoration: 'none' }}>הוסף עסקה ראשונה</Link>
           </div>
-        ) : trades.map(trade => (
-          <div key={trade.id} style={{ display: 'grid', gridTemplateColumns: '36px 1fr 100px 100px 80px 80px', padding: '12px 16px', borderBottom: '1px solid var(--border)', fontSize: '13px', gap: '8px', alignItems: 'center', cursor: 'pointer', transition: 'background 0.2s' }}
-            onClick={() => setSelectedTrade(trade)}
+        ) : (
+          trades.map(trade => (
+            <div
+              key={trade.id}
+              onClick={() => setSelectedTrade(trade)}
+              style={{ display: 'grid', gridTemplateColumns: '36px 1fr 100px 100px 80px 80px', padding: '12px 16px', borderBottom: '1px solid var(--border)', fontSize: '13px', gap: '8px', alignItems: 'center', cursor: 'pointer', transition: 'background 0.2s' }}
               onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
-            onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', background: trade.direction === 'long' ? '#10b98122' : '#ef444422', color: trade.direction === 'long' ? 'var(--green)' : 'var(--red)' }}>
-              {trade.direction === 'long' ? 'L' : 'S'}
+              onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', background: trade.direction === 'long' ? '#10b98122' : '#ef444422', color: trade.direction === 'long' ? 'var(--green)' : 'var(--red)' }}>
+                {trade.direction === 'long' ? 'L' : 'S'}
+              </div>
+              <div>
+                <div style={{ fontWeight: '600', fontSize: '14px' }}>{trade.symbol}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{trade.direction === 'long' ? 'Long' : 'Short'}</div>
+              </div>
+              <div>{trade.entry_price}</div>
+              <div style={{ fontWeight: '600', color: trade.pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>{trade.pnl >= 0 ? '+' : ''}${trade.pnl}</div>
+              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', background: 'var(--bg4)', color: 'var(--text2)' }}>1:{trade.rr_ratio?.toFixed(1)}</div>
+              <div style={{ fontSize: '12px', color: trade.outcome === 'win' ? 'var(--green)' : 'var(--red)' }}>{trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}</div>
             </div>
-            <div>
-              <div style={{ fontWeight: '600', fontSize: '14px' }}>{trade.symbol}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{trade.direction === 'long' ? 'Long' : 'Short'}</div>
-            </div>
-            <div>{trade.entry_price}</div>
-            <div style={{ fontWeight: '600', color: trade.pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>{trade.pnl >= 0 ? '+' : ''}${trade.pnl}</div>
-            <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', background: 'var(--bg4)', color: 'var(--text2)' }}>1:{trade.rr_ratio?.toFixed(1)}</div>
-            <div style={{ fontSize: '12px', color: trade.outcome === 'win' ? 'var(--green)' : 'var(--red)' }}>{trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}</div>
-          </div>
-        ))}
-      </div>
-
+          ))
+        )}
       </div>
 
       {selectedTrade && (
