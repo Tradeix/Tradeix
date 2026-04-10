@@ -402,6 +402,32 @@ export default function AddTradePage() {
               </>
             )}
 
+            {/* Upload zone for manual entry - shown when no image */}
+            {!imagePreview && (
+              <div
+                {...getRootProps()}
+                style={{
+                  border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
+                  borderRadius: 'var(--radius)',
+                  padding: '24px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  background: isDragActive ? '#4a7fff0a' : 'var(--bg3)',
+                  transition: 'all 0.3s',
+                  marginBottom: '16px',
+                }}
+              >
+                <input {...getInputProps()} />
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📈</div>
+                <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>
+                  העלה תמונת גרף (אופציונלי)
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
+                  גרור לכאן או לחץ לבחירה • PNG, JPG עד 10MB
+                </div>
+              </div>
+            )}
+
             {/* Trade detail form */}
             <div style={{
               background: 'var(--bg2)', border: '1px solid var(--border)',
