@@ -189,7 +189,7 @@ export default function DashboardPage() {
           <div style={{ fontSize: '12px', color: 'var(--text3)' }}>מאי 2024</div>
         </div>
         <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={equityCurve}>
+          <LineChart data={trades.reduce((acc: any[], t: any, i: number) => { const prev = i === 0 ? 0 : acc[i-1].value; acc.push({ date: new Date(t.traded_at).toLocaleDateString('he-IL'), value: Math.round(prev + t.pnl) }); return acc; }, [])}>
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} width={55} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
             <Tooltip
