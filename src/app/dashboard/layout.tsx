@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Portfolio } from '@/types'
+import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
 import Link from 'next/link'
 
 const NAV_ITEMS = [
@@ -12,62 +12,135 @@ const NAV_ITEMS = [
   { href: '/trades', icon: '≡', label: 'כל העסקאות' },
   { href: '/stats', icon: '↗', label: 'סטטיסטיקות' },
 ]
-
 const BOTTOM_NAV = [
   { href: '/portfolios', icon: '◈', label: 'הגדרות תיקים' },
   { href: '/settings', icon: '⚙', label: 'הגדרות אישיות' },
 ]
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([])
-  const [activePortfolio, setActivePortfolio] = useState<Portfolio | null>(null)
+function Header({ sidebarOpen, setSidebarOpen }: any) {
+  const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
   const [showMenu, setShowMenu] = useState(false)
-  const router = useRouter()
   const pathname = usePathname()
-  const supabase = createClient()
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      if (user) loadPortfolios(user.id)
-    })
-  }, [])
-
-  async function loadPortfolios(userId: string) {
-    const { data } = await supabase
-      .from('portfolios').select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-    if (data && data.length > 0) {
-      setPortfolios(data)
-      const savedId = localStorage.getItem('tradeix-active-portfolio')
-      const saved = data.find((p: Portfolio) => p.id === savedId)
-      setActivePortfolio(saved || data[0])
-    }
+  const PAGE_TITLES: Record<string, string> = {
+    '/dashboard': 'דשבורד',
+    '/add-trade': 'הוספת עסקה',
+    '/trades': 'כל העסקאות',
+    '/stats': 'סטטיסטיקות',
+    '/portfolios': 'הגדרות תיקים',
+    '/settings': 'הגדרות אישיות',
   }
 
-  function selectPortfolio(p: Portfolio) {
-    setActivePortfolio(p)
-    localStorage.setItem('tradeix-active-portfolio', p.id)
-    setShowMenu(false)
-  }
+  return (
+    <div style={{
+      height: '60px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
+      display: 'flex', alignItems: 'center', padding: '0 24px', gap: '12px',
+      position: 'sticky', top: 0, zIndex: 50,
+    }}>
+      <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
+        display: 'none', width: '36px', height: '36px',
+        background: 'var(--bg3)', border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
+      }}>
+        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
+        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
+        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
+      </button>
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/auth/login')
-  }
+      {/* Page title + portfolio name */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '600' }}>
+          {PAGE_TITLES[pathname] || ''}
+        </div>
+        {activePortfolio && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)',
+            border: '1px solid #4a7fff44',
+            borderRadius: '20px', padding: '3px 12px',
+            fontSize: '12px', color: 'var(--blue)', fontWeight: '500',
+          }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--blue)', boxShadow: '0 0 6px var(--blue)' }} />
+            {activePortfolio.name}
+          </div>
+        )}
+      </div>
 
-  const NavLink = ({ href, icon, label }: { href: string; icon: string; label: string }) => {
+      {/* Portfolio switcher */}
+      <div style={{ position: 'relative' }}>
+        <div onClick={() => setShowMenu(!showMenu)} style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          background: 'var(--bg3)', border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-sm)', padding: '6px 12px',
+          fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
+          transition: 'border 0.2s',
+        }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio ? 'var(--blue)' : 'var(--text3)', boxShadow: activePortfolio ? '0 0 6px var(--blue)' : 'none' }} />
+          <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {activePortfolio ? activePortfolio.name : 'בחר תיק'}
+          </span>
+          <span style={{ fontSize: '10px', color: 'var(--text3)' }}>▼</span>
+        </div>
+
+        {showMenu && (
+          <>
+            <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
+            <div style={{
+              position: 'absolute', top: '44px', left: 0,
+              background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)', zIndex: 200, minWidth: '200px',
+              boxShadow: '0 8px 24px #00000066', overflow: 'hidden',
+            }}>
+              {portfolios.length === 0 ? (
+                <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text3)' }}>
+                  אין תיקים — <Link href="/portfolios" style={{ color: 'var(--blue)' }}>צור תיק</Link>
+                </div>
+              ) : (
+                portfolios.map(p => (
+                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
+                    padding: '12px 16px', fontSize: '13px', cursor: 'pointer',
+                    background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
+                    color: activePortfolio?.id === p.id ? 'var(--blue)' : 'var(--text)',
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    transition: 'background 0.2s', borderBottom: '1px solid var(--border)',
+                  }}>
+                    <div style={{
+                      width: '8px', height: '8px', borderRadius: '50%',
+                      background: activePortfolio?.id === p.id ? 'var(--blue)' : 'var(--border2)',
+                    }} />
+                    <span style={{ flex: 1 }}>{p.name}</span>
+                    {activePortfolio?.id === p.id && <span style={{ fontSize: '12px' }}>✓</span>}
+                  </div>
+                ))
+              )}
+              <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '12px 16px', fontSize: '13px', color: 'var(--blue)',
+                textDecoration: 'none', transition: 'background 0.2s',
+              }}>
+                <span>＋</span> תיק חדש
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
+  const pathname = usePathname()
+
+  const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
       <Link href={href} onClick={() => setSidebarOpen(false)} style={{
         display: 'flex', alignItems: 'center', gap: '10px',
         padding: '10px 12px', borderRadius: 'var(--radius-sm)',
         color: active ? 'var(--blue)' : 'var(--text2)',
-        fontWeight: active ? '500' : '400',
-        fontSize: '14px', textDecoration: 'none',
+        fontWeight: active ? '500' : '400', fontSize: '14px',
+        textDecoration: 'none',
         background: active ? 'linear-gradient(135deg, #1a3a8f22, #8b5cf622)' : 'transparent',
         transition: 'all 0.2s', marginBottom: '2px', position: 'relative',
       }}>
@@ -83,7 +156,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     )
   }
 
-  const sidebarContent = (
+  return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
         <div style={{
@@ -110,9 +183,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           color: 'var(--red)', fontSize: '14px', cursor: 'pointer',
           background: 'transparent', border: 'none', width: '100%',
           fontFamily: 'Rubik, sans-serif', marginBottom: '8px',
-        }}>
-          <span>↩</span> יציאה
-        </button>
+        }}>↩ יציאה</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px' }}>
           <div style={{
             width: '34px', height: '34px', borderRadius: '50%',
@@ -134,6 +205,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     </div>
   )
+}
+
+function LayoutInner({ children }: { children: React.ReactNode }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
+  const supabase = createClient()
+
+  useState(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
+  })
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -144,77 +231,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         borderLeft: '1px solid var(--border)', position: 'fixed', right: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease',
       }} className="sidebar-el">
-        {sidebarContent}
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} handleSignOut={handleSignOut} />
       </div>
 
       <div style={{ marginRight: '220px', flex: 1, minWidth: 0 }} className="main-content">
-        <div style={{
-          height: '60px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', padding: '0 24px', gap: '12px',
-          position: 'sticky', top: 0, zIndex: 50,
-        }}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
-            display: 'none', width: '36px', height: '36px',
-            background: 'var(--bg3)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)', cursor: 'pointer',
-            flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
-          }}>
-            <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
-            <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
-            <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
-          </button>
-          <div style={{ flex: 1 }} />
-
-          {/* Portfolio switcher */}
-          <div style={{ position: 'relative' }}>
-            <div onClick={() => setShowMenu(!showMenu)} style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: 'var(--bg3)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)', padding: '6px 12px',
-              fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
-            }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--blue)', boxShadow: '0 0 6px var(--blue)' }} />
-              <span>{activePortfolio ? activePortfolio.name : 'בחר תיק'}</span>
-              <span style={{ fontSize: '10px', color: 'var(--text3)' }}>▼</span>
-            </div>
-            {showMenu && (
-              <>
-                <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
-                <div style={{
-                  position: 'absolute', top: '44px', left: 0,
-                  background: 'var(--bg2)', border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)', zIndex: 200, minWidth: '180px',
-                  boxShadow: '0 8px 24px #00000044', overflow: 'hidden',
-                }}>
-                  {portfolios.length === 0
-                    ? <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text3)' }}>
-                        אין תיקים — <Link href="/portfolios" style={{ color: 'var(--blue)' }}>צור תיק</Link>
-                      </div>
-                    : portfolios.map(p => (
-                        <div key={p.id} onClick={() => selectPortfolio(p)} style={{
-                          padding: '10px 16px', fontSize: '13px', cursor: 'pointer',
-                          background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
-                          color: activePortfolio?.id === p.id ? 'var(--blue)' : 'var(--text)',
-                          display: 'flex', alignItems: 'center', gap: '8px',
-                          transition: 'background 0.2s',
-                        }}>
-                          {activePortfolio?.id === p.id && <span>✓</span>}
-                          {p.name}
-                        </div>
-                      ))
-                  }
-                  <div style={{ borderTop: '1px solid var(--border)' }}>
-                    <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
-                      display: 'block', padding: '10px 16px',
-                      fontSize: '13px', color: 'var(--blue)', textDecoration: 'none',
-                    }}>＋ תיק חדש</Link>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div style={{ padding: '24px' }}>{children}</div>
       </div>
 
@@ -227,5 +248,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         @media (min-width: 641px) { .sidebar-el { transform: translateX(0) !important; } }
       `}</style>
     </div>
+  )
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <PortfolioProvider>
+      <LayoutInner>{children}</LayoutInner>
+    </PortfolioProvider>
   )
 }
