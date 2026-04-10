@@ -30,6 +30,7 @@ const AI_MESSAGES = [
 
 export default function AddTradePage() {
   const [step, setStep] = useState<Step>(1)
+  const [isManual, setIsManual] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [aiMessage, setAiMessage] = useState(AI_MESSAGES[0])
@@ -45,8 +46,7 @@ export default function AddTradePage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [isManual, setIsManual] = useState(false)
-
+  // Dropzone for AI analysis
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (!file) return
@@ -57,6 +57,7 @@ export default function AddTradePage() {
     runAiAnalysis(file)
   }, [])
 
+  // Dropzone for manual (no AI)
   const onDropManual = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (!file) return
@@ -67,29 +68,21 @@ export default function AddTradePage() {
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
-    maxFiles: 1,
-    maxSize: 10 * 1024 * 1024,
+    onDrop, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1, maxSize: 10 * 1024 * 1024,
   })
 
   const { getRootProps: getManualRootProps, getInputProps: getManualInputProps, isDragActive: isManualDragActive } = useDropzone({
-    onDrop: onDropManual,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
-    maxFiles: 1,
-    maxSize: 10 * 1024 * 1024,
+    onDrop: onDropManual, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1, maxSize: 10 * 1024 * 1024,
   })
 
   async function runAiAnalysis(file: File) {
     setStep(2)
-    // Animate loading messages
     let i = 0
     const interval = setInterval(() => {
-      if (i < AI_MESSAGES.length - 1) {
-        setAiMessage(AI_MESSAGES[++i])
-      } else {
-        clearInterval(interval)
-      }
+      if (i < AI_MESSAGES.length - 1) setAiMessage(AI_MESSAGES[++i])
+      else clearInterval(interval)
     }, 700)
 
     try {
@@ -99,12 +92,9 @@ export default function AddTradePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64, mediaType: file.type }),
       })
-
       clearInterval(interval)
-
       if (!res.ok) throw new Error('ניתוח נכשל')
       const data = await res.json()
-
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
@@ -116,20 +106,19 @@ export default function AddTradePage() {
       setAiConfidence(data.confidence || 85)
       setAiRaw(data.analysis || '')
       setStep(3)
-    } catch (err) {
+    } catch {
       clearInterval(interval)
       toast.error('שגיאה בניתוח התמונה — נסה שוב או מלא ידנית')
-      setStep(3) // still show form so user can fill manually
+      setImageFile(null)
+      setImagePreview(null)
+      setStep(3)
     }
   }
 
   function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.onload = () => {
-        const result = reader.result as string
-        resolve(result.split(',')[1]) // strip data:...;base64,
-      }
+      reader.onload = () => resolve((reader.result as string).split(',')[1])
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
@@ -153,40 +142,33 @@ export default function AddTradePage() {
       toast.error('נא למלא את כל השדות הנדרשים')
       return
     }
-
     setSubmitting(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('לא מחובר')
 
-      // Get active portfolio
-      const { data: portfolios } = await supabase
-        .from('portfolios')
-        .select('id')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
+      const savedId = localStorage.getItem('tradeix-active-portfolio')
+      let portfolioId = savedId
 
-      if (!portfolios || portfolios.length === 0) {
-        toast.error('אין תיק פתוח — צור תיק קודם')
-        router.push('/portfolios')
-        return
+      if (!portfolioId) {
+        const { data: portfolios } = await supabase
+          .from('portfolios').select('id').eq('user_id', user.id)
+          .order('created_at', { ascending: false }).limit(1)
+        if (!portfolios || portfolios.length === 0) {
+          toast.error('אין תיק פתוח — צור תיק קודם')
+          router.push('/portfolios')
+          return
+        }
+        portfolioId = portfolios[0].id
       }
 
       let imageUrl = null
-
-      // Upload image if exists
       if (imageFile) {
         const ext = imageFile.name.split('.').pop()
         const path = `${user.id}/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from('trade-images')
-          .upload(path, imageFile)
-
+        const { error: uploadError } = await supabase.storage.from('trade-images').upload(path, imageFile)
         if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from('trade-images')
-            .getPublicUrl(path)
+          const { data: urlData } = supabase.storage.from('trade-images').getPublicUrl(path)
           imageUrl = urlData.publicUrl
         }
       }
@@ -195,7 +177,7 @@ export default function AddTradePage() {
       const pnl = parseFloat(tradeData.pnl) || 0
 
       const { error } = await supabase.from('trades').insert({
-        portfolio_id: portfolios[0].id,
+        portfolio_id: portfolioId,
         user_id: user.id,
         symbol: tradeData.symbol.toUpperCase(),
         direction: tradeData.direction,
@@ -205,14 +187,13 @@ export default function AddTradePage() {
         pnl,
         rr_ratio: rr ? parseFloat(rr) : 0,
         image_url: imageUrl,
-        ai_analysis: aiRaw,
+        ai_analysis: isManual ? null : aiRaw,
         notes: tradeData.notes,
         traded_at: tradeData.traded_at,
         outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
       })
 
       if (error) throw error
-
       toast.success('העסקה הועלתה בהצלחה! ✓')
       router.push('/dashboard')
     } catch (err: any) {
@@ -224,11 +205,10 @@ export default function AddTradePage() {
 
   const rr = calcRR()
 
-  // ─── STEP INDICATOR ───
   const StepIndicator = () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: '28px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
       {[1, 2, 3].map((n, idx) => (
-        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? '1' : 'none' }}>
+        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 'none' as any }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
               width: '28px', height: '28px', borderRadius: '50%',
@@ -241,20 +221,12 @@ export default function AddTradePage() {
             }}>
               {step > n ? '✓' : n}
             </div>
-            <span style={{
-              fontSize: '12px', transition: 'all 0.3s',
-              color: step === n ? 'var(--text)' : 'var(--text3)',
-              fontWeight: step === n ? '500' : '400',
-            }}>
+            <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
               {['העלאת גרף', 'ניתוח AI', 'פרטי עסקה'][n - 1]}
             </span>
           </div>
           {idx < 2 && (
-            <div style={{
-              flex: 1, height: '1px', margin: '0 8px',
-              background: step > n ? 'var(--green)' : 'var(--border)',
-              transition: 'background 0.3s',
-            }} />
+            <div style={{ flex: 1, height: '1px', margin: '0 8px', background: step > n ? 'var(--green)' : 'var(--border)', transition: 'background 0.3s' }} />
           )}
         </div>
       ))}
@@ -263,29 +235,20 @@ export default function AddTradePage() {
 
   return (
     <div>
-      <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '24px' }}>
-        הוספת עסקה חדשה
-      </div>
-
+      <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '24px' }}>הוספת עסקה חדשה</div>
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
+
         {!isManual && <StepIndicator />}
 
-        {/* ─── STEP 1: UPLOAD ─── */}
+        {/* STEP 1: UPLOAD */}
         {step === 1 && (
           <div className="fade-up">
-            <div
-              {...getRootProps()}
-              style={{
-                border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
-                borderRadius: 'var(--radius)',
-                padding: '52px 24px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                background: isDragActive ? '#4a7fff0a' : 'var(--bg3)',
-                transition: 'all 0.3s',
-                marginBottom: '16px',
-              }}
-            >
+            <div {...getRootProps()} style={{
+              border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
+              borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center',
+              cursor: 'pointer', background: isDragActive ? '#4a7fff0a' : 'var(--bg3)',
+              transition: 'all 0.3s', marginBottom: '16px',
+            }}>
               <input {...getInputProps()} />
               <div style={{ fontSize: '44px', marginBottom: '14px' }}>📈</div>
               <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>
@@ -293,74 +256,36 @@ export default function AddTradePage() {
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
                 גרור תמונת גרף לכאן, או לחץ לבחירת קובץ<br />
-                <span style={{ color: 'var(--text3)', fontSize: '12px' }}>
-                  הגרף חייב לכלול ציר מחירים + נקודת כניסה + SL + TP
-                </span>
+                <span style={{ color: 'var(--text3)', fontSize: '12px' }}>הגרף חייב לכלול ציר מחירים + נקודת כניסה + SL + TP</span>
               </div>
-              <span className="btn-primary" style={{
-                background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
-                color: '#fff', padding: '10px 24px', borderRadius: 'var(--radius-sm)',
-                fontSize: '13px', fontWeight: '500',
-                boxShadow: '0 0 20px var(--blueglow)',
-              }}>
+              <span className="btn-primary" style={{ background: 'linear-gradient(135deg, var(--blue), var(--blue2))', color: '#fff', padding: '10px 24px', borderRadius: 'var(--radius-sm)', fontSize: '13px', fontWeight: '500', boxShadow: '0 0 20px var(--blueglow)' }}>
                 בחר קובץ
               </span>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '12px' }}>
-                PNG, JPG, WEBP עד 10MB
-              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP עד 10MB</div>
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
               <span style={{ fontSize: '12px', color: 'var(--text3)' }}>או</span>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
-
-            <button onClick={skipToManual} className="btn-ghost" style={{ width: '100%' }}>
-              דלג לניתוח ידני ←
-            </button>
+            <button onClick={skipToManual} className="btn-ghost" style={{ width: '100%' }}>הוספה ידנית ←</button>
           </div>
         )}
 
-        {/* ─── STEP 2: ANALYZING ─── */}
+        {/* STEP 2: ANALYZING */}
         {step === 2 && (
           <div className="fade-up">
-            <div style={{
-              background: 'var(--bg2)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius)', overflow: 'hidden',
-            }}>
-              {/* Image preview */}
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               {imagePreview && (
                 <div style={{ position: 'relative' }}>
-                  <img
-                    src={imagePreview}
-                    alt="גרף"
-                    style={{ width: '100%', maxHeight: '260px', objectFit: 'contain', display: 'block', background: '#000' }}
-                  />
-                  <div style={{
-                    position: 'absolute', top: '10px', right: '10px',
-                    background: '#00000088', backdropFilter: 'blur(4px)',
-                    border: '1px solid var(--border2)',
-                    borderRadius: '6px', padding: '4px 10px',
-                    fontSize: '11px', color: 'var(--text2)',
-                  }}>
+                  <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '260px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#00000088', backdropFilter: 'blur(4px)', border: '1px solid var(--border2)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: 'var(--text2)' }}>
                     {imageFile?.name}
                   </div>
                 </div>
               )}
-
-              {/* Loader */}
-              <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', padding: '32px', gap: '14px',
-              }}>
-                <div style={{
-                  width: '44px', height: '44px',
-                  border: '3px solid var(--border)',
-                  borderTopColor: 'var(--blue)',
-                  borderRadius: '50%',
-                  animation: 'spin 0.8s linear infinite',
-                }} />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', border: '3px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>{aiMessage}</div>
                 <div style={{ fontSize: '12px', color: 'var(--text3)' }}>ניתוח AI • אנא המתן</div>
               </div>
@@ -368,96 +293,54 @@ export default function AddTradePage() {
           </div>
         )}
 
-        {/* ─── STEP 3: TRADE DETAILS ─── */}
+        {/* STEP 3: TRADE DETAILS */}
         {step === 3 && (
           <div className="fade-up">
-            {/* AI result banner — only if image was uploaded via AI (not manual) */}
-            {imagePreview && !isManual && (
-              <>
-                <div style={{
-                  background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)',
-                  border: '1px solid #4a7fff44',
-                  borderRadius: 'var(--radius)',
-                  padding: '16px',
-                  display: 'flex', alignItems: 'flex-start', gap: '14px',
-                  marginBottom: '16px',
-                }}>
-                  <div style={{
-                    width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
-                    background: 'linear-gradient(135deg, var(--blue), var(--purple))',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '18px', boxShadow: '0 0 16px var(--blueglow)',
-                  }}>✦</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', letterSpacing: '0.5px', marginBottom: '4px' }}>
-                      ניתוח AI הושלם
-                    </div>
-                    <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
-                      {tradeData.symbol
-                        ? `זוהה: ${tradeData.symbol} • ${tradeData.direction === 'long' ? 'Long' : 'Short'} • כניסה: ${tradeData.entry_price} • SL: ${tradeData.stop_loss} • TP: ${tradeData.take_profit}`
-                        : 'לא זוהו נתונים בגרף — אנא מלא ידנית'
-                      }
-                    </div>
-                    {aiConfidence > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: 'var(--text3)' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green)' }} />
-                        רמת ביטחון: {aiConfidence}% • ניתן לערוך את הפרטים למטה
-                      </div>
-                    )}
+            {/* AI banner — only when AI found data */}
+            {!isManual && imagePreview && tradeData.symbol && (
+              <div style={{ background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)', border: '1px solid #4a7fff44', borderRadius: 'var(--radius)', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0, background: 'linear-gradient(135deg, var(--blue), var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', boxShadow: '0 0 16px var(--blueglow)' }}>✦</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>ניתוח AI הושלם</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
+                    זוהה: {tradeData.symbol} • {tradeData.direction === 'long' ? 'Long' : 'Short'} • כניסה: {tradeData.entry_price} • SL: {tradeData.stop_loss} • TP: {tradeData.take_profit}
                   </div>
-                </div>
-
-                {/* Small image preview */}
-                <div style={{
-                  borderRadius: 'var(--radius)', overflow: 'hidden',
-                  border: '1px solid var(--border)', marginBottom: '16px',
-                }}>
-                  <img
-                    src={imagePreview}
-                    alt="גרף"
-                    style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', display: 'block', background: '#000' }}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Trade detail form */}
-            <div style={{
-              background: 'var(--bg2)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius)', overflow: 'hidden',
-            }}>
-              <div style={{
-                padding: '16px 20px', background: 'var(--bg3)',
-                borderBottom: '1px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              }}>
-                <div style={{ fontSize: '14px', fontWeight: '600' }}>פרטי עסקה</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>
-                  {imagePreview ? 'ניתן לערוך כל שדה' : 'מילוי ידני'}
+                  {aiConfidence > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: 'var(--text3)' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green)' }} />
+                      רמת ביטחון: {aiConfidence}% • ניתן לערוך
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
+
+            {/* AI image preview — only when AI found data */}
+            {!isManual && imagePreview && tradeData.symbol && (
+              <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)', marginBottom: '16px' }}>
+                <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', display: 'block', background: '#000' }} />
+              </div>
+            )}
+
+            {/* Trade form */}
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+              <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '14px', fontWeight: '600' }}>פרטי עסקה</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? 'הוספה ידנית' : 'ניתן לערוך כל שדה'}</div>
+              </div>
               <div style={{ padding: '20px' }}>
-                {/* Image upload inside form */}
+
+                {/* Image upload inside form — always shown */}
                 <div style={{ marginBottom: '20px' }}>
                   {imagePreview ? (
                     <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border)' }}>
                       <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', background: '#000' }} />
-                      <button
-                        onClick={() => { setImageFile(null); setImagePreview(null) }}
-                        style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Rubik, sans-serif' }}
-                      >✕ הסר</button>
+                      <button onClick={() => { setImageFile(null); setImagePreview(null) }} style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Rubik, sans-serif' }}>
+                        ✕ הסר
+                      </button>
                     </div>
                   ) : (
-                    <div
-                      {...getManualRootProps()}
-                      style={{
-                        border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`,
-                        borderRadius: 'var(--radius-sm)', padding: '20px',
-                        textAlign: 'center', cursor: 'pointer',
-                        background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)',
-                        transition: 'all 0.2s',
-                      }}
-                    >
+                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.2s' }}>
                       <input {...getManualInputProps()} />
                       <div style={{ fontSize: '24px', marginBottom: '6px' }}>📷</div>
                       <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>העלה תמונת גרף</div>
@@ -466,127 +349,58 @@ export default function AddTradePage() {
                   )}
                 </div>
 
-                {/* Row 1: symbol + direction */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                      סמל / זוג *
-                    </label>
-                    <input
-                      value={tradeData.symbol}
-                      onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))}
-                      placeholder="EUR/USD, GOLD, BTC..."
-                    />
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>סמל / זוג *</label>
+                    <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                      כיוון *
-                    </label>
-                    <select
-                      value={tradeData.direction}
-                      onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}
-                    >
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>כיוון *</label>
+                    <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
                       <option value="long">Long (קניה)</option>
                       <option value="short">Short (מכירה)</option>
                     </select>
                   </div>
                 </div>
 
-                {/* Row 2: date + PnL */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                      תאריך
-                    </label>
-                    <input
-                      type="date"
-                      value={tradeData.traded_at}
-                      onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))}
-                    />
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>תאריך</label>
+                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                      P&L ($)
-                    </label>
-                    <input
-                      value={tradeData.pnl}
-                      onChange={e => setTradeData(p => ({ ...p, pnl: e.target.value }))}
-                      placeholder="+320 או -150"
-                    />
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>P&L ($)</label>
+                    <input value={tradeData.pnl} onChange={e => setTradeData(p => ({ ...p, pnl: e.target.value }))} placeholder="+320 או -150" />
                   </div>
                 </div>
 
-                {/* Row 3: entry, SL, TP */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
-                  {[
-                    { key: 'entry_price', label: 'Entry *' },
-                    { key: 'stop_loss', label: 'Stop Loss *' },
-                    { key: 'take_profit', label: 'Take Profit *' },
-                  ].map(({ key, label }) => (
+                  {[{ key: 'entry_price', label: 'Entry *' }, { key: 'stop_loss', label: 'Stop Loss *' }, { key: 'take_profit', label: 'Take Profit *' }].map(({ key, label }) => (
                     <div key={key}>
-                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                        {label}
-                      </label>
-                      <input
-                        value={(tradeData as any)[key]}
-                        onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))}
-                        placeholder="0.0000"
-                      />
+                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
+                      <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
                     </div>
                   ))}
                 </div>
 
-                {/* RR display */}
-                <div style={{
-                  background: 'linear-gradient(135deg, #1a3a8f18, #7c3aed18)',
-                  border: '1px solid #4a7fff33',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '14px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  margin: '16px 0',
-                }}>
+                <div style={{ background: 'linear-gradient(135deg, #1a3a8f18, #7c3aed18)', border: '1px solid #4a7fff33', borderRadius: 'var(--radius-sm)', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '16px 0' }}>
                   <div>
                     <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Risk/Reward מחושב אוטומטית</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>
-                      מבוסס Entry ← SL / TP
-                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>מבוסס Entry ← SL / TP</div>
                   </div>
-                  <div style={{
-                    fontSize: '26px', fontWeight: '700',
-                    background: rr ? 'linear-gradient(90deg, var(--blue), var(--purple))' : undefined,
-                    WebkitBackgroundClip: rr ? 'text' : undefined,
-                    WebkitTextFillColor: rr ? 'transparent' : undefined,
-                    color: rr ? undefined : 'var(--text3)',
-                  }}>
+                  <div style={{ fontSize: '26px', fontWeight: '700', background: rr ? 'linear-gradient(90deg, var(--blue), var(--purple))' : undefined, WebkitBackgroundClip: rr ? 'text' : undefined, WebkitTextFillColor: rr ? 'transparent' : undefined, color: rr ? undefined : 'var(--text3)' }}>
                     {rr ? `1:${rr}` : '—'}
                   </div>
                 </div>
 
-                {/* Notes */}
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                    הערות (אופציונלי)
-                  </label>
-                  <textarea
-                    value={tradeData.notes}
-                    onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))}
-                    placeholder="מה למדת מהעסקה הזו?"
-                    rows={3}
-                    style={{ resize: 'vertical' }}
-                  />
+                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>הערות (אופציונלי)</label>
+                  <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder="מה למדת מהעסקה הזו?" rows={3} style={{ resize: 'vertical' }} />
                 </div>
 
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className="btn-primary"
-                    style={{ flex: 1, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}
-                  >
-                    {submitting ? '⏳ מעלה...' : 'שגר עסקה ✓'}
-                  </button>
-                </div>
+                <button onClick={handleSubmit} disabled={submitting} className="btn-primary" style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
+                  {submitting ? '⏳ מעלה...' : '✓ העלאת עסקה'}
+                </button>
               </div>
             </div>
           </div>
