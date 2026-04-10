@@ -371,8 +371,8 @@ export default function AddTradePage() {
         {/* ─── STEP 3: TRADE DETAILS ─── */}
         {step === 3 && (
           <div className="fade-up">
-            {/* AI result banner — only if image was uploaded */}
-            {imagePreview && (
+            {/* AI result banner — only if image was uploaded via AI (not manual) */}
+            {imagePreview && !isManual && (
               <>
                 <div style={{
                   background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)',
