@@ -10,32 +10,16 @@ import {
 
 const TIME_FILTERS = ['יום', 'שבוע', 'חודש', 'שנה']
 
-// demo equity curve data
-const DEMO_EQUITY = [
-  { date: '01/05', value: 10000 },
-  { date: '03/05', value: 10320 },
-  { date: '05/05', value: 10180 },
-  { date: '07/05', value: 10650 },
-  { date: '09/05', value: 10820 },
-  { date: '11/05', value: 10640 },
-  { date: '13/05', value: 11180 },
-  { date: '15/05', value: 11450 },
-  { date: '17/05', value: 12100 },
-  { date: '19/05', value: 12380 },
-  { date: '21/05', value: 13050 },
-  { date: '23/05', value: 14280 },
-]
-
 export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useState('חודש')
   const [trades, setTrades] = useState<Trade[]>([])
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [activePortfolio, setActivePortfolio] = useState<string | null>(null)
   const [stats, setStats] = useState<Stats>({
-    totalTrades: 48, wins: 33, losses: 15,
-    winRate: 68.75, totalPnl: 4280,
-    profitFactor: 2.14, avgRR: 2.3,
-    bestTrade: 540, worstTrade: -180,
+    totalTrades: 0, wins: 0, losses: 0,
+    winRate: 0, totalPnl: 0,
+    profitFactor: 0, avgRR: 0,
+    bestTrade: 0, worstTrade: 0,
   })
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
