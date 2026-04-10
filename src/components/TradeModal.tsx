@@ -255,12 +255,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <div style={{ fontSize: '13px', color: 'var(--text2)' }}>Risk / Reward</div>
                 <div style={{ fontSize: '22px', fontWeight: '700', background: 'linear-gradient(90deg,var(--blue),var(--purple))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>1:{trade.rr_ratio?.toFixed(2)}</div>
               </div>
-              {trade.ai_analysis && (
-                <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '14px', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '6px' }}>✦ ניתוח AI</div>
-                  <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6 }}>{trade.ai_analysis}</div>
-                </div>
-              )}
               {trade.notes && (
                 <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '14px' }}>
                   <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px' }}>הערות</div>
