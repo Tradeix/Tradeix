@@ -189,7 +189,7 @@ export default function DashboardPage() {
           <div style={{ fontSize: '12px', color: 'var(--text3)' }}>מאי 2024</div>
         </div>
         <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={DEMO_EQUITY}>
+          <LineChart data={equityCurve}>
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} width={55} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
             <Tooltip
