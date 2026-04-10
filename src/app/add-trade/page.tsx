@@ -45,6 +45,8 @@ export default function AddTradePage() {
   const router = useRouter()
   const supabase = createClient()
 
+  const [isManual, setIsManual] = useState(false)
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (!file) return
@@ -55,8 +57,24 @@ export default function AddTradePage() {
     runAiAnalysis(file)
   }, [])
 
+  const onDropManual = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+    setImageFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => setImagePreview(e.target?.result as string)
+    reader.readAsDataURL(file)
+  }, [])
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1,
+    maxSize: 10 * 1024 * 1024,
+  })
+
+  const { getRootProps: getManualRootProps, getInputProps: getManualInputProps, isDragActive: isManualDragActive } = useDropzone({
+    onDrop: onDropManual,
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1,
     maxSize: 10 * 1024 * 1024,
@@ -118,6 +136,7 @@ export default function AddTradePage() {
   }
 
   function skipToManual() {
+    setIsManual(true)
     setStep(3)
   }
 
@@ -402,32 +421,6 @@ export default function AddTradePage() {
               </>
             )}
 
-            {/* Upload zone for manual entry - shown when no image */}
-            {!imagePreview && (
-              <div
-                {...getRootProps()}
-                style={{
-                  border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
-                  borderRadius: 'var(--radius)',
-                  padding: '24px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  background: isDragActive ? '#4a7fff0a' : 'var(--bg3)',
-                  transition: 'all 0.3s',
-                  marginBottom: '16px',
-                }}
-              >
-                <input {...getInputProps()} />
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📈</div>
-                <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>
-                  העלה תמונת גרף (אופציונלי)
-                </div>
-                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                  גרור לכאן או לחץ לבחירה • PNG, JPG עד 10MB
-                </div>
-              </div>
-            )}
-
             {/* Trade detail form */}
             <div style={{
               background: 'var(--bg2)', border: '1px solid var(--border)',
@@ -444,6 +437,35 @@ export default function AddTradePage() {
                 </div>
               </div>
               <div style={{ padding: '20px' }}>
+                {/* Image upload inside form */}
+                <div style={{ marginBottom: '20px' }}>
+                  {imagePreview ? (
+                    <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                      <button
+                        onClick={() => { setImageFile(null); setImagePreview(null) }}
+                        style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Rubik, sans-serif' }}
+                      >✕ הסר</button>
+                    </div>
+                  ) : (
+                    <div
+                      {...getManualRootProps()}
+                      style={{
+                        border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`,
+                        borderRadius: 'var(--radius-sm)', padding: '20px',
+                        textAlign: 'center', cursor: 'pointer',
+                        background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <input {...getManualInputProps()} />
+                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>📷</div>
+                      <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>העלה תמונת גרף</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text3)' }}>אופציונלי • PNG, JPG עד 10MB</div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Row 1: symbol + direction */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
