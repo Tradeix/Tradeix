@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               width: '8px', height: '8px', borderRadius: '50%',
               background: 'var(--blue)', boxShadow: '0 0 6px var(--blue)',
             }} />
-            <span>תיק פורקס 2024</span>
+            <span>בחר תיק</span>
           </div>
         </div>
 
