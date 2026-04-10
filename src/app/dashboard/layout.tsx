@@ -6,6 +6,16 @@ import { createClient } from '@/lib/supabase/client'
 import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
 import Link from 'next/link'
 
+const PORTFOLIO_COLOR_MAP: Record<string, string> = {
+  blue: '#4a7fff', purple: '#8b5cf6', green: '#10b981',
+  red: '#ef4444', amber: '#f59e0b', cyan: '#06b6d4',
+  pink: '#ec4899', gray: '#6b7280',
+}
+
+function getPortfolioColor(portfolio: any) {
+  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#4a7fff'
+}
+
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '⬛', label: 'דשבורד' },
   { href: '/add-trade', icon: '＋', label: 'הוספת עסקה' },
@@ -56,12 +66,12 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         {activePortfolio && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: '6px',
-            background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)',
-            border: '1px solid #4a7fff44',
+            background: `${getPortfolioColor(activePortfolio)}18`,
+            border: `1px solid ${getPortfolioColor(activePortfolio)}44`,
             borderRadius: '20px', padding: '3px 12px',
-            fontSize: '12px', color: 'var(--blue)', fontWeight: '500',
+            fontSize: '12px', color: getPortfolioColor(activePortfolio), fontWeight: '500',
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--blue)', boxShadow: '0 0 6px var(--blue)' }} />
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: getPortfolioColor(activePortfolio), boxShadow: `0 0 6px ${getPortfolioColor(activePortfolio)}` }} />
             {activePortfolio.name}
           </div>
         )}
@@ -76,7 +86,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
           transition: 'border 0.2s',
         }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio ? 'var(--blue)' : 'var(--text3)', boxShadow: activePortfolio ? '0 0 6px var(--blue)' : 'none' }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio ? getPortfolioColor(activePortfolio) : 'var(--text3)', boxShadow: activePortfolio ? `0 0 6px ${getPortfolioColor(activePortfolio)}` : 'none' }} />
           <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activePortfolio ? activePortfolio.name : 'בחר תיק'}
           </span>
@@ -107,7 +117,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
                   }}>
                     <div style={{
                       width: '8px', height: '8px', borderRadius: '50%',
-                      background: activePortfolio?.id === p.id ? 'var(--blue)' : 'var(--border2)',
+                      background: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--border2)',
                     }} />
                     <span style={{ flex: 1 }}>{p.name}</span>
                     {activePortfolio?.id === p.id && <span style={{ fontSize: '12px' }}>✓</span>}
@@ -236,7 +246,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       <div style={{ marginRight: '220px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>{children}</div>
+        <div style={{ padding: '24px' }}>{children}</div>
       </div>
 
       <style>{`
