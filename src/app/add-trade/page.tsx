@@ -584,13 +584,7 @@ export default function AddTradePage() {
                     className="btn-primary"
                     style={{ flex: 1, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}
                   >
-                    {submitting ? '⏳ מעלה...' : '✓ העלאת עסקה'}
-                  </button>
-                  <button
-                    onClick={() => { setStep(1); setImageFile(null); setImagePreview(null) }}
-                    className="btn-ghost"
-                  >
-                    ↩ התחל מחדש
+                    {submitting ? '⏳ מעלה...' : 'שגר עסקה ✓'}
                   </button>
                 </div>
               </div>
