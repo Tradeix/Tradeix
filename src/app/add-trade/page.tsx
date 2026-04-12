@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useDropzone } from 'react-dropzone'
+import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 
 type Step = 1 | 2 | 3
@@ -235,7 +236,11 @@ export default function AddTradePage() {
 
   return (
     <div>
-      <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '24px' }}>הוספת עסקה חדשה</div>
+      <PageHeader
+        title="הוספת עסקה חדשה"
+        subtitle="תעד ונתח את העסקאות שלך"
+        icon="add_circle"
+      />
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
 
         {!isManual && <StepIndicator />}

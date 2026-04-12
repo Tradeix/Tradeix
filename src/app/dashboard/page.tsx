@@ -1,400 +1,416 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { usePortfolio } from '@/lib/portfolio-context'
-import { useApp } from '@/lib/app-context'
-import { t } from '@/lib/translations'
-import { Trade, Stats } from '@/types'
-import Link from 'next/link'
-import TradeModal from '@/components/TradeModal'
+import { useDropzone } from 'react-dropzone'
+import PageHeader from '@/components/PageHeader'
+import toast from 'react-hot-toast'
 
-// Accent color — kept blue/purple per user request
-const PRIMARY = '#4a7fff'
-const PRIMARY_DARK = '#3c2f00'
+type Step = 1 | 2 | 3
 
-export default function DashboardPage() {
-  const { activePortfolio } = usePortfolio()
-  const { language } = useApp()
-  const tr = t[language]
-  const [timeFilter, setTimeFilter] = useState(3) // יום active by default like HTML
-  const [trades, setTrades] = useState<Trade[]>([])
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
-  const [stats, setStats] = useState<Stats>({
-    totalTrades: 0, wins: 0, losses: 0, winRate: 0,
-    totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
+interface TradeData {
+  symbol: string
+  direction: 'long' | 'short'
+  entry_price: string
+  stop_loss: string
+  take_profit: string
+  pnl: string
+  traded_at: string
+  notes: string
+}
+
+const AI_MESSAGES = [
+  'מזהה ציר מחירים...',
+  'מאתר נקודת כניסה...',
+  'מחשב Stop Loss ו-Take Profit...',
+  'מנתח כיוון המסחר...',
+  'מחשב Risk/Reward...',
+  'מסיים ניתוח...',
+]
+
+export default function AddTradePage() {
+  const [step, setStep] = useState<Step>(1)
+  const [isManual, setIsManual] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [aiMessage, setAiMessage] = useState(AI_MESSAGES[0])
+  const [aiConfidence, setAiConfidence] = useState(0)
+  const [aiRaw, setAiRaw] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [tradeData, setTradeData] = useState<TradeData>({
+    symbol: '', direction: 'long',
+    entry_price: '', stop_loss: '', take_profit: '',
+    pnl: '', traded_at: new Date().toISOString().split('T')[0],
+    notes: '',
   })
-  const [loading, setLoading] = useState(true)
+  const router = useRouter()
   const supabase = createClient()
 
-  const TIME_FILTERS = [tr.year, tr.month, tr.week, tr.day]
+  // Dropzone for AI analysis
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+    setImageFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => setImagePreview(e.target?.result as string)
+    reader.readAsDataURL(file)
+    runAiAnalysis(file)
+  }, [])
 
-  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio])
+  // Dropzone for manual (no AI)
+  const onDropManual = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+    setImageFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => setImagePreview(e.target?.result as string)
+    reader.readAsDataURL(file)
+  }, [])
 
-  async function loadData() {
-    setLoading(true)
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1, maxSize: 10 * 1024 * 1024,
+  })
+
+  const { getRootProps: getManualRootProps, getInputProps: getManualInputProps, isDragActive: isManualDragActive } = useDropzone({
+    onDrop: onDropManual, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1, maxSize: 10 * 1024 * 1024,
+  })
+
+  async function runAiAnalysis(file: File) {
+    setStep(2)
+    let i = 0
+    const interval = setInterval(() => {
+      if (i < AI_MESSAGES.length - 1) setAiMessage(AI_MESSAGES[++i])
+      else clearInterval(interval)
+    }, 700)
+
     try {
-      const { data: tradeData } = await supabase
-        .from('trades').select('*')
-        .eq('portfolio_id', activePortfolio!.id)
-        .order('traded_at', { ascending: false }).limit(10)
-      if (tradeData) setTrades(tradeData)
+      const base64 = await fileToBase64(file)
+      const res = await fetch('/api/analyze-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mediaType: file.type }),
+      })
+      clearInterval(interval)
+      if (!res.ok) throw new Error('ניתוח נכשל')
+      const data = await res.json()
+      setTradeData(prev => ({
+        ...prev,
+        symbol: data.symbol || '',
+        direction: data.direction || 'long',
+        entry_price: data.entry_price?.toString() || '',
+        stop_loss: data.stop_loss?.toString() || '',
+        take_profit: data.take_profit?.toString() || '',
+      }))
+      setAiConfidence(data.confidence || 85)
+      setAiRaw(data.analysis || '')
+      setStep(3)
+    } catch {
+      clearInterval(interval)
+      toast.error('שגיאה בניתוח התמונה — נסה שוב או מלא ידנית')
+      setImageFile(null)
+      setImagePreview(null)
+      setStep(3)
+    }
+  }
 
-      const { data: all } = await supabase
-        .from('trades').select('pnl, outcome')
-        .eq('portfolio_id', activePortfolio!.id)
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve((reader.result as string).split(',')[1])
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
 
-      if (all && all.length > 0) {
-        const wins = all.filter((x: any) => x.outcome === 'win')
-        const losses = all.filter((x: any) => x.outcome === 'loss')
-        const totalPnl = all.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
-        const gp = wins.reduce((s: number, x: any) => s + x.pnl, 0)
-        const gl = Math.abs(losses.reduce((s: number, x: any) => s + x.pnl, 0))
-        setStats({
-          totalTrades: all.length, wins: wins.length, losses: losses.length,
-          winRate: (wins.length / all.length) * 100, totalPnl,
-          profitFactor: gl > 0 ? gp / gl : 0, avgRR: 0,
-          bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)),
-          worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)),
-        })
+  function skipToManual() {
+    setIsManual(true)
+    setStep(3)
+  }
+
+  function calcRR() {
+    const e = parseFloat(tradeData.entry_price)
+    const s = parseFloat(tradeData.stop_loss)
+    const t = parseFloat(tradeData.take_profit)
+    if (isNaN(e) || isNaN(s) || isNaN(t) || Math.abs(e - s) === 0) return null
+    return (Math.abs(t - e) / Math.abs(e - s)).toFixed(2)
+  }
+
+  async function handleSubmit() {
+    if (!tradeData.symbol || !tradeData.entry_price || !tradeData.stop_loss || !tradeData.take_profit) {
+      toast.error('נא למלא את כל השדות הנדרשים')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('לא מחובר')
+
+      const savedId = localStorage.getItem('tradeix-active-portfolio')
+      let portfolioId = savedId
+
+      if (!portfolioId) {
+        const { data: portfolios } = await supabase
+          .from('portfolios').select('id').eq('user_id', user.id)
+          .order('created_at', { ascending: false }).limit(1)
+        if (!portfolios || portfolios.length === 0) {
+          toast.error('אין תיק פתוח — צור תיק קודם')
+          router.push('/portfolios')
+          return
+        }
+        portfolioId = portfolios[0].id
       }
-    } finally { setLoading(false) }
+
+      let imageUrl = null
+      if (imageFile) {
+        const ext = imageFile.name.split('.').pop()
+        const path = `${user.id}/${Date.now()}.${ext}`
+        const { error: uploadError } = await supabase.storage.from('trade-images').upload(path, imageFile)
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('trade-images').getPublicUrl(path)
+          imageUrl = urlData.publicUrl
+        }
+      }
+
+      const rr = calcRR()
+      const pnl = parseFloat(tradeData.pnl) || 0
+
+      const { error } = await supabase.from('trades').insert({
+        portfolio_id: portfolioId,
+        user_id: user.id,
+        symbol: tradeData.symbol.toUpperCase(),
+        direction: tradeData.direction,
+        entry_price: parseFloat(tradeData.entry_price),
+        stop_loss: parseFloat(tradeData.stop_loss),
+        take_profit: parseFloat(tradeData.take_profit),
+        pnl,
+        rr_ratio: rr ? parseFloat(rr) : 0,
+        image_url: imageUrl,
+        ai_analysis: isManual ? null : aiRaw,
+        notes: tradeData.notes,
+        traded_at: tradeData.traded_at,
+        outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
+      })
+
+      if (error) throw error
+      toast.success('העסקה הועלתה בהצלחה! ✓')
+      router.push('/dashboard')
+    } catch (err: any) {
+      toast.error(err.message || 'שגיאה בהעלאת העסקה')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  if (!activePortfolio && !loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '100px 20px', fontFamily: 'Heebo, sans-serif' }}>
-        <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.2 }}>📁</div>
-        <div style={{ fontSize: '22px', fontWeight: '900', marginBottom: '10px' }}>{tr.noPortfolio}</div>
-        <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.4)', marginBottom: '28px' }}>{tr.noPortfolioDesc}</div>
-        <Link href="/portfolios" style={{ background: `linear-gradient(135deg, ${PRIMARY}, #3366dd)`, color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700', boxShadow: `0 0 24px rgba(74,127,255,0.4)` }}>{tr.createPortfolio}</Link>
-      </div>
-    )
-  }
+  const rr = calcRR()
 
-  const pnlPositive = stats.totalPnl >= 0
-
-  return (
-    <div style={{ fontFamily: 'Heebo, sans-serif', color: '#e5e2e1' }}>
-
-      {/* ── HEADER AREA ── */}
-      <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
-        <div style={{ position: 'relative' }}>
-          <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0 }}>סקירה כללית</h2>
-          <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
-        </div>
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', gap: '2px' }}>
-          {TIME_FILTERS.map((label, i) => (
-            <button key={i} onClick={() => setTimeFilter(i)} style={{
-              padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: '700',
-              cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-              background: timeFilter === i ? PRIMARY : 'transparent',
-              color: timeFilter === i ? '#fff' : 'rgba(229,226,225,0.4)',
-              boxShadow: timeFilter === i ? `0 4px 16px rgba(74,127,255,0.35)` : 'none',
-              transition: 'all 0.2s',
-            }}>{label}</button>
-          ))}
-        </div>
-      </section>
-
-      {/* ── COMMAND CENTER STATS ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: '4fr 8fr', gap: '16px', height: '100px', marginBottom: '32px' }} className="stats-hero">
-
-        {/* P&L hero card */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-          border: `1px solid ${pnlPositive ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-          boxShadow: pnlPositive ? '0 0 30px -10px rgba(34,197,94,0.3)' : '0 0 30px -10px rgba(239,68,68,0.3)',
-          borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          padding: '12px', position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', insetInlineEnd: '-40px', top: '-40px', width: '96px', height: '96px', background: pnlPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', filter: 'blur(50px)', borderRadius: '50%' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <p style={{ fontSize: '9px', fontWeight: '900', color: pnlPositive ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)', textTransform: 'uppercase', letterSpacing: '0.2em', margin: 0 }}>ביצועי תיק סה״כ</p>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: pnlPositive ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>trending_up</span>
-          </div>
-          <div>
-            <p style={{ fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', fontSize: '24px', letterSpacing: '-0.02em', margin: '0 0 2px', textShadow: pnlPositive ? '0 0 20px rgba(34,197,94,0.4)' : '0 0 20px rgba(239,68,68,0.4)' }}>
-              {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
-            </p>
-            <p style={{ fontSize: '9px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>סה״כ P&L</p>
-          </div>
-        </div>
-
-        {/* Right 2-col mini cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-
-          {/* Profit Factor */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '12px', color: 'rgba(208,197,175,0.6)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
-              </div>
+  const StepIndicator = () => (
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
+      {[1, 2, 3].map((n, idx) => (
+        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 'none' as any }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '12px', fontWeight: '600', flexShrink: 0,
+              border: `1.5px solid ${step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--border)'}`,
+              background: step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--bg2)',
+              color: step >= n ? '#fff' : 'var(--text3)',
+              transition: 'all 0.3s',
+            }}>
+              {step > n ? '✓' : n}
             </div>
-            <div style={{ marginTop: '4px' }}>
-              <p style={{ fontWeight: '900', color: '#e5e2e1', fontSize: '20px', margin: '0 0 2px' }}>{stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—'}</p>
-              <p style={{ fontSize: '9px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>גורם רווחיות</p>
-            </div>
+            <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
+              {['העלאת גרף', 'ניתוח AI', 'פרטי עסקה'][n - 1]}
+            </span>
           </div>
-
-          {/* Trades count — gold glow */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border: `1px solid rgba(74,127,255,0.2)`, boxShadow: `0 0 30px -10px rgba(74,127,255,0.3)`, borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '8px', background: `rgba(74,127,255,0.1)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '12px', color: PRIMARY, fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>reorder</span>
-              </div>
-            </div>
-            <div style={{ marginTop: '4px' }}>
-              <p style={{ fontWeight: '900', color: '#e5e2e1', fontSize: '20px', margin: '0 0 2px' }}>{stats.totalTrades}</p>
-              <p style={{ fontSize: '9px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>עסקאות</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PERFORMANCE MATRIX ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.03)',
-        borderRadius: '16px', padding: '24px',
-        position: 'relative', overflow: 'hidden', marginBottom: '32px',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            {/* Win rate big number */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>אחוז הצלחה</span>
-              <span style={{ fontSize: '30px', fontWeight: '900', color: '#22c55e', textShadow: '0 0 15px rgba(34,197,94,0.3)' }}>{stats.winRate.toFixed(0)}%</span>
-            </div>
-            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.05)' }} />
-            {/* Win/Loss pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ padding: '6px 16px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,1)' }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#22c55e', letterSpacing: '0.05em' }}>ניצחונות {stats.wins}</span>
-              </div>
-              <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>הפסדים {stats.losses}</span>
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'rgba(208,197,175,0.3)', textTransform: 'uppercase', letterSpacing: '0.3em' }}>
-            מטריצת ביצועים
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>security</span>
-          </div>
-        </div>
-
-        {/* Segmented bar */}
-        <div style={{ position: 'relative', height: '16px', width: '100%', display: 'flex', gap: '4px' }}>
-          {stats.totalTrades > 0 ? (
-            Array.from({ length: Math.min(stats.totalTrades, 20) }).map((_, i) => {
-              const isWin = i < Math.round((stats.wins / stats.totalTrades) * Math.min(stats.totalTrades, 20))
-              const isFirst = i === 0
-              const isLast = i === Math.min(stats.totalTrades, 20) - 1
-              return (
-                <div key={i} style={{
-                  flex: 1, height: '100%',
-                  background: isWin ? '#22c55e' : 'rgba(255,255,255,0.08)',
-                  boxShadow: isWin ? '0 0 20px rgba(34,197,94,0.2)' : 'none',
-                  transition: 'all 0.7s',
-                  borderRadius: isFirst ? '999px 0 0 999px' : isLast ? '0 999px 999px 0' : '0',
-                }} />
-              )
-            })
-          ) : (
-            <div style={{ flex: 1, height: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px' }} />
+          {idx < 2 && (
+            <div style={{ flex: 1, height: '1px', margin: '0 8px', background: step > n ? 'var(--green)' : 'var(--border)', transition: 'background 0.3s' }} />
           )}
         </div>
+      ))}
+    </div>
+  )
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(34,197,94,0.4)', display: 'inline-block' }} />
-            <span style={{ fontSize: '10px', color: 'rgba(34,197,94,0.6)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>חוזק סשן פעיל: {stats.winRate >= 60 ? 'יוצא דופן' : stats.winRate >= 40 ? 'טוב' : 'נמוך'}</span>
-          </div>
-          <span style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>עדכון בזמן אמת פעיל</span>
-        </div>
-      </section>
+  return (
+    <div>
+      <PageHeader
+        title="הוספת עסקה חדשה"
+        subtitle="תעד ונתח את העסקאות שלך"
+        icon="add_circle"
+      />
+      <div style={{ maxWidth: '620px', margin: '0 auto' }}>
 
-      {/* ── EQUITY CURVE ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: '32px', padding: '32px',
-        overflow: 'hidden', position: 'relative', marginBottom: '32px',
-      }}>
-        <div style={{ position: 'absolute', left: '-80px', bottom: '-80px', width: '256px', height: '256px', background: 'rgba(74,127,255,0.05)', filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
-          <div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>עקומת הון</h3>
-            <p style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>ויזואליזציה של ציר זמן ביצועים</p>
-          </div>
-          <div style={{ textAlign: 'left' }}>
-            <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>סה״כ P&L</p>
-            <p style={{ fontSize: '20px', fontWeight: '900', color: '#e5e2e1', margin: 0 }}>
-              {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
-            </p>
-          </div>
-        </div>
+        {!isManual && <StepIndicator />}
 
-        {/* SVG Chart — exact style from HTML */}
-        <div style={{ position: 'relative', height: '200px', width: '100%', display: 'flex' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '900', paddingInlineEnd: '16px', height: '100%', borderInlineEnd: '1px solid rgba(255,255,255,0.05)', width: '56px' }}>
-            {trades.length > 0 ? (
-              <>
-                <span>${Math.max(stats.bestTrade, 0)}</span>
-                <span>$0</span>
-                <span>${stats.worstTrade < 0 ? stats.worstTrade : 0}</span>
-              </>
-            ) : (
-              <><span>ציר Y</span></>
-            )}
-          </div>
-          <div style={{ flex: 1, position: 'relative', marginInlineStart: '16px', marginTop: '8px' }}>
-            {/* Grid lines */}
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', opacity: 0.1 }}>
-              {[0,1,2,3].map(i => <div key={i} style={{ borderTop: '1px solid white', width: '100%', height: '1px' }} />)}
+        {/* STEP 1: UPLOAD */}
+        {step === 1 && (
+          <div className="fade-up">
+            <div {...getRootProps()} style={{
+              border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
+              borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center',
+              cursor: 'pointer', background: isDragActive ? '#4a7fff0a' : 'var(--bg3)',
+              transition: 'all 0.3s', marginBottom: '16px',
+            }}>
+              <input {...getInputProps()} />
+              <div style={{ fontSize: '44px', marginBottom: '14px' }}>📈</div>
+              <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>
+                {isDragActive ? 'שחרר כאן...' : 'העלה גרף לניתוח AI'}
+              </div>
+              <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
+                גרור תמונת גרף לכאן, או לחץ לבחירת קובץ<br />
+                <span style={{ color: 'var(--text3)', fontSize: '12px' }}>הגרף חייב לכלול ציר מחירים + נקודת כניסה + SL + TP</span>
+              </div>
+              <span className="btn-primary" style={{ background: 'linear-gradient(135deg, var(--blue), var(--blue2))', color: '#fff', padding: '10px 24px', borderRadius: 'var(--radius-sm)', fontSize: '13px', fontWeight: '500', boxShadow: '0 0 20px var(--blueglow)' }}>
+                בחר קובץ
+              </span>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP עד 10MB</div>
             </div>
-            {/* Animated ping dot */}
-            <div style={{ position: 'absolute', right: '25%', top: '33%', transform: 'translate(50%, -50%)', zIndex: 20 }}>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ position: 'absolute', width: '32px', height: '32px', borderRadius: '50%', background: `rgba(74,127,255,0.2)`, animation: 'ping 1.5s ease-in-out infinite' }} />
-                <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white', boxShadow: `0 0 15px rgba(74,127,255,1)` }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <span style={{ fontSize: '12px', color: 'var(--text3)' }}>או</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            </div>
+            <button onClick={skipToManual} className="btn-ghost" style={{ width: '100%' }}>הוספה ידנית ←</button>
+          </div>
+        )}
+
+        {/* STEP 2: ANALYZING */}
+        {step === 2 && (
+          <div className="fade-up">
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+              {imagePreview && (
+                <div style={{ position: 'relative' }}>
+                  <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '260px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#00000088', backdropFilter: 'blur(4px)', border: '1px solid var(--border2)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: 'var(--text2)' }}>
+                    {imageFile?.name}
+                  </div>
                 </div>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', border: '3px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>{aiMessage}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>ניתוח AI • אנא המתן</div>
               </div>
             </div>
-            {/* SVG line */}
-            <svg style={{ width: '100%', height: '100%', overflow: 'visible' }} viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="chartFill" x1="0%" x2="0%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor={PRIMARY} stopOpacity="0.2" />
-                  <stop offset="100%" stopColor={PRIMARY} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M 0 100 Q 25 80, 50 33.3 Q 75 30, 100 20 V 100 H 0 Z" fill="url(#chartFill)" />
-              <path d="M 0 100 Q 25 80, 50 33.3 Q 75 30, 100 20" fill="none" stroke={PRIMARY} strokeLinecap="round" strokeWidth="3" style={{ filter: `drop-shadow(0 0 10px rgba(74,127,255,0.6))` }} />
-            </svg>
-            <div style={{ position: 'absolute', bottom: '-30px', left: '50%', transform: 'translateX(-50%)', fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '900', letterSpacing: '0.3em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>תחזית ציר זמן 2024</div>
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* ── RECENT TRADES ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: '24px', overflow: 'hidden', marginBottom: '32px',
-      }}>
-        <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>עסקאות אחרונות</h4>
-            <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>פעילות מסחר חיה</p>
-          </div>
-          <Link href="/add-trade" style={{
-            padding: '10px 20px', background: PRIMARY,
-            color: '#fff', borderRadius: '12px', fontSize: '12px', fontWeight: '900',
-            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px',
-            boxShadow: `0 8px 24px rgba(74,127,255,0.25)`, letterSpacing: '0.03em',
-            transition: 'opacity 0.2s',
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
-            עסקה חדשה
-          </Link>
-        </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
-            <thead>
-              <tr style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>נכס</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>סוג</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>מחיר כניסה</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>SL / TP</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>תוצאה</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>רווח/הפסד</th>
-              </tr>
-            </thead>
-            <tbody>
-              {trades.length === 0 ? (
-                <>
-                  <tr style={{ opacity: 0.2 }}>
-                    <td colSpan={6} style={{ padding: '32px', textAlign: 'center', fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', fontStyle: 'italic', letterSpacing: '0.2em' }}>
-                      אין עסקאות נוספות להצגה
-                    </td>
-                  </tr>
-                </>
-              ) : trades.map(trade => (
-                <tr key={trade.id}
-                  onClick={() => setSelectedTrade(trade)}
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', transition: 'background 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
-                >
-                  <td style={{ padding: '20px 32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{
-                        width: '36px', height: '36px', borderRadius: '12px',
-                        background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                        border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'transform 0.2s',
-                      }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>
-                          {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
-                        </span>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: '14px', fontWeight: '700', margin: '0 0 2px' }}>{trade.symbol}</p>
-                        <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', fontWeight: '500', margin: 0 }}>{new Date(trade.traded_at).toLocaleDateString('he-IL')}</p>
-                      </div>
+        {/* STEP 3: TRADE DETAILS */}
+        {step === 3 && (
+          <div className="fade-up">
+            {/* AI banner — only when AI found data */}
+            {!isManual && imagePreview && tradeData.symbol && (
+              <div style={{ background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)', border: '1px solid #4a7fff44', borderRadius: 'var(--radius)', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0, background: 'linear-gradient(135deg, var(--blue), var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', boxShadow: '0 0 16px var(--blueglow)' }}>✦</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>ניתוח AI הושלם</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
+                    זוהה: {tradeData.symbol} • {tradeData.direction === 'long' ? 'Long' : 'Short'} • כניסה: {tradeData.entry_price} • SL: {tradeData.stop_loss} • TP: {tradeData.take_profit}
+                  </div>
+                  {aiConfidence > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: 'var(--text3)' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green)' }} />
+                      רמת ביטחון: {aiConfidence}% • ניתן לערוך
                     </div>
-                  </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.direction === 'long' ? '#60a5fa' : '#a78bfa' }}>
-                    {trade.direction === 'long' ? 'לונג' : 'שורט'}
-                  </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '500', color: 'rgba(229,226,225,0.8)' }}>
-                    ${trade.entry_price}
-                  </td>
-                  <td style={{ padding: '20px 32px', fontSize: '13px', color: 'rgba(208,197,175,0.5)' }}>
-                    <span style={{ color: '#ef4444', fontWeight: '600' }}>{trade.stop_loss}</span>
-                    {' / '}
-                    <span style={{ color: '#22c55e', fontWeight: '600' }}>{trade.take_profit}</span>
-                  </td>
-                  <td style={{ padding: '20px 32px' }}>
-                    <span style={{
-                      padding: '4px 10px', borderRadius: '999px',
-                      background: trade.outcome === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                      color: trade.outcome === 'win' ? '#22c55e' : '#ef4444',
-                      fontSize: '10px', fontWeight: '900',
-                      border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                    }}>
-                      {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                  )}
+                </div>
+              </div>
+            )}
 
-      {selectedTrade && (
-        <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadData() }} />
-      )}
+            {/* AI image preview — only when AI found data */}
+            {!isManual && imagePreview && tradeData.symbol && (
+              <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)', marginBottom: '16px' }}>
+                <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', display: 'block', background: '#000' }} />
+              </div>
+            )}
 
-      <style>{`
-        @keyframes ping {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.5); opacity: 0; }
-        }
-        @media (max-width: 768px) {
-          .stats-hero { grid-template-columns: 1fr !important; height: auto !important; }
-        }
-      `}</style>
+            {/* Trade form */}
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+              <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '14px', fontWeight: '600' }}>פרטי עסקה</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? 'הוספה ידנית' : 'ניתן לערוך כל שדה'}</div>
+              </div>
+              <div style={{ padding: '20px' }}>
+
+                {/* Image upload inside form — always shown */}
+                <div style={{ marginBottom: '20px' }}>
+                  {imagePreview ? (
+                    <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                      <button onClick={() => { setImageFile(null); setImagePreview(null) }} style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Rubik, sans-serif' }}>
+                        ✕ הסר
+                      </button>
+                    </div>
+                  ) : (
+                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.2s' }}>
+                      <input {...getManualInputProps()} />
+                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>📷</div>
+                      <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>העלה תמונת גרף</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text3)' }}>אופציונלי • PNG, JPG עד 10MB</div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>סמל / זוג *</label>
+                    <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>כיוון *</label>
+                    <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
+                      <option value="long">Long (קניה)</option>
+                      <option value="short">Short (מכירה)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>תאריך</label>
+                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>P&L ($)</label>
+                    <input value={tradeData.pnl} onChange={e => setTradeData(p => ({ ...p, pnl: e.target.value }))} placeholder="+320 או -150" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
+                  {[{ key: 'entry_price', label: 'Entry *' }, { key: 'stop_loss', label: 'Stop Loss *' }, { key: 'take_profit', label: 'Take Profit *' }].map(({ key, label }) => (
+                    <div key={key}>
+                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
+                      <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, #1a3a8f18, #7c3aed18)', border: '1px solid #4a7fff33', borderRadius: 'var(--radius-sm)', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '16px 0' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Risk/Reward מחושב אוטומטית</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>מבוסס Entry ← SL / TP</div>
+                  </div>
+                  <div style={{ fontSize: '26px', fontWeight: '700', background: rr ? 'linear-gradient(90deg, var(--blue), var(--purple))' : undefined, WebkitBackgroundClip: rr ? 'text' : undefined, WebkitTextFillColor: rr ? 'transparent' : undefined, color: rr ? undefined : 'var(--text3)' }}>
+                    {rr ? `1:${rr}` : '—'}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>הערות (אופציונלי)</label>
+                  <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder="מה למדת מהעסקה הזו?" rows={3} style={{ resize: 'vertical' }} />
+                </div>
+
+                <button onClick={handleSubmit} disabled={submitting} className="btn-primary" style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
+                  {submitting ? '⏳ מעלה...' : '✓ העלאת עסקה'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

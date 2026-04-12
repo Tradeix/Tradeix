@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Portfolio } from '@/types'
 import toast from 'react-hot-toast'
+import PageHeader from '@/components/PageHeader'
 
 const MARKET_ICONS: Record<string, string> = {
   forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊',
@@ -91,13 +92,18 @@ export default function PortfoliosPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div style={{ fontSize: '20px', fontWeight: '600' }}>הגדרות תיקים</div>
-        <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' }) }}
-          className="btn-primary" style={{ fontSize: '13px', padding: '8px 16px' }}>
-          ＋ תיק חדש
-        </button>
-      </div>
+      <PageHeader
+        title="הגדרות תיקים"
+        subtitle="ניהול תיקי המסחר שלך"
+        icon="folder_open"
+        action={
+          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' }) }}
+            style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
+            תיק חדש
+          </button>
+        }
+      />
 
       {/* Form */}
       {showForm && (

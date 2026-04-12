@@ -1,190 +1,140 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useApp } from '@/lib/app-context'
-import toast from 'react-hot-toast'
+import { Trade } from '@/types'
+import Link from 'next/link'
+import TradeModal from '@/components/TradeModal'
+import PageHeader from '@/components/PageHeader'
+import { usePortfolio } from '@/lib/portfolio-context'
 
-export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage } = useApp()
-  const [user, setUser] = useState<any>(null)
-  const [nickname, setNickname] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
+export default function TradesPage() {
+  const { activePortfolio } = usePortfolio()
+  const [trades, setTrades] = useState<Trade[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      setNickname(user?.user_metadata?.full_name || '')
-      setAvatarUrl(user?.user_metadata?.avatar_url || null)
-    })
-  }, [])
+  useEffect(() => { if (activePortfolio) loadTrades() }, [activePortfolio, filter])
 
-  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || !user) return
-    setUploadingAvatar(true)
-    try {
-      const ext = file.name.split('.').pop()
-      const path = `avatars/${user.id}.${ext}`
-      const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-      if (error) throw error
-      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-      setAvatarUrl(data.publicUrl)
-      await supabase.auth.updateUser({ data: { avatar_url: data.publicUrl } })
-      toast.success('תמונת פרופיל עודכנה ✓')
-    } catch {
-      toast.error('שגיאה בהעלאת התמונה')
-    } finally {
-      setUploadingAvatar(false)
-    }
+  async function loadTrades() {
+    setLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    let query = supabase.from('trades').select('*')
+      .eq('portfolio_id', activePortfolio!.id)
+      .order('traded_at', { ascending: false })
+    if (filter !== 'all') query = query.eq('outcome', filter)
+    const { data } = await query
+    if (data) setTrades(data)
+    setLoading(false)
   }
-
-  async function handleSave() {
-    if (!nickname.trim()) { toast.error('נא להזין כינוי'); return }
-    setSaving(true)
-    try {
-      await supabase.auth.updateUser({ data: { full_name: nickname } })
-      await supabase.from('profiles').update({ full_name: nickname }).eq('id', user.id)
-      toast.success('הפרטים נשמרו ✓')
-    } catch {
-      toast.error('שגיאה בשמירה')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const initials = (nickname || user?.email || 'U')[0].toUpperCase()
-
-  const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
-    <div style={{ display: 'flex', gap: '6px' }}>
-      {options.map(opt => (
-        <button key={opt.value} onClick={() => onChange(opt.value)} style={{
-          padding: '6px 16px', borderRadius: '20px', fontSize: '13px',
-          cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
-          border: `1px solid ${value === opt.value ? 'var(--blue)' : 'var(--border)'}`,
-          background: value === opt.value ? 'var(--blue3)' : 'transparent',
-          color: value === opt.value ? 'var(--blue)' : 'var(--text2)',
-          fontWeight: value === opt.value ? '500' : '400',
-          transition: 'all 0.2s',
-        }}>{opt.label}</button>
-      ))}
-    </div>
-  )
 
   return (
     <div>
-      <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '24px' }}>
-        {language === 'he' ? 'הגדרות אישיות' : 'Personal Settings'}
+      <PageHeader
+        title="כל העסקאות"
+        subtitle="היסטוריית מסחר מלאה"
+        icon="receipt_long"
+        action={
+          <Link href="/add-trade" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '10px 20px', borderRadius: '12px', textDecoration: 'none', fontSize: '12px', fontWeight: '700', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
+            עסקה חדשה
+          </Link>
+        }
+      />
+
+      {/* Filter */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {[{ key: 'all', label: 'הכל' }, { key: 'win', label: '✓ WIN' }, { key: 'loss', label: '✕ LOSS' }].map(({ key, label }) => (
+          <button key={key} onClick={() => setFilter(key as any)} style={{
+            padding: '6px 14px', borderRadius: '20px', fontSize: '13px',
+            cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
+            border: `1px solid ${filter === key ? 'var(--blue)' : 'var(--border)'}`,
+            background: filter === key ? 'var(--blue3)' : 'transparent',
+            color: filter === key ? 'var(--blue)' : 'var(--text2)',
+            transition: 'all 0.2s',
+          }}>{label}</button>
+        ))}
       </div>
 
-      <div style={{ maxWidth: '480px' }}>
-        {/* Profile card */}
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px', marginBottom: '16px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '20px' }}>
-            {language === 'he' ? 'פרטי חשבון' : 'Account Details'}
-          </div>
-
-          {/* Avatar */}
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <div onClick={() => fileRef.current?.click()} style={{
-              width: '80px', height: '80px', borderRadius: '50%',
-              background: avatarUrl ? undefined : 'linear-gradient(135deg, var(--blue), var(--purple))',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '30px', fontWeight: '600', color: '#fff',
-              margin: '0 auto 12px', cursor: 'pointer',
-              overflow: 'hidden', position: 'relative',
-              boxShadow: '0 0 30px var(--blueglow)',
-            }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : initials
-              }
-              {uploadingAvatar && (
-                <div style={{ position: 'absolute', inset: 0, background: '#00000088', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                </div>
-              )}
-            </div>
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
-            <button onClick={() => fileRef.current?.click()} style={{
-              background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
-              padding: '6px 14px', fontSize: '12px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
-            }}>
-              {language === 'he' ? '✎ שינוי תמונה' : '✎ Change photo'}
-            </button>
-          </div>
-
-          {/* Nickname */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-              {language === 'he' ? 'כינוי' : 'Nickname'}
-            </label>
-            <input
-              value={nickname}
-              onChange={e => setNickname(e.target.value)}
-              placeholder={language === 'he' ? 'הכינוי שלך' : 'Your nickname'}
-            />
-          </div>
-
-          {/* Email (readonly) */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-              {language === 'he' ? 'אימייל (Google)' : 'Email (Google)'}
-            </label>
-            <input value={user?.email || ''} disabled style={{ opacity: 0.5, cursor: 'not-allowed' }} />
-          </div>
-
-          <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ width: '100%', opacity: saving ? 0.7 : 1 }}>
-            {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
-          </button>
+      <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: '36px 1fr 110px 90px 80px 90px 90px',
+          padding: '12px 16px', background: 'var(--bg3)',
+          borderBottom: '1px solid var(--border)',
+          fontSize: '11px', color: 'var(--text3)',
+          textTransform: 'uppercase', letterSpacing: '0.6px', gap: '8px',
+        }}>
+          <div /><div>סמל</div><div>כניסה</div><div>P&L</div><div>RR</div><div>תאריך</div><div>סטטוס</div>
         </div>
 
-        {/* Preferences card */}
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '20px' }}>
-            {language === 'he' ? 'העדפות' : 'Preferences'}
+        {loading ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>טוען...</div>
+        ) : trades.length === 0 ? (
+          <div style={{ padding: '60px', textAlign: 'center' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.3 }}>📊</div>
+            <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>אין עסקאות עדיין</div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '20px' }}>הוסף את העסקה הראשונה שלך</div>
+            <Link href="/add-trade" style={{
+              background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
+              color: '#fff', padding: '10px 20px', borderRadius: 'var(--radius-sm)',
+              textDecoration: 'none', fontSize: '13px', fontWeight: '500',
+            }}>＋ הוסף עסקה</Link>
           </div>
-
-          {/* Language */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '16px', borderBottom: '1px solid var(--border)', marginBottom: '16px' }}>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>
-                {language === 'he' ? 'שפה' : 'Language'}
+        ) : (
+          trades.map(trade => (
+            <div
+              key={trade.id}
+              onClick={() => setSelectedTrade(trade)}
+              style={{
+                display: 'grid', gridTemplateColumns: '36px 1fr 110px 90px 80px 90px 90px',
+                padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                fontSize: '13px', gap: '8px', alignItems: 'center',
+                cursor: 'pointer', transition: 'background 0.2s',
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
+              onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div style={{
+                width: '28px', height: '28px', borderRadius: '6px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '11px', fontWeight: '600',
+                background: trade.direction === 'long' ? '#10b98122' : '#ef444422',
+                color: trade.direction === 'long' ? 'var(--green)' : 'var(--red)',
+              }}>
+                {trade.direction === 'long' ? 'L' : 'S'}
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)' }}>עברית / English</div>
-            </div>
-            <ToggleGroup
-              value={language}
-              onChange={setLanguage}
-              options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
-            />
-          </div>
-
-          {/* Theme */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>
-                {language === 'he' ? 'עיצוב' : 'Theme'}
+              <div>
+                <div style={{ fontWeight: '600' }}>{trade.symbol}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{trade.direction === 'long' ? 'Long' : 'Short'}</div>
+              </div>
+              <div style={{ fontSize: '13px' }}>{trade.entry_price}</div>
+              <div style={{ fontWeight: '600', color: trade.pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+              </div>
+              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', background: 'var(--bg4)', color: 'var(--text2)' }}>
+                1:{trade.rr_ratio?.toFixed(1)}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                {language === 'he' ? 'כהה / בהיר' : 'Dark / Light'}
+                {new Date(trade.traded_at).toLocaleDateString('he-IL')}
+              </div>
+              <div style={{ fontSize: '12px', color: trade.outcome === 'win' ? 'var(--green)' : 'var(--red)' }}>
+                {trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}
               </div>
             </div>
-            <ToggleGroup
-              value={theme}
-              onChange={setTheme}
-              options={[
-                { value: 'dark', label: language === 'he' ? '🌙 כהה' : '🌙 Dark' },
-                { value: 'light', label: language === 'he' ? '☀ בהיר' : '☀ Light' },
-              ]}
-            />
-          </div>
-        </div>
+          ))
+        )}
       </div>
+
+      {selectedTrade && (
+        <TradeModal
+          trade={selectedTrade}
+          onClose={() => setSelectedTrade(null)}
+          onUpdate={() => { setSelectedTrade(null); loadTrades() }}
+        />
+      )}
     </div>
   )
 }
