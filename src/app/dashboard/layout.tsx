@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
@@ -13,9 +13,17 @@ const PORTFOLIO_COLOR_MAP: Record<string, string> = {
   red: '#ef4444', amber: '#f59e0b', cyan: '#06b6d4',
   pink: '#ec4899', gray: '#6b7280',
 }
-
 function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#4a7fff'
+}
+
+const NAV_ICONS: Record<string, string> = {
+  '/dashboard': 'dashboard',
+  '/add-trade': 'add_circle',
+  '/trades': 'receipt_long',
+  '/stats': 'query_stats',
+  '/portfolios': 'folder_open',
+  '/settings': 'manage_accounts',
 }
 
 function Header({ sidebarOpen, setSidebarOpen }: any) {
@@ -23,191 +31,265 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
   const { language } = useApp()
   const tr = t[language]
   const [showMenu, setShowMenu] = useState(false)
-  const pathname = usePathname()
+  const [user, setUser] = useState<any>(null)
+  const supabase = createClient()
 
-  const PAGE_TITLES: Record<string, string> = {
-    '/dashboard': tr.dashboard,
-    '/add-trade': tr.addTrade,
-    '/trades': tr.allTrades,
-    '/stats': tr.statistics,
-    '/portfolios': tr.portfolioSettings,
-    '/settings': tr.personalSettings,
-  }
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
+  }, [])
 
-  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : 'var(--text3)'
+  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#4a7fff'
+  const isRTL = language === 'he'
 
   return (
-    <div style={{
-      height: '60px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
-      display: 'flex', alignItems: 'center', padding: '0 24px', gap: '12px',
+    <header style={{
+      height: '72px',
+      background: 'rgba(10,11,15,0.85)',
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      display: 'flex', alignItems: 'center',
+      padding: '0 32px', gap: '16px',
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
         display: 'none', width: '36px', height: '36px',
-        background: 'var(--bg3)', border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '50%', cursor: 'pointer',
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
+        color: 'var(--text)',
       }}>
-        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
-        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
-        <span style={{ display: 'block', width: '16px', height: '1.5px', background: 'var(--text)' }} />
+        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
+        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
+        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
       </button>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ fontSize: '16px', fontWeight: '600' }}>{PAGE_TITLES[pathname] || ''}</div>
         {activePortfolio && (
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            background: `${dotColor}18`, border: `1px solid ${dotColor}44`,
-            borderRadius: '20px', padding: '3px 12px',
-            fontSize: '12px', color: dotColor, fontWeight: '500',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            background: `${dotColor}12`,
+            border: `1px solid ${dotColor}30`,
+            borderRadius: '20px', padding: '4px 14px',
+            fontSize: '11px', color: dotColor, fontWeight: '700',
+            letterSpacing: '0.05em', textTransform: 'uppercase',
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 6px ${dotColor}` }} />
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
             {activePortfolio.name}
           </div>
         )}
       </div>
 
+      {/* Portfolio switcher */}
       <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          background: 'var(--bg3)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-sm)', padding: '6px 12px',
-          fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '12px', padding: '7px 14px',
+          fontSize: '12px', color: 'var(--text)', cursor: 'pointer',
+          fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
+          transition: 'all 0.2s',
         }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor, boxShadow: activePortfolio ? `0 0 6px ${dotColor}` : 'none' }} />
-          <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
+          <span style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
           </span>
-          <span style={{ fontSize: '10px', color: 'var(--text3)' }}>▼</span>
+          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', marginTop: '1px' }}>▼</span>
         </div>
 
         {showMenu && (
           <>
             <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
-              position: 'absolute', top: '44px', [language === 'en' ? 'right' : 'left']: 0,
-              background: 'var(--bg2)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)', zIndex: 200, minWidth: '200px',
-              boxShadow: '0 8px 24px #00000066', overflow: 'hidden',
+              position: 'absolute', top: '48px',
+              [isRTL ? 'left' : 'right']: 0,
+              background: '#12141a',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '16px', zIndex: 200, minWidth: '210px',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+              overflow: 'hidden',
             }}>
               {portfolios.length === 0 ? (
-                <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text3)' }}>
-                  {tr.noPortfolios} — <Link href="/portfolios" style={{ color: 'var(--blue)' }}>{tr.createPortfolio}</Link>
+                <div style={{ padding: '14px 18px', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+                  {tr.noPortfolios}
                 </div>
-              ) : portfolios.map(p => (
-                <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
-                  padding: '12px 16px', fontSize: '13px', cursor: 'pointer',
-                  background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
-                  color: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--text)',
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  transition: 'background 0.2s', borderBottom: '1px solid var(--border)',
-                }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activePortfolio?.id === p.id ? getPortfolioColor(p) : 'var(--border2)' }} />
-                  <span style={{ flex: 1 }}>{p.name}</span>
-                  {activePortfolio?.id === p.id && <span>✓</span>}
-                </div>
-              ))}
+              ) : portfolios.map(p => {
+                const c = getPortfolioColor(p)
+                return (
+                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
+                    padding: '12px 18px', fontSize: '13px', cursor: 'pointer',
+                    background: activePortfolio?.id === p.id ? 'rgba(255,255,255,0.04)' : 'transparent',
+                    color: activePortfolio?.id === p.id ? c : 'rgba(255,255,255,0.6)',
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    transition: 'background 0.15s', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    fontWeight: '600',
+                  }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                    onMouseOut={e => (e.currentTarget.style.background = activePortfolio?.id === p.id ? 'rgba(255,255,255,0.04)' : 'transparent')}
+                  >
+                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: c, boxShadow: `0 0 6px ${c}` }} />
+                    <span style={{ flex: 1 }}>{p.name}</span>
+                    {activePortfolio?.id === p.id && <span style={{ fontSize: '12px', color: c }}>✓</span>}
+                  </div>
+                )
+              })}
               <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 16px', fontSize: '13px', color: 'var(--blue)', textDecoration: 'none',
-              }}><span>＋</span> {tr.newPortfolio}</Link>
+                padding: '12px 18px', fontSize: '12px', color: '#4a7fff',
+                textDecoration: 'none', fontWeight: '700',
+              }}>＋ {tr.newPortfolio}</Link>
             </div>
           </>
         )}
       </div>
-    </div>
+
+      {/* User */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ textAlign: isRTL ? 'right' : 'left' }}>
+          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
+            {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
+            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
+            <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              {tr.freeAccount}
+            </span>
+          </div>
+        </div>
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            width: '38px', height: '38px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
+            border: '1.5px solid rgba(74,127,255,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
+          }}>
+            {user?.user_metadata?.avatar_url
+              ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
+            }
+          </div>
+          <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid #0a0b0f', borderRadius: '50%' }} />
+        </div>
+      </div>
+    </header>
   )
 }
 
-function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
+function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const pathname = usePathname()
   const { language } = useApp()
   const tr = t[language]
+  const isRTL = language === 'he'
 
   const NAV_ITEMS = [
-    { href: '/dashboard', icon: '⬛', label: tr.dashboard },
-    { href: '/add-trade', icon: '＋', label: tr.addTrade },
-    { href: '/trades', icon: '≡', label: tr.allTrades },
-    { href: '/stats', icon: '↗', label: tr.statistics },
+    { href: '/dashboard', icon: 'dashboard', label: tr.dashboard },
+    { href: '/add-trade', icon: 'add_circle', label: tr.addTrade },
+    { href: '/trades', icon: 'receipt_long', label: tr.allTrades },
+    { href: '/stats', icon: 'query_stats', label: tr.statistics },
   ]
   const BOTTOM_NAV = [
-    { href: '/portfolios', icon: '◈', label: tr.portfolioSettings },
-    { href: '/settings', icon: '⚙', label: tr.personalSettings },
+    { href: '/portfolios', icon: 'folder_open', label: tr.portfolioSettings },
+    { href: '/settings', icon: 'manage_accounts', label: tr.personalSettings },
   ]
 
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
       <Link href={href} onClick={() => setSidebarOpen(false)} style={{
-        display: 'flex', alignItems: 'center', gap: '10px',
-        padding: '10px 12px', borderRadius: 'var(--radius-sm)',
-        color: active ? 'var(--blue)' : 'var(--text2)',
-        fontWeight: active ? '500' : '400', fontSize: '14px',
-        textDecoration: 'none',
-        background: active ? 'linear-gradient(135deg, #1a3a8f22, #8b5cf622)' : 'transparent',
-        transition: 'all 0.2s', marginBottom: '2px', position: 'relative',
-      }}>
-        {active && <div style={{
-          position: 'absolute',
-          [language === 'en' ? 'right' : 'left']: 0,
-          top: '50%', transform: 'translateY(-50%)',
-          width: '3px', height: '20px',
-          background: 'linear-gradient(var(--blue), var(--purple))',
-          borderRadius: language === 'en' ? '2px 0 0 2px' : '0 2px 2px 0',
-        }} />}
-        <span style={{ fontSize: '16px', width: '20px', textAlign: 'center' }}>{icon}</span>
+        display: 'flex', alignItems: 'center', gap: '12px',
+        padding: '11px 20px',
+        color: active ? '#4a7fff' : 'rgba(232,234,246,0.35)',
+        fontWeight: active ? '700' : '500',
+        fontSize: '13px', textDecoration: 'none',
+        background: active ? 'radial-gradient(circle at 100%, rgba(74,127,255,0.1) 0%, transparent 70%)' : 'transparent',
+        transition: 'all 0.2s', marginBottom: '2px',
+        position: 'relative', letterSpacing: '0.02em',
+        fontFamily: 'Heebo, Rubik, sans-serif',
+      }}
+        onMouseOver={e => { if (!active) e.currentTarget.style.color = 'rgba(232,234,246,0.8)'; e.currentTarget.style.background = active ? e.currentTarget.style.background : 'rgba(255,255,255,0.02)' }}
+        onMouseOut={e => { e.currentTarget.style.color = active ? '#4a7fff' : 'rgba(232,234,246,0.35)'; if (!active) e.currentTarget.style.background = 'transparent' }}
+      >
+        {active && (
+          <div style={{
+            position: 'absolute',
+            [isRTL ? 'right' : 'left']: 0,
+            top: 0, bottom: 0,
+            width: '2px',
+            background: '#4a7fff',
+            boxShadow: '0 0 12px rgba(74,127,255,0.8)',
+            borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
+          }} />
+        )}
+        <span className="material-symbols-outlined" style={{
+          fontSize: '18px',
+          fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20",
+          color: 'inherit',
+        }}>{icon}</span>
         {label}
       </Link>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{
-          width: '38px', height: '38px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, var(--blue), var(--purple))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '16px', fontWeight: '700', color: '#fff',
-          boxShadow: '0 0 20px var(--blueglow)', flexShrink: 0,
-        }}>TX</div>
-        <div style={{ fontSize: '18px', fontWeight: '700', letterSpacing: '1px' }}>
-          <span style={{ background: 'linear-gradient(90deg, var(--blue), var(--purple))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>TRADE</span>
-          <span style={{ color: 'var(--text)' }}>IX</span>
+    <div style={{
+      display: 'flex', flexDirection: 'column', height: '100%',
+      background: 'linear-gradient(180deg, #0c0c0c 0%, #050505 100%)',
+    }}>
+      {/* Logo */}
+      <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Logo icon - diamond shape */}
+          <div style={{
+            width: '28px', height: '28px',
+            background: 'linear-gradient(135deg, #4a7fff 0%, #8b5cf6 100%)',
+            borderRadius: '5px', transform: 'rotate(-45deg)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 20px rgba(74,127,255,0.4)',
+            flexShrink: 0,
+          }}>
+            <div style={{
+              width: '10px', height: '10px',
+              border: '2px solid rgba(255,255,255,0.8)',
+              borderLeft: '2px solid transparent',
+              borderBottom: '2px solid transparent',
+              transform: 'rotate(45deg)',
+            }} />
+          </div>
+          <span style={{
+            fontFamily: 'Manrope, Heebo, sans-serif',
+            fontWeight: '800', fontSize: '20px',
+            letterSpacing: '-0.02em', color: '#e8eaf6',
+          }}>
+            Trade<span style={{ background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IX</span>
+          </span>
         </div>
       </div>
-      <nav style={{ flex: 1, padding: '12px 8px' }}>
+
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: '0 8px' }}>
         {NAV_ITEMS.map(item => <NavLink key={item.href} {...item} />)}
-        <div style={{ height: '1px', background: 'var(--border)', margin: '8px 12px' }} />
+        <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '12px 12px' }} />
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
       </nav>
-      <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
+
+      {/* Logout */}
+      <div style={{ padding: '16px 8px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <button onClick={handleSignOut} style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '10px 12px', borderRadius: 'var(--radius-sm)',
-          color: 'var(--red)', fontSize: '14px', cursor: 'pointer',
-          background: 'transparent', border: 'none', width: '100%',
-          fontFamily: 'Rubik, sans-serif', marginBottom: '8px',
-        }}>↩ {tr.logout}</button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px' }}>
-          <div style={{
-            width: '34px', height: '34px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, var(--blue), var(--purple))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '13px', fontWeight: '600', color: '#fff', flexShrink: 0, overflow: 'hidden',
-          }}>
-            {user?.user_metadata?.avatar_url
-              ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {user?.user_metadata?.full_name || user?.email || 'User'}
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{tr.freeAccount}</div>
-          </div>
-        </div>
+          display: 'flex', alignItems: 'center', gap: '12px',
+          padding: '11px 20px', width: '100%',
+          color: 'rgba(239,68,68,0.6)', fontSize: '13px', fontWeight: '500',
+          cursor: 'pointer', background: 'transparent', border: 'none',
+          fontFamily: 'Heebo, Rubik, sans-serif', letterSpacing: '0.02em',
+          borderRadius: '8px', transition: 'all 0.2s',
+        }}
+          onMouseOver={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.05)' }}
+          onMouseOut={e => { e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.background = 'transparent' }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
+          {tr.logout}
+        </button>
       </div>
     </div>
   )
@@ -215,47 +297,50 @@ function Sidebar({ sidebarOpen, setSidebarOpen, user, handleSignOut }: any) {
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
   const { language } = useApp()
   const router = useRouter()
   const supabase = createClient()
-
-  useState(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
-  })
+  const isRTL = language === 'he'
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/auth/login')
   }
 
-  const isRTL = language === 'he'
-
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: '#00000066', zIndex: 99 }} />}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#080808' }}>
+      {/* Google Material Symbols font */}
+      <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
 
+      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
+
+      {/* Sidebar */}
       <div style={{
-        width: '220px', minHeight: '100vh', background: 'var(--bg2)',
-        [isRTL ? 'borderLeft' : 'borderRight']: '1px solid var(--border)',
+        width: '210px', minHeight: '100vh',
+        borderInlineEnd: '1px solid rgba(255,255,255,0.05)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease',
       }} className="sidebar-el">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} handleSignOut={handleSignOut} />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
-      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '220px', flex: 1, minWidth: 0 }} className="main-content">
+      {/* Main */}
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '210px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>{children}</div>
+        <div style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }} className="page-content">
+          {children}
+        </div>
       </div>
 
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+        body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: #080808 !important; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
         @media (max-width: 640px) {
-          .sidebar-el { transform: ${sidebarOpen
-            ? 'translateX(0)'
-            : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
+          .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
+          .page-content { padding: 20px 16px !important; }
         }
         @media (min-width: 641px) { .sidebar-el { transform: translateX(0) !important; } }
       `}</style>
