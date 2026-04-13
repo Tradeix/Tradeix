@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import Link from 'next/link'
 import TradeModal from '@/components/TradeModal'
+import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 
 export default function TradesPage() {
@@ -32,15 +33,17 @@ export default function TradesPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div style={{ fontSize: '20px', fontWeight: '600' }}>כל העסקאות</div>
-        <Link href="/add-trade" style={{
-          background: 'linear-gradient(135deg, var(--blue), var(--blue2))',
-          color: '#fff', padding: '8px 16px', borderRadius: 'var(--radius-sm)',
-          textDecoration: 'none', fontSize: '13px', fontWeight: '500',
-          boxShadow: '0 0 20px var(--blueglow)',
-        }}>＋ עסקה חדשה</Link>
-      </div>
+      <PageHeader
+        title="כל העסקאות"
+        subtitle="היסטוריית מסחר מלאה"
+        icon="receipt_long"
+        action={
+          <Link href="/add-trade" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '10px 20px', borderRadius: '12px', textDecoration: 'none', fontSize: '12px', fontWeight: '700', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
+            עסקה חדשה
+          </Link>
+        }
+      />
 
       {/* Filter */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
