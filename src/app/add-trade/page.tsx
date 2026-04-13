@@ -210,33 +210,7 @@ export default function AddTradePage() {
 
   const rr = calcRR()
 
-  const StepIndicator = () => (
-    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
-      {[1, 2, 3].map((n, idx) => (
-        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? '1' : 'none' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '28px', height: '28px', borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '12px', fontWeight: '600', flexShrink: 0,
-              border: `1.5px solid ${step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--border)'}`,
-              background: step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--bg2)',
-              color: step >= n ? '#fff' : 'var(--text3)',
-              transition: 'all 0.3s',
-            }}>
-              {step > n ? '✓' : n}
-            </div>
-            <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
-              {n === 1 ? (language === 'he' ? 'העלאת גרף' : 'Upload Chart') : n === 2 ? (language === 'he' ? 'ניתוח AI' : 'AI Analysis') : (language === 'he' ? 'פרטי עסקה' : 'Trade Details')}
-            </span>
-          </div>
-          {idx < 2 && (
-            <div style={{ flex: 1, height: '1px', margin: '0 8px', background: step > n ? 'var(--green)' : 'var(--border)', transition: 'background 0.3s' }} />
-          )}
-        </div>
-      ))}
-    </div>
-  )
+
 
   return (
     <div>
@@ -247,7 +221,23 @@ export default function AddTradePage() {
       />
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
 
-        {!isManual && <StepIndicator />}
+        {!isManual && (
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
+            {([1, 2, 3] as const).map((n, idx) => (
+              <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600', flexShrink: 0, border: `1.5px solid ${step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--border)'}`, background: step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--bg2)', color: step >= n ? '#fff' : 'var(--text3)', transition: 'all 0.3s' }}>
+                    {step > n ? '✓' : n}
+                  </div>
+                  <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
+                    {n === 1 ? (language === 'he' ? 'העלאת גרף' : 'Upload Chart') : n === 2 ? (language === 'he' ? 'ניתוח AI' : 'AI Analysis') : (language === 'he' ? 'פרטי עסקה' : 'Trade Details')}
+                  </span>
+                </div>
+                {idx < 2 && <div style={{ flex: 1, height: '1px', margin: '0 8px', background: step > n ? 'var(--green)' : 'var(--border)' }} />}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* STEP 1: UPLOAD */}
         {step === 1 && (
