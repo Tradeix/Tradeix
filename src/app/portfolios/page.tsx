@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import Link from 'next/link'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 
@@ -17,6 +18,11 @@ const PORTFOLIO_COLORS = [
   { id: 'pink', primary: '#ec4899' }, { id: 'gray', primary: '#6b7280' },
 ]
 
+const MARKET_LABELS: Record<string, Record<string, string>> = {
+  he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
+  en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
+}
+
 export default function PortfoliosPage() {
   const { language } = useApp()
   const tr = t[language]
@@ -26,6 +32,7 @@ export default function PortfoliosPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
   const [saving, setSaving] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => { loadPortfolios() }, [])
@@ -34,13 +41,16 @@ export default function PortfoliosPage() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data } = await supabase.from('portfolios').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+    const { data } = await supabase.from('portfolios').select('*')
+      .eq('user_id', user.id)
+      .eq('archived', false)
+      .order('created_at', { ascending: false })
     if (data) setPortfolios(data)
     setLoading(false)
   }
 
   async function handleSave() {
-    if (!form.name.trim()) { toast.error(language === 'he' ? 'נא להזין שם לתיק' : 'Please enter a portfolio name'); return }
+    if (!form.name.trim()) { toast.error(language === 'he' ? 'נא להזין שם לתיק' : 'Please enter a name'); return }
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -49,30 +59,33 @@ export default function PortfoliosPage() {
       if (error) toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Update error')
       else toast.success(language === 'he' ? 'התיק עודכן ✓' : 'Portfolio updated ✓')
     } else {
-      const { error } = await supabase.from('portfolios').insert({ user_id: user.id, name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, currency: 'USD', color: form.color })
+      const { error } = await supabase.from('portfolios').insert({ user_id: user.id, name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, currency: 'USD', color: form.color, archived: false })
       if (error) toast.error(language === 'he' ? 'שגיאה ביצירת תיק' : 'Error creating portfolio')
-      else toast.success(language === 'he' ? 'תיק נוצר בהצלחה ✓' : 'Portfolio created ✓')
+      else toast.success(language === 'he' ? 'תיק נוצר ✓' : 'Portfolio created ✓')
     }
-    setSaving(false)
-    setShowForm(false)
-    setEditingId(null)
+    setSaving(false); setShowForm(false); setEditingId(null)
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
     loadPortfolios()
   }
 
+  async function handleArchive(id: string) {
+    const { error } = await supabase.from('portfolios').update({ archived: true }).eq('id', id)
+    if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
+    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון ✓' : 'Portfolio archived ✓'); loadPortfolios() }
+  }
+
+  async function handleDelete(id: string) {
+    const { error } = await supabase.from('portfolios').delete().eq('id', id)
+    if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
+    else { toast.success(language === 'he' ? 'התיק נמחק ✓' : 'Portfolio deleted ✓'); setConfirmDelete(null); loadPortfolios() }
+  }
+
   function startEdit(p: Portfolio) {
     setForm({ name: p.name, market_type: p.market_type, initial_capital: p.initial_capital.toString(), color: (p as any).color || 'blue' })
-    setEditingId(p.id)
-    setShowForm(true)
+    setEditingId(p.id); setShowForm(true)
   }
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'
-
-  const MARKET_LABELS: Record<string, Record<string, string>> = {
-    he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
-    en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
-  }
-
   const glass = { background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px' }
 
   return (
@@ -82,11 +95,17 @@ export default function PortfoliosPage() {
         subtitle={language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage your trading portfolios'}
         icon="folder_open"
         action={
-          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' }) }}
-            style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>add</span>
-            {tr.newPortfolioBtn}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Link href="/portfolios/archive" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', padding: '10px 18px', borderRadius: '12px', textDecoration: 'none', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>inventory_2</span>
+              {language === 'he' ? 'ארכיון' : 'Archive'}
+            </Link>
+            <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' }) }}
+              style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>add</span>
+              {tr.newPortfolioBtn}
+            </button>
+          </div>
         }
       />
 
@@ -98,7 +117,7 @@ export default function PortfoliosPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }} className="form-grid">
             <div>
-              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioName.replace(' *', '')}</label>
+              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioName.replace(' *','')}</label>
               <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.portfolioNamePlaceholder} />
             </div>
             <div>
@@ -112,7 +131,6 @@ export default function PortfoliosPage() {
               <input type="number" value={form.initial_capital} onChange={e => setForm(p => ({ ...p, initial_capital: e.target.value }))} placeholder="10,000" />
             </div>
           </div>
-
           <div style={{ marginBottom: '20px' }}>
             <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -121,7 +139,6 @@ export default function PortfoliosPage() {
               ))}
             </div>
           </div>
-
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ opacity: saving ? 0.7 : 1 }}>{saving ? tr.saving : tr.save}</button>
             <button onClick={() => setShowForm(false)} className="btn-ghost">{tr.cancel}</button>
@@ -129,7 +146,35 @@ export default function PortfoliosPage() {
         </div>
       )}
 
-      {/* List */}
+      {/* Confirm Delete Dialog */}
+      {confirmDelete && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center' }} className="fade-up">
+            <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '28px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete_forever</span>
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
+              {language === 'he' ? 'מחיקת תיק' : 'Delete Portfolio'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', lineHeight: 1.6 }}>
+              {language === 'he' ? 'פעולה זו תמחק את התיק וכל העסקאות בו לצמיתות.' : 'This will permanently delete the portfolio and all its trades.'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '700', marginBottom: '24px' }}>
+              {language === 'he' ? '⚠ לא ניתן לשחזר פעולה זו!' : '⚠ This action cannot be undone!'}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button onClick={() => handleDelete(confirmDelete)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px 24px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+                {language === 'he' ? 'כן, מחק לצמיתות' : 'Yes, Delete Forever'}
+              </button>
+              <button onClick={() => setConfirmDelete(null)} className="btn-ghost">
+                {tr.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio List */}
       {loading ? (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>{tr.loading}</div>
       ) : portfolios.length === 0 ? (
@@ -143,10 +188,13 @@ export default function PortfoliosPage() {
           {portfolios.map(p => {
             const color = getColor((p as any).color || 'blue')
             return (
-              <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', transition: 'border 0.2s' }}>
+              <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                {/* Icon */}
                 <div style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0, background: `${color}15`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
                   {MARKET_ICONS[p.market_type] || '📊'}
                 </div>
+
+                {/* Info */}
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 6px ${color}`, flexShrink: 0 }} />
@@ -156,9 +204,31 @@ export default function PortfoliosPage() {
                     {MARKET_LABELS[language][p.market_type]} • {tr.initialCapitalLabel}: ${p.initial_capital?.toLocaleString() || 0}
                   </div>
                 </div>
-                <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: `1px solid ${color}30`, borderRadius: '10px', padding: '7px 14px', fontSize: '12px', color: color, cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
-                  {tr.edit}
-                </button>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {/* Edit */}
+                  <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: `1px solid ${color}30`, borderRadius: '10px', padding: '7px 14px', fontSize: '12px', color: color, cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
+                    {tr.edit}
+                  </button>
+
+                  {/* Archive */}
+                  <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.15)' }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.08)' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>inventory_2</span>
+                  </button>
+
+                  {/* Delete */}
+                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)' }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
+                  </button>
+                </div>
               </div>
             )
           })}
