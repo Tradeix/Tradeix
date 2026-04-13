@@ -12,11 +12,29 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 
 const PRIMARY = '#4a7fff'
 
+function getDateFrom(filterIndex: number): Date {
+  const now = new Date()
+  switch (filterIndex) {
+    case 0: // Year
+      return new Date(now.getFullYear(), 0, 1)
+    case 1: // Month
+      return new Date(now.getFullYear(), now.getMonth(), 1)
+    case 2: // Week
+      const day = now.getDay()
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+      return new Date(now.setDate(diff))
+    case 3: // Day
+      return new Date(new Date().setHours(0, 0, 0, 0))
+    default:
+      return new Date(0)
+  }
+}
+
 export default function DashboardPage() {
   const { activePortfolio } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
-  const [timeFilter, setTimeFilter] = useState(3)
+  const [timeFilter, setTimeFilter] = useState(0)
   const [trades, setTrades] = useState<Trade[]>([])
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [stats, setStats] = useState<Stats>({
@@ -29,20 +47,29 @@ export default function DashboardPage() {
 
   const TIME_FILTERS = [tr.year, tr.month, tr.week, tr.day]
 
-  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio])
+  useEffect(() => {
+    if (activePortfolio) loadData()
+  }, [activePortfolio, timeFilter])
 
   async function loadData() {
     setLoading(true)
     try {
+      const fromDate = getDateFrom(timeFilter).toISOString()
+
+      // Recent trades (for table) — filtered by time
       const { data: tradeData } = await supabase
         .from('trades').select('*')
         .eq('portfolio_id', activePortfolio!.id)
-        .order('traded_at', { ascending: false }).limit(10)
+        .gte('traded_at', fromDate)
+        .order('traded_at', { ascending: false })
+        .limit(10)
       if (tradeData) setTrades(tradeData)
 
+      // Stats — filtered by time
       const { data: all } = await supabase
         .from('trades').select('pnl, outcome')
         .eq('portfolio_id', activePortfolio!.id)
+        .gte('traded_at', fromDate)
 
       if (all && all.length > 0) {
         const wins = all.filter((x: any) => x.outcome === 'win')
@@ -57,20 +84,33 @@ export default function DashboardPage() {
           bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)),
           worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)),
         })
+      } else {
+        setStats({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
       }
+
+      // Equity curve — filtered by time
       const { data: allTrades } = await supabase
         .from('trades').select('pnl, traded_at')
         .eq('portfolio_id', activePortfolio!.id)
+        .gte('traded_at', fromDate)
         .order('traded_at', { ascending: true })
+
       if (allTrades && allTrades.length > 0) {
         const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
-          const prev = i === 0 ? 0 : acc[i-1].value
-          acc.push({ date: new Date(x.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day:'2-digit', month:'2-digit' }), value: Math.round(prev + (x.pnl || 0)) })
+          const prev = i === 0 ? 0 : acc[i - 1].value
+          acc.push({
+            date: new Date(x.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' }),
+            value: Math.round(prev + (x.pnl || 0))
+          })
           return acc
         }, [])
         setEquityCurve(curve)
-      } else { setEquityCurve([]) }
-    } finally { setLoading(false) }
+      } else {
+        setEquityCurve([])
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!activePortfolio && !loading) {
@@ -109,8 +149,15 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      {/* loading indicator */}
+      {loading && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+          <div style={{ width: '24px', height: '24px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: PRIMARY, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        </div>
+      )}
+
       {/* ── COMMAND CENTER STATS ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }} className="stats-hero">
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px', opacity: loading ? 0.4 : 1, transition: 'opacity 0.3s' }} className="stats-hero">
 
         {/* Trades card */}
         <div style={{
@@ -350,7 +397,6 @@ export default function DashboardPage() {
                         background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
                         border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'transform 0.2s',
                       }}>
                         <span className="material-symbols-outlined" style={{ fontSize: '16px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>
                           {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
@@ -401,6 +447,7 @@ export default function DashboardPage() {
       )}
 
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes ping {
           0%, 100% { transform: scale(1); opacity: 0.8; }
           50% { transform: scale(1.5); opacity: 0; }
