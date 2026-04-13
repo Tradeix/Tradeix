@@ -25,7 +25,7 @@ interface TradeData {
 const AI_MESSAGES = [
   'מזהה ציר מחירים...',
   'מאתר נקודת כניסה...',
-  'מחשב Stop Loss ו-Take Profit...',
+  language === 'he' ? 'מחשב סטופ לוס וטייק פרופיט...' : 'Calculating Stop Loss and Take Profit...',
   'מנתח כיוון המסחר...',
   'מחשב Risk/Reward...',
   'מסיים ניתוח...',
@@ -312,7 +312,7 @@ export default function AddTradePage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>ניתוח AI הושלם</div>
                   <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
-                    זוהה: {tradeData.symbol} • {tradeData.direction === 'long' ? 'Long' : 'Short'} • כניסה: {tradeData.entry_price} • SL: {tradeData.stop_loss} • TP: {tradeData.take_profit}
+                    זוהה: {tradeData.symbol} • {tradeData.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • כניסה: {tradeData.entry_price} • SL: {tradeData.stop_loss} • TP: {tradeData.take_profit}
                   </div>
                   {aiConfidence > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: 'var(--text3)' }}>
@@ -366,8 +366,8 @@ export default function AddTradePage() {
                   <div>
                     <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>כיוון *</label>
                     <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
-                      <option value="long">{language === 'he' ? tr.long : 'Long (Buy)'}</option>
-                      <option value="short">{language === 'he' ? tr.short : 'Short (Sell)'}</option>
+                      <option value="long">{tr.long}</option>
+                      <option value="short">{tr.short}</option>
                     </select>
                   </div>
                 </div>
@@ -384,7 +384,7 @@ export default function AddTradePage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
-                  {[{ key: 'entry_price', label: language === 'he' ? tr.entryPrice : 'Entry *' }, { key: 'stop_loss', label: language === 'he' ? tr.stopLoss : 'Stop Loss *' }, { key: 'take_profit', label: language === 'he' ? tr.takeProfit : 'Take Profit *' }].map(({ key, label }) => (
+                  {[{ key: 'entry_price', label: tr.entryPrice }, { key: 'stop_loss', label: tr.stopLoss }, { key: 'take_profit', label: tr.takeProfit }].map(({ key, label }) => (
                     <div key={key}>
                       <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
                       <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.00000" />
@@ -404,11 +404,11 @@ export default function AddTradePage() {
 
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>הערות (אופציונלי)</label>
-                  <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder="מה למדת מהעסקה הזו?" rows={3} style={{ resize: 'vertical' }} />
+                  <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder={tr.notesPlaceholder} rows={3} style={{ resize: 'vertical' }} />
                 </div>
 
                 <button onClick={handleSubmit} disabled={submitting} className="btn-primary" style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
-                  {submitting ? language === 'he' ? tr.submitting : '⏳ Submitting...' : language === 'he' ? tr.submitTrade : '✓ Submit Trade'}
+                  {submitting ? submitting ? tr.submitting : tr.submitTrade}
                 </button>
               </div>
             </div>

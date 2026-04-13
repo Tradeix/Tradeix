@@ -34,7 +34,15 @@ function applyTheme(t: Theme) {
     root.style.setProperty('--text3', '#6b7280')
     root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%)')
     root.style.setProperty('--glass-border', 'rgba(0,0,0,0.07)')
-    document.body.style.cssText = 'background: #f0f2f8 !important; color: #0f1117 !important;'
+    document.body.style.cssText = 'background: #eef0f7 !important; color: #0f1117 !important;'
+    // force all text to be dark in light mode
+    const style = document.getElementById('tradeix-theme-style') || document.createElement('style')
+    style.id = 'tradeix-theme-style'
+    style.textContent = `
+      [data-theme="light"] { color-scheme: light; }
+      [data-theme="light"] * { --on-dark: #0f1117; }
+    `
+    document.head.appendChild(style)
   } else {
     root.setAttribute('data-theme', 'dark')
     root.style.setProperty('--bg', '#080808')
@@ -49,6 +57,8 @@ function applyTheme(t: Theme) {
     root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)')
     root.style.setProperty('--glass-border', 'rgba(255,255,255,0.06)')
     document.body.style.cssText = 'background: #080808 !important; color: #e5e2e1 !important;'
+    const styleEl = document.getElementById('tradeix-theme-style')
+    if (styleEl) styleEl.textContent = '[data-theme="dark"] { color-scheme: dark; }'
   }
 }
 
