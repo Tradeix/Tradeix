@@ -213,7 +213,7 @@ export default function AddTradePage() {
   const StepIndicator = () => (
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
       {[1, 2, 3].map((n, idx) => (
-        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 'none' as any }}>
+        <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? '1' : 'none' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
               width: '28px', height: '28px', borderRadius: '50%',
