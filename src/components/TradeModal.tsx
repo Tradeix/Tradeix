@@ -218,13 +218,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <div>
                   <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>כיוון</label>
                   <select value={form.direction} onChange={e => setForm(p => ({ ...p, direction: e.target.value as any }))}>
-                    <option value="long">Long</option>
-                    <option value="short">Short</option>
+                    <option value="long">לונג</option>
+                    <option value="short">שורט</option>
                   </select>
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                {[{ key: 'entry_price', label: 'Entry' }, { key: 'stop_loss', label: 'Stop Loss' }, { key: 'take_profit', label: 'Take Profit' }].map(({ key, label }) => (
+                {[{ key: 'entry_price', label: 'כניסה' }, { key: 'stop_loss', label: 'סטופ לוס' }, { key: 'take_profit', label: 'טייק פרופיט' }].map(({ key, label }) => (
                   <div key={key}>
                     <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
                     <input value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
@@ -233,7 +233,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L ($)</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>רווח/הפסד ($)</label>
                   <input value={form.pnl} onChange={e => setForm(p => ({ ...p, pnl: e.target.value }))} placeholder="+320" />
                 </div>
                 <div>
@@ -244,7 +244,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               {/* RR */}
               <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>Risk/Reward</div>
+                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>יחס סיכון/תשואה</div>
                 <div style={{ fontSize: '20px', fontWeight: '900', color: rr ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>{rr ? `1:${rr}` : '—'}</div>
               </div>
 
@@ -288,9 +288,9 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Stats grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
                 {[
-                  { label: 'Entry', value: trade.entry_price, color: '#4a7fff' },
-                  { label: 'Stop Loss', value: trade.stop_loss, color: '#ef4444' },
-                  { label: 'Take Profit', value: trade.take_profit, color: '#22c55e' },
+                  { label: 'כניסה', value: trade.entry_price, color: '#4a7fff' },
+                  { label: 'סטופ לוס', value: trade.stop_loss, color: '#ef4444' },
+                  { label: 'טייק פרופיט', value: trade.take_profit, color: '#22c55e' },
                 ].map(({ label, value, color }) => (
                   <div key={label} style={{ ...glass, padding: '12px', textAlign: 'center' }}>
                     <div style={{ fontSize: '9px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</div>
@@ -303,7 +303,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               <div style={{ ...glass, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: 'linear-gradient(135deg, rgba(74,127,255,0.06), rgba(139,92,246,0.06))', border: '1px solid rgba(74,127,255,0.15)' }}>
                 <div>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(74,127,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '2px' }}>Risk / Reward</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '600' }}>מבוסס Entry / SL / TP</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '600' }}>מחושב לפי כניסה / סטופ / טייק</div>
                 </div>
                 <div style={{ fontSize: '28px', fontWeight: '900', background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   1:{trade.rr_ratio?.toFixed(2)}
@@ -342,7 +342,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               ) : (
                 <div style={{ ...glass, padding: '16px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }} className="fade-up">
                   <div style={{ fontSize: '13px', fontWeight: '700', color: '#ef4444', marginBottom: '12px', textAlign: 'center' }}>
-                    האם אתה בטוח שברצונך להסיר את העסקה?
+                    האם להסיר את העסקה הזו?
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={handleDelete} disabled={deleting} style={{

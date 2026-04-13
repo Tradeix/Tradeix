@@ -362,8 +362,8 @@ export default function AddTradePage() {
                   <div>
                     <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>כיוון *</label>
                     <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
-                      <option value="long">Long (קניה)</option>
-                      <option value="short">Short (מכירה)</option>
+                      <option value="long">לונג (קניה)</option>
+                      <option value="short">שורט (מכירה)</option>
                     </select>
                   </div>
                 </div>
@@ -380,18 +380,18 @@ export default function AddTradePage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
-                  {[{ key: 'entry_price', label: 'Entry *' }, { key: 'stop_loss', label: 'Stop Loss *' }, { key: 'take_profit', label: 'Take Profit *' }].map(({ key, label }) => (
+                  {[{ key: 'entry_price', label: 'מחיר כניסה *' }, { key: 'stop_loss', label: 'סטופ לוס *' }, { key: 'take_profit', label: 'טייק פרופיט *' }].map(({ key, label }) => (
                     <div key={key}>
                       <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
-                      <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
+                      <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.00000" />
                     </div>
                   ))}
                 </div>
 
                 <div style={{ background: 'linear-gradient(135deg, #1a3a8f18, #7c3aed18)', border: '1px solid #4a7fff33', borderRadius: 'var(--radius-sm)', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '16px 0' }}>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Risk/Reward מחושב אוטומטית</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>מבוסס Entry ← SL / TP</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text3)' }}>יחס סיכון/תשואה מחושב אוטומטית</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>מחושב לפי כניסה / סטופ / טייק</div>
                   </div>
                   <div style={{ fontSize: '26px', fontWeight: '700', background: rr ? 'linear-gradient(90deg, var(--blue), var(--purple))' : undefined, WebkitBackgroundClip: rr ? 'text' : undefined, WebkitTextFillColor: rr ? 'transparent' : undefined, color: rr ? undefined : 'var(--text3)' }}>
                     {rr ? `1:${rr}` : '—'}
