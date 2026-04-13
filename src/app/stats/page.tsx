@@ -12,7 +12,7 @@ import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
 import Link from 'next/link'
 
 export default function StatsPage() {
-  const { activePortfolio } = usePortfolio()
+  const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
@@ -72,7 +72,7 @@ export default function StatsPage() {
     </div>
   )
 
-  if (!activePortfolio && !loading) {
+  if (portfoliosLoaded && !activePortfolio) {
     return (
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
         <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="query_stats" />

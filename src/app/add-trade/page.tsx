@@ -25,7 +25,7 @@ interface TradeData {
 }
 
 export default function AddTradePage() {
-  const { activePortfolio } = usePortfolio()
+  const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const [step, setStep] = useState<Step>(1)
   const [isManual, setIsManual] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -180,7 +180,7 @@ export default function AddTradePage() {
   const rr = calcRR()
 
   // No portfolio state
-  if (!activePortfolio) {
+  if (portfoliosLoaded && !activePortfolio) {
     return (
       <div>
         <PageHeader

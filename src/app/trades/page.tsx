@@ -11,7 +11,7 @@ import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 
 export default function TradesPage() {
-  const { activePortfolio } = usePortfolio()
+  const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
@@ -56,7 +56,7 @@ export default function TradesPage() {
   const isLong = (d: string) => d === 'long'
 
   // No portfolio state
-  if (!activePortfolio && !loading) {
+  if (portfoliosLoaded && !activePortfolio) {
     return (
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
         <PageHeader

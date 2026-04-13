@@ -13,7 +13,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 const PRIMARY = '#4a7fff'
 
 export default function DashboardPage() {
-  const { activePortfolio } = usePortfolio()
+  const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
   const [timeFilter, setTimeFilter] = useState(2) // 0=daily 1=weekly 2=monthly 3=yearly — default: monthly
@@ -23,7 +23,6 @@ export default function DashboardPage() {
     totalTrades: 0, wins: 0, losses: 0, winRate: 0,
     totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
   })
-  const [loading, setLoading] = useState(true)
   const [equityCurve, setEquityCurve] = useState<{date: string; value: number}[]>([])
   const supabase = createClient()
 
@@ -57,8 +56,7 @@ export default function DashboardPage() {
   }, [activePortfolio])
 
   async function loadData() {
-    setLoading(true)
-    try {
+        try {
       const startDate = getStartDate(timeFilter)
 
       // Recent 10 trades (filtered by time)
@@ -106,10 +104,10 @@ export default function DashboardPage() {
         }, [])
         setEquityCurve(curve)
       } else { setEquityCurve([]) }
-    } finally { setLoading(false) }
+    } finally {}
   }
 
-  if (!activePortfolio && !loading) {
+  if (portfoliosLoaded && !activePortfolio) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px', fontFamily: 'Heebo, sans-serif' }}>
         <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.2 }}>📁</div>
