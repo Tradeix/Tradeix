@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useDropzone } from 'react-dropzone'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
+import { useApp } from '@/lib/app-context'
+import { t } from '@/lib/translations'
 
 type Step = 1 | 2 | 3
 
