@@ -8,6 +8,7 @@ import { t } from '@/lib/translations'
 import { Trade, Stats } from '@/types'
 import Link from 'next/link'
 import TradeModal from '@/components/TradeModal'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 // Accent color — kept blue/purple per user request
 const PRIMARY = '#4a7fff'
@@ -58,6 +59,19 @@ export default function DashboardPage() {
           worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)),
         })
       }
+        // equity curve
+        const { data: allTrades } = await supabase
+          .from('trades').select('pnl, traded_at')
+          .eq('portfolio_id', activePortfolio!.id)
+          .order('traded_at', { ascending: true })
+        if (allTrades && allTrades.length > 0) {
+          const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
+            const prev = i === 0 ? 0 : acc[i-1].value
+            acc.push({ date: new Date(x.traded_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit' }), value: Math.round(prev + (x.pnl || 0)) })
+            return acc
+          }, [])
+          setEquityCurve(curve)
+        } else { setEquityCurve([]) }
     } finally { setLoading(false) }
   }
 
@@ -110,10 +124,10 @@ export default function DashboardPage() {
         }}>
           <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(74,127,255,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>סה״כ</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>receipt_long</span>
             </div>
-            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>סה״כ</span>
           </div>
           <p style={{ fontSize: '38px', fontWeight: '900', color: '#e5e2e1', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1 }}>{stats.totalTrades}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -135,10 +149,10 @@ export default function DashboardPage() {
         }}>
           <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(139,92,246,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(139,92,246,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>יחס</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
             </div>
-            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(139,92,246,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>יחס</span>
           </div>
           <p style={{ fontSize: '38px', fontWeight: '900', color: '#8b5cf6', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: '0 0 30px rgba(139,92,246,0.4)' }}>
             {stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—'}
@@ -158,10 +172,10 @@ export default function DashboardPage() {
         }}>
           <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: pnlPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <span style={{ fontSize: '10px', fontWeight: '900', color: pnlPositive ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>ביצועי תיק</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: pnlPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${pnlPositive ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: pnlPositive ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{pnlPositive ? 'trending_up' : 'trending_down'}</span>
             </div>
-            <span style={{ fontSize: '10px', fontWeight: '900', color: pnlPositive ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>ביצועי תיק</span>
           </div>
           <p style={{ fontSize: '34px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: pnlPositive ? '0 0 30px rgba(34,197,94,0.5)' : '0 0 30px rgba(239,68,68,0.5)' }}>
             {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
@@ -243,60 +257,43 @@ export default function DashboardPage() {
         overflow: 'hidden', position: 'relative', marginBottom: '32px',
       }}>
         <div style={{ position: 'absolute', left: '-80px', bottom: '-80px', width: '256px', height: '256px', background: 'rgba(74,127,255,0.05)', filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
           <div>
             <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>עקומת הון</h3>
             <p style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>ויזואליזציה של ציר זמן ביצועים</p>
           </div>
           <div style={{ textAlign: 'left' }}>
             <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>סה״כ P&L</p>
-            <p style={{ fontSize: '20px', fontWeight: '900', color: '#e5e2e1', margin: 0 }}>
+            <p style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
               {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
             </p>
           </div>
         </div>
 
-        {/* SVG Chart — exact style from HTML */}
-        <div style={{ position: 'relative', height: '200px', width: '100%', display: 'flex' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '900', paddingInlineEnd: '16px', height: '100%', borderInlineEnd: '1px solid rgba(255,255,255,0.05)', width: '56px' }}>
-            {trades.length > 0 ? (
-              <>
-                <span>${Math.max(stats.bestTrade, 0)}</span>
-                <span>$0</span>
-                <span>${stats.worstTrade < 0 ? stats.worstTrade : 0}</span>
-              </>
-            ) : (
-              <><span>ציר Y</span></>
-            )}
-          </div>
-          <div style={{ flex: 1, position: 'relative', marginInlineStart: '16px', marginTop: '8px' }}>
-            {/* Grid lines */}
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', opacity: 0.1 }}>
-              {[0,1,2,3].map(i => <div key={i} style={{ borderTop: '1px solid white', width: '100%', height: '1px' }} />)}
-            </div>
-            {/* Animated ping dot */}
-            <div style={{ position: 'absolute', right: '25%', top: '33%', transform: 'translate(50%, -50%)', zIndex: 20 }}>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ position: 'absolute', width: '32px', height: '32px', borderRadius: '50%', background: `rgba(74,127,255,0.2)`, animation: 'ping 1.5s ease-in-out infinite' }} />
-                <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white', boxShadow: `0 0 15px rgba(74,127,255,1)` }} />
-                </div>
-              </div>
-            </div>
-            {/* SVG line */}
-            <svg style={{ width: '100%', height: '100%', overflow: 'visible' }} viewBox="0 0 100 100" preserveAspectRatio="none">
+        {equityCurve.length > 0 ? (
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={equityCurve} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="chartFill" x1="0%" x2="0%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor={PRIMARY} stopOpacity="0.2" />
-                  <stop offset="100%" stopColor={PRIMARY} stopOpacity="0" />
+                <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <path d="M 0 100 Q 25 80, 50 33.3 Q 75 30, 100 20 V 100 H 0 Z" fill="url(#chartFill)" />
-              <path d="M 0 100 Q 25 80, 50 33.3 Q 75 30, 100 20" fill="none" stroke={PRIMARY} strokeLinecap="round" strokeWidth="3" style={{ filter: `drop-shadow(0 0 10px rgba(74,127,255,0.6))` }} />
-            </svg>
-            <div style={{ position: 'absolute', bottom: '-30px', left: '50%', transform: 'translateX(-50%)', fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '900', letterSpacing: '0.3em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>תחזית ציר זמן 2024</div>
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'rgba(208,197,175,0.3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'rgba(208,197,175,0.3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
+              <Tooltip
+                contentStyle={{ background: '#1c1b1b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: '#e5e2e1', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                formatter={(v: any) => [`$${v}`, 'P&L מצטבר']}
+              />
+              <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2.5} fill="url(#equityGrad)" strokeLinecap="round" dot={false} activeDot={{ r: 6, fill: PRIMARY, strokeWidth: 0, filter: 'drop-shadow(0 0 8px rgba(74,127,255,0.8))' }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'rgba(74,127,255,0.2)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 40" }}>show_chart</span>
+            <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(208,197,175,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>אין נתונים עדיין — הוסף עסקאות</p>
           </div>
-        </div>
+        )}
       </section>
 
       {/* ── RECENT TRADES ── */}
