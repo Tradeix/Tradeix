@@ -227,7 +227,7 @@ export default function AddTradePage() {
               {step > n ? '✓' : n}
             </div>
             <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
-              {['העלאת גרף', 'ניתוח AI', language === 'he' ? tr.tradeDetails : 'Trade Details'][n - 1]}
+              {n === 1 ? (language === 'he' ? 'העלאת גרף' : 'Upload Chart') : n === 2 ? (language === 'he' ? 'ניתוח AI' : 'AI Analysis') : (language === 'he' ? 'פרטי עסקה' : 'Trade Details')}
             </span>
           </div>
           {idx < 2 && (
@@ -241,8 +241,8 @@ export default function AddTradePage() {
   return (
     <div>
       <PageHeader
-        title="הוספת עסקה חדשה"
-        subtitle="תעד ונתח את העסקאות שלך"
+        title={language === 'he' ? 'הוספת עסקה חדשה' : 'Add New Trade'}
+        subtitle={language === 'he' ? 'תעד ונתח את העסקאות שלך' : 'Record and analyze your trades'}
         icon="add_circle"
       />
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
