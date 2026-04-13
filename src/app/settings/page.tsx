@@ -61,8 +61,8 @@ export default function SettingsPage() {
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
 
   const glass = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--glass-bg)',
+    border: '1px solid var(--glass-border)',
     borderRadius: '20px',
     padding: '24px',
   }
@@ -73,9 +73,9 @@ export default function SettingsPage() {
         <button key={opt.value} onClick={() => onChange(opt.value)} style={{
           padding: '7px 18px', borderRadius: '10px', fontSize: '12px',
           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-          border: `1px solid ${value === opt.value ? 'rgba(74,127,255,0.4)' : 'rgba(255,255,255,0.08)'}`,
-          background: value === opt.value ? 'rgba(74,127,255,0.15)' : 'rgba(255,255,255,0.03)',
-          color: value === opt.value ? '#4a7fff' : 'rgba(229,226,225,0.4)',
+          border: `1px solid ${value === opt.value ? 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
+          background: value === opt.value ? 'rgba(74,127,255,0.15)' : 'var(--bg3)',
+          color: value === opt.value ? '#4a7fff' : 'var(--text3)',
           transition: 'all 0.2s',
         }}>{opt.label}</button>
       ))}
@@ -100,8 +100,8 @@ export default function SettingsPage() {
               <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>person</span>
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
-              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'פרופיל ותמונה' : 'Profile & photo'}</div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'פרופיל ותמונה' : 'Profile & photo'}</div>
             </div>
           </div>
 
@@ -124,14 +124,14 @@ export default function SettingsPage() {
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
-            <button onClick={() => fileRef.current?.click()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 14px', fontSize: '11px', color: 'rgba(229,226,225,0.6)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
+            <button onClick={() => fileRef.current?.click()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 14px', fontSize: '11px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
               {language === 'he' ? '✎ שינוי תמונה' : '✎ Change photo'}
             </button>
           </div>
 
           {/* Nickname */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'כינוי' : 'Nickname'}
             </label>
             <input value={nickname} onChange={e => setNickname(e.target.value)} placeholder={language === 'he' ? 'הכינוי שלך' : 'Your nickname'} />
@@ -139,7 +139,7 @@ export default function SettingsPage() {
 
           {/* Email */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'אימייל' : 'Email'}
             </label>
             <input value={user?.email || ''} disabled style={{ opacity: 0.4, cursor: 'not-allowed' }} />
@@ -163,14 +163,14 @@ export default function SettingsPage() {
               <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>tune</span>
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
-              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
             </div>
           </div>
 
           {/* Language */}
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'שפה' : 'Language'}
             </div>
             <ToggleGroup
@@ -187,7 +187,7 @@ export default function SettingsPage() {
 
           {/* Theme */}
           <div>
-            <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'עיצוב' : 'Theme'}
             </div>
             <ToggleGroup
@@ -214,8 +214,8 @@ export default function SettingsPage() {
               <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>workspace_premium</span>
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
-              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing'}</div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing'}</div>
             </div>
           </div>
 

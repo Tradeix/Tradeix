@@ -64,23 +64,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
       </button>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {activePortfolio && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: `${dotColor}12`,
-            border: `1px solid ${dotColor}30`,
-            borderRadius: '20px', padding: '4px 14px',
-            fontSize: '11px', color: dotColor, fontWeight: '700',
-            letterSpacing: '0.05em', textTransform: 'uppercase',
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
-            {activePortfolio.name}
-          </div>
-        )}
-      </div>
-
-      {/* Portfolio switcher */}
+      {/* Portfolio switcher — right side */}
       <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
@@ -144,19 +128,26 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         )}
       </div>
 
-      {/* User */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid rgba(255,255,255,0.08)' }}>
-        <div style={{ textAlign: isRTL ? 'right' : 'left' }}>
-          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
-            {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
-            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
-            <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              {tr.freeAccount}
-            </span>
-          </div>
+      {/* Spacer */}
+      <div style={{ flex: 1 }} />
+
+      {/* Current portfolio indicator — left side */}
+      {activePortfolio && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          background: `${dotColor}12`,
+          border: `1px solid ${dotColor}30`,
+          borderRadius: '20px', padding: '4px 14px',
+          fontSize: '11px', color: dotColor, fontWeight: '700',
+          letterSpacing: '0.05em', textTransform: 'uppercase',
+        }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
+          {activePortfolio.name}
         </div>
+      )}
+
+      {/* User — avatar first, then name */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ position: 'relative' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '50%',
@@ -171,6 +162,17 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             }
           </div>
           <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
+        </div>
+        <div style={{ textAlign: isRTL ? 'right' : 'left' }}>
+          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
+            {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
+            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
+            <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              {tr.freeAccount}
+            </span>
+          </div>
         </div>
       </div>
     </header>

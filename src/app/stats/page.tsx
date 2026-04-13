@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Trade, Portfolio } from '@/types'
+import { Trade } from '@/types'
 import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
+import Link from 'next/link'
 
 export default function StatsPage() {
-  const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
+  const { activePortfolio } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
@@ -71,19 +72,32 @@ export default function StatsPage() {
     </div>
   )
 
+  if (!activePortfolio && !loading) {
+    return (
+      <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="query_stats" />
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>📁</div>
+          <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
+            {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
+          </div>
+          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
+            {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
+          </div>
+          <Link href="/portfolios" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700', boxShadow: '0 0 24px rgba(74,127,255,0.4)' }}>
+            {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
         title={tr.statsTitle}
         subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'}
         icon="query_stats"
-        action={
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {portfolios.map(p => (
-              <button key={p.id} onClick={() => setActivePortfolio(p)} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700', border: `1px solid ${activePortfolio?.id === p.id ? 'rgba(74,127,255,0.4)' : 'var(--border)'}`, background: activePortfolio?.id === p.id ? 'rgba(74,127,255,0.1)' : 'var(--bg3)', color: activePortfolio?.id === p.id ? '#4a7fff' : 'var(--text3)', transition: 'all 0.2s' }}>{p.name}</button>
-            ))}
-          </div>
-        }
       />
 
       {/* Stats grid */}
@@ -106,14 +120,14 @@ export default function StatsPage() {
             <AreaChart data={equityCurve}>
               <defs>
                 <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#4a7fff" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#4a7fff" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
               <Tooltip contentStyle={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)' }} formatter={(v: any) => [`$${v}`, 'P&L']} />
-              <Area type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#grad2)" dot={false} />
+              <Area type="monotone" dataKey="value" stroke="#4a7fff" strokeWidth={2.5} fill="url(#grad2)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         ) : (

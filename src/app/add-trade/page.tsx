@@ -8,6 +8,8 @@ import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { usePortfolio } from '@/lib/portfolio-context'
+import Link from 'next/link'
 
 type Step = 1 | 2 | 3
 
@@ -23,11 +25,11 @@ interface TradeData {
 }
 
 export default function AddTradePage() {
+  const { activePortfolio } = usePortfolio()
   const [step, setStep] = useState<Step>(1)
   const [isManual, setIsManual] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [aiMessage, setAiMessage] = useState('מזהה נתונים...')
   const [aiConfidence, setAiConfidence] = useState(0)
   const [aiRaw, setAiRaw] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -177,11 +179,30 @@ export default function AddTradePage() {
 
   const rr = calcRR()
 
-  const stepLabels = [
-    language === 'he' ? 'העלאת גרף' : 'Upload Chart',
-    language === 'he' ? 'ניתוח AI' : 'AI Analysis',
-    language === 'he' ? 'פרטי עסקה' : 'Trade Details',
-  ]
+  // No portfolio state
+  if (!activePortfolio) {
+    return (
+      <div>
+        <PageHeader
+          title={language === 'he' ? 'הוספת עסקה חדשה' : 'Add New Trade'}
+          subtitle={language === 'he' ? 'תעד ונתח את העסקאות שלך' : 'Record and analyze your trades'}
+          icon="add_circle"
+        />
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>📁</div>
+          <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
+            {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
+          </div>
+          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
+            {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
+          </div>
+          <Link href="/portfolios" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700', boxShadow: '0 0 24px rgba(74,127,255,0.4)' }}>
+            {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -192,25 +213,6 @@ export default function AddTradePage() {
       />
 
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
-
-        {/* Step indicator */}
-        {!isManual && (
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
-            {[1, 2, 3].map((n, idx) => (
-              <div key={n} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600', flexShrink: 0, border: `1.5px solid ${step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--border)'}`, background: step > n ? 'var(--green)' : step === n ? 'var(--blue)' : 'var(--bg2)', color: step >= n ? '#fff' : 'var(--text3)', transition: 'all 0.3s' }}>
-                    {step > n ? '✓' : n}
-                  </div>
-                  <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
-                    {stepLabels[n - 1]}
-                  </span>
-                </div>
-                {idx < 2 && <div style={{ flex: 1, height: '1px', margin: '0 8px', background: step > n ? 'var(--green)' : 'var(--border)' }} />}
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* STEP 1 */}
         {step === 1 && (
@@ -249,7 +251,7 @@ export default function AddTradePage() {
               )}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', gap: '14px' }}>
                 <div style={{ width: '44px', height: '44px', border: '3px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>{aiMessage}</div>
+                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>{language === 'he' ? 'מזהה נתונים...' : 'Analyzing...'}</div>
                 <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{language === 'he' ? 'ניתוח AI • אנא המתן' : 'AI Analysis • Please wait'}</div>
               </div>
             </div>

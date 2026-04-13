@@ -35,12 +35,30 @@ function applyTheme(t: Theme) {
     root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%)')
     root.style.setProperty('--glass-border', 'rgba(0,0,0,0.07)')
     document.body.style.cssText = 'background: #eef0f7 !important; color: #0f1117 !important;'
-    // force all text to be dark in light mode
     const style = document.getElementById('tradeix-theme-style') || document.createElement('style')
     style.id = 'tradeix-theme-style'
     style.textContent = `
       [data-theme="light"] { color-scheme: light; }
-      [data-theme="light"] * { --on-dark: #0f1117; }
+      [data-theme="light"] body { color: #0f1117 !important; }
+      [data-theme="light"] h1, [data-theme="light"] h2, [data-theme="light"] h3,
+      [data-theme="light"] h4, [data-theme="light"] h5, [data-theme="light"] p,
+      [data-theme="light"] span, [data-theme="light"] div, [data-theme="light"] label,
+      [data-theme="light"] td, [data-theme="light"] th, [data-theme="light"] button {
+        border-color: inherit;
+      }
+      [data-theme="light"] input, [data-theme="light"] select, [data-theme="light"] textarea {
+        background: #fff !important;
+        color: #0f1117 !important;
+        border-color: rgba(0,0,0,0.12) !important;
+      }
+      [data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder {
+        color: #9ca3af !important;
+      }
+      [data-theme="light"] .btn-ghost {
+        background: rgba(0,0,0,0.04) !important;
+        border-color: rgba(0,0,0,0.1) !important;
+        color: #374151 !important;
+      }
     `
     document.head.appendChild(style)
   } else {
