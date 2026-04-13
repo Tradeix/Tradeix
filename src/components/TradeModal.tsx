@@ -49,11 +49,11 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       const { data } = supabase.storage.from('trade-images').getPublicUrl(path)
       setImageUrl(data.publicUrl)
       await supabase.from('trades').update({ image_url: data.publicUrl }).eq('id', trade.id)
-      toast.success('התמונה הועלתה ✓')
+      toast.success(language === 'he' ? 'התמונה הועלתה ✓' : 'Image uploaded ✓')
       onUpdate()
-    } catch { toast.error('שגיאה בהעלאת התמונה') }
+    } catch { toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Upload failed') }
     finally { setUploadingImage(false) }
-  }, [trade.id])
+  }, [trade.id, language])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
@@ -63,9 +63,9 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   function calcRR() {
     const e = parseFloat(form.entry_price)
     const s = parseFloat(form.stop_loss)
-    const t = parseFloat(form.take_profit)
-    if (isNaN(e) || isNaN(s) || isNaN(t) || Math.abs(e - s) === 0) return null
-    return (Math.abs(t - e) / Math.abs(e - s)).toFixed(2)
+    const tp = parseFloat(form.take_profit)
+    if (isNaN(e) || isNaN(s) || isNaN(tp) || Math.abs(e - s) === 0) return null
+    return (Math.abs(tp - e) / Math.abs(e - s)).toFixed(2)
   }
 
   async function handleSave() {
@@ -84,10 +84,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
       }).eq('id', trade.id)
       if (error) throw error
-      toast.success('העסקה עודכנה ✓')
+      toast.success(language === 'he' ? 'העסקה עודכנה ✓' : 'Trade updated ✓')
       setEditing(false)
       onUpdate()
-    } catch { toast.error('שגיאה בשמירה') }
+    } catch { toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed') }
     finally { setSaving(false) }
   }
 
@@ -96,10 +96,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     try {
       const { error } = await supabase.from('trades').delete().eq('id', trade.id)
       if (error) throw error
-      toast.success('העסקה הוסרה ✓')
+      toast.success(language === 'he' ? 'העסקה הוסרה ✓' : 'Trade removed ✓')
       onUpdate()
       onClose()
-    } catch { toast.error('שגיאה בהסרה') }
+    } catch { toast.error(language === 'he' ? 'שגיאה בהסרה' : 'Delete failed') }
     finally { setDeleting(false) }
   }
 
@@ -149,7 +149,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             <div>
               <div style={{ fontSize: '18px', fontWeight: '900', color: '#e5e2e1', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
               <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>
-                {trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {new Date(trade.traded_at).toLocaleDateString('he-IL')}
+                {trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US')}
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 display: 'flex', alignItems: 'center', gap: '5px',
               }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
-                עריכה
+                {tr.editBtn}
               </button>
             )}
             <button onClick={onClose} style={{
@@ -181,12 +181,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           <div style={{ marginBottom: '20px' }}>
             {imageUrl ? (
               <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <img src={imageUrl} alt="גרף" style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: 'var(--bg)' }} />
+                <img src={imageUrl} alt="chart" style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: 'var(--bg)' }} />
                 <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
                   <div {...getRootProps()}>
                     <input {...getInputProps()} />
                     <button style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '5px 10px', fontSize: '11px', color: 'rgba(229,226,225,0.8)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
-                      ✎ החלף
+                      ✎ {tr.replaceImage}
                     </button>
                   </div>
                 </div>
@@ -197,13 +197,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {uploadingImage ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '24px', height: '24px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>מעלה...</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
                   </div>
                 ) : (
                   <>
                     <span className="material-symbols-outlined" style={{ fontSize: '28px', color: 'rgba(74,127,255,0.3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
-                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>העלה תמונת גרף</div>
-                    <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>PNG, JPG עד 10MB</div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>{tr.uploadOptional}</div>
+                    <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>{tr.uploadOptionalHint}</div>
                   </>
                 )}
               </div>
@@ -213,22 +213,26 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           {editing ? (
             // ── EDIT MODE ──
             <div className="fade-up">
-              <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '14px' }}>עריכת פרטים</div>
+              <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '14px' }}>{tr.editDetails}</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'סמל' : 'Symbol'}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.symbol}</label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כיוון' : 'Direction'}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.direction}</label>
                   <select value={form.direction} onChange={e => setForm(p => ({ ...p, direction: e.target.value as any }))}>
-                    <option value="long">{language === 'he' ? 'לונג' : 'Long'}</option>
-                    <option value="short">{language === 'he' ? 'שורט' : 'Short'}</option>
+                    <option value="long">{tr.directionLong}</option>
+                    <option value="short">{tr.directionShort}</option>
                   </select>
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                {[{ key: 'entry_price', label: language === 'he' ? 'כניסה' : 'Entry' }, { key: 'stop_loss', label: language === 'he' ? 'סטופ לוס' : 'Stop Loss' }, { key: 'take_profit', label: language === 'he' ? 'טייק פרופיט' : 'Take Profit' }].map(({ key, label }) => (
+                {[
+                  { key: 'entry_price', label: tr.entryLabel },
+                  { key: 'stop_loss', label: tr.slLabel },
+                  { key: 'take_profit', label: tr.tpLabel },
+                ].map(({ key, label }) => (
                   <div key={key}>
                     <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
                     <input value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
@@ -237,31 +241,31 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>רווח/הפסד ($)</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pnl}</label>
                   <input value={form.pnl} onChange={e => setForm(p => ({ ...p, pnl: e.target.value }))} placeholder="+320" />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.date}</label>
                   <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
                 </div>
               </div>
 
               {/* RR */}
               <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>{language === 'he' ? 'יחס סיכון/תשואה' : 'Risk/Reward'}</div>
+                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>{tr.rrLabel}</div>
                 <div style={{ fontSize: '20px', fontWeight: '900', color: rr ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>{rr ? `1:${rr}` : '—'}</div>
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>הערות</label>
-                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={language === 'he' ? 'מה למדת מהעסקה?' : 'What did you learn?'} />
+                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</label>
+                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={tr.notesPlaceholder} />
               </div>
 
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif' }}>
-                  {saving ? language === 'he' ? '⏳ שומר...' : '⏳ Saving...' : '✓ שמור'}
+                  {saving ? tr.saving : tr.save}
                 </button>
-                <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '11px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>ביטול</button>
+                <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '11px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
               </div>
             </div>
           ) : (
@@ -276,7 +280,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 marginBottom: '16px',
               }}>
                 <div>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' }}>תוצאה</div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' }}>{tr.outcome}</div>
                   <div style={{ fontSize: '32px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '-0.02em', textShadow: isWin ? '0 0 20px rgba(34,197,94,0.4)' : '0 0 20px rgba(239,68,68,0.4)', lineHeight: 1 }}>
                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                   </div>
@@ -292,9 +296,9 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Stats grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
                 {[
-                  { label: 'כניסה', value: trade.entry_price, color: '#4a7fff' },
-                  { label: 'סטופ לוס', value: trade.stop_loss, color: '#ef4444' },
-                  { label: 'טייק פרופיט', value: trade.take_profit, color: '#22c55e' },
+                  { label: tr.entryLabel, value: trade.entry_price, color: '#4a7fff' },
+                  { label: tr.slLabel, value: trade.stop_loss, color: '#ef4444' },
+                  { label: tr.tpLabel, value: trade.take_profit, color: '#22c55e' },
                 ].map(({ label, value, color }) => (
                   <div key={label} style={{ ...glass, padding: '12px', textAlign: 'center' }}>
                     <div style={{ fontSize: '9px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</div>
@@ -307,7 +311,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               <div style={{ ...glass, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: 'linear-gradient(135deg, rgba(74,127,255,0.06), rgba(139,92,246,0.06))', border: '1px solid rgba(74,127,255,0.15)' }}>
                 <div>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(74,127,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '2px' }}>Risk / Reward</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '600' }}>מחושב לפי כניסה / סטופ / טייק</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '600' }}>{tr.rrBased2}</div>
                 </div>
                 <div style={{ fontSize: '28px', fontWeight: '900', background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   1:{trade.rr_ratio?.toFixed(2)}
@@ -317,7 +321,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Notes */}
               {trade.notes && (
                 <div style={{ ...glass, padding: '14px', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>הערות</div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{tr.notes}</div>
                   <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', lineHeight: 1.6, fontWeight: '500' }}>{trade.notes}</div>
                 </div>
               )}
@@ -341,12 +345,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.06)'; e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.15)' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
-                  הסר עסקה
+                  {tr.removeTradeBtn}
                 </button>
               ) : (
                 <div style={{ ...glass, padding: '16px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }} className="fade-up">
                   <div style={{ fontSize: '13px', fontWeight: '700', color: '#ef4444', marginBottom: '12px', textAlign: 'center' }}>
-                    האם להסיר את העסקה הזו?
+                    {tr.removeTrdeConfirm}
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={handleDelete} disabled={deleting} style={{
@@ -355,7 +359,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                       fontSize: '13px', fontWeight: '700', cursor: deleting ? 'wait' : 'pointer',
                       fontFamily: 'Heebo, sans-serif', opacity: deleting ? 0.7 : 1,
                     }}>
-                      {deleting ? language === 'he' ? 'מסיר...' : 'Removing...' : '✓ כן, הסר'}
+                      {deleting ? tr.removing : tr.removeYes}
                     </button>
                     <button onClick={() => setConfirmDelete(false)} style={{
                       flex: 1, background: 'rgba(255,255,255,0.04)',
@@ -363,7 +367,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                       borderRadius: '10px', padding: '10px',
                       fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.5)',
                       cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                    }}>ביטול</button>
+                    }}>{tr.cancel}</button>
                   </div>
                 </div>
               )}
@@ -371,6 +375,15 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translate(-50%, -48%); }
+          to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fade-up { animation: fadeUp 0.2s ease; }
+      `}</style>
     </>
   )
 }
