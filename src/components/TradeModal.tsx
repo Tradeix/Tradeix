@@ -24,6 +24,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     symbol: trade.symbol,
     direction: trade.direction,
     entry_price: trade.entry_price?.toString() || '',
+    exit_price: trade.exit_price?.toString() || '',
     stop_loss: trade.stop_loss?.toString() || '',
     take_profit: trade.take_profit?.toString() || '',
     pnl: trade.pnl?.toString() || '',
@@ -77,6 +78,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         symbol: form.symbol.toUpperCase(),
         direction: form.direction,
         entry_price: parseFloat(form.entry_price),
+        exit_price: form.exit_price ? parseFloat(form.exit_price) : null,
         stop_loss: parseFloat(form.stop_loss),
         take_profit: parseFloat(form.take_profit),
         pnl, rr_ratio: rr ? parseFloat(rr) : trade.rr_ratio,
@@ -114,10 +116,8 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
   return (
     <>
-      {/* Overlay */}
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)' }} />
 
-      {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: '90%', maxWidth: '560px', maxHeight: '90vh',
@@ -148,8 +148,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             </div>
             <div>
               <div style={{ fontSize: '18px', fontWeight: '900', color: '#e5e2e1', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
-              <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>
-                {trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US')}
+              <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>{trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')}</span>
+                <span style={{ opacity: 0.4 }}>•</span>
+                <span>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
               </div>
             </div>
           </div>
@@ -177,7 +179,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
         <div style={{ padding: '20px 24px' }}>
 
-          {/* Image */}
+          {/* Image upload */}
           <div style={{ marginBottom: '20px' }}>
             {imageUrl ? (
               <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -211,46 +213,56 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           </div>
 
           {editing ? (
-            // ── EDIT MODE ──
             <div className="fade-up">
               <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '14px' }}>{tr.editDetails}</div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.symbol}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pair}</label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.direction}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tradeType}</label>
                   <select value={form.direction} onChange={e => setForm(p => ({ ...p, direction: e.target.value as any }))}>
                     <option value="long">{tr.directionLong}</option>
                     <option value="short">{tr.directionShort}</option>
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                {[
-                  { key: 'entry_price', label: tr.entryLabel },
-                  { key: 'stop_loss', label: tr.slLabel },
-                  { key: 'take_profit', label: tr.tpLabel },
-                ].map(({ key, label }) => (
-                  <div key={key}>
-                    <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
-                    <input value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
-                  </div>
-                ))}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.entryPriceLabel}</label>
+                  <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.0000" />
+                </div>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.exitPrice}</label>
+                  <input value={form.exit_price} onChange={e => setForm(p => ({ ...p, exit_price: e.target.value }))} placeholder="0.0000" />
+                </div>
               </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.slLabel}</label>
+                  <input value={form.stop_loss} onChange={e => setForm(p => ({ ...p, stop_loss: e.target.value }))} placeholder="0.0000" />
+                </div>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tpLabel}</label>
+                  <input value={form.take_profit} onChange={e => setForm(p => ({ ...p, take_profit: e.target.value }))} placeholder="0.0000" />
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
                   <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pnl}</label>
                   <input value={form.pnl} onChange={e => setForm(p => ({ ...p, pnl: e.target.value }))} placeholder="+320" />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.date}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.dateLabel}</label>
                   <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
                 </div>
               </div>
 
-              {/* RR */}
               <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>{tr.rrLabel}</div>
                 <div style={{ fontSize: '20px', fontWeight: '900', color: rr ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>{rr ? `1:${rr}` : '—'}</div>
@@ -269,7 +281,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               </div>
             </div>
           ) : (
-            // ── VIEW MODE ──
             <div>
               {/* P&L Banner */}
               <div style={{
@@ -277,7 +288,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 border: `1px solid ${isWin ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
                 borderRadius: '16px', padding: '16px 20px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginBottom: '16px',
+                marginBottom: '12px',
               }}>
                 <div>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' }}>{tr.outcome}</div>
@@ -293,10 +304,19 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 }}>{isWin ? '✓ WIN' : '✕ LOSS'}</span>
               </div>
 
-              {/* Stats grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
+              {/* Date — always visible */}
+              <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.dateLabel}</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.8)' }}>
+                  {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                </div>
+              </div>
+
+              {/* Entry / Exit / SL / TP grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '12px' }}>
                 {[
-                  { label: tr.entryLabel, value: trade.entry_price, color: '#4a7fff' },
+                  { label: tr.entryPriceLabel, value: trade.entry_price, color: '#4a7fff' },
+                  { label: tr.exitPrice, value: trade.exit_price || '—', color: trade.exit_price ? '#e5e2e1' : 'rgba(208,197,175,0.3)' },
                   { label: tr.slLabel, value: trade.stop_loss, color: '#ef4444' },
                   { label: tr.tpLabel, value: trade.take_profit, color: '#22c55e' },
                 ].map(({ label, value, color }) => (
@@ -328,7 +348,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             </div>
           )}
 
-          {/* ── DELETE SECTION ── */}
+          {/* DELETE */}
           {!editing && (
             <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
               {!confirmDelete ? (

@@ -47,7 +47,12 @@ export const t = {
     type: 'סוג',
     result: 'תוצאה',
     cumulativePnl: 'P&L מצטבר',
-    total: 'סה״כ',
+    total: 'סה05d405db',
+    exitPrice: 'נקודת יציאה',
+    entryPriceLabel: 'נקודת כניסה',
+    pair: 'צמד',
+    tradeType: 'סוג עסקה',
+    dateLabel: 'תאריך',
 
     // Add Trade
     addTradeTitle: 'הוספת עסקה חדשה',
@@ -198,6 +203,11 @@ export const t = {
     result: 'Result',
     cumulativePnl: 'Cumulative P&L',
     total: 'Total',
+    exitPrice: 'Exit Price',
+    entryPriceLabel: 'Entry Price',
+    pair: 'Pair',
+    tradeType: 'Trade Type',
+    dateLabel: 'Date',
 
     // Add Trade
     addTradeTitle: 'Add New Trade',

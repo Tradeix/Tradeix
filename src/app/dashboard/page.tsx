@@ -12,29 +12,11 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 
 const PRIMARY = '#4a7fff'
 
-function getDateFrom(filterIndex: number): Date {
-  const now = new Date()
-  switch (filterIndex) {
-    case 0: // Year
-      return new Date(now.getFullYear(), 0, 1)
-    case 1: // Month
-      return new Date(now.getFullYear(), now.getMonth(), 1)
-    case 2: // Week
-      const day = now.getDay()
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-      return new Date(now.setDate(diff))
-    case 3: // Day
-      return new Date(new Date().setHours(0, 0, 0, 0))
-    default:
-      return new Date(0)
-  }
-}
-
 export default function DashboardPage() {
   const { activePortfolio } = usePortfolio()
   const { language } = useApp()
   const tr = t[language]
-  const [timeFilter, setTimeFilter] = useState(0)
+  const [timeFilter, setTimeFilter] = useState(3)
   const [trades, setTrades] = useState<Trade[]>([])
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [stats, setStats] = useState<Stats>({
@@ -47,29 +29,20 @@ export default function DashboardPage() {
 
   const TIME_FILTERS = [tr.year, tr.month, tr.week, tr.day]
 
-  useEffect(() => {
-    if (activePortfolio) loadData()
-  }, [activePortfolio, timeFilter])
+  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio])
 
   async function loadData() {
     setLoading(true)
     try {
-      const fromDate = getDateFrom(timeFilter).toISOString()
-
-      // Recent trades (for table) — filtered by time
       const { data: tradeData } = await supabase
         .from('trades').select('*')
         .eq('portfolio_id', activePortfolio!.id)
-        .gte('traded_at', fromDate)
-        .order('traded_at', { ascending: false })
-        .limit(10)
+        .order('traded_at', { ascending: false }).limit(10)
       if (tradeData) setTrades(tradeData)
 
-      // Stats — filtered by time
       const { data: all } = await supabase
         .from('trades').select('pnl, outcome')
         .eq('portfolio_id', activePortfolio!.id)
-        .gte('traded_at', fromDate)
 
       if (all && all.length > 0) {
         const wins = all.filter((x: any) => x.outcome === 'win')
@@ -84,33 +57,20 @@ export default function DashboardPage() {
           bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)),
           worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)),
         })
-      } else {
-        setStats({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
       }
-
-      // Equity curve — filtered by time
       const { data: allTrades } = await supabase
         .from('trades').select('pnl, traded_at')
         .eq('portfolio_id', activePortfolio!.id)
-        .gte('traded_at', fromDate)
         .order('traded_at', { ascending: true })
-
       if (allTrades && allTrades.length > 0) {
         const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
-          const prev = i === 0 ? 0 : acc[i - 1].value
-          acc.push({
-            date: new Date(x.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' }),
-            value: Math.round(prev + (x.pnl || 0))
-          })
+          const prev = i === 0 ? 0 : acc[i-1].value
+          acc.push({ date: new Date(x.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day:'2-digit', month:'2-digit' }), value: Math.round(prev + (x.pnl || 0)) })
           return acc
         }, [])
         setEquityCurve(curve)
-      } else {
-        setEquityCurve([])
-      }
-    } finally {
-      setLoading(false)
-    }
+      } else { setEquityCurve([]) }
+    } finally { setLoading(false) }
   }
 
   if (!activePortfolio && !loading) {
@@ -149,15 +109,8 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* loading indicator */}
-      {loading && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
-          <div style={{ width: '24px', height: '24px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: PRIMARY, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        </div>
-      )}
-
       {/* ── COMMAND CENTER STATS ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px', opacity: loading ? 0.4 : 1, transition: 'opacity 0.3s' }} className="stats-hero">
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }} className="stats-hero">
 
         {/* Trades card */}
         <div style={{
@@ -352,34 +305,25 @@ export default function DashboardPage() {
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
-          <Link href="/add-trade" style={{
-            padding: '10px 20px', background: PRIMARY,
-            color: '#fff', borderRadius: '12px', fontSize: '12px', fontWeight: '900',
-            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px',
-            boxShadow: `0 8px 24px rgba(74,127,255,0.25)`, letterSpacing: '0.03em',
-            transition: 'opacity 0.2s',
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
-            {tr.newTrade}
-          </Link>
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{tr.asset}</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{tr.type}</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{tr.entry}</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>SL / TP</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{tr.result}</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{tr.totalPnl}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.dateLabel}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.pair}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.tradeType}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.entryPriceLabel}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.exitPrice}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.result}</th>
+                <th style={{ padding: '16px 24px', fontWeight: '900' }}>{tr.totalPnl}</th>
               </tr>
             </thead>
             <tbody>
               {trades.length === 0 ? (
                 <tr style={{ opacity: 0.2 }}>
-                  <td colSpan={6} style={{ padding: '32px', textAlign: 'center', fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', fontStyle: 'italic', letterSpacing: '0.2em' }}>
+                  <td colSpan={7} style={{ padding: '32px', textAlign: 'center', fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', fontStyle: 'italic', letterSpacing: '0.2em' }}>
                     {tr.noMoreTrades}
                   </td>
                 </tr>
@@ -390,38 +334,48 @@ export default function DashboardPage() {
                   onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
                   onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <td style={{ padding: '20px 32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {/* Date */}
+                  <td style={{ padding: '18px 24px', fontSize: '13px', color: 'rgba(208,197,175,0.6)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                    {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US')}
+                  </td>
+                  {/* Pair */}
+                  <td style={{ padding: '18px 24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{
-                        width: '36px', height: '36px', borderRadius: '12px',
+                        width: '32px', height: '32px', borderRadius: '10px',
                         background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
                         border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '15px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>
                           {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
                         </span>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: '14px', fontWeight: '700', margin: '0 0 2px' }}>{trade.symbol}</p>
-                        <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', fontWeight: '500', margin: 0 }}>
-                          {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US')}
-                        </p>
-                      </div>
+                      <span style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{trade.symbol}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.direction === 'long' ? '#60a5fa' : '#a78bfa' }}>
-                    {trade.direction === 'long' ? tr.directionLong : tr.directionShort}
+                  {/* Trade Type */}
+                  <td style={{ padding: '18px 24px' }}>
+                    <span style={{
+                      fontSize: '11px', fontWeight: '800',
+                      color: trade.direction === 'long' ? '#60a5fa' : '#a78bfa',
+                      background: trade.direction === 'long' ? 'rgba(96,165,250,0.1)' : 'rgba(167,139,250,0.1)',
+                      border: `1px solid ${trade.direction === 'long' ? 'rgba(96,165,250,0.2)' : 'rgba(167,139,250,0.2)'}`,
+                      padding: '3px 10px', borderRadius: '6px',
+                    }}>
+                      {trade.direction === 'long' ? tr.directionLong : tr.directionShort}
+                    </span>
                   </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '500', color: 'rgba(229,226,225,0.8)' }}>
+                  {/* Entry Price */}
+                  <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '600', color: 'rgba(229,226,225,0.8)' }}>
                     ${trade.entry_price}
                   </td>
-                  <td style={{ padding: '20px 32px', fontSize: '13px', color: 'rgba(208,197,175,0.5)' }}>
-                    <span style={{ color: '#ef4444', fontWeight: '600' }}>{trade.stop_loss}</span>
-                    {' / '}
-                    <span style={{ color: '#22c55e', fontWeight: '600' }}>{trade.take_profit}</span>
+                  {/* Exit Price */}
+                  <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '600', color: trade.exit_price ? 'rgba(229,226,225,0.8)' : 'rgba(208,197,175,0.3)' }}>
+                    {trade.exit_price ? `$${trade.exit_price}` : '—'}
                   </td>
-                  <td style={{ padding: '20px 32px' }}>
+                  {/* Result */}
+                  <td style={{ padding: '18px 24px' }}>
                     <span style={{
                       padding: '4px 10px', borderRadius: '999px',
                       background: trade.outcome === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
@@ -432,7 +386,8 @@ export default function DashboardPage() {
                       {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
                     </span>
                   </td>
-                  <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                  {/* P&L */}
+                  <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                   </td>
                 </tr>

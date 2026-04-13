@@ -15,6 +15,7 @@ export type Trade = {
   symbol: string
   direction: 'long' | 'short'
   entry_price: number
+  exit_price?: number
   stop_loss: number
   take_profit: number
   pnl: number
