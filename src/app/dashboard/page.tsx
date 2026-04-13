@@ -132,7 +132,7 @@ export default function DashboardPage() {
           </div>
           <p style={{ fontSize: '38px', fontWeight: '900', color: '#e5e2e1', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1 }}>{stats.totalTrades}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>עסקאות</p>
+            <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>{language === 'he' ? 'עסקאות' : 'Trades'}</p>
             <div style={{ display: 'flex', gap: '4px' }}>
               <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '1px 6px', borderRadius: '4px' }}>{stats.wins}W</span>
               <span style={{ fontSize: '10px', fontWeight: '800', color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '1px 6px', borderRadius: '4px' }}>{stats.losses}L</span>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
         }}>
           <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(139,92,246,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(139,92,246,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>יחס</span>
+            <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(139,92,246,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{language === 'he' ? 'יחס' : 'Ratio'}</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
             </div>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
           <p style={{ fontSize: '38px', fontWeight: '900', color: '#8b5cf6', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: '0 0 30px rgba(139,92,246,0.4)' }}>
             {stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—'}
           </p>
-          <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>גורם רווחיות</p>
+          <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>{language === 'he' ? 'גורם רווחיות' : 'Profit Factor'}</p>
         </div>
 
         {/* P&L hero */}
@@ -181,7 +181,7 @@ export default function DashboardPage() {
           <p style={{ fontSize: '34px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: pnlPositive ? '0 0 30px rgba(34,197,94,0.5)' : '0 0 30px rgba(239,68,68,0.5)' }}>
             {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
           </p>
-          <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>סה״כ P&L</p>
+          <p style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.5)', margin: 0 }}>{language === 'he' ? 'סה״כ P&L' : 'Total P&L'}</p>
         </div>
 
       </section>
@@ -197,7 +197,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             {/* Win rate big number */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>אחוז הצלחה</span>
+              <span style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>{language === 'he' ? 'אחוז הצלחה' : 'Win Rate'}</span>
               <span style={{ fontSize: '30px', fontWeight: '900', color: '#22c55e', textShadow: '0 0 15px rgba(34,197,94,0.3)' }}>{stats.winRate.toFixed(0)}%</span>
             </div>
             <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.05)' }} />
@@ -244,7 +244,7 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(34,197,94,0.4)', display: 'inline-block' }} />
-            <span style={{ fontSize: '10px', color: 'rgba(34,197,94,0.6)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>חוזק סשן פעיל: {stats.winRate >= 60 ? 'יוצא דופן' : stats.winRate >= 40 ? 'טוב' : 'נמוך'}</span>
+            <span style={{ fontSize: '10px', color: 'rgba(34,197,94,0.6)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>חוזק סשן פעיל: {stats.winRate >= 60 ? 'Outstanding' : stats.winRate >= 40 ? (language === 'he' ? 'טוב' : 'Good') : (language === 'he' ? 'נמוך' : 'Low')}</span>
           </div>
           <span style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>עדכון בזמן אמת פעיל</span>
         </div>
@@ -261,10 +261,10 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
           <div>
             <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>עקומת הון</h3>
-            <p style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>ויזואליזציה של ציר זמן ביצועים</p>
+            <p style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>{language === 'he' ? 'ויזואליזציה של ציר זמן ביצועים' : 'Performance timeline visualization'}</p>
           </div>
           <div style={{ textAlign: 'left' }}>
-            <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>סה״כ P&L</p>
+            <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>{language === 'he' ? 'סה״כ P&L' : 'Total P&L'}</p>
             <p style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
               {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
             </p>
@@ -306,7 +306,7 @@ export default function DashboardPage() {
         <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em' }}>עסקאות אחרונות</h4>
-            <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>פעילות מסחר חיה</p>
+            <p style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{language === 'he' ? 'פעילות מסחר חיה' : 'Live trading activity'}</p>
           </div>
           <Link href="/add-trade" style={{
             padding: '10px 20px', background: PRIMARY,
@@ -324,12 +324,12 @@ export default function DashboardPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
             <thead>
               <tr style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>נכס</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>סוג</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>מחיר כניסה</th>
+                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{language === 'he' ? 'נכס' : 'Asset'}</th>
+                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{language === 'he' ? 'סוג' : 'Type'}</th>
+                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{language === 'he' ? 'מחיר כניסה' : 'Entry'}</th>
                 <th style={{ padding: '16px 32px', fontWeight: '900' }}>SL / TP</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>תוצאה</th>
-                <th style={{ padding: '16px 32px', fontWeight: '900' }}>רווח/הפסד</th>
+                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{language === 'he' ? 'תוצאה' : 'Result'}</th>
+                <th style={{ padding: '16px 32px', fontWeight: '900' }}>{language === 'he' ? 'רווח/הפסד' : 'P&L'}</th>
               </tr>
             </thead>
             <tbody>
@@ -368,7 +368,7 @@ export default function DashboardPage() {
                     </div>
                   </td>
                   <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.direction === 'long' ? '#60a5fa' : '#a78bfa' }}>
-                    {trade.direction === 'long' ? 'לונג' : 'שורט'}
+                    {trade.direction === 'long' ? language === 'he' ? 'לונג' : 'שורט'}
                   </td>
                   <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '500', color: 'rgba(229,226,225,0.8)' }}>
                     ${trade.entry_price}
