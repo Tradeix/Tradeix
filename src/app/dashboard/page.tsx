@@ -26,6 +26,7 @@ export default function DashboardPage() {
     totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [equityCurve, setEquityCurve] = useState<{date: string; value: number}[]>([])
   const supabase = createClient()
 
   const TIME_FILTERS = [tr.year, tr.month, tr.week, tr.day]
