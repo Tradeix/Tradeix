@@ -60,16 +60,22 @@ export default function SettingsPage() {
 
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
 
+  const glass = {
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '20px',
+    padding: '24px',
+  }
+
   const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
     <div style={{ display: 'flex', gap: '6px' }}>
       {options.map(opt => (
         <button key={opt.value} onClick={() => onChange(opt.value)} style={{
-          padding: '6px 16px', borderRadius: '20px', fontSize: '13px',
-          cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
-          border: `1px solid ${value === opt.value ? 'var(--blue)' : 'var(--border)'}`,
-          background: value === opt.value ? 'var(--blue3)' : 'transparent',
-          color: value === opt.value ? 'var(--blue)' : 'var(--text2)',
-          fontWeight: value === opt.value ? '500' : '400',
+          padding: '7px 18px', borderRadius: '10px', fontSize: '12px',
+          cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
+          border: `1px solid ${value === opt.value ? 'rgba(74,127,255,0.4)' : 'rgba(255,255,255,0.08)'}`,
+          background: value === opt.value ? 'rgba(74,127,255,0.15)' : 'rgba(255,255,255,0.03)',
+          color: value === opt.value ? '#4a7fff' : 'rgba(229,226,225,0.4)',
           transition: 'all 0.2s',
         }}>{opt.label}</button>
       ))}
@@ -77,105 +83,112 @@ export default function SettingsPage() {
   )
 
   return (
-    <div>
+    <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
         title={language === 'he' ? 'הגדרות אישיות' : 'Personal Settings'}
         subtitle={language === 'he' ? 'ניהול חשבון והעדפות' : 'Account management & preferences'}
         icon="manage_accounts"
       />
 
-      <div style={{ maxWidth: '480px' }}>
-        {/* Profile card */}
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px', marginBottom: '16px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '20px' }}>
-            {language === 'he' ? 'פרטי חשבון' : 'Account Details'}
+      {/* 3 cards side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }} className="settings-grid">
+
+        {/* ── CARD 1: Profile ── */}
+        <div style={{ ...glass }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>person</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
+              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'פרופיל ותמונה' : 'Profile & photo'}</div>
+            </div>
           </div>
 
           {/* Avatar */}
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
             <div onClick={() => fileRef.current?.click()} style={{
-              width: '80px', height: '80px', borderRadius: '50%',
-              background: avatarUrl ? undefined : 'linear-gradient(135deg, var(--blue), var(--purple))',
+              width: '72px', height: '72px', borderRadius: '50%',
+              background: avatarUrl ? undefined : 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '30px', fontWeight: '600', color: '#fff',
-              margin: '0 auto 12px', cursor: 'pointer',
-              overflow: 'hidden', position: 'relative',
-              boxShadow: '0 0 30px var(--blueglow)',
+              fontSize: '26px', fontWeight: '700', color: '#fff',
+              marginBottom: '10px', cursor: 'pointer', overflow: 'hidden', position: 'relative',
+              border: '2px solid rgba(74,127,255,0.3)',
+              boxShadow: '0 0 24px rgba(74,127,255,0.2)',
             }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : initials
-              }
+              {avatarUrl ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
               {uploadingAvatar && (
-                <div style={{ position: 'absolute', inset: 0, background: '#00000088', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <div style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 </div>
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
-            <button onClick={() => fileRef.current?.click()} style={{
-              background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
-              padding: '6px 14px', fontSize: '12px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Rubik, sans-serif',
-            }}>
+            <button onClick={() => fileRef.current?.click()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 14px', fontSize: '11px', color: 'rgba(229,226,225,0.6)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
               {language === 'he' ? '✎ שינוי תמונה' : '✎ Change photo'}
             </button>
           </div>
 
           {/* Nickname */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'כינוי' : 'Nickname'}
             </label>
-            <input
-              value={nickname}
-              onChange={e => setNickname(e.target.value)}
-              placeholder={language === 'he' ? 'הכינוי שלך' : 'Your nickname'}
-            />
+            <input value={nickname} onChange={e => setNickname(e.target.value)} placeholder={language === 'he' ? 'הכינוי שלך' : 'Your nickname'} />
           </div>
 
-          {/* Email (readonly) */}
+          {/* Email */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-              {language === 'he' ? 'אימייל (Google)' : 'Email (Google)'}
+            <label style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {language === 'he' ? 'אימייל' : 'Email'}
             </label>
-            <input value={user?.email || ''} disabled style={{ opacity: 0.5, cursor: 'not-allowed' }} />
+            <input value={user?.email || ''} disabled style={{ opacity: 0.4, cursor: 'not-allowed' }} />
           </div>
 
-          <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ width: '100%', opacity: saving ? 0.7 : 1 }}>
+          <button onClick={handleSave} disabled={saving} style={{
+            width: '100%', background: 'linear-gradient(135deg, #4a7fff, #3366dd)',
+            color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
+            fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+            opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
+            boxShadow: '0 0 20px rgba(74,127,255,0.3)',
+          }}>
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
           </button>
         </div>
 
-        {/* Preferences card */}
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '20px' }}>
-            {language === 'he' ? 'העדפות' : 'Preferences'}
+        {/* ── CARD 2: Preferences ── */}
+        <div style={{ ...glass }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>tune</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
+              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
+            </div>
           </div>
 
           {/* Language */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '16px', borderBottom: '1px solid var(--border)', marginBottom: '16px' }}>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>
-                {language === 'he' ? 'שפה' : 'Language'}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)' }}>עברית / English</div>
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {language === 'he' ? 'שפה' : 'Language'}
             </div>
             <ToggleGroup
               value={language}
               onChange={setLanguage}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
+            <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', marginTop: '8px', fontWeight: '600' }}>
+              {language === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
+            </div>
           </div>
 
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', marginBottom: '20px' }} />
+
           {/* Theme */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px' }}>
-                {language === 'he' ? 'עיצוב' : 'Theme'}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                {language === 'he' ? 'כהה / בהיר' : 'Dark / Light'}
-              </div>
+          <div>
+            <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.5)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {language === 'he' ? 'עיצוב' : 'Theme'}
             </div>
             <ToggleGroup
               value={theme}
@@ -185,9 +198,78 @@ export default function SettingsPage() {
                 { value: 'light', label: language === 'he' ? '☀ בהיר' : '☀ Light' },
               ]}
             />
+            <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', marginTop: '8px', fontWeight: '600' }}>
+              {language === 'he' ? 'השינוי חל על כל האתר' : 'Change applies to the entire site'}
+            </div>
           </div>
         </div>
+
+        {/* ── CARD 3: Subscription ── */}
+        <div style={{ ...glass, position: 'relative', overflow: 'hidden', border: '1px solid rgba(74,127,255,0.15)' }}>
+          {/* Glow background */}
+          <div style={{ position: 'absolute', top: '-40px', left: '-40px', width: '150px', height: '150px', background: 'rgba(74,127,255,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>workspace_premium</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#e5e2e1' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
+              <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.4)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing'}</div>
+            </div>
+          </div>
+
+          {/* Current plan badge */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(74,127,255,0.08)', border: '1px solid rgba(74,127,255,0.2)', borderRadius: '14px', padding: '14px 16px', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '11px', color: 'rgba(74,127,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>{language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}</div>
+              <div style={{ fontSize: '18px', fontWeight: '900', color: '#4a7fff' }}>{language === 'he' ? 'חינמי' : 'Free'}</div>
+            </div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(74,127,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>verified</span>
+            </div>
+          </div>
+
+          {/* Features list */}
+          <div style={{ marginBottom: '24px' }}>
+            {[
+              { feature: language === 'he' ? 'עד 50 עסקאות' : 'Up to 50 trades', included: true },
+              { feature: language === 'he' ? 'ניתוח AI בסיסי' : 'Basic AI analysis', included: true },
+              { feature: language === 'he' ? 'סטטיסטיקות מתקדמות' : 'Advanced statistics', included: false },
+              { feature: language === 'he' ? 'ייצוא נתונים' : 'Data export', included: false },
+              { feature: language === 'he' ? 'תיקים ללא הגבלה' : 'Unlimited portfolios', included: false },
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.included ? '#22c55e' : 'rgba(255,255,255,0.15)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                  {item.included ? 'check_circle' : 'cancel'}
+                </span>
+                <span style={{ fontSize: '12px', color: item.included ? 'rgba(229,226,225,0.7)' : 'rgba(229,226,225,0.25)', fontWeight: '600' }}>{item.feature}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Upgrade button */}
+          <button style={{
+            width: '100%', background: 'linear-gradient(135deg, rgba(74,127,255,0.2), rgba(139,92,246,0.2))',
+            color: '#4a7fff', border: '1px solid rgba(74,127,255,0.3)',
+            borderRadius: '12px', padding: '11px',
+            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+          }}
+            onMouseOver={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74,127,255,0.3), rgba(139,92,246,0.3))' }}
+            onMouseOut={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74,127,255,0.2), rgba(139,92,246,0.2))' }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>rocket_launch</span>
+            {language === 'he' ? 'שדרג לפרו' : 'Upgrade to Pro'}
+          </button>
+        </div>
       </div>
+
+      <style>{`
+        @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr !important; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   )
 }
