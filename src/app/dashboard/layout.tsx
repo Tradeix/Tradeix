@@ -44,7 +44,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
   return (
     <header style={{
       height: '72px',
-      background: 'rgba(10,11,15,0.85)',
+      background: 'var(--bg2)',
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
       borderBottom: '1px solid rgba(255,255,255,0.05)',
@@ -170,7 +170,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
               : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
             }
           </div>
-          <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid #0a0b0f', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
         </div>
       </div>
     </header>
@@ -235,7 +235,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'linear-gradient(180deg, #0c0c0c 0%, #050505 100%)',
+      background: 'var(--bg2)',
     }}>
       {/* Logo */}
       <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
@@ -308,7 +308,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#080808' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Google Material Symbols font */}
       <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
 
@@ -334,7 +334,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
-        body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: #080808 !important; }
+        body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: var(--bg) !important; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
         @media (max-width: 640px) {
           .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }

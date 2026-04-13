@@ -32,9 +32,9 @@ function applyTheme(t: Theme) {
     root.style.setProperty('--text', '#0f1117')
     root.style.setProperty('--text2', '#2d3148')
     root.style.setProperty('--text3', '#6b7280')
-    // Override body background for light mode
-    document.body.style.background = '#f0f2f8'
-    document.body.style.color = '#0f1117'
+    root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%)')
+    root.style.setProperty('--glass-border', 'rgba(0,0,0,0.07)')
+    document.body.style.cssText = 'background: #f0f2f8 !important; color: #0f1117 !important;'
   } else {
     root.setAttribute('data-theme', 'dark')
     root.style.setProperty('--bg', '#080808')
@@ -46,8 +46,9 @@ function applyTheme(t: Theme) {
     root.style.setProperty('--text', '#e5e2e1')
     root.style.setProperty('--text2', 'rgba(229,226,225,0.6)')
     root.style.setProperty('--text3', 'rgba(229,226,225,0.3)')
-    document.body.style.background = '#080808'
-    document.body.style.color = '#e5e2e1'
+    root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)')
+    root.style.setProperty('--glass-border', 'rgba(255,255,255,0.06)')
+    document.body.style.cssText = 'background: #080808 !important; color: #e5e2e1 !important;'
   }
 }
 

@@ -168,3 +168,44 @@ select option { background: var(--bg2); color: var(--text); }
   0%, 100% { box-shadow: 0 0 20px var(--blueglow); }
   50% { box-shadow: 0 0 35px rgba(139,92,246,0.3); }
 }
+
+/* ── LIGHT MODE OVERRIDES — cover all inline-styled elements ── */
+[data-theme="light"] body {
+  background: #f0f2f8 !important;
+  color: #0f1117 !important;
+}
+
+[data-theme="light"] .sidebar-el > div {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7ff 100%) !important;
+}
+
+[data-theme="light"] header {
+  background: rgba(248,249,255,0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom-color: rgba(0,0,0,0.07) !important;
+}
+
+/* Glass panels in light mode */
+[data-theme="light"] section,
+[data-theme="light"] [style*="rgba(255,255,255,0.03)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.01)"] {
+  background: rgba(255,255,255,0.8) !important;
+  border-color: rgba(0,0,0,0.07) !important;
+}
+
+/* Tables and lists */
+[data-theme="light"] tr:hover td {
+  background: rgba(0,0,0,0.02) !important;
+}
+
+/* Dropdowns */
+[data-theme="light"] [style*="#12141a"],
+[data-theme="light"] [style*="#0e0f14"],
+[data-theme="light"] [style*="#1c1b1b"],
+[data-theme="light"] [style*="#131313"],
+[data-theme="light"] [style*="#0c0c0c"],
+[data-theme="light"] [style*="#080808"],
+[data-theme="light"] [style*="#050505"] {
+  background: #ffffff !important;
+  color: #0f1117 !important;
+}

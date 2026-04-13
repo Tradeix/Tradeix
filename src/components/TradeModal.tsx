@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
+import { useApp } from '@/lib/app-context'
+import { t } from '@/lib/translations'
 
 interface TradeModalProps {
   trade: Trade
@@ -29,6 +31,8 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     traded_at: trade.traded_at ? new Date(trade.traded_at).toISOString().split('T')[0] : '',
   })
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
+  const { language } = useApp()
+  const tr = t[language]
   const supabase = createClient()
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -111,13 +115,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 300, backdropFilter: 'blur(8px)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)' }} />
 
       {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: '90%', maxWidth: '560px', maxHeight: '90vh',
-        background: 'linear-gradient(160deg, #0e0f14 0%, #0a0b0f 100%)',
+        background: 'var(--bg2)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '24px', zIndex: 301, overflowY: 'auto',
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
@@ -129,7 +133,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         <div style={{
           padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          position: 'sticky', top: 0, background: '#0e0f14', zIndex: 1, borderRadius: '24px 24px 0 0',
+          position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1, borderRadius: '24px 24px 0 0',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
@@ -145,7 +149,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             <div>
               <div style={{ fontSize: '18px', fontWeight: '900', color: '#e5e2e1', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
               <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>
-                {trade.direction === 'long' ? 'Long' : 'Short'} • {new Date(trade.traded_at).toLocaleDateString('he-IL')}
+                {trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {new Date(trade.traded_at).toLocaleDateString('he-IL')}
               </div>
             </div>
           </div>
@@ -177,7 +181,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           <div style={{ marginBottom: '20px' }}>
             {imageUrl ? (
               <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <img src={imageUrl} alt="גרף" style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: '#050508' }} />
+                <img src={imageUrl} alt="גרף" style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: 'var(--bg)' }} />
                 <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
                   <div {...getRootProps()}>
                     <input {...getInputProps()} />
@@ -212,19 +216,19 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(74,127,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '14px' }}>עריכת פרטים</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>סמל</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'סמל' : 'Symbol'}</label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>כיוון</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כיוון' : 'Direction'}</label>
                   <select value={form.direction} onChange={e => setForm(p => ({ ...p, direction: e.target.value as any }))}>
-                    <option value="long">לונג</option>
-                    <option value="short">שורט</option>
+                    <option value="long">{language === 'he' ? 'לונג' : 'Long'}</option>
+                    <option value="short">{language === 'he' ? 'שורט' : 'Short'}</option>
                   </select>
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                {[{ key: 'entry_price', label: 'כניסה' }, { key: 'stop_loss', label: 'סטופ לוס' }, { key: 'take_profit', label: 'טייק פרופיט' }].map(({ key, label }) => (
+                {[{ key: 'entry_price', label: language === 'he' ? 'כניסה' : 'Entry' }, { key: 'stop_loss', label: language === 'he' ? 'סטופ לוס' : 'Stop Loss' }, { key: 'take_profit', label: language === 'he' ? 'טייק פרופיט' : 'Take Profit' }].map(({ key, label }) => (
                   <div key={key}>
                     <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
                     <input value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))} placeholder="0.0000" />
@@ -237,25 +241,25 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   <input value={form.pnl} onChange={e => setForm(p => ({ ...p, pnl: e.target.value }))} placeholder="+320" />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>תאריך</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</label>
                   <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
                 </div>
               </div>
 
               {/* RR */}
               <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>יחס סיכון/תשואה</div>
+                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>{language === 'he' ? 'יחס סיכון/תשואה' : 'Risk/Reward'}</div>
                 <div style={{ fontSize: '20px', fontWeight: '900', color: rr ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>{rr ? `1:${rr}` : '—'}</div>
               </div>
 
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>הערות</label>
-                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder="מה למדת מהעסקה?" />
+                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={language === 'he' ? 'מה למדת מהעסקה?' : 'What did you learn?'} />
               </div>
 
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif' }}>
-                  {saving ? '⏳ שומר...' : '✓ שמור'}
+                  {saving ? language === 'he' ? '⏳ שומר...' : '⏳ Saving...' : '✓ שמור'}
                 </button>
                 <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '11px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>ביטול</button>
               </div>
@@ -351,7 +355,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                       fontSize: '13px', fontWeight: '700', cursor: deleting ? 'wait' : 'pointer',
                       fontFamily: 'Heebo, sans-serif', opacity: deleting ? 0.7 : 1,
                     }}>
-                      {deleting ? 'מסיר...' : '✓ כן, הסר'}
+                      {deleting ? language === 'he' ? 'מסיר...' : 'Removing...' : '✓ כן, הסר'}
                     </button>
                     <button onClick={() => setConfirmDelete(false)} style={{
                       flex: 1, background: 'rgba(255,255,255,0.04)',

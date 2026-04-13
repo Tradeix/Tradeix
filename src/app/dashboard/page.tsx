@@ -283,7 +283,7 @@ export default function DashboardPage() {
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'rgba(208,197,175,0.3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'rgba(208,197,175,0.3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
               <Tooltip
-                contentStyle={{ background: '#1c1b1b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: '#e5e2e1', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                contentStyle={{ background: 'var(--bg3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: '#e5e2e1', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
                 formatter={(v: any) => [`$${v}`, 'P&L מצטבר']}
               />
               <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2.5} fill="url(#equityGrad)" strokeLinecap="round" dot={false} activeDot={{ r: 6, fill: PRIMARY, strokeWidth: 0, filter: 'drop-shadow(0 0 8px rgba(74,127,255,0.8))' }} />
