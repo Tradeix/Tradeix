@@ -5,27 +5,21 @@ import { createClient } from '@/lib/supabase/client'
 import { Portfolio } from '@/types'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
+import { useApp } from '@/lib/app-context'
+import { t } from '@/lib/translations'
 
-const MARKET_ICONS: Record<string, string> = {
-  forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊',
-}
-
-const MARKET_LABELS: Record<string, string> = {
-  forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר',
-}
+const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 
 const PORTFOLIO_COLORS = [
-  { id: 'blue',   label: 'כחול',   primary: '#4a7fff', bg: '#1a3a8f22', border: '#4a7fff44' },
-  { id: 'purple', label: 'סגול',   primary: '#8b5cf6', bg: '#7c3aed22', border: '#8b5cf644' },
-  { id: 'green',  label: 'ירוק',   primary: '#10b981', bg: '#10b98122', border: '#10b98144' },
-  { id: 'red',    label: 'אדום',   primary: '#ef4444', bg: '#ef444422', border: '#ef444444' },
-  { id: 'amber',  label: 'זהב',    primary: '#f59e0b', bg: '#f59e0b22', border: '#f59e0b44' },
-  { id: 'cyan',   label: 'תכלת',   primary: '#06b6d4', bg: '#06b6d422', border: '#06b6d444' },
-  { id: 'pink',   label: 'ורוד',   primary: '#ec4899', bg: '#ec489922', border: '#ec489944' },
-  { id: 'gray',   label: 'אפור',   primary: '#6b7280', bg: '#6b728022', border: '#6b728044' },
+  { id: 'blue', primary: '#4a7fff' }, { id: 'purple', primary: '#8b5cf6' },
+  { id: 'green', primary: '#10b981' }, { id: 'red', primary: '#ef4444' },
+  { id: 'amber', primary: '#f59e0b' }, { id: 'cyan', primary: '#06b6d4' },
+  { id: 'pink', primary: '#ec4899' }, { id: 'gray', primary: '#6b7280' },
 ]
 
 export default function PortfoliosPage() {
+  const { language } = useApp()
+  const tr = t[language]
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -46,33 +40,19 @@ export default function PortfoliosPage() {
   }
 
   async function handleSave() {
-    if (!form.name.trim()) { toast.error('נא להזין שם לתיק'); return }
+    if (!form.name.trim()) { toast.error(language === 'he' ? 'נא להזין שם לתיק' : 'Please enter a portfolio name'); return }
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-
     if (editingId) {
-      const { error } = await supabase.from('portfolios').update({
-        name: form.name,
-        market_type: form.market_type,
-        initial_capital: parseFloat(form.initial_capital) || 0,
-        color: form.color,
-      }).eq('id', editingId)
-      if (error) toast.error('שגיאה בעדכון')
-      else toast.success('התיק עודכן ✓')
+      const { error } = await supabase.from('portfolios').update({ name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, color: form.color }).eq('id', editingId)
+      if (error) toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Update error')
+      else toast.success(language === 'he' ? 'התיק עודכן ✓' : 'Portfolio updated ✓')
     } else {
-      const { error } = await supabase.from('portfolios').insert({
-        user_id: user.id,
-        name: form.name,
-        market_type: form.market_type,
-        initial_capital: parseFloat(form.initial_capital) || 0,
-        currency: 'USD',
-        color: form.color,
-      })
-      if (error) toast.error('שגיאה ביצירת תיק')
-      else toast.success('תיק נוצר בהצלחה ✓')
+      const { error } = await supabase.from('portfolios').insert({ user_id: user.id, name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, currency: 'USD', color: form.color })
+      if (error) toast.error(language === 'he' ? 'שגיאה ביצירת תיק' : 'Error creating portfolio')
+      else toast.success(language === 'he' ? 'תיק נוצר בהצלחה ✓' : 'Portfolio created ✓')
     }
-
     setSaving(false)
     setShowForm(false)
     setEditingId(null)
@@ -86,133 +66,98 @@ export default function PortfoliosPage() {
     setShowForm(true)
   }
 
-  function getColor(colorId: string) {
-    return PORTFOLIO_COLORS.find(c => c.id === colorId) || PORTFOLIO_COLORS[0]
+  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'
+
+  const MARKET_LABELS: Record<string, Record<string, string>> = {
+    he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
+    en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
   }
 
+  const glass = { background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px' }
+
   return (
-    <div>
+    <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
-        title="הגדרות תיקים"
-        subtitle="ניהול תיקי המסחר שלך"
+        title={tr.portfoliosTitle}
+        subtitle={language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage your trading portfolios'}
         icon="folder_open"
         action={
           <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' }) }}
             style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 20px rgba(74,127,255,0.35)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Heebo, sans-serif' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add</span>
-            תיק חדש
+            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>add</span>
+            {tr.newPortfolioBtn}
           </button>
         }
       />
 
       {/* Form */}
       {showForm && (
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px', marginBottom: '20px' }} className="fade-up">
-          <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '16px' }}>
-            {editingId ? 'עריכת תיק' : 'תיק חדש'}
+        <div style={{ ...glass, padding: '24px', marginBottom: '20px' }} className="fade-up">
+          <div style={{ fontSize: '15px', fontWeight: '800', marginBottom: '20px', color: 'var(--text)' }}>
+            {editingId ? tr.editPortfolio : tr.newPortfolioForm}
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }} className="form-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }} className="form-grid">
             <div>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block' }}>שם התיק *</label>
-              <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="תיק פורקס 2024" />
+              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioName.replace(' *', '')}</label>
+              <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.portfolioNamePlaceholder} />
             </div>
             <div>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block' }}>סוג שוק</label>
+              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
               <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
-                <option value="forex">פורקס</option>
-                <option value="stocks">מניות</option>
-                <option value="crypto">קריפטו</option>
-                <option value="commodities">סחורות</option>
-                <option value="other">אחר</option>
+                {Object.entries(MARKET_LABELS[language]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block' }}>הון התחלתי ($)</label>
+              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.initialCapital}</label>
               <input type="number" value={form.initial_capital} onChange={e => setForm(p => ({ ...p, initial_capital: e.target.value }))} placeholder="10,000" />
             </div>
           </div>
 
-          {/* Color picker */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '10px', display: 'block' }}>צבע התיק</label>
+            <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {PORTFOLIO_COLORS.map(color => (
-                <div
-                  key={color.id}
-                  onClick={() => setForm(p => ({ ...p, color: color.id }))}
-                  style={{
-                    width: '36px', height: '36px', borderRadius: '50%',
-                    background: color.primary,
-                    cursor: 'pointer',
-                    border: form.color === color.id ? `3px solid #fff` : '3px solid transparent',
-                    boxShadow: form.color === color.id ? `0 0 0 2px ${color.primary}, 0 0 12px ${color.primary}88` : 'none',
-                    transition: 'all 0.2s',
-                    transform: form.color === color.id ? 'scale(1.15)' : 'scale(1)',
-                  }}
-                  title={color.label}
-                />
+              {PORTFOLIO_COLORS.map(c => (
+                <div key={c.id} onClick={() => setForm(p => ({ ...p, color: c.id }))} style={{ width: '34px', height: '34px', borderRadius: '50%', background: c.primary, cursor: 'pointer', border: form.color === c.id ? '3px solid #fff' : '3px solid transparent', boxShadow: form.color === c.id ? `0 0 0 2px ${c.primary}, 0 0 12px ${c.primary}88` : 'none', transition: 'all 0.2s', transform: form.color === c.id ? 'scale(1.15)' : 'scale(1)' }} />
               ))}
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px' }}>
-              נבחר: {getColor(form.color).label}
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ opacity: saving ? 0.7 : 1 }}>
-              {saving ? 'שומר...' : '✓ שמור'}
-            </button>
-            <button onClick={() => setShowForm(false)} className="btn-ghost">ביטול</button>
+            <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ opacity: saving ? 0.7 : 1 }}>{saving ? tr.saving : tr.save}</button>
+            <button onClick={() => setShowForm(false)} className="btn-ghost">{tr.cancel}</button>
           </div>
         </div>
       )}
 
-      {/* Portfolios list */}
+      {/* List */}
       {loading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>טוען...</div>
+        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>{tr.loading}</div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.3 }}>📁</div>
-          <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>אין תיקים עדיין</div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>צור תיק ראשון כדי להתחיל</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px', color: 'var(--text)' }}>{tr.noPortfoliosYet}</div>
+          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {portfolios.map(p => {
             const color = getColor((p as any).color || 'blue')
             return (
-              <div key={p.id} style={{
-                background: 'var(--bg2)', border: `1px solid ${color.border}`,
-                borderRadius: 'var(--radius)', padding: '16px',
-                display: 'flex', alignItems: 'center', gap: '16px',
-                transition: 'border 0.2s',
-              }}>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0,
-                  background: color.bg,
-                  border: `1px solid ${color.border}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '22px',
-                }}>
+              <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', transition: 'border 0.2s' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0, background: `${color}15`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
                   {MARKET_ICONS[p.market_type] || '📊'}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <div style={{
-                      width: '10px', height: '10px', borderRadius: '50%',
-                      background: color.primary,
-                      boxShadow: `0 0 6px ${color.primary}`,
-                      flexShrink: 0,
-                    }} />
-                    <div style={{ fontWeight: '600', fontSize: '15px' }}>{p.name}</div>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 6px ${color}`, flexShrink: 0 }} />
+                    <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)' }}>{p.name}</div>
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                    {MARKET_LABELS[p.market_type]} • הון התחלתי: ${p.initial_capital?.toLocaleString() || 0}
+                  <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                    {MARKET_LABELS[language][p.market_type]} • {tr.initialCapitalLabel}: ${p.initial_capital?.toLocaleString() || 0}
                   </div>
                 </div>
-                <button onClick={() => startEdit(p)} className="btn-ghost" style={{ fontSize: '12px', padding: '6px 12px', borderColor: color.border }}>
-                  ✎ עריכה
+                <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: `1px solid ${color}30`, borderRadius: '10px', padding: '7px 14px', fontSize: '12px', color: color, cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
+                  {tr.edit}
                 </button>
               </div>
             )
@@ -220,9 +165,7 @@ export default function PortfoliosPage() {
         </div>
       )}
 
-      <style>{`
-        @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr !important; } }
-      `}</style>
+      <style>{`@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr !important; } }`}</style>
     </div>
   )
 }

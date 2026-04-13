@@ -4,57 +4,44 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Trade, Portfolio } from '@/types'
 import PageHeader from '@/components/PageHeader'
-import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis,
-  Tooltip, ResponsiveContainer, Cell,
-} from 'recharts'
+import { usePortfolio } from '@/lib/portfolio-context'
+import { useApp } from '@/lib/app-context'
+import { t } from '@/lib/translations'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
 
 export default function StatsPage() {
+  const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
+  const { language } = useApp()
+  const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([])
-  const [activePortfolio, setActivePortfolio] = useState<string | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
-  useEffect(() => { loadData() }, [activePortfolio])
+  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio])
 
   async function loadData() {
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data: pData } = await supabase.from('portfolios').select('*').eq('user_id', user.id)
-    if (pData) {
-      setPortfolios(pData)
-      if (!activePortfolio && pData.length > 0) setActivePortfolio(pData[0].id)
-    }
-
-    if (activePortfolio) {
-      const { data: tData } = await supabase.from('trades').select('*').eq('portfolio_id', activePortfolio).order('traded_at')
-      if (tData) setTrades(tData)
-    }
+    const { data } = await supabase.from('trades').select('*').eq('portfolio_id', activePortfolio!.id).order('traded_at', { ascending: true })
+    if (data) setTrades(data)
     setLoading(false)
   }
 
-  // Calculate stats
   const wins = trades.filter(t => t.outcome === 'win')
   const losses = trades.filter(t => t.outcome === 'loss')
-  const totalPnl = trades.reduce((s, t) => s + t.pnl, 0)
+  const totalPnl = trades.reduce((s, t) => s + (t.pnl || 0), 0)
   const winRate = trades.length ? (wins.length / trades.length) * 100 : 0
   const grossProfit = wins.reduce((s, t) => s + t.pnl, 0)
   const grossLoss = Math.abs(losses.reduce((s, t) => s + t.pnl, 0))
   const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : 0
 
-  // Equity curve
   const equityCurve = trades.reduce((acc: any[], t, i) => {
     const prev = i === 0 ? 0 : acc[i - 1].value
-    acc.push({ date: format(new Date(t.traded_at), 'dd/MM'), value: prev + t.pnl })
+    acc.push({ date: format(new Date(t.traded_at), 'dd/MM'), value: Math.round(prev + t.pnl) })
     return acc
   }, [])
 
-  // Monthly PnL per day
   const daysInMonth = getDaysInMonth(currentMonth)
   const firstDay = getDay(startOfMonth(currentMonth))
   const monthlyPnl: Record<number, number> = {}
@@ -65,98 +52,102 @@ export default function StatsPage() {
     }
   })
 
-  const statCards = [
-    { label: 'Win Rate', value: `${winRate.toFixed(1)}%`, color: 'var(--blue)' },
-    { label: 'P&L נטו', value: `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`, color: totalPnl >= 0 ? 'var(--green)' : 'var(--red)' },
-    { label: 'Profit Factor', value: profitFactor.toFixed(2), color: 'var(--purple)' },
-    { label: 'סה"כ עסקאות', value: trades.length, color: 'var(--text)' },
-    { label: 'WIN', value: wins.length, color: 'var(--green)' },
-    { label: 'LOSS', value: losses.length, color: 'var(--red)' },
-    { label: 'עסקה הטובה ביותר', value: `+$${Math.max(0, ...trades.map(t => t.pnl))}`, color: 'var(--green)' },
-    { label: 'עסקה הגרועה ביותר', value: `$${Math.min(0, ...trades.map(t => t.pnl))}`, color: 'var(--red)' },
-  ]
+  const DAY_NAMES = language === 'he'
+    ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-  const DAY_NAMES = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
+  const glass = { background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px' }
+
+  const StatCard = ({ label, value, color, icon }: any) => (
+    <div style={{ ...glass, padding: '20px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '80px', height: '80px', background: `${color}15`, filter: 'blur(30px)', borderRadius: '50%' }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+        <div style={{ fontSize: '10px', fontWeight: '800', color: `${color}99`, textTransform: 'uppercase', letterSpacing: '0.15em' }}>{label}</div>
+        <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: `${color}15`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px', color, fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
+        </div>
+      </div>
+      <div style={{ fontSize: '28px', fontWeight: '900', color, letterSpacing: '-0.02em' }}>{value}</div>
+    </div>
+  )
 
   return (
-    <div>
+    <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
-        title="סטטיסטיקות"
-        subtitle="ניתוח ביצועים מעמיק"
+        title={tr.statsTitle}
+        subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'}
         icon="query_stats"
         action={
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}></div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {portfolios.map(p => (
+              <button key={p.id} onClick={() => setActivePortfolio(p)} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700', border: `1px solid ${activePortfolio?.id === p.id ? 'rgba(74,127,255,0.4)' : 'var(--border)'}`, background: activePortfolio?.id === p.id ? 'rgba(74,127,255,0.1)' : 'var(--bg3)', color: activePortfolio?.id === p.id ? '#4a7fff' : 'var(--text3)', transition: 'all 0.2s' }}>{p.name}</button>
+            ))}
+          </div>
         }
       />
 
       {/* Stats grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }} className="stats-grid-4">
-        {statCards.map(({ label, value, color }) => (
-          <div key={label} style={{
-            background: 'var(--bg2)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)', padding: '16px',
-            position: 'relative', overflow: 'hidden',
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(90deg, ${color}, transparent)` }} />
-            <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</div>
-            <div style={{ fontSize: '22px', fontWeight: '700', color }}>{value}</div>
-          </div>
-        ))}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }} className="stats-grid-4">
+        <StatCard label={tr.winRate} value={`${winRate.toFixed(1)}%`} color="#4a7fff" icon="analytics" />
+        <StatCard label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
+        <StatCard label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#8b5cf6" icon="security" />
+        <StatCard label={tr.trades} value={trades.length} color="var(--text2)" icon="receipt_long" />
+        <StatCard label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="scoreboard" />
+        <StatCard label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="emoji_events" />
+        <StatCard label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="warning" />
+        <StatCard label={tr.avgRR} value={trades.length ? `1:${(trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length).toFixed(1)}` : '—'} color="#f59e0b" icon="balance" />
       </div>
 
-      {/* Equity Chart */}
-      {equityCurve.length > 0 && (
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px', marginBottom: '24px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '16px' }}>עקומת הון מצטברת</div>
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={equityCurve}>
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Rubik' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
-              <Tooltip contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '12px', fontFamily: 'Rubik' }} formatter={(v: any) => [`$${v}`, 'P&L מצטבר']} />
-              <Line type="monotone" dataKey="value" stroke="var(--purple)" strokeWidth={2} dot={false} />
-            </LineChart>
+      {/* Equity chart */}
+      <div style={{ ...glass, padding: '28px', marginBottom: '24px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '900', marginBottom: '20px', letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
+        {equityCurve.length > 0 ? (
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={equityCurve}>
+              <defs>
+                <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
+              <Tooltip contentStyle={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)' }} formatter={(v: any) => [`$${v}`, 'P&L']} />
+              <Area type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#grad2)" dot={false} />
+            </AreaChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        ) : (
+          <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: '12px', fontWeight: '700' }}>{tr.noData}</div>
+        )}
+      </div>
 
       {/* Calendar */}
-      <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ fontSize: '14px', fontWeight: '600' }}>
-            לוח P&L יומי — {format(currentMonth, 'MMMM yyyy')}
+      <div style={{ ...glass, padding: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.01em' }}>
+            {tr.monthlyCalendar} — {format(currentMonth, language === 'he' ? 'MMMM yyyy' : 'MMMM yyyy')}
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '6px' }}>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))} className="btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}>‹</button>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))} className="btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}>›</button>
           </div>
         </div>
 
-        {/* Day headers */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
           {DAY_NAMES.map(d => (
-            <div key={d} style={{ fontSize: '11px', color: 'var(--text3)', textAlign: 'center', padding: '4px 0', fontWeight: '500' }}>{d}</div>
+            <div key={d} style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textAlign: 'center', padding: '4px 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{d}</div>
           ))}
         </div>
 
-        {/* Days */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
-          {/* Empty cells before first day */}
-          {Array.from({ length: firstDay }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-          {/* Day cells */}
+          {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
           {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
             const pnl = monthlyPnl[day]
             return (
-              <div key={day} style={{
-                background: pnl ? (pnl > 0 ? '#10b98110' : '#ef444410') : 'var(--bg3)',
-                border: `1px solid ${pnl ? (pnl > 0 ? '#10b98133' : '#ef444433') : 'var(--border)'}`,
-                borderRadius: '6px', minHeight: '56px', padding: '6px',
-                cursor: 'pointer', transition: 'all 0.2s',
-              }}>
-                <div style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text2)', marginBottom: '4px' }}>{day}</div>
+              <div key={day} style={{ background: pnl ? (pnl > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') : 'var(--bg3)', border: `1px solid ${pnl ? (pnl > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') : 'var(--border)'}`, borderRadius: '8px', minHeight: '56px', padding: '6px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text2)', marginBottom: '4px' }}>{day}</div>
                 {pnl !== undefined && (
-                  <div style={{ fontSize: '11px', fontWeight: '600', color: pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: '800', color: pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                     {pnl >= 0 ? '+' : ''}${pnl}
                   </div>
                 )}
@@ -168,7 +159,6 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 900px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 480px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
       `}</style>
     </div>
   )

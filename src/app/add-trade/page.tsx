@@ -45,6 +45,8 @@ export default function AddTradePage() {
     notes: '',
   })
   const router = useRouter()
+  const { language } = useApp()
+  const tr = t[language]
   const supabase = createClient()
 
   // Dropzone for AI analysis
@@ -223,7 +225,7 @@ export default function AddTradePage() {
               {step > n ? '✓' : n}
             </div>
             <span style={{ fontSize: '12px', color: step === n ? 'var(--text)' : 'var(--text3)', fontWeight: step === n ? '500' : '400' }}>
-              {['העלאת גרף', 'ניתוח AI', 'פרטי עסקה'][n - 1]}
+              {['העלאת גרף', 'ניתוח AI', language === 'he' ? tr.tradeDetails : 'Trade Details'][n - 1]}
             </span>
           </div>
           {idx < 2 && (
@@ -257,7 +259,7 @@ export default function AddTradePage() {
               <input {...getInputProps()} />
               <div style={{ fontSize: '44px', marginBottom: '14px' }}>📈</div>
               <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>
-                {isDragActive ? 'שחרר כאן...' : 'העלה גרף לניתוח AI'}
+                {isDragActive ? 'שחרר כאן...' : tr.uploadChart}
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
                 גרור תמונת גרף לכאן, או לחץ לבחירת קובץ<br />
@@ -331,7 +333,7 @@ export default function AddTradePage() {
             <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ fontSize: '14px', fontWeight: '600' }}>פרטי עסקה</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? 'הוספה ידנית' : 'ניתן לערוך כל שדה'}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? tr.manualMode : language === 'he' ? tr.editableMode : 'All fields editable'}</div>
               </div>
               <div style={{ padding: '20px' }}>
 
@@ -362,8 +364,8 @@ export default function AddTradePage() {
                   <div>
                     <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>כיוון *</label>
                     <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
-                      <option value="long">לונג (קניה)</option>
-                      <option value="short">שורט (מכירה)</option>
+                      <option value="long">{language === 'he' ? tr.long : 'Long (Buy)'}</option>
+                      <option value="short">{language === 'he' ? tr.short : 'Short (Sell)'}</option>
                     </select>
                   </div>
                 </div>
@@ -380,7 +382,7 @@ export default function AddTradePage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
-                  {[{ key: 'entry_price', label: 'מחיר כניסה *' }, { key: 'stop_loss', label: 'סטופ לוס *' }, { key: 'take_profit', label: 'טייק פרופיט *' }].map(({ key, label }) => (
+                  {[{ key: 'entry_price', label: language === 'he' ? tr.entryPrice : 'Entry *' }, { key: 'stop_loss', label: language === 'he' ? tr.stopLoss : 'Stop Loss *' }, { key: 'take_profit', label: language === 'he' ? tr.takeProfit : 'Take Profit *' }].map(({ key, label }) => (
                     <div key={key}>
                       <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
                       <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.00000" />
@@ -404,7 +406,7 @@ export default function AddTradePage() {
                 </div>
 
                 <button onClick={handleSubmit} disabled={submitting} className="btn-primary" style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
-                  {submitting ? '⏳ מעלה...' : '✓ העלאת עסקה'}
+                  {submitting ? language === 'he' ? tr.submitting : '⏳ Submitting...' : language === 'he' ? tr.submitTrade : '✓ Submit Trade'}
                 </button>
               </div>
             </div>
