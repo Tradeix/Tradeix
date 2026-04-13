@@ -368,7 +368,7 @@ export default function DashboardPage() {
                     </div>
                   </td>
                   <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '900', color: trade.direction === 'long' ? '#60a5fa' : '#a78bfa' }}>
-                    {trade.direction === 'long' ? language === 'he' ? 'לונג' : 'שורט'}
+                    {trade.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')}
                   </td>
                   <td style={{ padding: '20px 32px', fontSize: '14px', fontWeight: '500', color: 'rgba(229,226,225,0.8)' }}>
                     ${trade.entry_price}
