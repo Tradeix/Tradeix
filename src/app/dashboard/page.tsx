@@ -60,19 +60,19 @@ export default function DashboardPage() {
           worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)),
         })
       }
-        // equity curve
-        const { data: allTrades } = await supabase
-          .from('trades').select('pnl, traded_at')
-          .eq('portfolio_id', activePortfolio!.id)
-          .order('traded_at', { ascending: true })
-        if (allTrades && allTrades.length > 0) {
-          const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
-            const prev = i === 0 ? 0 : acc[i-1].value
-            acc.push({ date: new Date(x.traded_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit' }), value: Math.round(prev + (x.pnl || 0)) })
-            return acc
-          }, [])
-          setEquityCurve(curve)
-        } else { setEquityCurve([]) }
+      // equity curve
+      const { data: allTrades } = await supabase
+        .from('trades').select('pnl, traded_at')
+        .eq('portfolio_id', activePortfolio!.id)
+        .order('traded_at', { ascending: true })
+      if (allTrades && allTrades.length > 0) {
+        const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
+          const prev = i === 0 ? 0 : acc[i-1].value
+          acc.push({ date: new Date(x.traded_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit' }), value: Math.round(prev + (x.pnl || 0)) })
+          return acc
+        }, [])
+        setEquityCurve(curve)
+      } else { setEquityCurve([]) }
     } finally { setLoading(false) }
   }
 
@@ -95,7 +95,7 @@ export default function DashboardPage() {
       {/* ── HEADER AREA ── */}
       <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
         <div style={{ position: 'relative' }}>
-          <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0 }}>סקירה כללית</h2>
+          <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0 }}>{language === 'he' ? 'סקירה כללית' : 'Overview'}</h2>
           <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
         </div>
         <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', gap: '2px' }}>
@@ -205,16 +205,16 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ padding: '6px 16px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,1)' }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#22c55e', letterSpacing: '0.05em' }}>ניצחונות {stats.wins}</span>
+                <span style={{ fontSize: '11px', fontWeight: '900', color: '#22c55e', letterSpacing: '0.05em' }}>{language === 'he' ? 'ניצחונות' : 'Wins'} {stats.wins}</span>
               </div>
               <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>הפסדים {stats.losses}</span>
+                <span style={{ fontSize: '11px', fontWeight: '900', color: 'rgba(208,197,175,0.4)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{language === 'he' ? 'הפסדים' : 'Losses'} {stats.losses}</span>
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'rgba(208,197,175,0.3)', textTransform: 'uppercase', letterSpacing: '0.3em' }}>
-            מטריצת ביצועים
+            {language === 'he' ? 'מטריצת ביצועים' : 'Performance Matrix'}
             <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>security</span>
           </div>
         </div>
