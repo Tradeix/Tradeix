@@ -329,7 +329,7 @@ export default function AddTradePage() {
                 {/* Symbol + Direction */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.symbolPair}</label>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.symbolPair} <span style={{ color: '#ef4444' }}>*</span></label>
                     <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
                   </div>
                   <div>
@@ -370,7 +370,7 @@ export default function AddTradePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
                   {[{ key: 'entry_price', label: tr.entryPrice }, { key: 'stop_loss', label: tr.stopLoss }, { key: 'take_profit', label: tr.takeProfit }].map(({ key, label }) => (
                     <div key={key}>
-                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label}</label>
+                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label} <span style={{ color: '#ef4444' }}>*</span></label>
                       <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.00" />
                     </div>
                   ))}

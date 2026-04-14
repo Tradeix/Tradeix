@@ -20,6 +20,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   const [deleting, setDeleting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [pnlError, setPnlError] = useState(false)
   const [form, setForm] = useState({
     symbol: trade.symbol,
     direction: trade.direction,
@@ -71,6 +72,8 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   }
 
   async function handleSave() {
+    const missingPnl = !form.pnl || form.pnl.trim() === ''
+    if (missingPnl) { setPnlError(true); toast.error(language === 'he' ? 'נא למלא P&L' : 'PNL is required'); return }
     setSaving(true)
     try {
       const pnl = parseFloat(form.pnl) || 0
@@ -227,7 +230,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pair}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pair} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
@@ -241,7 +244,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.entryPriceLabel}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.entryPriceLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
                   <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.0000" />
                 </div>
                 <div>
@@ -252,19 +255,32 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.slLabel}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.slLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
                   <input value={form.stop_loss} onChange={e => setForm(p => ({ ...p, stop_loss: e.target.value }))} placeholder="0.0000" />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tpLabel}</label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tpLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
                   <input value={form.take_profit} onChange={e => setForm(p => ({ ...p, take_profit: e.target.value }))} placeholder="0.0000" />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pnl}</label>
-                  <input value={form.pnl} onChange={e => setForm(p => ({ ...p, pnl: e.target.value }))} placeholder="+320" />
+                  <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {tr.pnl} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
+                  </label>
+                  <input
+                    value={form.pnl}
+                    onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
+                    placeholder="+320"
+                    style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                  />
+                  {pnlError && (
+                    <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
+                      {language === 'he' ? 'שדה חובה' : 'Required field'}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.dateLabel}</label>
