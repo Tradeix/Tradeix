@@ -87,7 +87,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
               position: 'absolute', top: '48px',
-              right: 0,
+              [isRTL ? 'right' : 'left']: 0,
               background: 'var(--bg2)',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: '16px', zIndex: 200, minWidth: '220px',
