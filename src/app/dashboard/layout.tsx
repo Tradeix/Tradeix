@@ -87,11 +87,11 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
               position: 'absolute', top: '48px',
-              [isRTL ? 'left' : 'right']: 0,
-              background: '#12141a',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px', zIndex: 200, minWidth: '210px',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+              right: 0,
+              background: 'var(--bg2)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '16px', zIndex: 200, minWidth: '220px',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
               overflow: 'hidden',
             }}>
               {portfolios.length === 0 ? (
