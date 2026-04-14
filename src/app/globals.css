@@ -16,11 +16,11 @@
 }
 
 [data-theme="light"] {
-  --bg: #eef0f7; --bg2: #ffffff; --bg3: #e5e8f2; --bg4: #d8dced;
-  --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.15);
-  --text: #0f1117; --text2: #2d3452; --text3: #6b7280;
-  --glass-bg: linear-gradient(135deg,rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.75) 100%);
-  --glass-border: rgba(0,0,0,0.08);
+  --bg: #d6dff2; --bg2: #e0e9f8; --bg3: #c8d3e8; --bg4: #bbc8de;
+  --border: rgba(74,127,255,0.13); --border2: rgba(74,127,255,0.22);
+  --text: #111827; --text2: #2d3452; --text3: #6b7280;
+  --glass-bg: rgba(255,255,255,0.55);
+  --glass-border: rgba(74,127,255,0.13);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -81,77 +81,78 @@ select option { background: var(--bg2); color: var(--text); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ══════════════════════════════════════
-   LIGHT MODE — comprehensive overrides
+   LIGHT MODE — glassmorphism overrides
    ══════════════════════════════════════ */
 [data-theme="light"] body {
-  background: #eef0f7;
-  color: #0f1117;
+  background: #d6dff2;
+  color: #111827;
 }
 
 /* ── Sidebar ── */
 [data-theme="light"] .sidebar-el > div {
-  background: #ffffff !important;
+  background: rgba(224,233,248,0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
-/* Sidebar nav links inactive */
 [data-theme="light"] .sidebar-el nav a {
   color: var(--text3) !important;
 }
 [data-theme="light"] .sidebar-el nav a:hover {
   color: var(--text2) !important;
-  background: var(--bg3) !important;
+  background: rgba(74,127,255,0.08) !important;
 }
-/* Active link keeps blue */
 [data-theme="light"] .sidebar-el nav a[style*="#4a7fff"] {
   color: #4a7fff !important;
 }
-/* Logout button */
 [data-theme="light"] .sidebar-el button {
   color: rgba(239,68,68,0.7) !important;
 }
 
 /* ── Header ── */
 [data-theme="light"] header {
-  background: rgba(255,255,255,0.96) !important;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.08) !important;
+  background: rgba(220,229,244,0.9) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  box-shadow: 0 1px 0 rgba(74,127,255,0.1) !important;
 }
 
-/* ── Glass cards / panels ── */
-/* Most page panels use inline style with glass-bg var or rgba white tints */
+/* ── Glass cards — semi-transparent, no solid white ── */
 [data-theme="light"] div[style*="var(--glass-bg)"] {
-  background: #ffffff !important;
-  border-color: rgba(0,0,0,0.08) !important;
-}
-[data-theme="light"] div[style*="var(--glass-border)"] {
-  border-color: rgba(0,0,0,0.08) !important;
+  background: rgba(255,255,255,0.55) !important;
+  border-color: rgba(74,127,255,0.12) !important;
+  box-shadow: 0 2px 16px rgba(30,50,120,0.08), inset 0 1px 0 rgba(255,255,255,0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
 }
 
-/* Panels with semi-transparent white backgrounds (dashboard cards etc.) */
+/* ── Section elements ── */
+[data-theme="light"] section {
+  background: rgba(255,255,255,0.5) !important;
+  border-color: rgba(74,127,255,0.12) !important;
+  box-shadow: 0 2px 16px rgba(30,50,120,0.07) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: #111827 !important;
+}
+
+/* ── Panels with semi-transparent white tints ── */
 [data-theme="light"] div[style*="rgba(255,255,255,0.04)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.03)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.05)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.06)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.07)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.08)"] {
-  background: rgba(255,255,255,0.9) !important;
-  border-color: rgba(0,0,0,0.07) !important;
+  background: rgba(255,255,255,0.45) !important;
+  border-color: rgba(74,127,255,0.1) !important;
 }
 
-/* Section elements */
-[data-theme="light"] section {
-  background: #ffffff !important;
-  border-color: rgba(0,0,0,0.08) !important;
-  color: #0f1117 !important;
-}
-
-/* ── Text colors ── */
-/* White/near-white text → dark */
+/* ── Text — white/near-white → dark ── */
 [data-theme="light"] *[style*="color: #e5e2e1"],
 [data-theme="light"] *[style*="color: #e8eaf6"],
 [data-theme="light"] *[style*="color: #fff"],
 [data-theme="light"] *[style*="color: white"] {
-  color: #0f1117 !important;
+  color: #111827 !important;
 }
-/* Low-opacity white text → readable gray */
 [data-theme="light"] *[style*="color: rgba(229,226,225,0.65)"],
 [data-theme="light"] *[style*="color: rgba(232,234,246,0.35)"],
 [data-theme="light"] *[style*="color: rgba(232,234,246,0.8)"],
@@ -168,22 +169,21 @@ select option { background: var(--bg2); color: var(--text); }
   color: #9ca3af !important;
 }
 
-/* ── Inline dark backgrounds ── */
+/* ── Inline exact backgrounds ── */
 [data-theme="light"] *[style*="background: rgba(255,255,255,0.04)"],
 [data-theme="light"] *[style*="background: rgba(255,255,255,0.05)"],
 [data-theme="light"] *[style*="background: rgba(255,255,255,0.03)"] {
-  background: rgba(0,0,0,0.03) !important;
+  background: rgba(255,255,255,0.3) !important;
 }
 
-/* Hardcoded dark hex backgrounds */
+/* Hardcoded dark backgrounds */
 [data-theme="light"] *[style*="background: #080808"],
 [data-theme="light"] *[style*="background: #0c0c0c"],
 [data-theme="light"] *[style*="background: #131313"],
 [data-theme="light"] *[style*="background: #1c1b1b"],
-[data-theme="light"] *[style*="background: #0a0"],
 [data-theme="light"] *[style*="background: #12141a"] {
-  background: #ffffff !important;
-  color: #0f1117 !important;
+  background: rgba(255,255,255,0.55) !important;
+  color: #111827 !important;
 }
 
 /* ── Borders ── */
@@ -195,42 +195,33 @@ select option { background: var(--bg2); color: var(--text); }
 [data-theme="light"] *[style*="border-bottom: 1px solid rgba(255,255,255,0.05)"],
 [data-theme="light"] *[style*="border-top: 1px solid rgba(255,255,255,0.05)"],
 [data-theme="light"] *[style*="border-top: 1px solid rgba(255,255,255,0.03)"] {
-  border-color: rgba(0,0,0,0.08) !important;
+  border-color: rgba(74,127,255,0.1) !important;
 }
 
 /* ── Inputs ── */
 [data-theme="light"] input,
 [data-theme="light"] select,
 [data-theme="light"] textarea {
-  background: #ffffff !important;
-  border-color: rgba(0,0,0,0.12) !important;
-  color: #0f1117 !important;
+  background: rgba(255,255,255,0.7) !important;
+  border-color: rgba(74,127,255,0.15) !important;
+  color: #111827 !important;
 }
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder { color: #9ca3af !important; }
 
 /* ── Buttons ── */
 [data-theme="light"] .btn-ghost {
-  background: #f1f3fa !important;
-  border-color: rgba(0,0,0,0.10) !important;
+  background: rgba(255,255,255,0.5) !important;
+  border-color: rgba(74,127,255,0.15) !important;
   color: #2d3452 !important;
 }
 
-/* ── Trade/stat cards with explicit background colors ── */
-/* Win/loss outcome badges should stay colored */
-[data-theme="light"] span[style*="rgba(34,197,94,0.12)"] {
-  background: rgba(34,197,94,0.1) !important;
-}
-[data-theme="light"] span[style*="rgba(239,68,68,0.12)"] {
-  background: rgba(239,68,68,0.1) !important;
-}
-
-/* Chart tooltips */
+/* ── Chart tooltips ── */
 [data-theme="light"] .recharts-tooltip-wrapper * {
-  color: #0f1117 !important;
+  color: #111827 !important;
 }
 
-/* ── Modal overlay backdrop ── */
+/* ── Modal overlay ── */
 [data-theme="light"] div[style*="rgba(0,0,0,0.7)"][style*="position: fixed"],
 [data-theme="light"] div[style*="rgba(0,0,0,0.85)"][style*="position: fixed"] {
   background: rgba(15,17,23,0.5) !important;

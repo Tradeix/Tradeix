@@ -23,18 +23,18 @@ function applyTheme(t: Theme) {
   const root = document.documentElement
   if (t === 'light') {
     root.setAttribute('data-theme', 'light')
-    root.style.setProperty('--bg', '#f0f2f8')
-    root.style.setProperty('--bg2', '#ffffff')
-    root.style.setProperty('--bg3', '#e8eaf2')
-    root.style.setProperty('--bg4', '#dde0ee')
-    root.style.setProperty('--border', 'rgba(0,0,0,0.08)')
-    root.style.setProperty('--border2', 'rgba(0,0,0,0.13)')
-    root.style.setProperty('--text', '#0f1117')
-    root.style.setProperty('--text2', '#2d3148')
+    root.style.setProperty('--bg', '#d6dff2')
+    root.style.setProperty('--bg2', '#e0e9f8')
+    root.style.setProperty('--bg3', '#c8d3e8')
+    root.style.setProperty('--bg4', '#bbc8de')
+    root.style.setProperty('--border', 'rgba(74,127,255,0.13)')
+    root.style.setProperty('--border2', 'rgba(74,127,255,0.22)')
+    root.style.setProperty('--text', '#111827')
+    root.style.setProperty('--text2', '#2d3452')
     root.style.setProperty('--text3', '#6b7280')
-    root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%)')
-    root.style.setProperty('--glass-border', 'rgba(0,0,0,0.07)')
-    document.body.style.cssText = 'background: #eef0f7 !important; color: #0f1117 !important;'
+    root.style.setProperty('--glass-bg', 'rgba(255,255,255,0.55)')
+    root.style.setProperty('--glass-border', 'rgba(74,127,255,0.13)')
+    document.body.style.cssText = 'background: #d6dff2 !important; color: #111827 !important;'
     const style = document.getElementById('tradeix-theme-style') || document.createElement('style')
     style.id = 'tradeix-theme-style'
     style.textContent = `
