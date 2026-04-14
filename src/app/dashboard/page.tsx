@@ -257,10 +257,12 @@ export default function DashboardPage() {
         {stats.totalTrades > 0 ? (() => {
           const winPct = stats.winRate
           const lossPct = 100 - winPct
+          const isRTL = language === 'he'
+          // RTL: wins on right, losses on left. LTR: wins on left, losses on right.
           return (
             <div>
               {/* Labels */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', flexDirection: isRTL ? 'row-reverse' : 'row' }}>
                 <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                   {tr.wins} · {winPct.toFixed(1)}%
                 </span>
@@ -270,20 +272,20 @@ export default function DashboardPage() {
               </div>
               {/* Bar track */}
               <div style={{ position: 'relative', height: '10px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
-                {/* Win fill */}
+                {/* Win fill — anchored to the "start" side */}
                 <div style={{
-                  position: 'absolute', top: 0, left: 0, height: '100%',
+                  position: 'absolute', top: 0, [isRTL ? 'right' : 'left']: 0, height: '100%',
                   width: `${winPct}%`,
-                  background: 'linear-gradient(90deg, #16a34a, #22c55e)',
+                  background: isRTL ? 'linear-gradient(270deg, #16a34a, #22c55e)' : 'linear-gradient(90deg, #16a34a, #22c55e)',
                   boxShadow: '0 0 16px rgba(34,197,94,0.45)',
                   borderRadius: '999px',
                   transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
                 }} />
-                {/* Loss fill — starts right after win */}
+                {/* Loss fill — anchored to the "end" side */}
                 <div style={{
-                  position: 'absolute', top: 0, right: 0, height: '100%',
+                  position: 'absolute', top: 0, [isRTL ? 'left' : 'right']: 0, height: '100%',
                   width: `${lossPct}%`,
-                  background: 'linear-gradient(90deg, #ef4444, #dc2626)',
+                  background: isRTL ? 'linear-gradient(270deg, #ef4444, #dc2626)' : 'linear-gradient(90deg, #ef4444, #dc2626)',
                   boxShadow: '0 0 16px rgba(239,68,68,0.35)',
                   borderRadius: '999px',
                   transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
@@ -292,7 +294,7 @@ export default function DashboardPage() {
                 {winPct > 0 && lossPct > 0 && (
                   <div style={{
                     position: 'absolute', top: 0, bottom: 0,
-                    left: `${winPct}%`, width: '2px',
+                    [isRTL ? 'right' : 'left']: `${winPct}%`, width: '2px',
                     background: 'var(--bg2)',
                     transform: 'translateX(-50%)',
                   }} />
