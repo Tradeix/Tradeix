@@ -264,29 +264,29 @@ export default function ArchivePage() {
                         {language === 'he' ? 'עסקאות אחרונות' : 'Recent Trades'}
                       </div>
                       {totalPages > 1 && (() => {
-                        const isRTL   = language === 'he'
-                        const canBack = page < totalPages - 1
-                        const canFwd  = page > 0
-                        const rCan    = isRTL ? canBack : canFwd
-                        const lCan    = isRTL ? canFwd  : canBack
+                        const isRTL    = language === 'he'
+                        const canOlder = page < totalPages - 1
+                        const canNewer = page > 0
+                        const olderIcon = isRTL ? 'chevron_right' : 'chevron_left'
+                        const newerIcon = isRTL ? 'chevron_left'  : 'chevron_right'
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
                               {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
                             </span>
                             <button
-                              onClick={() => changePage(p.id, isRTL ? 1 : -1)}
-                              disabled={!rCan}
-                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: rCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rCan ? 1 : 0.3, transition: 'all 0.2s' }}
+                              onClick={() => changePage(p.id, 1)}
+                              disabled={!canOlder}
+                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.3, transition: 'all 0.2s' }}
                             >
-                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
                             </button>
                             <button
-                              onClick={() => changePage(p.id, isRTL ? -1 : 1)}
-                              disabled={!lCan}
-                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: lCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: lCan ? 1 : 0.3, transition: 'all 0.2s' }}
+                              onClick={() => changePage(p.id, -1)}
+                              disabled={!canNewer}
+                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.3, transition: 'all 0.2s' }}
                             >
-                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
                             </button>
                           </div>
                         )

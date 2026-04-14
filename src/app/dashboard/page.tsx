@@ -375,30 +375,30 @@ export default function DashboardPage() {
           {trades.length > 0 && (() => {
             const isRTL      = language === 'he'
             const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
-            const canBack    = tradePage < totalPages - 1  // can go to older
-            const canForward = tradePage > 0               // can go to newer
-            // RTL: › = older (back), ‹ = newer (forward)
-            // LTR: › = newer (forward), ‹ = older (back)
-            const rightCan = isRTL ? canBack    : canForward
-            const leftCan  = isRTL ? canForward : canBack
+            const canOlder   = tradePage < totalPages - 1
+            const canNewer   = tradePage > 0
+            // "older" button: RTL=chevron_right(›), LTR=chevron_left(‹)
+            // "newer" button: RTL=chevron_left(‹), LTR=chevron_right(›)
+            const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
+            const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
             return (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
                   {tradeTotal > 0 ? `${tradePage * 6 + 1}–${Math.min((tradePage + 1) * 6, tradeTotal)} / ${tradeTotal}` : ''}
                 </span>
                 <button
-                  onClick={() => { const p = tradePage + (isRTL ? 1 : -1); setTradePage(p); loadData(p) }}
-                  disabled={!rightCan}
-                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: rightCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rightCan ? 1 : 0.25, transition: 'all 0.2s' }}
+                  onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
+                  disabled={!canOlder}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
                 </button>
                 <button
-                  onClick={() => { const p = tradePage + (isRTL ? -1 : 1); setTradePage(p); loadData(p) }}
-                  disabled={!leftCan}
-                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: leftCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: leftCan ? 1 : 0.25, transition: 'all 0.2s' }}
+                  onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p) }}
+                  disabled={!canNewer}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
                 </button>
               </div>
             )
@@ -483,28 +483,28 @@ export default function DashboardPage() {
         {trades.length > 0 && (() => {
           const isRTL      = language === 'he'
           const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
-          const canBack    = tradePage < totalPages - 1
-          const canForward = tradePage > 0
-          const rightCan   = isRTL ? canBack    : canForward
-          const leftCan    = isRTL ? canForward : canBack
+          const canOlder   = tradePage < totalPages - 1
+          const canNewer   = tradePage > 0
+          const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
+          const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
           return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', padding: '14px 28px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
               <button
-                onClick={() => { const p = tradePage + (isRTL ? 1 : -1); setTradePage(p); loadData(p) }}
-                disabled={!rightCan}
-                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: rightCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rightCan ? 1 : 0.2, transition: 'all 0.2s' }}
+                onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
+                disabled={!canOlder}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.2, transition: 'all 0.2s' }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
               </button>
               <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', minWidth: '60px', textAlign: 'center' }}>
                 {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
               </span>
               <button
-                onClick={() => { const p = tradePage + (isRTL ? -1 : 1); setTradePage(p); loadData(p) }}
-                disabled={!leftCan}
-                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: leftCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: leftCan ? 1 : 0.2, transition: 'all 0.2s' }}
+                onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p) }}
+                disabled={!canNewer}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.2, transition: 'all 0.2s' }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
               </button>
             </div>
           )

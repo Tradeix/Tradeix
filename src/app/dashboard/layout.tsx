@@ -47,14 +47,14 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       background: 'var(--bg2)',
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
-      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      borderBottom: '1px solid var(--border)',
       display: 'flex', alignItems: 'center',
       padding: '0 32px', gap: '16px',
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
         display: 'none', width: '36px', height: '36px',
-        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+        background: 'var(--bg3)', border: '1px solid var(--border)',
         borderRadius: '50%', cursor: 'pointer',
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
         color: 'var(--text)',
@@ -68,8 +68,8 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--bg3)',
+          border: '1px solid var(--border)',
           borderRadius: '12px', padding: '7px 14px',
           fontSize: '12px', color: 'var(--text)', cursor: 'pointer',
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
@@ -79,7 +79,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           <span style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
           </span>
-          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', marginTop: '1px' }}>▼</span>
+          <span style={{ fontSize: '9px', color: 'var(--text3)', marginTop: '1px' }}>▼</span>
         </div>
 
         {showMenu && (
@@ -89,13 +89,13 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
               position: 'absolute', top: '48px',
               [isRTL ? 'right' : 'left']: 0,
               background: 'var(--bg2)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: '1px solid var(--border2)',
               borderRadius: '16px', zIndex: 200, minWidth: '220px',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.25)',
               overflow: 'hidden',
             }}>
               {portfolios.length === 0 ? (
-                <div style={{ padding: '14px 18px', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+                <div style={{ padding: '14px 18px', fontSize: '12px', color: 'var(--text3)' }}>
                   {tr.noPortfolios}
                 </div>
               ) : portfolios.map(p => {
@@ -103,14 +103,14 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
                 return (
                   <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
                     padding: '12px 18px', fontSize: '13px', cursor: 'pointer',
-                    background: activePortfolio?.id === p.id ? 'rgba(255,255,255,0.04)' : 'transparent',
-                    color: activePortfolio?.id === p.id ? c : 'rgba(255,255,255,0.6)',
+                    background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
+                    color: activePortfolio?.id === p.id ? c : 'var(--text2)',
                     display: 'flex', alignItems: 'center', gap: '10px',
-                    transition: 'background 0.15s', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    transition: 'background 0.15s', borderBottom: '1px solid var(--border)',
                     fontWeight: '600',
                   }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-                    onMouseOut={e => (e.currentTarget.style.background = activePortfolio?.id === p.id ? 'rgba(255,255,255,0.04)' : 'transparent')}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
+                    onMouseOut={e => (e.currentTarget.style.background = activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent')}
                   >
                     <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: c, boxShadow: `0 0 6px ${c}` }} />
                     <span style={{ flex: 1 }}>{p.name}</span>
@@ -147,7 +147,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       )}
 
       {/* User — avatar first, then name */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)' }}>
         <div style={{ position: 'relative' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '50%',
@@ -203,7 +203,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       <Link href={href} onClick={() => setSidebarOpen(false)} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
-        color: active ? '#4a7fff' : 'rgba(232,234,246,0.35)',
+        color: active ? '#4a7fff' : 'var(--text3)',
         fontWeight: active ? '700' : '500',
         fontSize: '13px', textDecoration: 'none',
         background: active ? 'radial-gradient(circle at 100%, rgba(74,127,255,0.1) 0%, transparent 70%)' : 'transparent',
@@ -211,8 +211,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         position: 'relative', letterSpacing: '0.02em',
         fontFamily: 'Heebo, Rubik, sans-serif',
       }}
-        onMouseOver={e => { if (!active) e.currentTarget.style.color = 'rgba(232,234,246,0.8)'; e.currentTarget.style.background = active ? e.currentTarget.style.background : 'rgba(255,255,255,0.02)' }}
-        onMouseOut={e => { e.currentTarget.style.color = active ? '#4a7fff' : 'rgba(232,234,246,0.35)'; if (!active) e.currentTarget.style.background = 'transparent' }}
+        onMouseOver={e => { if (!active) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)' } }}
+        onMouseOut={e => { e.currentTarget.style.color = active ? '#4a7fff' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
       >
         {active && (
           <div style={{
@@ -263,7 +263,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <span style={{
             fontFamily: 'Manrope, Heebo, sans-serif',
             fontWeight: '800', fontSize: '20px',
-            letterSpacing: '-0.02em', color: '#e8eaf6',
+            letterSpacing: '-0.02em', color: 'var(--text)',
           }}>
             Trade<span style={{ background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IX</span>
           </span>
@@ -273,12 +273,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {/* Nav */}
       <nav style={{ flex: 1, padding: '0 8px' }}>
         {NAV_ITEMS.map(item => <NavLink key={item.href} {...item} />)}
-        <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '12px 12px' }} />
+        <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
       </nav>
 
       {/* Logout */}
-      <div style={{ padding: '16px 8px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ padding: '16px 8px', borderTop: '1px solid var(--border)' }}>
         <button onClick={handleSignOut} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '11px 20px', width: '100%',
@@ -320,7 +320,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <div style={{
         width: '210px', minHeight: '100vh',
-        borderInlineEnd: '1px solid rgba(255,255,255,0.05)',
+        borderInlineEnd: '1px solid var(--border)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease',
       }} className="sidebar-el">

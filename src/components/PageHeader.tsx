@@ -34,7 +34,7 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
             <h2 style={{
               fontSize: '28px', fontWeight: '900',
               letterSpacing: '-0.02em', margin: 0,
-              color: '#e5e2e1',
+              color: 'var(--text)',
               fontFamily: 'Heebo, sans-serif',
             }}>{title}</h2>
             {/* Decorative dots */}
@@ -46,7 +46,7 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
           </div>
           {subtitle && (
             <p style={{
-              fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)',
+              fontSize: '11px', fontWeight: '700', color: 'var(--text3)',
               textTransform: 'uppercase', letterSpacing: '0.2em', margin: 0,
               fontFamily: 'Heebo, sans-serif',
             }}>{subtitle}</p>

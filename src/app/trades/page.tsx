@@ -61,11 +61,11 @@ export default function TradesPage() {
     loadTrades(next)
   }
 
-  const totalPages  = Math.ceil(total / PAGE_SIZE)
-  const canBack     = page < totalPages - 1
-  const canForward  = page > 0
-  const rightCan    = isRTL ? canBack    : canForward
-  const leftCan     = isRTL ? canForward : canBack
+  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const canOlder   = page < totalPages - 1
+  const canNewer   = page > 0
+  const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
+  const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
 
   const FILTERS = [
     { key: 'all', label: tr.all, icon: 'receipt_long' },
@@ -134,18 +134,18 @@ export default function TradesPage() {
               {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
             </span>
             <button
-              onClick={() => changePage(isRTL ? 1 : -1)}
-              disabled={!rightCan}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: rightCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rightCan ? 1 : 0.25, transition: 'all 0.2s' }}
+              onClick={() => changePage(1)}
+              disabled={!canOlder}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
             </button>
             <button
-              onClick={() => changePage(isRTL ? -1 : 1)}
-              disabled={!leftCan}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: leftCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: leftCan ? 1 : 0.25, transition: 'all 0.2s' }}
+              onClick={() => changePage(-1)}
+              disabled={!canNewer}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
             </button>
           </div>
         )}

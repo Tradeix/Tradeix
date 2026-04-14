@@ -124,7 +124,7 @@ export default function SettingsPage() {
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
-            <button onClick={() => fileRef.current?.click()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 14px', fontSize: '11px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
+            <button onClick={() => fileRef.current?.click()} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '5px 14px', fontSize: '11px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
               {language === 'he' ? '✎ שינוי תמונה' : '✎ Change photo'}
             </button>
           </div>
@@ -178,12 +178,12 @@ export default function SettingsPage() {
               onChange={setLanguage}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
-            <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', marginTop: '8px', fontWeight: '600' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
               {language === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
             </div>
           </div>
 
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', marginBottom: '20px' }} />
+          <div style={{ height: '1px', background: 'var(--border)', marginBottom: '20px' }} />
 
           {/* Theme */}
           <div>
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                 { value: 'light', label: language === 'he' ? '☀ בהיר' : '☀ Light' },
               ]}
             />
-            <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.3)', marginTop: '8px', fontWeight: '600' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
               {language === 'he' ? 'השינוי חל על כל האתר' : 'Change applies to the entire site'}
             </div>
           </div>
@@ -239,11 +239,11 @@ export default function SettingsPage() {
               { feature: language === 'he' ? 'ייצוא נתונים' : 'Data export', included: false },
               { feature: language === 'he' ? 'תיקים ללא הגבלה' : 'Unlimited portfolios', included: false },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.included ? '#22c55e' : 'rgba(255,255,255,0.15)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 4 ? '1px solid var(--border)' : 'none' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.included ? '#22c55e' : 'var(--text3)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
                   {item.included ? 'check_circle' : 'cancel'}
                 </span>
-                <span style={{ fontSize: '12px', color: item.included ? 'rgba(229,226,225,0.7)' : 'rgba(229,226,225,0.25)', fontWeight: '600' }}>{item.feature}</span>
+                <span style={{ fontSize: '12px', color: item.included ? 'var(--text2)' : 'var(--text3)', fontWeight: '600' }}>{item.feature}</span>
               </div>
             ))}
           </div>
