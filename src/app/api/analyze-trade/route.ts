@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key') {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey || apiKey.startsWith('your_') || !apiKey.startsWith('sk-ant-')) {
     return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
   }
 
