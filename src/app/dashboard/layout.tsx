@@ -62,8 +62,8 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>menu</span>
       </button>
 
-      {/* Portfolio switcher — right side */}
-      <div style={{ position: 'relative' }}>
+      {/* Portfolio switcher — right side (hidden when no portfolios) */}
+      {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           background: 'var(--bg3)',
@@ -124,13 +124,13 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             </div>
           </>
         )}
-      </div>
+      </div>}
 
       {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Current portfolio indicator — left side */}
-      {activePortfolio && (
+      {/* Current portfolio indicator — left side (hidden when no portfolios) */}
+      {portfolios.length > 0 && activePortfolio && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           background: `${dotColor}12`,
@@ -235,8 +235,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
+      display: 'flex', flexDirection: 'column', height: '100vh',
       background: 'var(--bg2)',
+      overflowY: 'auto',
     }}>
       {/* Logo */}
       <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
@@ -317,10 +318,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <div style={{
-        width: '210px', minHeight: '100vh',
+        width: '210px', height: '100vh',
         borderInlineEnd: '1px solid var(--border)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease',
+        overflow: 'hidden',
       }} className="sidebar-el">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
