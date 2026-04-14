@@ -62,8 +62,8 @@ export default function TradesPage() {
   }
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
-  const canPrev = isRTL ? page < totalPages - 1 : page > 0
-  const canNext = isRTL ? page > 0 : page < totalPages - 1
+  const canRight = page > 0               // › always = prev (lower page)
+  const canLeft  = page < totalPages - 1  // ‹ always = next (higher page)
 
   const FILTERS = [
     { key: 'all', label: tr.all, icon: 'receipt_long' },
@@ -132,16 +132,16 @@ export default function TradesPage() {
               {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
             </span>
             <button
-              onClick={() => changePage(isRTL ? 1 : -1)}
-              disabled={!canPrev}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canPrev ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canPrev ? 1 : 0.25, transition: 'all 0.2s' }}
+              onClick={() => changePage(-1)}
+              disabled={!canRight}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canRight ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canRight ? 1 : 0.25, transition: 'all 0.2s' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
             </button>
             <button
-              onClick={() => changePage(isRTL ? -1 : 1)}
-              disabled={!canNext}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNext ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNext ? 1 : 0.25, transition: 'all 0.2s' }}
+              onClick={() => changePage(1)}
+              disabled={!canLeft}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canLeft ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canLeft ? 1 : 0.25, transition: 'all 0.2s' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
             </button>

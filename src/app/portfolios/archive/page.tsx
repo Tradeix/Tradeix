@@ -270,16 +270,16 @@ export default function ArchivePage() {
                             {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
                           </span>
                           <button
-                            onClick={() => changePage(p.id, isRTL ? 1 : -1)}
-                            disabled={isRTL ? page >= totalPages - 1 : page === 0}
-                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: (isRTL ? page >= totalPages - 1 : page === 0) ? 0.3 : 1, transition: 'all 0.2s' }}
+                            onClick={() => changePage(p.id, -1)}
+                            disabled={page === 0}
+                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0.3 : 1, transition: 'all 0.2s' }}
                           >
                             <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
                           </button>
                           <button
-                            onClick={() => changePage(p.id, isRTL ? -1 : 1)}
-                            disabled={isRTL ? page === 0 : page >= totalPages - 1}
-                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: (isRTL ? page === 0 : page >= totalPages - 1) ? 0.3 : 1, transition: 'all 0.2s' }}
+                            onClick={() => changePage(p.id, 1)}
+                            disabled={page >= totalPages - 1}
+                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page >= totalPages - 1 ? 0.3 : 1, transition: 'all 0.2s' }}
                           >
                             <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
                           </button>
