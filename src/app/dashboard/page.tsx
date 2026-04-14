@@ -253,27 +253,56 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Segmented bar */}
-        <div style={{ position: 'relative', height: '16px', width: '100%', display: 'flex', gap: '4px' }}>
-          {stats.totalTrades > 0 ? (
-            Array.from({ length: Math.min(stats.totalTrades, 20) }).map((_, i) => {
-              const isWin = i < Math.round((stats.wins / stats.totalTrades) * Math.min(stats.totalTrades, 20))
-              const isFirst = i === 0
-              const isLast = i === Math.min(stats.totalTrades, 20) - 1
-              return (
-                <div key={i} style={{
-                  flex: 1, height: '100%',
-                  background: isWin ? '#22c55e' : 'rgba(239,68,68,0.3)',
-                  boxShadow: isWin ? '0 0 20px rgba(34,197,94,0.2)' : 'none',
-                  transition: 'all 0.7s',
-                  borderRadius: isFirst ? '999px 0 0 999px' : isLast ? '0 999px 999px 0' : '0',
+        {/* Win/Loss bar */}
+        {stats.totalTrades > 0 ? (() => {
+          const winPct = stats.winRate
+          const lossPct = 100 - winPct
+          return (
+            <div>
+              {/* Labels */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                  {tr.wins} · {winPct.toFixed(1)}%
+                </span>
+                <span style={{ fontSize: '10px', fontWeight: '800', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                  {lossPct.toFixed(1)}% · {tr.losses}
+                </span>
+              </div>
+              {/* Bar track */}
+              <div style={{ position: 'relative', height: '10px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
+                {/* Win fill */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, height: '100%',
+                  width: `${winPct}%`,
+                  background: 'linear-gradient(90deg, #16a34a, #22c55e)',
+                  boxShadow: '0 0 16px rgba(34,197,94,0.45)',
+                  borderRadius: '999px',
+                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
                 }} />
-              )
-            })
-          ) : (
-            <div style={{ flex: 1, height: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px' }} />
-          )}
-        </div>
+                {/* Loss fill — starts right after win */}
+                <div style={{
+                  position: 'absolute', top: 0, right: 0, height: '100%',
+                  width: `${lossPct}%`,
+                  background: 'linear-gradient(90deg, #ef4444, #dc2626)',
+                  boxShadow: '0 0 16px rgba(239,68,68,0.35)',
+                  borderRadius: '999px',
+                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+                }} />
+                {/* Divider line */}
+                {winPct > 0 && lossPct > 0 && (
+                  <div style={{
+                    position: 'absolute', top: 0, bottom: 0,
+                    left: `${winPct}%`, width: '2px',
+                    background: 'var(--bg2)',
+                    transform: 'translateX(-50%)',
+                  }} />
+                )}
+              </div>
+            </div>
+          )
+        })() : (
+          <div style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px' }} />
+        )}
       </section>
 
       {/* ── EQUITY CURVE ── */}
