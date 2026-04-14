@@ -263,27 +263,34 @@ export default function ArchivePage() {
                       <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         {language === 'he' ? 'עסקאות אחרונות' : 'Recent Trades'}
                       </div>
-                      {totalPages > 1 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
-                            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
-                          </span>
-                          <button
-                            onClick={() => changePage(p.id, 1)}
-                            disabled={page >= totalPages - 1}
-                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page >= totalPages - 1 ? 0.3 : 1, transition: 'all 0.2s' }}
-                          >
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
-                          </button>
-                          <button
-                            onClick={() => changePage(p.id, 1)}
-                            disabled={page >= totalPages - 1}
-                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page >= totalPages - 1 ? 0.3 : 1, transition: 'all 0.2s' }}
-                          >
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
-                          </button>
-                        </div>
-                      )}
+                      {totalPages > 1 && (() => {
+                        const isRTL   = language === 'he'
+                        const canBack = page < totalPages - 1
+                        const canFwd  = page > 0
+                        const rCan    = isRTL ? canBack : canFwd
+                        const lCan    = isRTL ? canFwd  : canBack
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+                              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
+                            </span>
+                            <button
+                              onClick={() => changePage(p.id, isRTL ? 1 : -1)}
+                              disabled={!rCan}
+                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: rCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rCan ? 1 : 0.3, transition: 'all 0.2s' }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                            </button>
+                            <button
+                              onClick={() => changePage(p.id, isRTL ? -1 : 1)}
+                              disabled={!lCan}
+                              style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: lCan ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: lCan ? 1 : 0.3, transition: 'all 0.2s' }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                            </button>
+                          </div>
+                        )
+                      })()}
                     </div>
 
                     {/* Trades list */}
