@@ -372,15 +372,14 @@ export default function DashboardPage() {
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
-          {tradeTotal > 6 && (() => {
-            const totalPages = Math.ceil(tradeTotal / 6)
-            // › = go back in time (older trades = higher page), ‹ = go forward (newer = lower page)
-            const canBack    = tradePage < totalPages - 1   // can go to older trades
-            const canForward = tradePage > 0                // can go to newer trades
+          {trades.length > 0 && (() => {
+            const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
+            const canBack    = tradePage < totalPages - 1
+            const canForward = tradePage > 0
             return (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
-                  {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
+                  {tradeTotal > 0 ? `${tradePage * 6 + 1}–${Math.min((tradePage + 1) * 6, tradeTotal)} / ${tradeTotal}` : ''}
                 </span>
                 <button
                   onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
@@ -476,7 +475,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Bottom pagination */}
-        {tradeTotal > 6 && (() => {
+        {trades.length > 0 && (() => {
           const totalPages = Math.ceil(tradeTotal / 6)
           const canBack    = tradePage < totalPages - 1
           const canForward = tradePage > 0
