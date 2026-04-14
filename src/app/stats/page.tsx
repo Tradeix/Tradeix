@@ -46,10 +46,13 @@ export default function StatsPage() {
   const daysInMonth = getDaysInMonth(currentMonth)
   const firstDay = getDay(startOfMonth(currentMonth))
   const monthlyPnl: Record<number, number> = {}
+  const monthlyCount: Record<number, number> = {}
   trades.forEach(t => {
     const d = new Date(t.traded_at)
     if (d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear()) {
-      monthlyPnl[d.getDate()] = (monthlyPnl[d.getDate()] || 0) + t.pnl
+      const day = d.getDate()
+      monthlyPnl[day] = (monthlyPnl[day] || 0) + t.pnl
+      monthlyCount[day] = (monthlyCount[day] || 0) + 1
     }
   })
 
@@ -157,12 +160,18 @@ export default function StatsPage() {
           {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
           {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
             const pnl = monthlyPnl[day]
+            const count = monthlyCount[day]
             return (
-              <div key={day} style={{ background: pnl ? (pnl > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') : 'var(--bg3)', border: `1px solid ${pnl ? (pnl > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') : 'var(--border)'}`, borderRadius: '8px', minHeight: '56px', padding: '6px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text2)', marginBottom: '4px' }}>{day}</div>
+              <div key={day} style={{ background: pnl !== undefined ? (pnl > 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'var(--bg3)', border: `1px solid ${pnl !== undefined ? (pnl > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') : 'var(--border)'}`, borderRadius: '10px', minHeight: '72px', padding: '8px 6px 6px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', marginBottom: 'auto' }}>{day}</div>
                 {pnl !== undefined && (
-                  <div style={{ fontSize: '11px', fontWeight: '800', color: pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                    {pnl >= 0 ? '+' : ''}${pnl}
+                  <div style={{ textAlign: 'center', marginTop: '4px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '900', color: pnl >= 0 ? '#22c55e' : '#ef4444', letterSpacing: '-0.01em', lineHeight: 1 }}>
+                      {pnl >= 0 ? '+' : ''}${pnl.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '9px', fontWeight: '600', color: 'var(--text3)', marginTop: '4px' }}>
+                      {count} {language === 'he' ? 'עסקאות' : count === 1 ? 'Trade' : 'Trades'}
+                    </div>
                   </div>
                 )}
               </div>
