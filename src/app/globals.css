@@ -125,8 +125,8 @@ select option { background: var(--bg2); color: var(--text); }
   -webkit-backdrop-filter: blur(12px) !important;
 }
 
-/* ── Section elements ── */
-[data-theme="light"] section {
+/* ── Section elements — only those with an explicit background ── */
+[data-theme="light"] section[style*="background"] {
   background: rgba(255,255,255,0.5) !important;
   border-color: rgba(74,127,255,0.12) !important;
   box-shadow: 0 2px 16px rgba(30,50,120,0.07) !important;
