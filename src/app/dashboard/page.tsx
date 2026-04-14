@@ -451,12 +451,11 @@ export default function DashboardPage() {
         @media (max-width: 768px) {
           .stats-hero { grid-template-columns: 1fr !important; }
           .winrate-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 60px 80px !important; padding: 14px 16px !important; }
-          .recent-trade-row > div:nth-child(4),
-          .recent-trade-row > div:nth-child(5) { display: none !important; }
+          .recent-trade-row { grid-template-columns: 1fr 80px 52px 65px !important; padding: 14px 16px !important; }
+          .recent-trade-row > div:nth-child(2) { display: none !important; }
         }
-        @media (max-width: 480px) {
-          .recent-trade-row { grid-template-columns: 1fr 70px !important; }
+        @media (max-width: 440px) {
+          .recent-trade-row { grid-template-columns: 1fr 52px 65px !important; }
           .recent-trade-row > div:nth-child(3) { display: none !important; }
         }
       `}</style>
