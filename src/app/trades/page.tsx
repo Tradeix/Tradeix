@@ -10,6 +10,8 @@ import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 
+const PAGE_SIZE = 6
+
 export default function TradesPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
@@ -17,10 +19,13 @@ export default function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
+  const isRTL = language === 'he'
 
-  useEffect(() => { if (activePortfolio) loadTrades() }, [activePortfolio, filter])
+  useEffect(() => { if (activePortfolio) { setPage(0); loadTrades(0) } }, [activePortfolio, filter])
 
   // Realtime subscription
   useEffect(() => {
@@ -28,24 +33,37 @@ export default function TradesPage() {
     const channel = supabase
       .channel('trades-page-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => {
-        loadTrades()
+        loadTrades(page)
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [activePortfolio])
+  }, [activePortfolio, page])
 
-  async function loadTrades() {
+  async function loadTrades(p: number) {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    let query = supabase.from('trades').select('*')
+    if (!user) { setLoading(false); return }
+    const from = p * PAGE_SIZE
+    let query = supabase.from('trades').select('*', { count: 'exact' })
       .eq('portfolio_id', activePortfolio!.id)
       .order('traded_at', { ascending: false })
-    if (filter !== 'all') query = query.eq('outcome', filter)
-    const { data } = await query
+      .range(from, from + PAGE_SIZE - 1)
+    if (filter !== 'all') query = (query as any).eq('outcome', filter)
+    const { data, count } = await query
     if (data) setTrades(data)
+    if (count !== null) setTotal(count)
     setLoading(false)
   }
+
+  function changePage(delta: number) {
+    const next = page + delta
+    setPage(next)
+    loadTrades(next)
+  }
+
+  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const canPrev = isRTL ? page < totalPages - 1 : page > 0
+  const canNext = isRTL ? page > 0 : page < totalPages - 1
 
   const FILTERS = [
     { key: 'all', label: tr.all, icon: 'receipt_long' },
@@ -55,7 +73,6 @@ export default function TradesPage() {
 
   const isLong = (d: string) => d === 'long'
 
-  // No portfolio state
   if (portfoliosLoaded && !activePortfolio) {
     return (
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
@@ -88,23 +105,48 @@ export default function TradesPage() {
         icon="receipt_long"
       />
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        {FILTERS.map(({ key, label, icon }) => (
-          <button key={key} onClick={() => setFilter(key as any)} style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '8px 18px', borderRadius: '12px', fontSize: '12px',
-            cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-            border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
-            background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(74,127,255,0.1)' : 'var(--bg3)',
-            color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#4a7fff' : 'var(--text3)',
-            transition: 'all 0.2s',
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
-            {label}
-            {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '10px' }}>{trades.length}</span>}
-          </button>
-        ))}
+      {/* Filters + pagination row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {FILTERS.map(({ key, label, icon }) => (
+            <button key={key} onClick={() => setFilter(key as any)} style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '8px 18px', borderRadius: '12px', fontSize: '12px',
+              cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
+              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
+              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(74,127,255,0.1)' : 'var(--bg3)',
+              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#4a7fff' : 'var(--text3)',
+              transition: 'all 0.2s',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
+              {label}
+              {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '10px' }}>{total}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* Pagination arrows */}
+        {total > PAGE_SIZE && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
+            </span>
+            <button
+              onClick={() => changePage(isRTL ? 1 : -1)}
+              disabled={!canPrev}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canPrev ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canPrev ? 1 : 0.25, transition: 'all 0.2s' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+            </button>
+            <button
+              onClick={() => changePage(isRTL ? -1 : 1)}
+              disabled={!canNext}
+              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNext ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNext ? 1 : 0.25, transition: 'all 0.2s' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Trades list */}
@@ -180,7 +222,7 @@ export default function TradesPage() {
         )}
       </div>
 
-      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades() }} />}
+      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 640px) {

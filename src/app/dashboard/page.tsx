@@ -63,14 +63,14 @@ export default function DashboardPage() {
     try {
       const startDate = getStartDate(timeFilter)
 
-      // Recent trades with pagination
-      const from = page * 10
+      // Recent trades with pagination (6 per page)
+      const from = page * 6
       const { data: tradeData, count } = await supabase
         .from('trades').select('*', { count: 'exact' })
         .eq('portfolio_id', activePortfolio!.id)
         .gte('traded_at', startDate)
         .order('traded_at', { ascending: false })
-        .range(from, from + 9)
+        .range(from, from + 5)
       if (tradeData) setTrades(tradeData)
       if (count !== null) setTradeTotal(count)
 
@@ -372,15 +372,15 @@ export default function DashboardPage() {
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
-          {tradeTotal > 10 && (() => {
-            const totalPages = Math.ceil(tradeTotal / 10)
+          {tradeTotal > 6 && (() => {
+            const totalPages = Math.ceil(tradeTotal / 6)
             const isRTL = language === 'he'
             const canPrev = isRTL ? tradePage < totalPages - 1 : tradePage > 0
             const canNext = isRTL ? tradePage > 0 : tradePage < totalPages - 1
             return (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
-                  {tradePage * 10 + 1}–{Math.min((tradePage + 1) * 10, tradeTotal)} / {tradeTotal}
+                  {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
                 </span>
                 <button
                   onClick={() => { const p = tradePage + (isRTL ? 1 : -1); setTradePage(p); loadData(p) }}

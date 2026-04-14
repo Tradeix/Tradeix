@@ -20,7 +20,7 @@ const MARKET_LABELS: Record<string, Record<string, string>> = {
   en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
 }
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 6
 
 interface PortfolioStats {
   totalTrades: number
