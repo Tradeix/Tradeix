@@ -53,15 +53,13 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
-        display: 'none', width: '36px', height: '36px',
+        display: 'none', width: '40px', height: '40px', flexShrink: 0,
         background: 'var(--bg3)', border: '1px solid var(--border)',
-        borderRadius: '50%', cursor: 'pointer',
-        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
-        color: 'var(--text)',
+        borderRadius: '12px', cursor: 'pointer',
+        alignItems: 'center', justifyContent: 'center',
+        color: 'var(--text2)',
       }}>
-        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
-        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
-        <span style={{ display: 'block', width: '14px', height: '1px', background: 'currentColor' }} />
+        <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>menu</span>
       </button>
 
       {/* Portfolio switcher — right side */}

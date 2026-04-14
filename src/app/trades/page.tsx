@@ -19,13 +19,14 @@ export default function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
+  const [timeFilter, setTimeFilter] = useState(0) // 0=all 1=daily 2=weekly 3=monthly
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
   const isRTL = language === 'he'
 
-  useEffect(() => { if (activePortfolio) { setPage(0); loadTrades(0) } }, [activePortfolio, filter])
+  useEffect(() => { if (activePortfolio) { setPage(0); loadTrades(0, filter, timeFilter) } }, [activePortfolio, filter, timeFilter])
 
   // Realtime subscription
   useEffect(() => {
@@ -33,13 +34,21 @@ export default function TradesPage() {
     const channel = supabase
       .channel('trades-page-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => {
-        loadTrades(page)
+        loadTrades(page, filter, timeFilter)
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [activePortfolio, page])
 
-  async function loadTrades(p: number) {
+  function getStartDate(f: number): string | null {
+    if (f === 0) return null
+    const now = new Date()
+    if (f === 1) { const d = new Date(now); d.setHours(0,0,0,0); return d.toISOString() }
+    if (f === 2) { const d = new Date(now); d.setDate(d.getDate()-7); d.setHours(0,0,0,0); return d.toISOString() }
+    return new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  }
+
+  async function loadTrades(p: number, outcomeFilter = filter, tf = timeFilter) {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
@@ -48,7 +57,9 @@ export default function TradesPage() {
       .eq('portfolio_id', activePortfolio!.id)
       .order('traded_at', { ascending: false })
       .range(from, from + PAGE_SIZE - 1)
-    if (filter !== 'all') query = (query as any).eq('outcome', filter)
+    if (outcomeFilter !== 'all') query = (query as any).eq('outcome', outcomeFilter)
+    const startDate = getStartDate(tf)
+    if (startDate) query = (query as any).gte('traded_at', startDate)
     const { data, count } = await query
     if (data) setTrades(data)
     if (count !== null) setTotal(count)
@@ -67,10 +78,14 @@ export default function TradesPage() {
   const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
   const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
 
-  const FILTERS = [
+  const OUTCOME_FILTERS = [
     { key: 'all', label: tr.all, icon: 'receipt_long' },
     { key: 'win', label: 'WIN', icon: 'trending_up' },
     { key: 'loss', label: 'LOSS', icon: 'trending_down' },
+  ]
+  const TIME_LABELS = [
+    language === 'he' ? 'הכל' : 'All',
+    tr.daily, tr.weekly, tr.monthly,
   ]
 
   const isLong = (d: string) => d === 'long'
@@ -107,48 +122,59 @@ export default function TradesPage() {
         icon="receipt_long"
       />
 
-      {/* Filters + pagination row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {FILTERS.map(({ key, label, icon }) => (
-            <button key={key} onClick={() => setFilter(key as any)} style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              padding: '8px 18px', borderRadius: '12px', fontSize: '12px',
+      {/* Filters + pagination — single row */}
+      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
+        {/* Left: outcome + time filters */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          {/* Outcome */}
+          {OUTCOME_FILTERS.map(({ key, label, icon }) => (
+            <button key={key} onClick={() => { setFilter(key as any); setPage(0) }} style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              padding: '7px 14px', borderRadius: '10px', fontSize: '11px',
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
               border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
               background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(74,127,255,0.1)' : 'var(--bg3)',
               color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#4a7fff' : 'var(--text3)',
               transition: 'all 0.2s',
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
               {label}
               {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '10px' }}>{total}</span>}
             </button>
           ))}
+
+          {/* Separator */}
+          <div style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
+
+          {/* Time filter pills */}
+          <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+            {TIME_LABELS.map((label, i) => (
+              <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
+                padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
+                cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
+                background: timeFilter === i ? '#4a7fff' : 'transparent',
+                color: timeFilter === i ? '#fff' : 'var(--text3)',
+                boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
+                transition: 'all 0.2s', whiteSpace: 'nowrap',
+              }}>{label}</button>
+            ))}
+          </div>
         </div>
 
-        {/* Pagination arrows */}
-        {total > PAGE_SIZE && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
-              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
-            </span>
-            <button
-              onClick={() => changePage(1)}
-              disabled={!canOlder}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
-            </button>
-            <button
-              onClick={() => changePage(-1)}
-              disabled={!canNewer}
-              style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
-            </button>
-          </div>
-        )}
+        {/* Right: pagination */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+            {total > 0 ? `${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, total)} / ${total}` : '0'}
+          </span>
+          <button onClick={() => changePage(1)} disabled={!canOlder}
+            style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
+          </button>
+          <button onClick={() => changePage(-1)} disabled={!canNewer}
+            style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
+          </button>
+        </div>
       </div>
 
       {/* Trades list */}
