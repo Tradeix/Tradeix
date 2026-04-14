@@ -376,8 +376,8 @@ export default function DashboardPage() {
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Time filter for trades */}
-            <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {/* Time filter + pagination — only when more than one page */}
+            {tradeTotal > 6 && <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
               {[tr.daily, tr.weekly, tr.monthly].map((label, i) => (
                 <button key={i} onClick={() => { setTradeTimeFilter(i); setTradePage(0); loadData(0, i) }} style={{
                   padding: '4px 12px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
@@ -388,9 +388,9 @@ export default function DashboardPage() {
                   transition: 'all 0.2s', whiteSpace: 'nowrap',
                 }}>{label}</button>
               ))}
-            </div>
+            </div>}
             {/* Pagination */}
-            {(() => {
+            {tradeTotal > 6 && (() => {
               const isRTL      = language === 'he'
               const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
               const canOlder   = tradePage < totalPages - 1
@@ -424,6 +424,7 @@ export default function DashboardPage() {
 
         <div style={{ padding: '8px 0' }}>
           {trades.length === 0 ? (
+
             <div style={{ padding: '40px', textAlign: 'center', opacity: 0.4 }}>
               <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--text3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 32" }}>receipt_long</span>
               <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{tr.noMoreTrades}</p>
@@ -496,8 +497,8 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Bottom pagination */}
-        {trades.length > 0 && (() => {
+        {/* Bottom pagination — only when more than one page */}
+        {tradeTotal > 6 && (() => {
           const isRTL      = language === 'he'
           const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
           const canOlder   = tradePage < totalPages - 1

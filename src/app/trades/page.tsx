@@ -143,26 +143,26 @@ export default function TradesPage() {
             </button>
           ))}
 
-          {/* Separator */}
-          <div style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
-
-          {/* Time filter pills */}
-          <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
-            {TIME_LABELS.map((label, i) => (
-              <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
-                padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
-                cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-                background: timeFilter === i ? '#4a7fff' : 'transparent',
-                color: timeFilter === i ? '#fff' : 'var(--text3)',
-                boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
-                transition: 'all 0.2s', whiteSpace: 'nowrap',
-              }}>{label}</button>
-            ))}
-          </div>
+          {/* Separator + time filter — only when more than one page */}
+          {total > PAGE_SIZE && <>
+            <div style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
+            <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+              {TIME_LABELS.map((label, i) => (
+                <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
+                  padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
+                  cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
+                  background: timeFilter === i ? '#4a7fff' : 'transparent',
+                  color: timeFilter === i ? '#fff' : 'var(--text3)',
+                  boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
+                  transition: 'all 0.2s', whiteSpace: 'nowrap',
+                }}>{label}</button>
+              ))}
+            </div>
+          </>}
         </div>
 
-        {/* Right: pagination */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Right: pagination — only when more than one page */}
+        {total > PAGE_SIZE && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap' }}>
             {total > 0 ? `${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, total)} / ${total}` : '0'}
           </span>
@@ -174,7 +174,7 @@ export default function TradesPage() {
             style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
           </button>
-        </div>
+        </div>}
       </div>
 
       {/* Trades list */}
