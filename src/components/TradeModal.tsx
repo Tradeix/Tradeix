@@ -32,6 +32,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     traded_at: trade.traded_at ? new Date(trade.traded_at).toISOString().split('T')[0] : '',
   })
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
+  const [lightbox, setLightbox] = useState(false)
   const { language } = useApp()
   const tr = t[language]
   const supabase = createClient()
@@ -183,7 +184,15 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           <div style={{ marginBottom: '20px' }}>
             {imageUrl ? (
               <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <img src={imageUrl} alt="chart" style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: 'var(--bg)' }} />
+                <img
+                  src={imageUrl} alt="chart"
+                  onClick={() => setLightbox(true)}
+                  style={{ width: '100%', maxHeight: '220px', objectFit: 'contain', display: 'block', background: 'var(--bg)', cursor: 'zoom-in' }}
+                />
+                {/* Zoom hint */}
+                <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '4px 8px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
+                </div>
                 <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
                   <div {...getRootProps()}>
                     <input {...getInputProps()} />
@@ -401,9 +410,50 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           from { opacity: 0; transform: translate(-50%, -48%); }
           to { opacity: 1; transform: translate(-50%, -50%); }
         }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-up { animation: fadeUp 0.2s ease; }
       `}</style>
+
+      {/* Lightbox */}
+      {lightbox && imageUrl && (
+        <div
+          onClick={() => setLightbox(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 500,
+            background: 'rgba(0,0,0,0.92)',
+            backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            animation: 'fadeIn 0.2s ease',
+            cursor: 'zoom-out',
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightbox(false)}
+            style={{
+              position: 'absolute', top: '20px', right: '20px',
+              width: '40px', height: '40px', borderRadius: '12px',
+              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+              color: '#fff', fontSize: '16px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 501,
+            }}
+          >✕</button>
+
+          <img
+            src={imageUrl}
+            alt="chart"
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: '94vw', maxHeight: '90vh',
+              objectFit: 'contain', borderRadius: '12px',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.8)',
+              cursor: 'default',
+            }}
+          />
+        </div>
+      )}
     </>
   )
 }
