@@ -270,7 +270,7 @@ export default function AddTradePage() {
             {!isManual && imagePreview && tradeData.symbol && (
               <div style={{ background: 'linear-gradient(135deg, #1a3a8f22, #7c3aed22)', border: '1px solid #4a7fff44', borderRadius: 'var(--radius)', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
                 <div style={{ width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0, background: 'linear-gradient(135deg, var(--blue), var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>✦</div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>{language === 'he' ? 'ניתוח AI הושלם' : 'AI Analysis Complete'}</div>
                   <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
                     {tradeData.symbol} • {tradeData.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {language === 'he' ? 'כניסה' : 'Entry'}: {tradeData.entry_price}
@@ -281,12 +281,20 @@ export default function AddTradePage() {
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {!isManual && imagePreview && tradeData.symbol && (
-              <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)', marginBottom: '16px' }}>
-                <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                {/* PNL — bold, updates as user types */}
+                <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '3px' }}>P&L</div>
+                  <div style={{
+                    fontSize: '22px', fontWeight: '900',
+                    color: tradeData.pnl
+                      ? parseFloat(tradeData.pnl) >= 0 ? '#10b981' : '#ef4444'
+                      : 'var(--text3)',
+                  }}>
+                    {tradeData.pnl
+                      ? (parseFloat(tradeData.pnl) >= 0 ? '+' : '') + tradeData.pnl + '$'
+                      : '—'}
+                  </div>
+                </div>
               </div>
             )}
 
