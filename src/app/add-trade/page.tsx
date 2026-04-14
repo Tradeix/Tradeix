@@ -32,6 +32,7 @@ export default function AddTradePage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [aiConfidence, setAiConfidence] = useState(0)
   const [aiRaw, setAiRaw] = useState('')
+  const [pnlError, setPnlError] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long',
@@ -131,7 +132,9 @@ export default function AddTradePage() {
   }
 
   async function handleSubmit() {
-    if (!tradeData.symbol || !tradeData.entry_price || !tradeData.stop_loss || !tradeData.take_profit) {
+    const missingPnl = !tradeData.pnl || tradeData.pnl.trim() === ''
+    if (missingPnl) setPnlError(true)
+    if (!tradeData.symbol || !tradeData.entry_price || !tradeData.stop_loss || !tradeData.take_profit || missingPnl) {
       toast.error(language === 'he' ? 'נא למלא את כל השדות' : 'Please fill all fields')
       return
     }
@@ -345,8 +348,21 @@ export default function AddTradePage() {
                     <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.pnl}</label>
-                    <input value={tradeData.pnl} onChange={e => setTradeData(p => ({ ...p, pnl: e.target.value }))} placeholder="+320 / -150" />
+                    <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
+                      {tr.pnl} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      value={tradeData.pnl}
+                      onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
+                      placeholder="+320 / -150"
+                      style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                    />
+                    {pnlError && (
+                      <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
+                        {language === 'he' ? 'שדה חובה' : 'Required field'}
+                      </div>
+                    )}
                   </div>
                 </div>
 
