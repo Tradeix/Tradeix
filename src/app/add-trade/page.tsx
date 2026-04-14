@@ -33,6 +33,8 @@ export default function AddTradePage() {
   const [aiConfidence, setAiConfidence] = useState(0)
   const [aiRaw, setAiRaw] = useState('')
   const [pnlError, setPnlError] = useState(false)
+  const [lightbox, setLightbox] = useState(false)
+  const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long',
@@ -85,6 +87,14 @@ export default function AddTradePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Analysis failed')
       if (data.error) throw new Error(data.error)
+      // Detect which fields the AI couldn't identify
+      const missing: string[] = []
+      if (!data.symbol) missing.push(language === 'he' ? 'שם הצמד' : 'Symbol')
+      if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
+      if (data.stop_loss == null) missing.push('Stop Loss')
+      if (data.take_profit == null) missing.push('Take Profit')
+      setAiMissingFields(missing)
+
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
@@ -307,11 +317,34 @@ export default function AddTradePage() {
                 <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? tr.manualMode : tr.editableMode}</div>
               </div>
               <div style={{ padding: '20px' }}>
+                {/* Missing fields warning */}
+                {aiMissingFields.length > 0 && (
+                  <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#f59e0b', flexShrink: 0, fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>warning</span>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', marginBottom: '3px' }}>
+                        {language === 'he' ? 'ה-AI לא הצליח לזהות:' : 'AI could not identify:'}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: '600' }}>
+                        {aiMissingFields.join(' • ')} — {language === 'he' ? 'נא למלא ידנית' : 'please fill manually'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Image upload */}
                 <div style={{ marginBottom: '20px' }}>
                   {imagePreview ? (
                     <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <img src={imagePreview} alt="גרף" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', background: '#000' }} />
+                      <img
+                        src={imagePreview} alt="גרף"
+                        onClick={() => setLightbox(true)}
+                        style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', background: '#000', cursor: 'zoom-in' }}
+                      />
+                      {/* Zoom hint */}
+                      <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '4px 8px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
+                      </div>
                       <button onClick={() => { setImageFile(null); setImagePreview(null) }} style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
                         {language === 'he' ? '✕ הסר' : '✕ Remove'}
                       </button>
@@ -402,7 +435,18 @@ export default function AddTradePage() {
         )}
       </div>
 
-      <style>{'@keyframes spin { to { transform: rotate(360deg); } }'}</style>
+      <style>{'@keyframes spin { to { transform: rotate(360deg); } } @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }'}</style>
+
+      {/* Image lightbox */}
+      {lightbox && imagePreview && (
+        <div
+          onClick={() => setLightbox(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
+        >
+          <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
+          <img src={imagePreview} alt="גרף" onClick={e => e.stopPropagation()} style={{ maxWidth: '94vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', cursor: 'default' }} />
+        </div>
+      )}
     </div>
   )
 }
