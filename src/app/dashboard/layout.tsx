@@ -193,6 +193,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   ]
   const BOTTOM_NAV = [
     { href: '/portfolios', icon: 'folder_open', label: tr.portfolioSettings },
+    { href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' },
     { href: '/settings', icon: 'manage_accounts', label: tr.personalSettings },
   ]
 
