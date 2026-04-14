@@ -81,12 +81,13 @@ export default function AddTradePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64, mediaType: file.type }),
       })
-      if (!res.ok) throw new Error()
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Analysis failed')
+      if (data.error) throw new Error(data.error)
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
-        direction: data.direction || 'long',
+        direction: data.direction === 'short' ? 'short' : 'long',
         entry_price: data.entry_price?.toString() || '',
         stop_loss: data.stop_loss?.toString() || '',
         take_profit: data.take_profit?.toString() || '',
@@ -94,10 +95,15 @@ export default function AddTradePage() {
       setAiConfidence(data.confidence || 85)
       setAiRaw(data.analysis || '')
       setStep(3)
-    } catch {
-      toast.error(language === 'he' ? 'שגיאה בניתוח — מלא ידנית' : 'Analysis failed — fill manually')
-      setImageFile(null)
-      setImagePreview(null)
+    } catch (err: any) {
+      const msg = err.message || ''
+      const isKeyMissing = msg.includes('API key') || msg.includes('authentication') || msg.includes('401')
+      toast.error(
+        language === 'he'
+          ? isKeyMissing ? 'מפתח API חסר — מלא ידנית' : 'שגיאה בניתוח — מלא ידנית'
+          : isKeyMissing ? 'API key missing — fill manually' : 'Analysis failed — fill manually'
+      )
+      // Keep image and go to step 3 so user can fill manually with the image visible
       setStep(3)
     }
   }
