@@ -428,72 +428,77 @@ export default function DashboardPage() {
               <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--text3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 32" }}>receipt_long</span>
               <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{tr.noMoreTrades}</p>
             </div>
-          ) : trades.map((trade, idx) => (
-            <div
-              key={trade.id}
-              onClick={() => setSelectedTrade(trade)}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 70px 100px 80px 80px', alignItems: 'center', gap: '8px', padding: '14px 28px', cursor: 'pointer', transition: 'background 0.15s', borderBottom: idx < trades.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}
-              onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
-              onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
-              className="recent-trade-row"
-            >
-              {/* Pair */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          ) : trades.map((trade, idx) => {
+            const isWin = trade.outcome === 'win'
+            const winColor = '#10b981'
+            const lossColor = '#ef4444'
+            const outcomeColor = isWin ? winColor : lossColor
+            const d = new Date(trade.traded_at)
+            const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getFullYear()).slice(2)}`
+            const pnlStr = isWin ? `$${trade.pnl}+` : `${Math.abs(trade.pnl)}-$`
+            return (
+              <div
+                key={trade.id}
+                onClick={() => setSelectedTrade(trade)}
+                style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 24px', cursor: 'pointer', transition: 'background 0.15s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none' }}
+                onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
+                className="recent-trade-row"
+              >
+                {/* WIN/LOSS badge */}
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
-                  background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                  padding: '5px 11px', borderRadius: '20px', flexShrink: 0,
+                  background: isWin ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
+                  border: `1px solid ${isWin ? 'rgba(16,185,129,0.28)' : 'rgba(239,68,68,0.28)'}`,
+                  color: outcomeColor, fontSize: '11px', fontWeight: '800',
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  minWidth: '66px', justifyContent: 'center', letterSpacing: '0.04em',
+                }}>
+                  {isWin ? 'WIN' : 'LOSS'}
+                  <span style={{ fontSize: '12px' }}>{isWin ? '✓' : '✕'}</span>
+                </div>
+
+                {/* Date */}
+                <div className="trade-col-date">
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>{dateStr}</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>{tr.dateLabel}</div>
+                </div>
+
+                {/* P&L */}
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: '900', color: outcomeColor }}>{pnlStr}</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
+                </div>
+
+                {/* RR */}
+                <div className="trade-col-rr">
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: PRIMARY }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
+                </div>
+
+                {/* Spacer */}
+                <div style={{ flex: 1 }} />
+
+                {/* Symbol */}
+                <div style={{ textAlign: 'end' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{trade.symbol}</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>{tr.pair}</div>
+                </div>
+
+                {/* Chart button */}
+                <div style={{
+                  width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
+                  background: isWin ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
+                  border: `1px solid ${isWin ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px', color: outcomeColor, fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
                     {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
                   </span>
                 </div>
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {tr.pair}
-                  </div>
-                </div>
               </div>
-
-              {/* RR */}
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '13px', fontWeight: '800', color: PRIMARY }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
-              </div>
-
-              {/* P&L */}
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                  {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
-                </div>
-                <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
-              </div>
-
-              {/* Date */}
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>
-                  {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}
-                </div>
-                <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>{tr.dateLabel}</div>
-              </div>
-
-              {/* Status */}
-              <div style={{ textAlign: 'center' }}>
-                <span style={{
-                  padding: '4px 10px', borderRadius: '999px',
-                  background: trade.outcome === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  color: trade.outcome === 'win' ? '#22c55e' : '#ef4444',
-                  fontSize: '10px', fontWeight: '900',
-                  border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                  whiteSpace: 'nowrap',
-                }}>
-                  {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
-                </span>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Bottom pagination */}
@@ -537,18 +542,16 @@ export default function DashboardPage() {
         @media (max-width: 768px) {
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .winrate-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 80px 52px 65px !important; padding: 14px 16px !important; }
-          .recent-trade-row > div:nth-child(2) { display: none !important; }
+          .recent-trade-row { gap: 10px !important; padding: 12px 14px !important; }
+          .trade-col-rr { display: none !important; }
           .time-filter-bar button { padding: 5px 10px !important; font-size: 10px !important; }
         }
         @media (max-width: 540px) {
           .stats-hero { grid-template-columns: 1fr !important; }
+          .recent-trade-row { gap: 8px !important; padding: 10px 12px !important; }
+          .trade-col-date { display: none !important; }
           .time-filter-bar button { padding: 5px 8px !important; font-size: 9px !important; }
           .trade-filter-pills button { padding: 3px 8px !important; font-size: 9px !important; }
-        }
-        @media (max-width: 440px) {
-          .recent-trade-row { grid-template-columns: 1fr 52px 65px !important; }
-          .recent-trade-row > div:nth-child(3) { display: none !important; }
         }
       `}</style>
     </div>
