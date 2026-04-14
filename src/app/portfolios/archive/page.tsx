@@ -351,30 +351,6 @@ export default function ArchivePage() {
                       ))}
                     </div>
 
-                    {/* Bottom pagination */}
-                    {totalPages > 1 && (
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '14px' }}>
-                        <button
-                          onClick={() => changePage(p.id, isRTL ? 1 : -1)}
-                          disabled={isRTL ? page >= totalPages - 1 : page === 0}
-                          style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '7px 16px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', opacity: (isRTL ? page >= totalPages - 1 : page === 0) ? 0.35 : 1, transition: 'all 0.2s' }}
-                        >
-                          <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
-                          {language === 'he' ? 'הבא' : 'Prev'}
-                        </button>
-                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700' }}>
-                          {page + 1} / {totalPages}
-                        </span>
-                        <button
-                          onClick={() => changePage(p.id, isRTL ? -1 : 1)}
-                          disabled={isRTL ? page === 0 : page >= totalPages - 1}
-                          style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '7px 16px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', opacity: (isRTL ? page === 0 : page >= totalPages - 1) ? 0.35 : 1, transition: 'all 0.2s' }}
-                        >
-                          {language === 'he' ? 'הקודם' : 'Next'}
-                          <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
