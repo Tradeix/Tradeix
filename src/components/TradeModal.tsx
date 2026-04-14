@@ -172,6 +172,20 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {tr.editBtn}
               </button>
             )}
+            {!editing && (
+              <button onClick={() => setConfirmDelete(true)} style={{
+                width: '32px', height: '32px', borderRadius: '8px',
+                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                color: '#ef4444', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.2s',
+              }}
+                onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.18)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)' }}
+                onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.2)' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
+              </button>
+            )}
             <button onClick={onClose} style={{
               width: '32px', height: '32px', borderRadius: '8px',
               background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
@@ -373,51 +387,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             </div>
           )}
 
-          {/* DELETE */}
-          {!editing && (
-            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} style={{
-                  width: '100%', background: 'rgba(239,68,68,0.06)',
-                  border: '1px solid rgba(239,68,68,0.15)',
-                  borderRadius: '12px', padding: '10px',
-                  fontSize: '12px', fontWeight: '700', color: 'rgba(239,68,68,0.6)',
-                  cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  transition: 'all 0.2s',
-                }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.06)'; e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.15)' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
-                  {tr.removeTradeBtn}
-                </button>
-              ) : (
-                <div style={{ ...glass, padding: '16px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }} className="fade-up">
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#ef4444', marginBottom: '12px', textAlign: 'center' }}>
-                    {tr.removeTrdeConfirm}
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={handleDelete} disabled={deleting} style={{
-                      flex: 1, background: '#ef4444', color: '#fff',
-                      border: 'none', borderRadius: '10px', padding: '10px',
-                      fontSize: '13px', fontWeight: '700', cursor: deleting ? 'wait' : 'pointer',
-                      fontFamily: 'Heebo, sans-serif', opacity: deleting ? 0.7 : 1,
-                    }}>
-                      {deleting ? tr.removing : tr.removeYes}
-                    </button>
-                    <button onClick={() => setConfirmDelete(false)} style={{
-                      flex: 1, background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '10px', padding: '10px',
-                      fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.5)',
-                      cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                    }}>{tr.cancel}</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
@@ -430,6 +399,31 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-up { animation: fadeUp 0.2s ease; }
       `}</style>
+
+      {/* Delete confirmation overlay */}
+      {confirmDelete && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.15s ease' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '20px', padding: '28px 28px 24px', width: '90%', maxWidth: '340px', boxShadow: '0 24px 60px rgba(0,0,0,0.6)', fontFamily: 'Heebo, sans-serif', animation: 'fadeUp 0.2s ease', position: 'relative', top: 0, left: 0, transform: 'none' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '22px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
+            </div>
+            <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--text)', textAlign: 'center', marginBottom: '8px' }}>
+              {language === 'he' ? 'מחיקת עסקה' : 'Delete Trade'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', textAlign: 'center', marginBottom: '24px', lineHeight: 1.5 }}>
+              {language === 'he' ? `האם אתה בטוח שברצונך למחוק את עסקת ${trade.symbol}? פעולה זו אינה ניתנת לביטול.` : `Are you sure you want to delete the ${trade.symbol} trade? This cannot be undone.`}
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={handleDelete} disabled={deleting} style={{ flex: 1, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '800', cursor: deleting ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', opacity: deleting ? 0.7 : 1 }}>
+                {deleting ? (language === 'he' ? 'מוחק...' : 'Deleting...') : (language === 'he' ? 'מחק' : 'Delete')}
+              </button>
+              <button onClick={() => setConfirmDelete(false)} style={{ flex: 1, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+                {language === 'he' ? 'ביטול' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       {lightbox && imageUrl && (
