@@ -184,7 +184,7 @@ export default function ArchivePage() {
               <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', overflow: 'hidden', transition: 'all 0.3s' }}>
 
                 {/* Main row */}
-                <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div className="archive-main-row" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0, background: `${color}15`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', opacity: 0.7 }}>
                     {MARKET_ICONS[p.market_type] || '📊'}
                   </div>
@@ -205,7 +205,7 @@ export default function ArchivePage() {
 
                   {/* Stats summary */}
                   {s && (
-                    <div style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
+                    <div className="archive-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
                       <div style={{ fontSize: '16px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
                         {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
                       </div>
@@ -214,19 +214,19 @@ export default function ArchivePage() {
                   )}
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="archive-actions" style={{ display: 'flex', gap: '8px', marginInlineStart: 'auto' }}>
                     {/* Stats toggle */}
                     <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(74,127,255,0.3)' : 'var(--border)'}`, color: isExpanded ? '#4a7fff' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                       <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{isExpanded ? 'expand_less' : 'bar_chart'}</span>
                     </button>
 
                     {/* Restore */}
-                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
+                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} className="archive-restore-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
                       onMouseOver={e => e.currentTarget.style.background = 'rgba(16,185,129,0.15)'}
                       onMouseOut={e => e.currentTarget.style.background = 'rgba(16,185,129,0.08)'}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>restore</span>
-                      {language === 'he' ? 'שחזר' : 'Restore'}
+                      <span className="restore-label">{language === 'he' ? 'שחזר' : 'Restore'}</span>
                     </button>
 
                     {/* Delete forever */}
@@ -244,7 +244,7 @@ export default function ArchivePage() {
                   <div style={{ borderTop: '1px solid var(--border)', padding: '20px' }}>
 
                     {/* Stats grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                    <div className="archive-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
                       {[
                         { label: language === 'he' ? 'עסקאות' : 'Trades', value: s.totalTrades, color: 'var(--text2)' },
                         { label: language === 'he' ? 'ניצחונות' : 'Wins', value: s.wins, color: '#22c55e' },
@@ -304,7 +304,7 @@ export default function ArchivePage() {
                           {language === 'he' ? 'אין עסקאות בתיק זה' : 'No trades in this portfolio'}
                         </div>
                       ) : trades.map((trade, idx) => (
-                        <div key={trade.id} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px 70px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
+                        <div key={trade.id} className="archive-trade-row" style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px 70px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
                           onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                           onMouseOut={e => e.currentTarget.style.background = 'transparent'}
                         >
@@ -365,7 +365,22 @@ export default function ArchivePage() {
         </div>
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 640px) {
+          .archive-main-row { padding: 12px 14px !important; gap: 10px !important; }
+          .archive-pnl { padding-inline: 10px !important; }
+          .archive-restore-btn { padding: 7px 10px !important; }
+          .restore-label { display: none; }
+          .archive-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .archive-trade-row { grid-template-columns: 1fr 90px 65px !important; }
+          .archive-trade-row > div:nth-child(3),
+          .archive-trade-row > div:nth-child(4) { display: none !important; }
+        }
+        @media (max-width: 440px) {
+          .archive-pnl { display: none !important; }
+        }
+      `}</style>
     </div>
   )
 }

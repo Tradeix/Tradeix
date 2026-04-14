@@ -9,10 +9,10 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, subtitle, icon, action }: PageHeaderProps) {
   return (
-    <div style={{
+    <div className="page-header-row" style={{
       display: 'flex', justifyContent: 'space-between',
       alignItems: 'flex-end', marginBottom: '32px',
-      position: 'relative',
+      position: 'relative', flexWrap: 'wrap', gap: '12px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         {icon && (
@@ -31,7 +31,7 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
         )}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{
+            <h2 className="page-header-title" style={{
               fontSize: '28px', fontWeight: '900',
               letterSpacing: '-0.02em', margin: 0,
               color: 'var(--text)',

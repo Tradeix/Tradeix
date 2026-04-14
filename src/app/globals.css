@@ -81,6 +81,19 @@ select option { background: var(--bg2); color: var(--text); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ══════════════════════════════════════
+   RESPONSIVE — mobile fixes
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* PageHeader */
+  .page-header-row { margin-bottom: 20px !important; }
+  .page-header-title { font-size: 20px !important; }
+
+  /* Portfolios page — general grids */
+  .settings-grid { grid-template-columns: 1fr !important; }
+  .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ══════════════════════════════════════
    LIGHT MODE — glassmorphism overrides
    ══════════════════════════════════════ */
 [data-theme="light"] body {

@@ -145,7 +145,7 @@ export default function DashboardPage() {
           <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
           <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
         </div>
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px' }}>
+        <div className="time-filter-bar" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px' }}>
           {TIME_FILTERS.map((label, i) => (
             <button key={i} onClick={() => setTimeFilter(i)} style={{
               padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: '700',
@@ -377,7 +377,7 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* Time filter for trades */}
-            <div style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
               {[tr.daily, tr.weekly, tr.monthly].map((label, i) => (
                 <button key={i} onClick={() => { setTradeTimeFilter(i); setTradePage(0); loadData(0, i) }} style={{
                   padding: '4px 12px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
@@ -535,10 +535,16 @@ export default function DashboardPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
-          .stats-hero { grid-template-columns: 1fr !important; }
+          .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .winrate-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
           .recent-trade-row { grid-template-columns: 1fr 80px 52px 65px !important; padding: 14px 16px !important; }
           .recent-trade-row > div:nth-child(2) { display: none !important; }
+          .time-filter-bar button { padding: 5px 10px !important; font-size: 10px !important; }
+        }
+        @media (max-width: 540px) {
+          .stats-hero { grid-template-columns: 1fr !important; }
+          .time-filter-bar button { padding: 5px 8px !important; font-size: 9px !important; }
+          .trade-filter-pills button { padding: 3px 8px !important; font-size: 9px !important; }
         }
         @media (max-width: 440px) {
           .recent-trade-row { grid-template-columns: 1fr 52px 65px !important; }
