@@ -57,11 +57,11 @@ export default function PortfoliosPage() {
     if (editingId) {
       const { error } = await supabase.from('portfolios').update({ name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, color: form.color }).eq('id', editingId)
       if (error) toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Update error')
-      else toast.success(language === 'he' ? 'התיק עודכן ✓' : 'Portfolio updated ✓')
+      else toast.success(language === 'he' ? 'התיק עודכן' : 'Portfolio updated')
     } else {
       const { error } = await supabase.from('portfolios').insert({ user_id: user.id, name: form.name, market_type: form.market_type, initial_capital: parseFloat(form.initial_capital) || 0, currency: 'USD', color: form.color, archived: false })
       if (error) toast.error(language === 'he' ? 'שגיאה ביצירת תיק' : 'Error creating portfolio')
-      else toast.success(language === 'he' ? 'תיק נוצר ✓' : 'Portfolio created ✓')
+      else toast.success(language === 'he' ? 'תיק נוצר' : 'Portfolio created')
     }
     setSaving(false); setShowForm(false); setEditingId(null)
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
@@ -71,13 +71,13 @@ export default function PortfoliosPage() {
   async function handleArchive(id: string) {
     const { error } = await supabase.from('portfolios').update({ archived: true }).eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
-    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון ✓' : 'Portfolio archived ✓'); loadPortfolios() }
+    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived'); loadPortfolios() }
   }
 
   async function handleDelete(id: string) {
     const { error } = await supabase.from('portfolios').delete().eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
-    else { toast.success(language === 'he' ? 'התיק נמחק ✓' : 'Portfolio deleted ✓'); setConfirmDelete(null); loadPortfolios() }
+    else { toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted'); setConfirmDelete(null); loadPortfolios() }
   }
 
   function startEdit(p: Portfolio) {

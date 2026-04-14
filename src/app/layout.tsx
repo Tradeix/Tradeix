@@ -17,31 +17,43 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </AppProvider>
         <Toaster
           position="top-center"
-          gutter={12}
+          gutter={10}
           toastOptions={{
-            duration: 3500,
+            duration: 3000,
             style: {
-              background: '#1a1d26',
-              color: '#e8eaf6',
-              border: '1px solid #363d55',
-              fontFamily: 'Rubik, sans-serif',
+              background: 'rgba(20,23,34,0.92)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              color: '#e5e2e1',
+              border: '1px solid rgba(255,255,255,0.08)',
+              fontFamily: 'Heebo, sans-serif',
               fontSize: '14px',
-              fontWeight: '500',
-              padding: '14px 20px',
-              borderRadius: '12px',
-              boxShadow: '0 8px 32px #00000066',
-              minWidth: '280px',
-              maxWidth: '420px',
+              fontWeight: '600',
+              padding: '13px 18px',
+              borderRadius: '14px',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+              minWidth: '240px',
+              maxWidth: '380px',
               direction: 'rtl',
-              textAlign: 'right',
+              gap: '10px',
             },
             success: {
-              style: { background: '#0d2218', border: '1px solid #10b98144', color: '#e8eaf6' },
-              iconTheme: { primary: '#10b981', secondary: '#0d2218' },
+              style: {
+                background: 'rgba(16,185,129,0.12)',
+                border: '1px solid rgba(16,185,129,0.3)',
+                color: '#e5e2e1',
+                fontFamily: 'Heebo, sans-serif',
+              },
+              iconTheme: { primary: '#10b981', secondary: 'rgba(16,185,129,0.15)' },
             },
             error: {
-              style: { background: '#200f0f', border: '1px solid #ef444444', color: '#e8eaf6' },
-              iconTheme: { primary: '#ef4444', secondary: '#200f0f' },
+              style: {
+                background: 'rgba(239,68,68,0.12)',
+                border: '1px solid rgba(239,68,68,0.3)',
+                color: '#e5e2e1',
+                fontFamily: 'Heebo, sans-serif',
+              },
+              iconTheme: { primary: '#ef4444', secondary: 'rgba(239,68,68,0.15)' },
             },
           }}
         />

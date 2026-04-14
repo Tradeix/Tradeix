@@ -187,7 +187,7 @@ export default function AddTradePage() {
         outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
       })
       if (error) throw error
-      toast.success(language === 'he' ? 'העסקה הועלתה! ✓' : 'Trade added! ✓')
+      toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
       router.push('/dashboard')
     } catch (err: any) {
       toast.error(err.message || (language === 'he' ? 'שגיאה' : 'Error'))

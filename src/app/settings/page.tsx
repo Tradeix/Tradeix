@@ -36,7 +36,7 @@ export default function SettingsPage() {
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
       setAvatarUrl(data.publicUrl)
       await supabase.auth.updateUser({ data: { avatar_url: data.publicUrl } })
-      toast.success('תמונת פרופיל עודכנה ✓')
+      toast.success('תמונת פרופיל עודכנה')
     } catch {
       toast.error('שגיאה בהעלאת התמונה')
     } finally {
@@ -50,7 +50,7 @@ export default function SettingsPage() {
     try {
       await supabase.auth.updateUser({ data: { full_name: nickname } })
       await supabase.from('profiles').update({ full_name: nickname }).eq('id', user.id)
-      toast.success('הפרטים נשמרו ✓')
+      toast.success('הפרטים נשמרו')
     } catch {
       toast.error('שגיאה בשמירה')
     } finally {

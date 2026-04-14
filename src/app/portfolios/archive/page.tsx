@@ -103,13 +103,13 @@ export default function ArchivePage() {
   async function handleRestore(id: string) {
     const { error } = await supabase.from('portfolios').update({ archived: false }).eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה בשחזור' : 'Restore error')
-    else { toast.success(language === 'he' ? 'התיק שוחזר ✓' : 'Portfolio restored ✓'); loadArchived() }
+    else { toast.success(language === 'he' ? 'התיק שוחזר' : 'Portfolio restored'); loadArchived() }
   }
 
   async function handleDelete(id: string) {
     const { error } = await supabase.from('portfolios').delete().eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
-    else { toast.success(language === 'he' ? 'התיק נמחק לצמיתות ✓' : 'Portfolio deleted forever ✓'); setConfirmDelete(null); loadArchived() }
+    else { toast.success(language === 'he' ? 'התיק נמחק לצמיתות' : 'Portfolio deleted forever'); setConfirmDelete(null); loadArchived() }
   }
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'

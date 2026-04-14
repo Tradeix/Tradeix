@@ -52,7 +52,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       const { data } = supabase.storage.from('trade-images').getPublicUrl(path)
       setImageUrl(data.publicUrl)
       await supabase.from('trades').update({ image_url: data.publicUrl }).eq('id', trade.id)
-      toast.success(language === 'he' ? 'התמונה הועלתה ✓' : 'Image uploaded ✓')
+      toast.success(language === 'he' ? 'התמונה הועלתה' : 'Image uploaded')
       onUpdate()
     } catch { toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Upload failed') }
     finally { setUploadingImage(false) }
@@ -90,7 +90,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
       }).eq('id', trade.id)
       if (error) throw error
-      toast.success(language === 'he' ? 'העסקה עודכנה ✓' : 'Trade updated ✓')
+      toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
       setEditing(false)
       onUpdate()
     } catch { toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed') }
@@ -102,7 +102,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     try {
       const { error } = await supabase.from('trades').delete().eq('id', trade.id)
       if (error) throw error
-      toast.success(language === 'he' ? 'העסקה הוסרה ✓' : 'Trade removed ✓')
+      toast.success(language === 'he' ? 'העסקה הוסרה' : 'Trade removed')
       onUpdate()
       onClose()
     } catch { toast.error(language === 'he' ? 'שגיאה בהסרה' : 'Delete failed') }
