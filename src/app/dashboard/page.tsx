@@ -18,6 +18,8 @@ export default function DashboardPage() {
   const tr = t[language]
   const [timeFilter, setTimeFilter] = useState(2) // 0=daily 1=weekly 2=monthly 3=yearly — default: monthly
   const [trades, setTrades] = useState<Trade[]>([])
+  const [tradePage, setTradePage] = useState(0)
+  const [tradeTotal, setTradeTotal] = useState(0)
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [stats, setStats] = useState<Stats>({
     totalTrades: 0, wins: 0, losses: 0, winRate: 0,
@@ -41,7 +43,9 @@ export default function DashboardPage() {
     }
   }
 
-  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio, timeFilter])
+  useEffect(() => {
+    if (activePortfolio) { setTradePage(0); loadData(0) }
+  }, [activePortfolio, timeFilter])
 
   // Realtime subscription
   useEffect(() => {
@@ -49,23 +53,26 @@ export default function DashboardPage() {
     const channel = supabase
       .channel('dashboard-trades')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => {
-        loadData()
+        loadData(0); setTradePage(0)
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [activePortfolio])
 
-  async function loadData() {
-        try {
+  async function loadData(page = 0) {
+    try {
       const startDate = getStartDate(timeFilter)
 
-      // Recent 10 trades (filtered by time)
-      const { data: tradeData } = await supabase
-        .from('trades').select('*')
+      // Recent trades with pagination
+      const from = page * 10
+      const { data: tradeData, count } = await supabase
+        .from('trades').select('*', { count: 'exact' })
         .eq('portfolio_id', activePortfolio!.id)
         .gte('traded_at', startDate)
-        .order('traded_at', { ascending: false }).limit(10)
+        .order('traded_at', { ascending: false })
+        .range(from, from + 9)
       if (tradeData) setTrades(tradeData)
+      if (count !== null) setTradeTotal(count)
 
       // Stats (filtered by time)
       const { data: all } = await supabase
@@ -365,6 +372,33 @@ export default function DashboardPage() {
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
+          {tradeTotal > 10 && (() => {
+            const totalPages = Math.ceil(tradeTotal / 10)
+            const isRTL = language === 'he'
+            const canPrev = isRTL ? tradePage < totalPages - 1 : tradePage > 0
+            const canNext = isRTL ? tradePage > 0 : tradePage < totalPages - 1
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+                  {tradePage * 10 + 1}–{Math.min((tradePage + 1) * 10, tradeTotal)} / {tradeTotal}
+                </span>
+                <button
+                  onClick={() => { const p = tradePage + (isRTL ? 1 : -1); setTradePage(p); loadData(p) }}
+                  disabled={!canPrev}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canPrev ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canPrev ? 1 : 0.25, transition: 'all 0.2s' }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                </button>
+                <button
+                  onClick={() => { const p = tradePage + (isRTL ? -1 : 1); setTradePage(p); loadData(p) }}
+                  disabled={!canNext}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNext ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNext ? 1 : 0.25, transition: 'all 0.2s' }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                </button>
+              </div>
+            )
+          })()}
         </div>
 
         <div style={{ padding: '8px 0' }}>
