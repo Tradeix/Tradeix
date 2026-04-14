@@ -33,21 +33,28 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: `You are a professional trading chart analyzer. Analyze this trading chart image and extract the trade details.
+              text: `You are a professional trading chart analyzer. Analyze this trading chart image and extract the trade details precisely.
 
-Look for:
-1. The trading symbol/pair (e.g. EURUSD, BTCUSDT, GOLD, NAS100, ES) — no slashes
-2. Trade direction: "long" if it's a buy/long setup, "short" if it's a sell/short setup
-3. Entry price level (where the trade entry is marked)
-4. Stop Loss price level (SL line)
-5. Take Profit price level (TP line)
+Step 1 — Find the price levels:
+- Entry price: the horizontal line or box edge marking the trade entry
+- Stop Loss (SL): the line above or below entry where the trade is invalidated
+- Take Profit (TP): the target line where profit is taken
+
+Step 2 — Determine direction using price math (most reliable method):
+- If Take Profit price > Entry price → direction is "long" (price expected to go UP)
+- If Take Profit price < Entry price → direction is "short" (price expected to go DOWN)
+- Also check: red/orange coloring or "Short"/"Sell" labels = short; green coloring or "Long"/"Buy" labels = long
+- Also check: if Stop Loss is ABOVE entry → direction is "short"; if SL is BELOW entry → direction is "long"
+
+Step 3 — Find the symbol:
+- Look for the ticker/pair name in the chart title or top-left area (e.g. MES1, EURUSD, GOLD, NAS100)
 
 Respond ONLY with valid JSON, no markdown, no code blocks, no other text:
-{"symbol":"EURUSD","direction":"long","entry_price":1.0842,"stop_loss":1.0800,"take_profit":1.0940,"confidence":92,"analysis":"brief explanation"}
+{"symbol":"MES1","direction":"short","entry_price":6834,"stop_loss":6855,"take_profit":6790,"confidence":90,"analysis":"brief explanation of what you found and why you chose this direction"}
 
 Rules:
-- symbol: uppercase, no spaces or slashes (EURUSD not EUR/USD)
-- direction: exactly "long" or "short"
+- symbol: uppercase, no spaces or slashes
+- direction: exactly "long" or "short" — use price math to decide, not just visual style
 - prices: numbers only, no strings
 - If a value cannot be found, use null
 - confidence: 0-100 based on how clearly the levels are visible`,
