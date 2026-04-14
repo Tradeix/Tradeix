@@ -261,14 +261,27 @@ export default function DashboardPage() {
           // RTL: wins on right, losses on left. LTR: wins on left, losses on right.
           return (
             <div>
-              {/* Labels */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', flexDirection: isRTL ? 'row-reverse' : 'row' }}>
-                <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                  {tr.wins} · {winPct.toFixed(1)}%
-                </span>
-                <span style={{ fontSize: '10px', fontWeight: '800', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                  {lossPct.toFixed(1)}% · {tr.losses}
-                </span>
+              {/* Labels — in RTL: losses on left, wins on right */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                {isRTL ? (
+                  <>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      {lossPct.toFixed(1)}% · {tr.losses}
+                    </span>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      {tr.wins} · {winPct.toFixed(1)}%
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      {tr.wins} · {winPct.toFixed(1)}%
+                    </span>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      {lossPct.toFixed(1)}% · {tr.losses}
+                    </span>
+                  </>
+                )}
               </div>
               {/* Bar track */}
               <div style={{ position: 'relative', height: '10px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
