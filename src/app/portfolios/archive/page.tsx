@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Portfolio } from '@/types'
+import { Portfolio, Trade } from '@/types'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
@@ -20,6 +20,8 @@ const MARKET_LABELS: Record<string, Record<string, string>> = {
   en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
 }
 
+const PAGE_SIZE = 10
+
 interface PortfolioStats {
   totalTrades: number
   wins: number
@@ -34,6 +36,10 @@ export default function ArchivePage() {
   const [loading, setLoading] = useState(true)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [portfolioTrades, setPortfolioTrades] = useState<Record<string, Trade[]>>({})
+  const [tradePage, setTradePage] = useState<Record<string, number>>({})
+  const [tradeTotal, setTradeTotal] = useState<Record<string, number>>({})
+  const [tradesLoading, setTradesLoading] = useState(false)
   const supabase = createClient()
 
   useEffect(() => { loadArchived() }, [])
@@ -47,7 +53,6 @@ export default function ArchivePage() {
       .order('created_at', { ascending: false })
     if (data) {
       setPortfolios(data)
-      // Load stats for each portfolio
       const statsMap: Record<string, PortfolioStats> = {}
       for (const p of data) {
         const { data: trades } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', p.id)
@@ -60,6 +65,39 @@ export default function ArchivePage() {
       setStats(statsMap)
     }
     setLoading(false)
+  }
+
+  async function loadTrades(portfolioId: string, page: number) {
+    setTradesLoading(true)
+    const from = page * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
+    const { data, count } = await supabase
+      .from('trades').select('*', { count: 'exact' })
+      .eq('portfolio_id', portfolioId)
+      .order('traded_at', { ascending: false })
+      .range(from, to)
+    if (data) {
+      setPortfolioTrades(prev => ({ ...prev, [portfolioId]: data }))
+      setTradeTotal(prev => ({ ...prev, [portfolioId]: count || 0 }))
+    }
+    setTradesLoading(false)
+  }
+
+  function toggleExpand(portfolioId: string) {
+    if (expandedId === portfolioId) {
+      setExpandedId(null)
+    } else {
+      setExpandedId(portfolioId)
+      const currentPage = tradePage[portfolioId] || 0
+      loadTrades(portfolioId, currentPage)
+    }
+  }
+
+  function changePage(portfolioId: string, delta: number) {
+    const current = tradePage[portfolioId] || 0
+    const next = current + delta
+    setTradePage(prev => ({ ...prev, [portfolioId]: next }))
+    loadTrades(portfolioId, next)
   }
 
   async function handleRestore(id: string) {
@@ -75,6 +113,7 @@ export default function ArchivePage() {
   }
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'
+  const isRTL = language === 'he'
 
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
@@ -93,7 +132,7 @@ export default function ArchivePage() {
       {/* Confirm Delete */}
       {confirmDelete && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}>
-          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center' }} className="fade-up">
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '28px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete_forever</span>
             </div>
@@ -137,6 +176,10 @@ export default function ArchivePage() {
             const s = stats[p.id]
             const isExpanded = expandedId === p.id
             const pnlPos = (s?.totalPnl || 0) >= 0
+            const trades = portfolioTrades[p.id] || []
+            const page = tradePage[p.id] || 0
+            const total = tradeTotal[p.id] || 0
+            const totalPages = Math.ceil(total / PAGE_SIZE)
 
             return (
               <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', overflow: 'hidden', transition: 'all 0.3s' }}>
@@ -174,7 +217,7 @@ export default function ArchivePage() {
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '8px' }}>
                     {/* Stats toggle */}
-                    <button onClick={() => setExpandedId(isExpanded ? null : p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(74,127,255,0.3)' : 'var(--border)'}`, color: isExpanded ? '#4a7fff' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                    <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(74,127,255,0.3)' : 'var(--border)'}`, color: isExpanded ? '#4a7fff' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                       <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{isExpanded ? 'expand_less' : 'bar_chart'}</span>
                     </button>
 
@@ -197,10 +240,12 @@ export default function ArchivePage() {
                   </div>
                 </div>
 
-                {/* Expanded stats */}
+                {/* Expanded section */}
                 {isExpanded && s && (
-                  <div style={{ padding: '0 20px 20px', borderTop: '1px solid var(--border)', paddingTop: '16px' }} className="fade-up">
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '20px' }}>
+
+                    {/* Stats grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
                       {[
                         { label: language === 'he' ? 'עסקאות' : 'Trades', value: s.totalTrades, color: 'var(--text2)' },
                         { label: language === 'he' ? 'ניצחונות' : 'Wins', value: s.wins, color: '#22c55e' },
@@ -213,6 +258,123 @@ export default function ArchivePage() {
                         </div>
                       ))}
                     </div>
+
+                    {/* Trades section header + pagination */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        {language === 'he' ? 'עסקאות אחרונות' : 'Recent Trades'}
+                      </div>
+                      {totalPages > 1 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+                            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
+                          </span>
+                          <button
+                            onClick={() => changePage(p.id, isRTL ? 1 : -1)}
+                            disabled={isRTL ? page >= totalPages - 1 : page === 0}
+                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: (isRTL ? page >= totalPages - 1 : page === 0) ? 0.3 : 1, transition: 'all 0.2s' }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                          </button>
+                          <button
+                            onClick={() => changePage(p.id, isRTL ? -1 : 1)}
+                            disabled={isRTL ? page === 0 : page >= totalPages - 1}
+                            style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: (isRTL ? page === 0 : page >= totalPages - 1) ? 0.3 : 1, transition: 'all 0.2s' }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Trades list */}
+                    <div style={{ background: 'var(--bg3)', borderRadius: '12px', overflow: 'hidden' }}>
+                      {tradesLoading ? (
+                        <div style={{ padding: '32px', textAlign: 'center' }}>
+                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                        </div>
+                      ) : trades.length === 0 ? (
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px', fontWeight: '600' }}>
+                          {language === 'he' ? 'אין עסקאות בתיק זה' : 'No trades in this portfolio'}
+                        </div>
+                      ) : trades.map((trade, idx) => (
+                        <div key={trade.id} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px 70px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
+                          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          {/* Symbol */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                                {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
+                              </span>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                              <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {language === 'he' ? 'צמד' : 'Pair'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* RR */}
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#4a7fff' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
+                          </div>
+
+                          {/* P&L */}
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '13px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                              {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                            </div>
+                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
+                          </div>
+
+                          {/* Date */}
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text2)' }}>
+                              {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                            </div>
+                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
+                              {language === 'he' ? 'תאריך' : 'Date'}
+                            </div>
+                          </div>
+
+                          {/* Outcome */}
+                          <div style={{ textAlign: 'center' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '10px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', whiteSpace: 'nowrap' }}>
+                              {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bottom pagination */}
+                    {totalPages > 1 && (
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '14px' }}>
+                        <button
+                          onClick={() => changePage(p.id, isRTL ? 1 : -1)}
+                          disabled={isRTL ? page >= totalPages - 1 : page === 0}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '7px 16px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', opacity: (isRTL ? page >= totalPages - 1 : page === 0) ? 0.35 : 1, transition: 'all 0.2s' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+                          {language === 'he' ? 'הבא' : 'Prev'}
+                        </button>
+                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700' }}>
+                          {page + 1} / {totalPages}
+                        </span>
+                        <button
+                          onClick={() => changePage(p.id, isRTL ? -1 : 1)}
+                          disabled={isRTL ? page === 0 : page >= totalPages - 1}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '7px 16px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', opacity: (isRTL ? page === 0 : page >= totalPages - 1) ? 0.35 : 1, transition: 'all 0.2s' }}
+                        >
+                          {language === 'he' ? 'הקודם' : 'Next'}
+                          <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
