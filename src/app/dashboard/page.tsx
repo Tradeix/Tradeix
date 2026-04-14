@@ -374,25 +374,25 @@ export default function DashboardPage() {
           </div>
           {tradeTotal > 6 && (() => {
             const totalPages = Math.ceil(tradeTotal / 6)
-            // › = back (prev page), ‹ = forward (next page) — consistent in both directions
-            const canRight = tradePage > 0                   // › always = lower page
-            const canLeft  = tradePage < totalPages - 1      // ‹ always = higher page
+            // › = go back in time (older trades = higher page), ‹ = go forward (newer = lower page)
+            const canBack    = tradePage < totalPages - 1   // can go to older trades
+            const canForward = tradePage > 0                // can go to newer trades
             return (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
                   {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
                 </span>
                 <button
-                  onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p) }}
-                  disabled={!canRight}
-                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canRight ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canRight ? 1 : 0.25, transition: 'all 0.2s' }}
+                  onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
+                  disabled={!canBack}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canBack ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canBack ? 1 : 0.25, transition: 'all 0.2s' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
                 </button>
                 <button
-                  onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
-                  disabled={!canLeft}
-                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canLeft ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canLeft ? 1 : 0.25, transition: 'all 0.2s' }}
+                  onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p) }}
+                  disabled={!canForward}
+                  style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canForward ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canForward ? 1 : 0.25, transition: 'all 0.2s' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
                 </button>
@@ -474,6 +474,34 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+
+        {/* Bottom pagination */}
+        {tradeTotal > 6 && (() => {
+          const totalPages = Math.ceil(tradeTotal / 6)
+          const canBack    = tradePage < totalPages - 1
+          const canForward = tradePage > 0
+          return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', padding: '14px 28px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+              <button
+                onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p) }}
+                disabled={!canBack}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canBack ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canBack ? 1 : 0.2, transition: 'all 0.2s' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+              </button>
+              <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', minWidth: '60px', textAlign: 'center' }}>
+                {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
+              </span>
+              <button
+                onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p) }}
+                disabled={!canForward}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canForward ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canForward ? 1 : 0.2, transition: 'all 0.2s' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+              </button>
+            </div>
+          )
+        })()}
       </section>
 
       {selectedTrade && (
