@@ -278,11 +278,11 @@ export default function StatsPage() {
           {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
             const pnl = monthlyPnl[day]
             const count = monthlyCount[day]
-            const wins = monthlyWins[day] || 0
             const hasData = pnl !== undefined
-            const winRate = count ? Math.round((wins / count) * 100) : 0
             const isGreen = hasData && pnl > 0
-            const isRed = hasData && pnl <= 0
+            const isRed = hasData && pnl < 0
+            const isZero = hasData && pnl === 0
+            const isNeutral = !hasData || isZero
             return (
               <div
                 key={day}
@@ -304,16 +304,14 @@ export default function StatsPage() {
                   {day}
                 </div>
 
-                {/* P&L + win rate */}
+                {/* P&L + trade count */}
                 {hasData && (
                   <div className="cal-body">
-                    <div className="cal-pnl" style={{ color: pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                      {pnl >= 0 ? '+' : ''}${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}
+                    <div className="cal-pnl" style={{ color: isGreen ? '#22c55e' : isRed ? '#ef4444' : 'rgba(255,255,255,0.35)' }}>
+                      {isZero ? '$0' : `${pnl > 0 ? '+' : ''}$${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}`}
                     </div>
-                    <div className="cal-wr" style={{
-                      color: winRate === 100 ? '#22c55e' : winRate > 50 ? 'rgba(34,197,94,0.75)' : winRate === 50 ? 'rgba(255,255,255,0.4)' : '#ef4444',
-                    }}>
-                      {winRate}%
+                    <div className="cal-wr" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      {count} TRADE{count !== 1 ? 'S' : ''}
                     </div>
                   </div>
                 )}
