@@ -343,7 +343,7 @@ export default function SettingsPage() {
       )}
 
       <style>{`
-        @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>

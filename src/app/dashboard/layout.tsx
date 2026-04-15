@@ -337,15 +337,21 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: var(--bg) !important; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
         .upgrade-btn:hover { transform: scale(1.03); box-shadow: 0 0 24px rgba(245,158,11,0.4) !important; }
-        @media (max-width: 640px) {
+        /* ── TABLET + MOBILE: app mode (≤1024px) ── */
+        @media (max-width: 1024px) {
           .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
-          .page-content { padding: 20px 16px !important; }
+          .page-content { padding: 24px 20px !important; }
           .upgrade-btn span:last-child { display: none; }
+        }
+        /* ── MOBILE SMALL (≤640px) ── */
+        @media (max-width: 640px) {
+          .page-content { padding: 16px 14px !important; }
           .user-name-block { display: none !important; }
         }
-        @media (min-width: 641px) { .sidebar-el { transform: translateX(0) !important; } }
+        /* ── DESKTOP: sidebar always visible (>1024px) ── */
+        @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }
       `}</style>
     </div>
   )

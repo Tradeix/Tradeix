@@ -582,49 +582,41 @@ export default function DashboardPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── HEADER ── */
-        @media (max-width: 600px) {
-          .dash-header { flex-wrap: wrap !important; align-items: flex-start !important; gap: 10px !important; margin-bottom: 20px !important; }
-          .dash-header h2 { font-size: 22px !important; }
+        /* ══════════════════════════════════════════
+           TABLET + MOBILE — APP MODE  (≤ 1024px)
+           ══════════════════════════════════════════ */
+        @media (max-width: 1024px) {
+          /* Header */
+          .dash-header { flex-wrap: wrap !important; gap: 10px !important; margin-bottom: 20px !important; }
           .time-filter-bar { width: 100% !important; }
-          .time-filter-bar button { flex: 1 !important; padding: 5px 6px !important; font-size: 10px !important; }
-        }
+          .time-filter-bar button { flex: 1 !important; font-size: 10px !important; padding: 5px 8px !important; }
 
-        /* ── STAT CARDS: switch to 2×2 at 900px ── */
-        @media (max-width: 900px) {
+          /* Stat cards → 2×2 */
           .stats-hero { grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-bottom: 20px !important; }
-        }
-        @media (max-width: 600px) {
-          .stats-hero { gap: 10px !important; margin-bottom: 16px !important; }
-          .stat-card { padding: 14px !important; border-radius: 16px !important; }
-        }
+          .stat-card { padding: 16px !important; border-radius: 16px !important; }
 
-        /* ── TRADE ROWS: hide RR + Date at 900px ── */
-        @media (max-width: 900px) {
+          /* Trade rows: hide RR + Date */
           .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; gap: 8px !important; padding: 12px 10px !important; }
           .trade-col-rr { display: none !important; }
           .trade-col-date { display: none !important; }
-          .time-filter-bar button { padding: 5px 10px !important; font-size: 10px !important; }
-          .trade-filter-pills button { padding: 3px 8px !important; font-size: 9px !important; }
-        }
-        @media (max-width: 480px) {
-          .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; padding: 10px 8px !important; }
-          .time-filter-bar button { padding: 5px 8px !important; font-size: 9px !important; }
-        }
+          .trade-filter-pills button { font-size: 9px !important; padding: 3px 8px !important; }
 
-        /* ── EQUITY SECTION ── */
-        @media (max-width: 600px) {
+          /* Portfolio section */
+          .portfolio-stats-row { grid-template-columns: 1fr 1fr 1fr !important; gap: 10px !important; }
+
+          /* Equity */
           .equity-section { padding: 20px !important; border-radius: 20px !important; }
         }
 
-        /* ── PORTFOLIO SECTION ── */
-        @media (max-width: 600px) {
-          .portfolio-stats-row { grid-template-columns: 1fr 1fr !important; }
-          .portfolio-main-row { gap: 10px !important; margin-bottom: 16px !important; }
-          .portfolio-main-row > div:first-child div[dir="ltr"] { font-size: 30px !important; }
-        }
-        @media (max-width: 400px) {
-          .portfolio-stats-row { grid-template-columns: 1fr !important; gap: 8px !important; }
+        /* ══════════════════════════════════════════
+           MOBILE SMALL  (≤ 640px)
+           ══════════════════════════════════════════ */
+        @media (max-width: 640px) {
+          .stats-hero { gap: 10px !important; }
+          .stat-card { padding: 14px !important; }
+          .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; padding: 10px 8px !important; }
+          .portfolio-stats-row { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+          .portfolio-main-row > div:first-child div[dir="ltr"] { font-size: 28px !important; }
         }
       `}</style>
     </div>

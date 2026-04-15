@@ -249,12 +249,12 @@ export default function TradesPage() {
       {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .trade-row { grid-template-columns: 1fr 100px 90px !important; gap: 8px !important; }
           .trade-row > div:nth-child(2) { display: none !important; }
           .trade-row > div:nth-child(4) { display: none !important; }
         }
-        @media (max-width: 480px) {
+        @media (max-width: 640px) {
           .trade-row { grid-template-columns: 1fr 86px 72px !important; gap: 6px !important; padding: 10px 6px !important; }
         }
       `}</style>

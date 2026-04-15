@@ -393,9 +393,8 @@ export default function ArchivePage() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 640px) {
+        @media (max-width: 1024px) {
           .archive-main-row { padding: 12px 14px !important; gap: 10px !important; }
-          .archive-pnl { padding-inline: 10px !important; }
           .archive-restore-btn { padding: 7px 10px !important; }
           .restore-label { display: none; }
           .archive-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -403,7 +402,8 @@ export default function ArchivePage() {
           .archive-trade-row > div:nth-child(3),
           .archive-trade-row > div:nth-child(4) { display: none !important; }
         }
-        @media (max-width: 440px) {
+        @media (max-width: 640px) {
+          .archive-pnl { padding-inline: 10px !important; }
           .archive-pnl { display: none !important; }
         }
       `}</style>

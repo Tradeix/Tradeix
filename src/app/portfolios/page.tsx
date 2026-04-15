@@ -261,7 +261,7 @@ export default function PortfoliosPage() {
         </div>
       )}
 
-      <style>{`@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`@media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }`}</style>
     </div>
   )
 }

@@ -324,7 +324,7 @@ export default function StatsPage() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 1024px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
 
         /* Calendar grid */
         .cal-grid {
