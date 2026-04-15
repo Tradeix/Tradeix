@@ -31,7 +31,7 @@ export const t = {
     day: 'יום', week: 'שבוע', month: 'חודש', year: 'שנה',
     daily: 'יומי', weekly: 'שבועי', monthly: 'חודשי', yearly: 'שנתי',
     selectPortfolio: 'בחר תיק',
-    newPortfolio: '＋ תיק חדש',
+    newPortfolio: '＋ צור תיק חדש',
     noPortfolios: 'אין תיקים',
     portfolioPerformance: 'ביצועי תיק',
     performanceMatrix: 'מטריצת ביצועים',
@@ -121,7 +121,7 @@ export const t = {
 
     // Portfolios
     portfoliosTitle: 'הגדרות תיקים',
-    newPortfolioBtn: 'תיק חדש',
+    newPortfolioBtn: 'צור תיק חדש',
     editPortfolio: 'עריכת תיק',
     newPortfolioForm: 'תיק חדש',
     portfolioName: 'שם התיק *',
@@ -187,7 +187,7 @@ export const t = {
     day: 'Day', week: 'Week', month: 'Month', year: 'Year',
     daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly',
     selectPortfolio: 'Select Portfolio',
-    newPortfolio: '＋ New Portfolio',
+    newPortfolio: '＋ Create Portfolio',
     noPortfolios: 'No portfolios',
     portfolioPerformance: 'Portfolio Performance',
     performanceMatrix: 'Performance Matrix',
@@ -277,7 +277,7 @@ export const t = {
 
     // Portfolios
     portfoliosTitle: 'Portfolio Settings',
-    newPortfolioBtn: 'New Portfolio',
+    newPortfolioBtn: 'Create Portfolio',
     editPortfolio: 'Edit Portfolio',
     newPortfolioForm: 'New Portfolio',
     portfolioName: 'Portfolio Name *',

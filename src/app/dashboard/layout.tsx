@@ -102,11 +102,12 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
                   </div>
                 )
               })}
-              <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
+              <button onClick={() => { setShowMenu(false); localStorage.setItem('tradeix-open-new-portfolio', '1'); window.location.href = '/portfolios' }} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
                 padding: '12px 18px', fontSize: '13px', color: '#4a7fff',
-                textDecoration: 'none', fontWeight: '800',
-              }}>+ {tr.newPortfolio}</Link>
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontWeight: '800', fontFamily: 'Heebo, sans-serif', width: '100%',
+              }}>+ {tr.newPortfolio}</button>
             </div>
           </>
         )}

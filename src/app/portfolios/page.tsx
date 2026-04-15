@@ -35,9 +35,24 @@ export default function PortfoliosPage() {
   const [form, setForm] = useState({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [pendingOpenNew, setPendingOpenNew] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => { loadPortfolios() }, [])
+  useEffect(() => {
+    if (localStorage.getItem('tradeix-open-new-portfolio') === '1') {
+      localStorage.removeItem('tradeix-open-new-portfolio')
+      setPendingOpenNew(true)
+    }
+    loadPortfolios()
+  }, [])
+
+  // Once portfolios load, auto-open the new form if flagged
+  useEffect(() => {
+    if (pendingOpenNew && !loading) {
+      setPendingOpenNew(false)
+      openNewForm()
+    }
+  }, [pendingOpenNew, loading])
 
   async function loadPortfolios() {
     setLoading(true)

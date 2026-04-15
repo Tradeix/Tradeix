@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import PageHeader from '@/components/PageHeader'
@@ -14,6 +15,7 @@ import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language, isPro, subscriptionLoading } = useApp()
+  const router = useRouter()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -144,9 +146,9 @@ export default function StatsPage() {
           <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <Link href="/portfolios" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700', boxShadow: '0 0 24px rgba(74,127,255,0.4)' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 24px rgba(74,127,255,0.4)', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
-          </Link>
+          </button>
         </div>
       </div>
     )

@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import { Trade, Stats } from '@/types'
-import Link from 'next/link'
 import TradeModal from '@/components/TradeModal'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -15,6 +15,7 @@ const PRIMARY = '#4a7fff'
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
+  const router = useRouter()
   const tr = t[language]
   const [timeFilter, setTimeFilter] = useState(2) // 0=daily 1=weekly 2=monthly 3=yearly — default: monthly
   const [tradeTimeFilter, setTradeTimeFilter] = useState(2) // 0=daily 1=weekly 2=monthly — for recent trades list
@@ -147,9 +148,9 @@ export default function DashboardPage() {
         <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '28px' }}>
           {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
         </div>
-        <Link href="/portfolios" style={{ background: `linear-gradient(135deg, ${PRIMARY}, #3366dd)`, color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700', boxShadow: `0 0 24px rgba(74,127,255,0.4)` }}>
+        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: `linear-gradient(135deg, ${PRIMARY}, #3366dd)`, color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', boxShadow: `0 0 24px rgba(74,127,255,0.4)`, fontFamily: 'Heebo, sans-serif' }}>
           {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
-        </Link>
+        </button>
       </div>
     )
   }
