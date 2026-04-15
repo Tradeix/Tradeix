@@ -33,31 +33,32 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: `You are a professional trading chart analyzer. Analyze this trading chart image and extract the trade details precisely.
+              text: `You are a professional trading chart analyzer. Analyze this trading chart image and extract ALL trade details precisely.
 
 Step 1 — Find the price levels:
-- Entry price: the horizontal line or box edge marking the trade entry
-- Stop Loss (SL): the line above or below entry where the trade is invalidated
-- Take Profit (TP): the target line where profit is taken
+- entry_price: the horizontal line or box edge where the trade was entered (look for "Entry", "Open", an arrow, or a dotted line at the start of the trade)
+- exit_price: where the trade actually CLOSED — look for the end of the trade line, "Close", "Exit", "TP hit", "SL hit", or where price clearly reverses/ends
+- stop_loss: SL line (for reference only)
+- take_profit: TP line (for reference only)
 
-Step 2 — Determine direction using price math (most reliable method):
-- If Take Profit price > Entry price → direction is "long" (price expected to go UP)
-- If Take Profit price < Entry price → direction is "short" (price expected to go DOWN)
-- Also check: red/orange coloring or "Short"/"Sell" labels = short; green coloring or "Long"/"Buy" labels = long
-- Also check: if Stop Loss is ABOVE entry → direction is "short"; if SL is BELOW entry → direction is "long"
+Step 2 — Determine direction:
+- "long" if price was expected to go UP (TP above entry, or labeled Buy/Long/green)
+- "short" if price was expected to go DOWN (TP below entry, or labeled Sell/Short/red)
+- If SL is ABOVE entry → "short"; if SL is BELOW entry → "long"
 
 Step 3 — Find the symbol:
-- Look for the ticker/pair name in the chart title or top-left area (e.g. MES1, EURUSD, GOLD, NAS100)
+- Look for ticker/pair name in chart title or top-left (e.g. MES1!, EURUSD, GOLD, NAS100)
+- Strip exchange prefixes (CME:, NASDAQ:, etc.), keep only the symbol itself
 
-Respond ONLY with valid JSON, no markdown, no code blocks, no other text:
-{"symbol":"MES1","direction":"short","entry_price":6834,"stop_loss":6855,"take_profit":6790,"confidence":90,"analysis":"brief explanation of what you found and why you chose this direction"}
+Respond ONLY with valid JSON, no markdown, no code blocks:
+{"symbol":"MES1","direction":"short","entry_price":6869,"exit_price":6850,"stop_loss":6890,"take_profit":6820,"confidence":88,"analysis":"Brief: what you found and why"}
 
 Rules:
-- symbol: uppercase, no spaces or slashes
-- direction: exactly "long" or "short" — use price math to decide, not just visual style
-- prices: numbers only, no strings
-- If a value cannot be found, use null
-- confidence: 0-100 based on how clearly the levels are visible`,
+- symbol: uppercase, no spaces, no slashes, no exchange prefix
+- direction: exactly "long" or "short"
+- all prices: numbers only (no strings, no currency symbols)
+- exit_price: null if the chart only shows a planned trade with no clear close price
+- confidence: 0-100`,
             },
           ],
         },

@@ -92,10 +92,20 @@ export default function AddTradePage() {
       if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
       setAiMissingFields(missing)
 
+      // Auto-detect outcome from direction + entry/exit prices
+      let detectedOutcome: 'win' | 'loss' | undefined
+      if (data.direction && data.entry_price != null && data.exit_price != null) {
+        const isLong = data.direction === 'long'
+        const priceWentUp = data.exit_price > data.entry_price
+        detectedOutcome = (isLong ? priceWentUp : !priceWentUp) ? 'win' : 'loss'
+      }
+
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
         entry_price: data.entry_price?.toString() || '',
+        exit_price: data.exit_price?.toString() || '',
+        ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
       }))
       setAiConfidence(data.confidence || 85)
       setAiRaw(data.analysis || '')
@@ -431,19 +441,12 @@ export default function AddTradePage() {
                   <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                     {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
-                  <div style={{ position: 'relative' }}>
-                    <input
+                  <input
                       value={tradeData.pnl}
                       onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
                       placeholder="500"
                       style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
                     />
-                    {tradeData.pnl && (
-                      <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', fontWeight: '900', color: tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', pointerEvents: 'none' }}>
-                        {tradeData.outcome === 'win' ? '+' : '-'}${Math.abs(parseFloat(tradeData.pnl) || 0)}
-                      </div>
-                    )}
-                  </div>
                   {pnlError && (
                     <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
@@ -464,9 +467,9 @@ export default function AddTradePage() {
                   onClick={handleSubmit}
                   disabled={submitting}
                   className="btn-primary"
-                  style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', direction: 'ltr' }}
                 >
-                  <span>✓</span>
+                  <span style={{ fontSize: '16px' }}>✓</span>
                   {submitting ? tr.submitting : (language === 'he' ? 'העלאת עסקה' : 'Submit Trade')}
                 </button>
               </div>
@@ -475,7 +478,11 @@ export default function AddTradePage() {
         )}
       </div>
 
-      <style>{'@keyframes spin { to { transform: rotate(360deg); } } @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }'}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
+      `}</style>
 
       {/* Image lightbox */}
       {lightbox && imagePreview && (

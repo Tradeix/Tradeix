@@ -260,19 +260,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    value={form.pnl}
-                    onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
-                    placeholder="500"
-                    style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
-                  />
-                  {form.pnl && (
-                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', fontWeight: '900', color: form.outcome === 'win' ? '#22c55e' : '#ef4444', pointerEvents: 'none' }}>
-                      {form.outcome === 'win' ? '+' : '-'}${Math.abs(parseFloat(form.pnl) || 0)}
-                    </div>
-                  )}
-                </div>
+                <input
+                  value={form.pnl}
+                  onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
+                  placeholder="500"
+                  style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                />
                 {pnlError && (
                   <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px' }}>
                     {language === 'he' ? 'שדה חובה' : 'Required field'}
@@ -461,6 +454,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
       `}</style>
 
       {/* Delete confirmation */}
