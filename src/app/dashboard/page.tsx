@@ -73,7 +73,7 @@ export default function DashboardPage() {
         .from('trades').select('*', { count: 'exact' })
         .eq('portfolio_id', activePortfolio!.id)
         .gte('traded_at', tradeStartDate)
-        .order('traded_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .range(from, from + 5)
       if (tradeData) setTrades(tradeData)
       if (count !== null) setTradeTotal(count)
