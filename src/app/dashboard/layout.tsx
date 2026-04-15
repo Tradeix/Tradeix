@@ -231,20 +231,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto' }}>
       {/* Logo */}
-      <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
-        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{
-            width: '28px', height: '28px',
-            background: 'linear-gradient(135deg, #4a7fff 0%, #8b5cf6 100%)',
-            borderRadius: '5px', transform: 'rotate(-45deg)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(74,127,255,0.4)', flexShrink: 0,
-          }}>
-            <div style={{ width: '10px', height: '10px', border: '2px solid rgba(255,255,255,0.8)', borderLeft: '2px solid transparent', borderBottom: '2px solid transparent', transform: 'rotate(45deg)' }} />
-          </div>
-          <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
-            Trade<span style={{ background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IX</span>
-          </span>
+      <div style={{ padding: '24px 20px 32px', display: 'flex', justifyContent: 'center' }}>
+        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+          <img src="/logo.png" alt="TradeIX" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
         </Link>
       </div>
 
