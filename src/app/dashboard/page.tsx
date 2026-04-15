@@ -317,53 +317,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* ── EQUITY CURVE ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: '32px', padding: '32px',
-        overflow: 'hidden', position: 'relative', marginBottom: '32px',
-      }}>
-        <div style={{ position: 'absolute', left: '-80px', bottom: '-80px', width: '256px', height: '256px', background: 'rgba(74,127,255,0.05)', filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
-          <div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.equityCurve}</h3>
-            <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>{tr.performanceTimeline}</p>
-          </div>
-          <div style={{ textAlign: 'left' }}>
-            <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>{tr.totalPnl}</p>
-            <p style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
-              {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        {equityCurve.length > 0 ? (
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={equityCurve} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.25} />
-                  <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
-              <Tooltip
-                contentStyle={{ background: 'var(--bg3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
-                formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
-              />
-              <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2.5} fill="url(#equityGrad)" strokeLinecap="round" dot={false} activeDot={{ r: 6, fill: PRIMARY, strokeWidth: 0, filter: 'drop-shadow(0 0 8px rgba(74,127,255,0.8))' }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        ) : (
-          <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'rgba(74,127,255,0.2)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 40" }}>show_chart</span>
-            <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{tr.noDataAddTrades}</p>
-          </div>
-        )}
-      </section>
-
       {/* ── RECENT TRADES ── */}
       <section style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
@@ -494,6 +447,53 @@ export default function DashboardPage() {
           ))}
         </div>
 
+      </section>
+
+      {/* ── EQUITY CURVE ── */}
+      <section style={{
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+        border: '1px solid rgba(255,255,255,0.05)',
+        borderRadius: '32px', padding: '32px',
+        overflow: 'hidden', position: 'relative', marginBottom: '32px',
+      }}>
+        <div style={{ position: 'absolute', left: '-80px', bottom: '-80px', width: '256px', height: '256px', background: 'rgba(74,127,255,0.05)', filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
+          <div>
+            <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.equityCurve}</h3>
+            <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>{tr.performanceTimeline}</p>
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>{tr.totalPnl}</p>
+            <p style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
+              {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        {equityCurve.length > 0 ? (
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={equityCurve} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
+              <Tooltip
+                contentStyle={{ background: 'var(--bg3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
+              />
+              <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2.5} fill="url(#equityGrad)" strokeLinecap="round" dot={false} activeDot={{ r: 6, fill: PRIMARY, strokeWidth: 0, filter: 'drop-shadow(0 0 8px rgba(74,127,255,0.8))' }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'rgba(74,127,255,0.2)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 40" }}>show_chart</span>
+            <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{tr.noDataAddTrades}</p>
+          </div>
+        )}
       </section>
 
       {selectedTrade && (
