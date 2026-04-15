@@ -233,7 +233,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {/* Logo */}
       <div style={{ padding: '24px 20px 32px', display: 'flex', justifyContent: 'center' }}>
         <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
-          <img src="/logo.jpeg" alt="TradeIX" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+          <div style={{ background: '#fff', borderRadius: '14px', padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>
+            <img src="/logo.jpeg" alt="TradeIX" style={{ height: '36px', width: 'auto', objectFit: 'contain', display: 'block' }} />
+          </div>
         </Link>
       </div>
 
