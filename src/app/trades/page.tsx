@@ -122,10 +122,9 @@ export default function TradesPage() {
       />
 
       {/* Filters */}
-      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
-        {/* time + outcome filters */}
-        <div className="trades-filter-inner" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-          {/* Outcome */}
+      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+        {/* Outcome — WIN/LOSS */}
+        <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setFilter(filter === key ? 'all' : key as any); setPage(0) }} style={{
               display: 'flex', alignItems: 'center', gap: '5px',
@@ -141,25 +140,24 @@ export default function TradesPage() {
               {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '10px' }}>{total}</span>}
             </button>
           ))}
-
-          {/* Separator + time filter — always visible */}
-          <>
-            <div style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
-            <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
-              {TIME_LABELS.map((label, i) => (
-                <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
-                  padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
-                  cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-                  background: timeFilter === i ? '#4a7fff' : 'transparent',
-                  color: timeFilter === i ? '#fff' : 'var(--text3)',
-                  boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
-                  transition: 'all 0.2s', whiteSpace: 'nowrap',
-                }}>{label}</button>
-              ))}
-            </div>
-          </>
         </div>
 
+        {/* Separator */}
+        <div className="trades-filter-sep" style={{ width: '1px', height: '22px', background: 'var(--border)', flexShrink: 0 }} />
+
+        {/* Time filter */}
+        <div className="trades-time-filter" style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+          {TIME_LABELS.map((label, i) => (
+            <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
+              padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
+              cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
+              background: timeFilter === i ? '#4a7fff' : 'transparent',
+              color: timeFilter === i ? '#fff' : 'var(--text3)',
+              boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
+              transition: 'all 0.2s', whiteSpace: 'nowrap',
+            }}>{label}</button>
+          ))}
+        </div>
       </div>
 
       {/* Trades list */}
@@ -262,8 +260,10 @@ export default function TradesPage() {
         }
         @media (max-width: 640px) {
           .trade-row { grid-template-columns: 1fr 86px 72px !important; gap: 6px !important; padding: 10px 6px !important; }
-          .trades-filter-row { justify-content: flex-end !important; }
-          .trades-filter-inner { justify-content: flex-end !important; width: 100%; }
+          .trades-filter-row { justify-content: space-between !important; width: 100%; }
+          .trades-time-filter { order: -1; }
+          .trades-outcome-btns { order: 1; }
+          .trades-filter-sep { display: none !important; }
         }
       `}</style>
     </div>
