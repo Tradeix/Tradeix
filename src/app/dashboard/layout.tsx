@@ -303,10 +303,18 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const { language } = useApp()
   const router = useRouter()
   const supabase = createClient()
   const isRTL = language === 'he'
+
+  useEffect(() => {
+    if (localStorage.getItem('tradeix-show-downgrade') === '1') {
+      localStorage.removeItem('tradeix-show-downgrade')
+      setShowDowngradePopup(true)
+    }
+  }, [])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -334,6 +342,50 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
+
+      {/* Downgrade popup */}
+      {showDowngradePopup && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'var(--bg2)', border: '1px solid var(--border2)',
+            borderRadius: '20px', padding: '32px 28px', maxWidth: '420px', width: '100%',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.5)', position: 'relative',
+            textAlign: language === 'he' ? 'right' : 'left',
+          }}>
+            <button onClick={() => setShowDowngradePopup(false)} style={{
+              position: 'absolute', top: '16px', right: '16px',
+              background: 'var(--bg3)', border: '1px solid var(--border)',
+              borderRadius: '8px', width: '32px', height: '32px',
+              cursor: 'pointer', color: 'var(--text2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
+            </button>
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>👋</div>
+            <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
+              {language === 'he' ? 'המנוי בוטל בהצלחה' : 'Subscription Cancelled'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '24px' }}>
+              {language === 'he'
+                ? 'חזרת לחשבון חינמי. כל הנתונים הקודמים נמחקו. תמיד תוכל לחדש את המנוי ולהתחיל מחדש.'
+                : 'You\'ve been moved back to the free plan. All previous data was deleted. You can always renew your subscription and start fresh.'}
+            </div>
+            <Link href="/upgrade" onClick={() => setShowDowngradePopup(false)} style={{
+              display: 'block', textAlign: 'center',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: '#fff', borderRadius: '12px', padding: '12px',
+              fontSize: '13px', fontWeight: '800', textDecoration: 'none',
+              boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
+            }}>
+              {language === 'he' ? 'חדש מנוי PRO' : 'Renew PRO Subscription'}
+            </Link>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
