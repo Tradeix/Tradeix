@@ -304,6 +304,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const { language } = useApp()
   const router = useRouter()
   const supabase = createClient()
@@ -313,6 +314,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     if (localStorage.getItem('tradeix-show-downgrade') === '1') {
       localStorage.removeItem('tradeix-show-downgrade')
       setShowDowngradePopup(true)
+    }
+    if (localStorage.getItem('tradeix-show-upgrade') === '1') {
+      localStorage.removeItem('tradeix-show-upgrade')
+      setShowUpgradePopup(true)
     }
   }, [])
 
@@ -343,46 +348,106 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Downgrade popup */}
+      {/* ── DOWNGRADE POPUP ── */}
       {showDowngradePopup && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 9999,
-          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '20px',
-        }}>
-          <div style={{
-            background: 'var(--bg2)', border: '1px solid var(--border2)',
-            borderRadius: '20px', padding: '32px 28px', maxWidth: '420px', width: '100%',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.5)', position: 'relative',
-            textAlign: language === 'he' ? 'right' : 'left',
-          }}>
-            <button onClick={() => setShowDowngradePopup(false)} style={{
-              position: 'absolute', top: '16px', right: '16px',
-              background: 'var(--bg3)', border: '1px solid var(--border)',
-              borderRadius: '8px', width: '32px', height: '32px',
-              cursor: 'pointer', color: 'var(--text2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+            <button onClick={() => setShowDowngradePopup(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(229,226,225,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>close</span>
             </button>
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>👋</div>
-            <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
-              {language === 'he' ? 'המנוי בוטל בהצלחה' : 'Subscription Cancelled'}
+            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '32px', color: '#10b981', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 32" }}>sentiment_satisfied</span>
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '24px' }}>
+            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
+              {language === 'he' ? 'חזרת לתכנית החינמית' : 'Back to Free Plan'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.3)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
-                ? 'חזרת לחשבון חינמי. כל הנתונים הקודמים נמחקו. תמיד תוכל לחדש את המנוי ולהתחיל מחדש.'
-                : 'You\'ve been moved back to the free plan. All previous data was deleted. You can always renew your subscription and start fresh.'}
+                ? 'המנוי בוטל וכל הנתונים נמחקו. עדיין תוכל ליהנות מהמערכת!'
+                : 'Your subscription was canceled and all data was cleared. You can still enjoy the app!'}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px 20px', marginBottom: '28px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
+                {language === 'he' ? 'תכנית חינמית כוללת' : 'Free Plan includes'}
+              </div>
+              {[
+                { icon: 'folder_open', text: language === 'he' ? 'תיק מסחר אחד' : '1 trading portfolio', ok: true },
+                { icon: 'receipt_long', text: language === 'he' ? 'עד 20 עסקאות' : 'Up to 20 trades', ok: true },
+                { icon: 'lock', text: language === 'he' ? 'ללא עמוד סטטיסטיקות' : 'No statistics page', ok: false },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: item.ok ? '#10b981' : 'rgba(255,255,255,0.2)', fontVariationSettings: `'FILL' ${item.ok ? 0 : 1}, 'wght' 200, 'GRAD' -25, 'opsz' 20` }}>{item.icon}</span>
+                  <span style={{ fontSize: '13px', color: item.ok ? 'rgba(229,226,225,0.6)' : 'rgba(229,226,225,0.3)', fontWeight: '600' }}>{item.text}</span>
+                </div>
+              ))}
             </div>
             <Link href="/upgrade" onClick={() => setShowDowngradePopup(false)} style={{
-              display: 'block', textAlign: 'center',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               background: 'linear-gradient(135deg, #10b981, #059669)',
-              color: '#fff', borderRadius: '12px', padding: '12px',
-              fontSize: '13px', fontWeight: '800', textDecoration: 'none',
-              boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
+              color: '#fff', borderRadius: '14px', padding: '13px',
+              fontSize: '14px', fontWeight: '800', textDecoration: 'none',
+              boxShadow: '0 0 24px rgba(16,185,129,0.35)',
             }}>
-              {language === 'he' ? 'חדש מנוי PRO' : 'Renew PRO Subscription'}
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+              {language === 'he' ? 'חזור ל PRO — $20/חודש' : 'Upgrade back to PRO — $20/mo'}
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ── UPGRADE / WELCOME PRO POPUP ── */}
+      {showUpgradePopup && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+            <button onClick={() => setShowUpgradePopup(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(229,226,225,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>close</span>
+            </button>
+            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '220px', height: '220px', background: 'rgba(245,158,11,0.1)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '36px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 36" }}>bolt</span>
+            </div>
+            <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
+              {language === 'he' ? '!ברוכים הבאים למועדון' : 'Welcome to PRO!'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.7, marginBottom: '28px' }}>
+              {language === 'he'
+                ? 'המנוי שלך פעיל. עכשיו יש לך גישה מלאה לכל הכלים המקצועיים.'
+                : 'Your subscription is now active. You have full access to all professional tools.'}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px 20px', marginBottom: '28px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
+                {language === 'he' ? 'מה כלול ב PRO' : 'PRO includes'}
+              </div>
+              {[
+                { icon: 'folder_open', text: language === 'he' ? 'תיקים ללא הגבלה' : 'Unlimited portfolios' },
+                { icon: 'receipt_long', text: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades' },
+                { icon: 'query_stats', text: language === 'he' ? 'עמוד סטטיסטיקות מלא' : 'Full statistics page' },
+                { icon: 'inventory_2', text: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive' },
+              ].map((item, i, arr) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#f59e0b', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{item.icon}</span>
+                  <span style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', fontWeight: '600' }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setShowUpgradePopup(false)} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%',
+              background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              color: '#fff', borderRadius: '14px', padding: '13px',
+              fontSize: '14px', fontWeight: '800', border: 'none', cursor: 'pointer',
+              boxShadow: '0 0 28px rgba(245,158,11,0.4)',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>rocket_launch</span>
+              {language === 'he' ? 'בואו נתחיל!' : "Let's go!"}
+            </button>
           </div>
         </div>
       )}

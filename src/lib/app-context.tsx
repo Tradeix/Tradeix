@@ -148,6 +148,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       { onConflict: 'id' }
     )
     setSubscription('pro')
+    localStorage.setItem('tradeix-show-upgrade', '1')
   }
 
   async function cancelSubscription() {
