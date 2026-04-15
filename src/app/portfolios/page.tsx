@@ -247,6 +247,12 @@ export default function PortfoliosPage() {
                     {tr.edit}
                     <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 500, 'GRAD' -25, 'opsz' 20" }}>edit</span>
                   </button>
+                  <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.15)' }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.08)' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>inventory_2</span>
+                  </button>
                   <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                     onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)' }}
                     onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}

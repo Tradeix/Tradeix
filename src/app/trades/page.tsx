@@ -121,9 +121,9 @@ export default function TradesPage() {
         icon="receipt_long"
       />
 
-      {/* Filters + pagination — single row */}
-      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
-        {/* Left: outcome + time filters */}
+      {/* Filters */}
+      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
+        {/* time + outcome filters — aligned end (left in RTL) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           {/* Outcome */}
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
