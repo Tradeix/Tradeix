@@ -284,11 +284,11 @@ export default function DashboardPage() {
       </section>
 
       {/* ── HEADER AREA ── */}
-      <section className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)' }}>
-          {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
-        </div>
-        <div className="time-filter-bar" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px' }}>
+      <section className="dash-header" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '32px', gap: '10px' }}>
+        <div className="time-filter-bar" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px', alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', padding: '0 8px', whiteSpace: 'nowrap' }}>
+            {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
+          </span>
           {TIME_FILTERS.map((label, i) => (
             <button key={i} onClick={() => setTimeFilter(i)} style={{
               padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: '700',
