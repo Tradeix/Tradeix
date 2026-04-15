@@ -231,11 +231,23 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto' }}>
       {/* Logo */}
-      <div style={{ padding: '24px 20px 32px', display: 'flex', justifyContent: 'center' }}>
-        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
-          <div style={{ background: '#fff', borderRadius: '14px', padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>
-            <img src="/logo.jpeg" alt="TradeIX" style={{ height: '36px', width: 'auto', objectFit: 'contain', display: 'block' }} />
-          </div>
+      <div style={{ padding: '28px 20px 36px', display: 'flex', justifyContent: 'center' }}>
+        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          {/* Icon */}
+          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="38" height="38" rx="8" fill="#10b981"/>
+            {/* Bars */}
+            <rect x="7" y="22" width="5" height="9" rx="1.5" fill="rgba(255,255,255,0.45)"/>
+            <rect x="14" y="17" width="5" height="14" rx="1.5" fill="rgba(255,255,255,0.65)"/>
+            <rect x="21" y="12" width="5" height="19" rx="1.5" fill="rgba(255,255,255,0.85)"/>
+            {/* Arrow up-right */}
+            <polyline points="16,14 26,7 26,14" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <line x1="10" y1="20" x2="26" y2="7" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+          </svg>
+          {/* Text */}
+          <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: '#fff' }}>
+            Trade<span style={{ color: '#10b981' }}>IX</span>
+          </span>
         </Link>
       </div>
 
