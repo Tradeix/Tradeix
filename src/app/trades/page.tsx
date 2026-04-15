@@ -160,17 +160,6 @@ export default function TradesPage() {
           </>
         </div>
 
-        {/* Right: pagination — only when more than one page */}
-        {total > PAGE_SIZE && <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <button onClick={() => changePage(1)} disabled={!canOlder}
-            style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
-          </button>
-          <button onClick={() => changePage(-1)} disabled={!canNewer}
-            style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
-          </button>
-        </div>}
       </div>
 
       {/* Trades list */}
@@ -245,6 +234,23 @@ export default function TradesPage() {
           </div>
         )}
       </div>
+
+      {/* Bottom pagination */}
+      {total > PAGE_SIZE && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px 0' }}>
+          <button onClick={() => changePage(1)} disabled={!canOlder}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
+          </button>
+          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)' }}>
+            {page + 1} / {totalPages}
+          </span>
+          <button onClick={() => changePage(-1)} disabled={!canNewer}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
+          </button>
+        </div>
+      )}
 
       {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page) }} />}
       <style>{`
