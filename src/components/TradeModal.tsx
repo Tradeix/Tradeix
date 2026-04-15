@@ -259,14 +259,22 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               {/* P&L */}
               <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
+                <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : form.outcome === 'win' ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  P&L ($) <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
                 <input
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={form.pnl}
                   onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
                   placeholder="500"
-                  style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                  style={pnlError
+                    ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' }
+                    : form.outcome === 'win'
+                      ? { borderColor: 'rgba(34,197,94,0.4)', boxShadow: '0 0 0 3px rgba(34,197,94,0.08)' }
+                      : { borderColor: 'rgba(239,68,68,0.4)', boxShadow: '0 0 0 3px rgba(239,68,68,0.08)' }
+                  }
                 />
                 {pnlError && (
                   <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px' }}>
@@ -295,153 +303,172 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           /* ── VIEW MODE ── */
           <div>
 
-            {/* ── IMAGE HERO ── */}
-            <div style={{ position: 'relative', borderRadius: '24px 24px 0 0', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
-              {imageUrl ? (
-                <>
-                  <img
-                    src={imageUrl}
-                    alt="chart"
-                    onClick={() => setLightbox(true)}
-                    style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
-                  />
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
-                  <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '14px', left: '14px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
-                  </div>
-                </>
-              ) : (
-                <div {...getRootProps()} style={{ padding: '28px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.06)' : 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
-                  <input {...getInputProps()} />
-                  {uploadingImage ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: '24px', height: '24px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                      <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'rgba(74,127,255,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.25)' }}>{language === 'he' ? 'הוסף תמונת גרף' : 'Add chart image'}</span>
-                    </div>
-                  )}
+            {/* ── STICKY HEADER: Symbol + action buttons ── */}
+            <div style={{
+              position: 'sticky', top: 0, zIndex: 2,
+              padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--bg2)', borderRadius: '24px 24px 0 0',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+            }}>
+              {/* Left: symbol + direction */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                  background: trade.direction === 'long' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+                  border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '17px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                    {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
+                  </span>
                 </div>
-              )}
-
-              {/* Floating action buttons */}
-              <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px', zIndex: 2 }}>
+                <div>
+                  <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.01em', lineHeight: 1 }}>{trade.symbol}</div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: trade.direction === 'long' ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)', textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>
+                    {trade.direction === 'long' ? 'LONG' : 'SHORT'}
+                  </div>
+                </div>
+              </div>
+              {/* Right: action buttons */}
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button
                   onClick={() => setEditing(true)}
                   title={tr.editBtn}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(229,226,225,0.8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.3)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.5)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
+                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(74,127,255,0.1)', border: '1px solid rgba(74,127,255,0.2)', color: '#4a7fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
                 </button>
                 <button
                   onClick={() => setConfirmDelete(true)}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(10px)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.25)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.25)' }}
+                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
                 </button>
                 <button
                   onClick={onClose}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(229,226,225,0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)' }}
+                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
                 >✕</button>
               </div>
             </div>
 
-            {/* ── CONTENT ── */}
-            <div style={{ padding: '22px 24px 28px' }}>
-
-              {/* Symbol */}
-              <div style={{ fontSize: '30px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: '14px' }}>
-                {trade.symbol}
+            {/* ── IMAGE ── */}
+            {imageUrl ? (
+              <div style={{ position: 'relative', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
+                <img
+                  src={imageUrl}
+                  alt="chart"
+                  onClick={() => setLightbox(true)}
+                  style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
+                />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
+                <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '10px', left: '12px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
+                </div>
               </div>
+            ) : (
+              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.06)' : 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
+                <input {...getInputProps()} />
+                {uploadingImage ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(74,127,255,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.2)' }}>{language === 'he' ? 'הוסף תמונת גרף' : 'Add chart image'}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
-              {/* WIN / LOSS badge */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+            {/* ── ALL TRADE DATA ── */}
+            <div style={{ padding: '18px 20px 24px' }}>
+
+              {/* WIN/LOSS + P&L row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '7px 18px', borderRadius: '999px',
-                  background: isWin ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  border: `1px solid ${isWin ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                  padding: '8px 16px', borderRadius: '999px',
+                  background: isWin ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+                  border: `1px solid ${isWin ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
                 }}>
                   <span style={{ fontSize: '13px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
-                    {isWin ? (language === 'he' ? '✓ WIN' : '✓ WIN') : (language === 'he' ? '✕ LOSS' : '✕ LOSS')}
+                    {isWin ? '✓ WIN' : '✕ LOSS'}
                   </span>
                 </div>
-              </div>
-
-              {/* P&L Banner */}
-              <div style={{
-                background: isWin
-                  ? 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04))'
-                  : 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04))',
-                border: `1px solid ${isWin ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
-                borderRadius: '16px', padding: '18px 22px',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginBottom: '14px',
-              }}>
-                <div style={{ fontSize: '10px', fontWeight: '800', color: isWin ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
-                  P&L
-                </div>
-                <div style={{
-                  fontSize: '34px', fontWeight: '900', letterSpacing: '-0.02em', lineHeight: 1,
+                <div dir="ltr" style={{
+                  fontSize: '26px', fontWeight: '900', letterSpacing: '-0.02em',
                   color: isWin ? '#22c55e' : '#ef4444',
-                  textShadow: isWin ? '0 0 24px rgba(34,197,94,0.35)' : '0 0 24px rgba(239,68,68,0.35)',
+                  textShadow: isWin ? '0 0 20px rgba(34,197,94,0.4)' : '0 0 20px rgba(239,68,68,0.4)',
                 }}>
-                  {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                  {isWin ? '+' : '-'}${Math.abs(trade.pnl ?? 0)}
                 </div>
               </div>
 
-              {/* Stats card: Date / Entry / Exit */}
-              <div style={{ ...glass, overflow: 'hidden', marginBottom: '14px' }}>
+              {/* Data grid */}
+              <div style={{ ...glass, overflow: 'hidden' }}>
                 {/* Date */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>calendar_today</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.35)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>calendar_today</span>
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)' }}>{numericDate}</span>
                 </div>
                 {/* Entry price */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: trade.exit_price ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(74,127,255,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>login</span>
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(74,127,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#4a7fff' }}>{trade.entry_price || '—'}</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.entry_price != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
+                    {trade.entry_price ?? '—'}
+                  </span>
                 </div>
-                {/* Exit price — shown only if exists, colored by outcome */}
-                {trade.exit_price != null && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '14px', color: isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
-                      <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? 'rgba(34,197,94,0.55)' : 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
-                    </div>
-                    <span style={{ fontSize: '14px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444' }}>
-                      {trade.exit_price}
-                    </span>
+                {/* Exit price — always shown */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? 'rgba(34,197,94,0.55)' : 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
                   </div>
-                )}
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'rgba(255,255,255,0.2)' }}>
+                    {trade.exit_price ?? '—'}
+                  </span>
+                </div>
+                {/* RR ratio — always shown */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(74,127,255,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
+                  </div>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.rr_ratio != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
+                    {trade.rr_ratio != null ? `1:${trade.rr_ratio.toFixed(2)}` : '—'}
+                  </span>
+                </div>
+                {/* Notes — always shown */}
+                <div style={{ padding: '12px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: trade.notes ? '8px' : '0' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.35)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>notes</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
+                  </div>
+                  {trade.notes ? (
+                    <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', lineHeight: 1.65, fontWeight: '500', paddingInlineStart: '21px' }}>{trade.notes}</div>
+                  ) : (
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.15)', fontStyle: 'italic', paddingInlineStart: '21px' }}>—</div>
+                  )}
+                </div>
               </div>
 
-              {/* Notes */}
-              {trade.notes && (
-                <div style={{ ...glass, padding: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'rgba(208,197,175,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>notes</span>
-                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</div>
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', lineHeight: 1.65, fontWeight: '500' }}>{trade.notes}</div>
-                </div>
-              )}
+              {/* Edit hint */}
+              <button
+                onClick={() => setEditing(true)}
+                style={{ width: '100%', marginTop: '12px', background: 'rgba(74,127,255,0.08)', border: '1px solid rgba(74,127,255,0.2)', borderRadius: '12px', padding: '11px', fontSize: '12px', fontWeight: '700', color: 'rgba(74,127,255,0.7)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
+                {language === 'he' ? 'ערוך פרטים חסרים' : 'Edit missing details'}
+              </button>
 
             </div>
           </div>

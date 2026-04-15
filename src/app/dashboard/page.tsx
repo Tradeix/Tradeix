@@ -160,7 +160,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ── COMMAND CENTER STATS ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }} className="stats-hero">
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }} className="stats-hero">
 
         {/* Trades card */}
         <div style={{
@@ -232,89 +232,30 @@ export default function DashboardPage() {
           <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', margin: 0 }}>{tr.totalPnl}</p>
         </div>
 
-      </section>
-
-      {/* ── WIN RATE SECTION ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.03)',
-        borderRadius: '16px', padding: '24px',
-        position: 'relative', overflow: 'hidden', marginBottom: '32px',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }} className="winrate-row">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-            {/* Win Rate */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>{tr.winRate}</span>
-              <span style={{ fontSize: '30px', fontWeight: '900', color: '#22c55e', textShadow: '0 0 15px rgba(34,197,94,0.3)' }}>{stats.winRate.toFixed(0)}%</span>
+        {/* WIN RATE card */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(16,185,129,0.05) 100%)',
+          border: '1px solid rgba(34,197,94,0.2)',
+          boxShadow: '0 0 40px -10px rgba(34,197,94,0.2)',
+          borderRadius: '20px', padding: '20px',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(34,197,94,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '900', color: 'rgba(34,197,94,0.8)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tr.winRate}</span>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#22c55e', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>emoji_events</span>
             </div>
-            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.05)' }} />
-            {/* Wins / Losses badges */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ padding: '6px 16px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,1)', flexShrink: 0 }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#22c55e', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{tr.wins} {stats.wins}</span>
-              </div>
-              <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px rgba(239,68,68,0.8)', flexShrink: 0 }} />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#ef4444', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{tr.losses} {stats.losses}</span>
-              </div>
-            </div>
+          </div>
+          <p style={{ fontSize: '38px', fontWeight: '900', color: '#22c55e', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: '0 0 30px rgba(34,197,94,0.5)' }}>
+            {stats.winRate.toFixed(0)}%
+          </p>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '11px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{stats.wins} {language === 'he' ? 'נצח' : 'W'}</span>
+            <span style={{ fontSize: '11px', fontWeight: '800', color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{stats.losses} {language === 'he' ? 'הפס' : 'L'}</span>
           </div>
         </div>
 
-        {/* Win/Loss bar */}
-        {stats.totalTrades > 0 ? (() => {
-          const winPct = stats.winRate
-          const lossPct = 100 - winPct
-          const isRTL = language === 'he'
-          // RTL: wins on right, losses on left. LTR: wins on left, losses on right.
-          return (
-            <div>
-              {/* Labels — absolute positioning so direction doesn't affect placement */}
-              <div style={{ position: 'relative', height: '16px', marginBottom: '8px' }}>
-                <span style={{ position: 'absolute', [isRTL ? 'right' : 'left']: 0, fontSize: '10px', fontWeight: '800', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                  {tr.wins} · {winPct.toFixed(1)}%
-                </span>
-                <span style={{ position: 'absolute', [isRTL ? 'left' : 'right']: 0, fontSize: '10px', fontWeight: '800', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                  {lossPct.toFixed(1)}% · {tr.losses}
-                </span>
-              </div>
-              {/* Bar track */}
-              <div style={{ position: 'relative', height: '10px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
-                {/* Win fill — anchored to the "start" side */}
-                <div style={{
-                  position: 'absolute', top: 0, [isRTL ? 'right' : 'left']: 0, height: '100%',
-                  width: `${winPct}%`,
-                  background: isRTL ? 'linear-gradient(270deg, #16a34a, #22c55e)' : 'linear-gradient(90deg, #16a34a, #22c55e)',
-                  boxShadow: '0 0 16px rgba(34,197,94,0.45)',
-                  borderRadius: '999px',
-                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
-                }} />
-                {/* Loss fill — anchored to the "end" side */}
-                <div style={{
-                  position: 'absolute', top: 0, [isRTL ? 'left' : 'right']: 0, height: '100%',
-                  width: `${lossPct}%`,
-                  background: isRTL ? 'linear-gradient(270deg, #ef4444, #dc2626)' : 'linear-gradient(90deg, #ef4444, #dc2626)',
-                  boxShadow: '0 0 16px rgba(239,68,68,0.35)',
-                  borderRadius: '999px',
-                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
-                }} />
-                {/* Divider line */}
-                {winPct > 0 && lossPct > 0 && (
-                  <div style={{
-                    position: 'absolute', top: 0, bottom: 0,
-                    [isRTL ? 'right' : 'left']: `${winPct}%`, width: '2px',
-                    background: 'var(--bg2)',
-                    transform: 'translateX(-50%)',
-                  }} />
-                )}
-              </div>
-            </div>
-          )
-        })() : (
-          <div style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px' }} />
-        )}
       </section>
 
       {/* ── RECENT TRADES ── */}

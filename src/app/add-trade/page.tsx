@@ -185,13 +185,19 @@ export default function AddTradePage() {
       }
       const pnlAbs = Math.abs(parseFloat(tradeData.pnl) || 0)
       const pnl = tradeData.outcome === 'loss' ? -pnlAbs : pnlAbs
+      const entryNum = tradeData.entry_price ? parseFloat(tradeData.entry_price) : null
+      const exitNum = tradeData.exit_price ? parseFloat(tradeData.exit_price) : null
+      const rrRatio = tradeData.outcome === 'win' && entryNum && exitNum
+        ? Math.abs(exitNum - entryNum)
+        : null
       const { error } = await supabase.from('trades').insert({
         portfolio_id: portfolioId, user_id: user.id,
         symbol: tradeData.symbol.toUpperCase(),
         direction: tradeData.direction,
-        entry_price: tradeData.entry_price ? parseFloat(tradeData.entry_price) : null,
-        exit_price: tradeData.exit_price ? parseFloat(tradeData.exit_price) : null,
+        entry_price: entryNum,
+        exit_price: exitNum,
         pnl,
+        rr_ratio: rrRatio,
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
         notes: tradeData.notes, traded_at: tradeData.traded_at,
         outcome: tradeData.outcome,
@@ -305,14 +311,12 @@ export default function AddTradePage() {
                 {/* PNL — bold, updates as user types */}
                 <div style={{ textAlign: 'center', flexShrink: 0 }}>
                   <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '3px' }}>P&L</div>
-                  <div style={{
+                  <div dir="ltr" style={{
                     fontSize: '22px', fontWeight: '900',
-                    color: tradeData.pnl
-                      ? parseFloat(tradeData.pnl) >= 0 ? '#10b981' : '#ef4444'
-                      : 'var(--text3)',
+                    color: tradeData.pnl ? (tradeData.outcome === 'win' ? '#10b981' : '#ef4444') : 'var(--text3)',
                   }}>
                     {tradeData.pnl
-                      ? (parseFloat(tradeData.pnl) >= 0 ? '+' : '') + tradeData.pnl + '$'
+                      ? `${tradeData.outcome === 'win' ? '+' : '-'}$${Math.abs(parseFloat(tradeData.pnl) || 0)}`
                       : '—'}
                   </div>
                 </div>
@@ -451,14 +455,22 @@ export default function AddTradePage() {
 
                 {/* P&L */}
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                    {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444' }}>*</span>
+                  <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    P&L ($) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
+                      type="number"
+                      min="0"
+                      step="0.01"
                       value={tradeData.pnl}
                       onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
                       placeholder="500"
-                      style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                      style={pnlError
+                        ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' }
+                        : tradeData.outcome === 'win'
+                          ? { borderColor: 'rgba(34,197,94,0.4)', boxShadow: '0 0 0 3px rgba(34,197,94,0.08)' }
+                          : { borderColor: 'rgba(239,68,68,0.4)', boxShadow: '0 0 0 3px rgba(239,68,68,0.08)' }
+                      }
                     />
                   {pnlError && (
                     <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
