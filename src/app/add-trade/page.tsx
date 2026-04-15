@@ -43,9 +43,17 @@ export default function AddTradePage() {
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
   })
   const router = useRouter()
-  const { language, isPro } = useApp()
+  const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const supabase = createClient()
+
+  // Free users → manual form only, no steps
+  useEffect(() => {
+    if (!subscriptionLoading && !isPro) {
+      setIsManual(true)
+      setStep(3)
+    }
+  }, [subscriptionLoading, isPro])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -254,8 +262,8 @@ export default function AddTradePage() {
 
       <div style={{ maxWidth: '620px', margin: '0 auto' }}>
 
-        {/* STEP 1 */}
-        {step === 1 && (
+        {/* STEP 1 — PRO only */}
+        {isPro && step === 1 && (
           <div className="fade-up">
             <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
               <input {...getInputProps()} />
@@ -282,8 +290,8 @@ export default function AddTradePage() {
           </div>
         )}
 
-        {/* STEP 2 */}
-        {step === 2 && (
+        {/* STEP 2 — PRO only */}
+        {isPro && step === 2 && (
           <div className="fade-up">
             <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               {imagePreview && (
