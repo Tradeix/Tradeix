@@ -76,12 +76,14 @@ export default function StatsPage() {
   const firstDay = getDay(startOfMonth(currentMonth))
   const monthlyPnl: Record<number, number> = {}
   const monthlyCount: Record<number, number> = {}
+  const monthlyWins: Record<number, number> = {}
   trades.forEach(t => {
     const d = new Date(t.traded_at)
     if (d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear()) {
       const day = d.getDate()
       monthlyPnl[day] = (monthlyPnl[day] || 0) + t.pnl
       monthlyCount[day] = (monthlyCount[day] || 0) + 1
+      if (t.outcome === 'win') monthlyWins[day] = (monthlyWins[day] || 0) + 1
     }
   })
 
@@ -194,7 +196,7 @@ export default function StatsPage() {
       </div>
 
       {/* Calendar */}
-      <div ref={calendarRef} style={{ ...glass, padding: '24px' }}>
+      <div ref={calendarRef} className="cal-wrap" style={{ ...glass, padding: '24px' }}>
 
         {/* Header row: camera right | [prev] title [next] centered */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -264,56 +266,54 @@ export default function StatsPage() {
         </div>
 
         {/* Day name headers */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
+        <div className="cal-grid" style={{ marginBottom: '6px' }}>
           {DAY_NAMES.map(d => (
-            <div key={d} style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textAlign: 'center', padding: '4px 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{d}</div>
+            <div key={d} className="cal-dayname">{d}</div>
           ))}
         </div>
 
         {/* Calendar grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+        <div className="cal-grid">
           {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
           {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
             const pnl = monthlyPnl[day]
             const count = monthlyCount[day]
+            const wins = monthlyWins[day] || 0
             const hasData = pnl !== undefined
+            const winRate = count ? Math.round((wins / count) * 100) : 0
+            const isGreen = hasData && pnl > 0
+            const isRed = hasData && pnl <= 0
             return (
               <div
                 key={day}
+                className="cal-cell"
                 style={{
-                  background: hasData ? (pnl > 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'var(--bg3)',
-                  border: `1px solid ${hasData ? (pnl > 0 ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)') : 'var(--border)'}`,
-                  borderRadius: '10px', minHeight: '80px',
-                  padding: '6px 4px',
-                  transition: 'all 0.2s',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  background: isGreen
+                    ? 'linear-gradient(145deg, rgba(34,197,94,0.15), rgba(34,197,94,0.07))'
+                    : isRed
+                      ? 'linear-gradient(145deg, rgba(239,68,68,0.13), rgba(239,68,68,0.06))'
+                      : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${isGreen ? 'rgba(34,197,94,0.4)' : isRed ? 'rgba(239,68,68,0.35)' : 'rgba(255,255,255,0.07)'}`,
+                  boxShadow: isGreen ? '0 0 14px rgba(34,197,94,0.14), inset 0 1px 0 rgba(34,197,94,0.15)' : isRed ? '0 0 14px rgba(239,68,68,0.1)' : 'none',
                 }}
               >
                 {/* Date number */}
-                <div style={{
-                  fontSize: '13px', fontWeight: '800',
-                  color: hasData ? (pnl > 0 ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)') : 'var(--text3)',
-                  alignSelf: 'flex-start', paddingInlineStart: '4px', lineHeight: 1, marginBottom: '4px',
+                <div className="cal-day" style={{
+                  color: isGreen ? 'rgba(34,197,94,0.9)' : isRed ? 'rgba(239,68,68,0.9)' : 'rgba(255,255,255,0.22)',
                 }}>
                   {day}
                 </div>
 
-                {/* P&L + count centered */}
+                {/* P&L + win rate */}
                 {hasData && (
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', width: '100%' }}>
-                    <div style={{
-                      fontSize: '15px', fontWeight: '900',
-                      color: pnl >= 0 ? '#22c55e' : '#ef4444',
-                      letterSpacing: '-0.02em', lineHeight: 1,
-                      textAlign: 'center',
-                    }}>
-                      {pnl >= 0 ? '+' : ''}${Math.abs(pnl) >= 1000 ? (pnl / 1000).toFixed(1) + 'k' : pnl.toLocaleString()}
+                  <div className="cal-body">
+                    <div className="cal-pnl" style={{ color: pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                      {pnl >= 0 ? '+' : ''}${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}
                     </div>
-                    <div style={{
-                      fontSize: '10px', fontWeight: '700',
-                      color: 'var(--text3)', textAlign: 'center',
+                    <div className="cal-wr" style={{
+                      color: winRate === 100 ? '#22c55e' : winRate > 50 ? 'rgba(34,197,94,0.75)' : winRate === 50 ? 'rgba(255,255,255,0.4)' : '#ef4444',
                     }}>
-                      {count} {language === 'he' ? (count === 1 ? 'עסקה' : 'עסקאות') : count === 1 ? 'trade' : 'trades'}
+                      {winRate}%
                     </div>
                   </div>
                 )}
@@ -325,6 +325,82 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 900px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
+
+        /* Calendar grid */
+        .cal-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 6px;
+        }
+        .cal-dayname {
+          font-size: 10px;
+          font-weight: 800;
+          color: rgba(255,255,255,0.25);
+          text-align: center;
+          padding: 4px 0 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .cal-cell {
+          border-radius: 12px;
+          min-height: 88px;
+          padding: 8px 6px 6px;
+          display: flex;
+          flex-direction: column;
+          transition: all 0.2s;
+          cursor: default;
+        }
+        .cal-day {
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1;
+          margin-bottom: 4px;
+          align-self: flex-start;
+          padding-inline-start: 2px;
+        }
+        .cal-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+        }
+        .cal-pnl {
+          font-size: 15px;
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1;
+          text-align: center;
+        }
+        .cal-wr {
+          font-size: 10px;
+          font-weight: 800;
+          text-align: center;
+          letter-spacing: 0.04em;
+        }
+
+        /* Tablet */
+        @media (max-width: 640px) {
+          .cal-wrap { padding: 16px !important; }
+          .cal-grid { gap: 4px; }
+          .cal-cell { min-height: 72px; border-radius: 10px; padding: 6px 4px 5px; }
+          .cal-day { font-size: 11px; }
+          .cal-pnl { font-size: 12px; }
+          .cal-wr { font-size: 9px; }
+          .cal-dayname { font-size: 9px; letter-spacing: 0.04em; padding-bottom: 4px; }
+        }
+
+        /* Mobile */
+        @media (max-width: 400px) {
+          .cal-wrap { padding: 14px !important; }
+          .cal-grid { gap: 3px; }
+          .cal-cell { min-height: 58px; border-radius: 8px; padding: 5px 3px 4px; }
+          .cal-day { font-size: 10px; }
+          .cal-pnl { font-size: 10px; }
+          .cal-wr { font-size: 8px; }
+          .cal-dayname { font-size: 8px; }
+        }
       `}</style>
     </div>
   )
