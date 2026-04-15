@@ -42,7 +42,7 @@ export default function AddTradePage() {
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
   })
   const router = useRouter()
-  const { language } = useApp()
+  const { language, isPro } = useApp()
   const tr = t[language]
   const supabase = createClient()
 
@@ -152,6 +152,18 @@ export default function AddTradePage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('לא מחובר')
+
+      // Free tier: max 20 trades
+      if (!isPro) {
+        const { count } = await supabase.from('trades').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+        if ((count ?? 0) >= 20) {
+          toast.error(language === 'he' ? 'הגעת למגבלת 20 עסקאות — שדרג ל PRO' : 'Reached 20 trade limit — upgrade to PRO')
+          router.push('/upgrade')
+          setSubmitting(false)
+          return
+        }
+      }
+
       const savedId = localStorage.getItem('tradeix-active-portfolio')
       let portfolioId = savedId
       if (!portfolioId) {

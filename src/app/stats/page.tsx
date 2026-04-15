@@ -1,24 +1,54 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import Link from 'next/link'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
 import Link from 'next/link'
 
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language } = useApp()
+  const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
+  const [capturing, setCapturing] = useState(false)
+  const calendarRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
+
+  async function captureCalendar() {
+    if (!calendarRef.current || capturing) return
+    setCapturing(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(calendarRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      })
+      canvas.toBlob(blob => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `PL-${format(currentMonth, 'yyyy-MM')}.png`
+        a.click()
+        URL.revokeObjectURL(url)
+      }, 'image/png')
+    } catch (e) {
+      console.error('Screenshot failed', e)
+    } finally {
+      setCapturing(false)
+    }
+  }
 
   useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio])
 
@@ -74,6 +104,32 @@ export default function StatsPage() {
       <div style={{ fontSize: '28px', fontWeight: '900', color, letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
+
+  // Free tier paywall
+  if (!subscriptionLoading && !isPro) {
+    return (
+      <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="query_stats" />
+        <div style={{ textAlign: 'center', padding: '80px 20px', position: 'relative' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '24px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 40" }}>lock</span>
+          </div>
+          <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
+            {language === 'he' ? 'עמוד הסטטיסטיקות זמין ל PRO בלבד' : 'Statistics page is PRO only'}
+          </div>
+          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+            {language === 'he'
+              ? 'שדרג למנוי PRO כדי לגשת לניתוחים מעמיקים, גרפים ולוח שנה חודשי'
+              : 'Upgrade to PRO to access deep analytics, charts and monthly calendar'}
+          </div>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '14px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+            {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   if (portfoliosLoaded && !activePortfolio) {
     return (
@@ -139,15 +195,51 @@ export default function StatsPage() {
       </div>
 
       {/* Calendar */}
-      <div style={{ ...glass, padding: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.01em' }}>
-            {tr.monthlyCalendar} — {format(currentMonth, language === 'he' ? 'MMMM yyyy' : 'MMMM yyyy')}
+      <div ref={calendarRef} style={{ ...glass, padding: '24px' }}>
+        {/* Header: [prev] [centered title + camera] [next] */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexDirection: language === 'he' ? 'row-reverse' : 'row' }}>
+          {/* Prev month arrow */}
+          <button
+            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)' }}
+            onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+          </button>
+
+          {/* Center: title + camera */}
+          <div style={{ flex: 1, textAlign: 'center', position: 'relative', padding: '0 8px' }}>
+            <div style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.01em', color: 'var(--text)' }}>
+              {tr.monthlyCalendar}
+            </div>
+            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {format(currentMonth, 'MMMM yyyy')}
+            </div>
+            {/* Camera button — absolute top-right of center block */}
+            <button
+              onClick={captureCalendar}
+              disabled={capturing}
+              title={language === 'he' ? 'שמור תמונה' : 'Save image'}
+              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', [language === 'he' ? 'left' : 'right']: 0, width: '32px', height: '32px', borderRadius: '9px', background: capturing ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: '1px solid var(--border)', color: capturing ? '#4a7fff' : 'var(--text3)', cursor: capturing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+              onMouseOver={e => { if (!capturing) { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)'; e.currentTarget.style.color = '#4a7fff' } }}
+              onMouseOut={e => { if (!capturing) { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)' } }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: `'FILL' ${capturing ? 1 : 0}, 'wght' 200, 'GRAD' -25, 'opsz' 20` }}>
+                {capturing ? 'hourglass_empty' : 'photo_camera'}
+              </span>
+            </button>
           </div>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))} className="btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}>‹</button>
-            <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))} className="btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}>›</button>
-          </div>
+
+          {/* Next month arrow */}
+          <button
+            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)' }}
+            onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+          </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>

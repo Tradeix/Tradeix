@@ -5,12 +5,14 @@ import { createClient } from '@/lib/supabase/client'
 import { useApp } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
+import Link from 'next/link'
 
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage } = useApp()
+  const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
+  const [cancelingPro, setCancelingPro] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -205,13 +207,18 @@ export default function SettingsPage() {
         </div>
 
         {/* ── CARD 3: Subscription ── */}
-        <div style={{ ...glass, position: 'relative', overflow: 'hidden', border: '1px solid rgba(74,127,255,0.15)' }}>
-          {/* Glow background */}
-          <div style={{ position: 'absolute', top: '-40px', left: '-40px', width: '150px', height: '150px', background: 'rgba(74,127,255,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+        <div style={{
+          ...glass, position: 'relative', overflow: 'hidden',
+          border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(74,127,255,0.15)',
+          background: isPro
+            ? 'linear-gradient(135deg, rgba(245,158,11,0.06), rgba(249,115,22,0.03))'
+            : 'var(--glass-bg)',
+        }}>
+          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(74,127,255,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>workspace_premium</span>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(74,127,255,0.15)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.3)' : 'rgba(74,127,255,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: isPro ? '#f59e0b' : '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>workspace_premium</span>
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
@@ -220,49 +227,84 @@ export default function SettingsPage() {
           </div>
 
           {/* Current plan badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(74,127,255,0.08)', border: '1px solid rgba(74,127,255,0.2)', borderRadius: '14px', padding: '14px 16px', marginBottom: '20px' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: isPro ? 'rgba(245,158,11,0.1)' : 'rgba(74,127,255,0.08)',
+            border: `1px solid ${isPro ? 'rgba(245,158,11,0.25)' : 'rgba(74,127,255,0.2)'}`,
+            borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
+          }}>
             <div>
-              <div style={{ fontSize: '11px', color: 'rgba(74,127,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>{language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}</div>
-              <div style={{ fontSize: '18px', fontWeight: '900', color: '#4a7fff' }}>{language === 'he' ? 'חינמי' : 'Free'}</div>
+              <div style={{ fontSize: '11px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(74,127,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+                {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
+              </div>
+              <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#4a7fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
+                {isPro && <span style={{ fontSize: '12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700' }}>⚡ פעיל</span>}
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
+                {isPro ? '$20 / ' + (language === 'he' ? 'חודש' : 'month') : (language === 'he' ? 'ללא עלות' : 'No charge')}
+              </div>
             </div>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(74,127,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>verified</span>
+            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(74,127,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '22px', color: isPro ? '#f59e0b' : '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                {isPro ? 'bolt' : 'verified'}
+              </span>
             </div>
           </div>
 
           {/* Features list */}
           <div style={{ marginBottom: '24px' }}>
-            {[
-              { feature: language === 'he' ? 'עד 50 עסקאות' : 'Up to 50 trades', included: true },
-              { feature: language === 'he' ? 'ניתוח AI בסיסי' : 'Basic AI analysis', included: true },
-              { feature: language === 'he' ? 'סטטיסטיקות מתקדמות' : 'Advanced statistics', included: false },
-              { feature: language === 'he' ? 'ייצוא נתונים' : 'Data export', included: false },
-              { feature: language === 'he' ? 'תיקים ללא הגבלה' : 'Unlimited portfolios', included: false },
-            ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 4 ? '1px solid var(--border)' : 'none' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.included ? '#22c55e' : 'var(--text3)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
-                  {item.included ? 'check_circle' : 'cancel'}
+            {(isPro ? [
+              { feature: language === 'he' ? 'עד 3 תיקים' : 'Up to 3 portfolios', ok: true },
+              { feature: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades', ok: true },
+              { feature: language === 'he' ? 'עמוד סטטיסטיקות' : 'Statistics page', ok: true },
+              { feature: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive', ok: true },
+              { feature: language === 'he' ? 'עדכונים ותכונות חדשות' : 'New features & updates', ok: true },
+            ] : [
+              { feature: language === 'he' ? 'תיק מסחר אחד' : 'One portfolio', ok: true },
+              { feature: language === 'he' ? 'עד 20 עסקאות' : 'Up to 20 trades', ok: true },
+              { feature: language === 'he' ? 'עמוד סטטיסטיקות' : 'Statistics page', ok: false },
+              { feature: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive', ok: false },
+              { feature: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades', ok: false },
+            ]).map((item, i, arr) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.ok ? (isPro ? '#f59e0b' : '#22c55e') : 'var(--text3)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
+                  {item.ok ? 'check_circle' : 'cancel'}
                 </span>
-                <span style={{ fontSize: '12px', color: item.included ? 'var(--text2)' : 'var(--text3)', fontWeight: '600' }}>{item.feature}</span>
+                <span style={{ fontSize: '12px', color: item.ok ? 'var(--text2)' : 'var(--text3)', fontWeight: '600', textDecoration: item.ok ? 'none' : 'line-through' }}>
+                  {item.feature}
+                </span>
               </div>
             ))}
           </div>
 
-          {/* Upgrade button */}
-          <button style={{
-            width: '100%', background: 'linear-gradient(135deg, rgba(74,127,255,0.2), rgba(139,92,246,0.2))',
-            color: '#4a7fff', border: '1px solid rgba(74,127,255,0.3)',
-            borderRadius: '12px', padding: '11px',
-            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
-            fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          }}
-            onMouseOver={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74,127,255,0.3), rgba(139,92,246,0.3))' }}
-            onMouseOut={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74,127,255,0.2), rgba(139,92,246,0.2))' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>rocket_launch</span>
-            {language === 'he' ? 'שדרג לפרו' : 'Upgrade to Pro'}
-          </button>
+          {/* CTA */}
+          {isPro ? (
+            <button
+              onClick={async () => { setCancelingPro(true); await cancelSubscription(); setCancelingPro(false) }}
+              disabled={cancelingPro}
+              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1 }}
+              onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
+              onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>cancel</span>
+              {cancelingPro ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
+            </button>
+          ) : (
+            <Link href="/upgrade" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              width: '100%', background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
+              fontSize: '13px', fontWeight: '800', textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(245,158,11,0.3)', transition: 'all 0.2s',
+            }}
+              onMouseOver={(e: any) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(245,158,11,0.4)' }}
+              onMouseOut={(e: any) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(245,158,11,0.3)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+              {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
+            </Link>
+          )}
         </div>
       </div>
 

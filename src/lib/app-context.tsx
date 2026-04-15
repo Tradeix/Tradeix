@@ -5,20 +5,27 @@ import { createClient } from '@/lib/supabase/client'
 
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
+type SubscriptionTier = 'free' | 'pro'
 
 type AppContextType = {
   theme: Theme
   language: Language
   setTheme: (t: Theme) => void
   setLanguage: (l: Language) => void
+  subscription: SubscriptionTier
+  isPro: boolean
+  subscriptionLoading: boolean
+  upgradeToPro: () => Promise<void>
+  cancelSubscription: () => Promise<void>
 }
 
 const AppContext = createContext<AppContextType>({
   theme: 'dark', language: 'he',
   setTheme: () => {}, setLanguage: () => {},
+  subscription: 'free', isPro: false, subscriptionLoading: true,
+  upgradeToPro: async () => {}, cancelSubscription: async () => {},
 })
 
-// Apply theme to DOM immediately
 function applyTheme(t: Theme) {
   const root = document.documentElement
   if (t === 'light') {
@@ -88,10 +95,11 @@ function applyLanguage(l: Language) {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [language, setLanguageState] = useState<Language>('he')
+  const [subscription, setSubscription] = useState<SubscriptionTier>('free')
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const supabase = createClient()
 
   useEffect(() => {
-    // Apply from localStorage immediately (no flash)
     const savedTheme = (localStorage.getItem('tradeix-theme') as Theme) || 'dark'
     const savedLang = (localStorage.getItem('tradeix-lang') as Language) || 'he'
     setThemeState(savedTheme)
@@ -99,46 +107,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     applyTheme(savedTheme)
     applyLanguage(savedLang)
 
-    // Then sync from Supabase
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      supabase.from('profiles').select('theme, language').eq('id', user.id).single()
+      if (!user) { setSubscriptionLoading(false); return }
+      supabase.from('profiles')
+        .select('theme, language, subscription_tier, subscription_status')
+        .eq('id', user.id).single()
         .then(({ data }) => {
-          if (!data) return
+          if (!data) { setSubscriptionLoading(false); return }
           const t = (data.theme as Theme) || savedTheme
           const l = (data.language as Language) || savedLang
-          setThemeState(t)
-          setLanguageState(l)
-          applyTheme(t)
-          applyLanguage(l)
+          setThemeState(t); setLanguageState(l)
+          applyTheme(t); applyLanguage(l)
           localStorage.setItem('tradeix-theme', t)
           localStorage.setItem('tradeix-lang', l)
+          const tier = (data.subscription_tier as SubscriptionTier) || 'free'
+          setSubscription(tier)
+          setSubscriptionLoading(false)
         })
     })
   }, [])
 
   async function setTheme(t: Theme) {
-    setThemeState(t)
-    applyTheme(t)
+    setThemeState(t); applyTheme(t)
     localStorage.setItem('tradeix-theme', t)
     const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      await supabase.from('profiles').upsert({ id: user.id, theme: t }, { onConflict: 'id' })
-    }
+    if (user) await supabase.from('profiles').upsert({ id: user.id, theme: t }, { onConflict: 'id' })
   }
 
   async function setLanguage(l: Language) {
-    setLanguageState(l)
-    applyLanguage(l)
+    setLanguageState(l); applyLanguage(l)
     localStorage.setItem('tradeix-lang', l)
     const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      await supabase.from('profiles').upsert({ id: user.id, language: l }, { onConflict: 'id' })
-    }
+    if (user) await supabase.from('profiles').upsert({ id: user.id, language: l }, { onConflict: 'id' })
   }
 
+  async function upgradeToPro() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('profiles').upsert(
+      { id: user.id, subscription_tier: 'pro', subscription_status: 'active' },
+      { onConflict: 'id' }
+    )
+    setSubscription('pro')
+  }
+
+  async function cancelSubscription() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('profiles').upsert(
+      { id: user.id, subscription_tier: 'free', subscription_status: 'canceled' },
+      { onConflict: 'id' }
+    )
+    setSubscription('free')
+  }
+
+  const isPro = subscription === 'pro'
+
   return (
-    <AppContext.Provider value={{ theme, language, setTheme, setLanguage }}>
+    <AppContext.Provider value={{
+      theme, language, setTheme, setLanguage,
+      subscription, isPro, subscriptionLoading,
+      upgradeToPro, cancelSubscription,
+    }}>
       {children}
     </AppContext.Provider>
   )

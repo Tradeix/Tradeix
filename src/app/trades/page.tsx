@@ -79,7 +79,6 @@ export default function TradesPage() {
   const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
 
   const OUTCOME_FILTERS = [
-    { key: 'all', label: tr.all, icon: 'receipt_long' },
     { key: 'win', label: 'WIN', icon: 'trending_up' },
     { key: 'loss', label: 'LOSS', icon: 'trending_down' },
   ]
@@ -128,7 +127,7 @@ export default function TradesPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           {/* Outcome */}
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
-            <button key={key} onClick={() => { setFilter(key as any); setPage(0) }} style={{
+            <button key={key} onClick={() => { setFilter(filter === key ? 'all' : key as any); setPage(0) }} style={{
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '7px 14px', borderRadius: '10px', fontSize: '11px',
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
@@ -143,8 +142,8 @@ export default function TradesPage() {
             </button>
           ))}
 
-          {/* Separator + time filter — only when more than one page */}
-          {total > PAGE_SIZE && <>
+          {/* Separator + time filter — always visible */}
+          <>
             <div style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
             <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
               {TIME_LABELS.map((label, i) => (
@@ -158,14 +157,11 @@ export default function TradesPage() {
                 }}>{label}</button>
               ))}
             </div>
-          </>}
+          </>
         </div>
 
         {/* Right: pagination — only when more than one page */}
-        {total > PAGE_SIZE && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap' }}>
-            {total > 0 ? `${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, total)} / ${total}` : '0'}
-          </span>
+        {total > PAGE_SIZE && <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <button onClick={() => changePage(1)} disabled={!canOlder}
             style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>

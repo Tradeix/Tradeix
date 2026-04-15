@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 
@@ -24,8 +25,9 @@ const MARKET_LABELS: Record<string, Record<string, string>> = {
 }
 
 export default function PortfoliosPage() {
-  const { language } = useApp()
+  const { language, isPro } = useApp()
   const tr = t[language]
+  const router = useRouter()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -86,6 +88,17 @@ export default function PortfoliosPage() {
   }
 
   function openNewForm() {
+    // Free tier: max 1 portfolio
+    const maxPortfolios = isPro ? 3 : 1
+    if (portfolios.length >= maxPortfolios) {
+      if (!isPro) {
+        toast.error(language === 'he' ? 'מנוי חינמי מוגבל לתיק אחד — שדרג ל PRO' : 'Free plan is limited to 1 portfolio — upgrade to PRO')
+        router.push('/upgrade')
+      } else {
+        toast.error(language === 'he' ? 'מנוי PRO מוגבל ל-3 תיקים' : 'PRO plan is limited to 3 portfolios')
+      }
+      return
+    }
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
     setEditingId(null); setShowForm(true)
   }

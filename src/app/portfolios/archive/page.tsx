@@ -30,7 +30,7 @@ interface PortfolioStats {
 }
 
 export default function ArchivePage() {
-  const { language } = useApp()
+  const { language, isPro, subscriptionLoading } = useApp()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [stats, setStats] = useState<Record<string, PortfolioStats>>({})
   const [loading, setLoading] = useState(true)
@@ -113,6 +113,32 @@ export default function ArchivePage() {
   }
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'
+
+  // Free tier paywall
+  if (!subscriptionLoading && !isPro) {
+    return (
+      <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader title={language === 'he' ? 'ארכיון תיקים' : 'Portfolio Archive'} subtitle={language === 'he' ? 'תיקים מועברים לארכיון' : 'Archived portfolios'} icon="inventory_2" />
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '24px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 40" }}>lock</span>
+          </div>
+          <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
+            {language === 'he' ? 'ארכיון תיקים זמין ל PRO בלבד' : 'Portfolio archive is PRO only'}
+          </div>
+          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+            {language === 'he'
+              ? 'שדרג למנוי PRO כדי לגשת לארכיון התיקים ולנהל היסטוריית מסחר מלאה'
+              : 'Upgrade to PRO to access the portfolio archive and manage full trading history'}
+          </div>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '14px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+            {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>

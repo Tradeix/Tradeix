@@ -376,8 +376,8 @@ export default function DashboardPage() {
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Time filter + pagination — only when more than one page */}
-            {tradeTotal > 6 && <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {/* Time filter — always visible */}
+            <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
               {[tr.daily, tr.weekly, tr.monthly].map((label, i) => (
                 <button key={i} onClick={() => { setTradeTimeFilter(i); setTradePage(0); loadData(0, i) }} style={{
                   padding: '4px 12px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
@@ -388,8 +388,8 @@ export default function DashboardPage() {
                   transition: 'all 0.2s', whiteSpace: 'nowrap',
                 }}>{label}</button>
               ))}
-            </div>}
-            {/* Pagination */}
+            </div>
+            {/* Pagination arrows — only when more than one page */}
             {tradeTotal > 6 && (() => {
               const isRTL      = language === 'he'
               const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
@@ -398,10 +398,7 @@ export default function DashboardPage() {
               const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
               const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
               return (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', minWidth: '60px', textAlign: 'center' }}>
-                    {tradeTotal > 0 ? `${tradePage * 6 + 1}–${Math.min((tradePage + 1) * 6, tradeTotal)} / ${tradeTotal}` : '0'}
-                  </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <button
                     onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                     disabled={!canOlder}
@@ -422,18 +419,18 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ padding: '8px 0' }}>
+        <div style={{ padding: '8px 12px' }}>
           {trades.length === 0 ? (
 
             <div style={{ padding: '40px', textAlign: 'center', opacity: 0.4 }}>
               <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--text3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 32" }}>receipt_long</span>
               <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{tr.noMoreTrades}</p>
             </div>
-          ) : trades.map((trade) => (
+          ) : trades.map((trade, idx) => (
             <div
               key={trade.id}
               onClick={() => setSelectedTrade(trade)}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 70px 100px 80px 80px', alignItems: 'center', gap: '8px', padding: '14px 28px', cursor: 'pointer', transition: 'background 0.15s', borderBottom: '1px solid var(--border)' }}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none' }}
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.04)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
               className="recent-trade-row"
@@ -497,36 +494,6 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Bottom pagination — only when more than one page */}
-        {tradeTotal > 6 && (() => {
-          const isRTL      = language === 'he'
-          const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
-          const canOlder   = tradePage < totalPages - 1
-          const canNewer   = tradePage > 0
-          const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
-          const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
-          return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', padding: '14px 28px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
-              <button
-                onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
-                disabled={!canOlder}
-                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.2, transition: 'all 0.2s' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
-              </button>
-              <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', minWidth: '60px', textAlign: 'center' }}>
-                {tradePage * 6 + 1}–{Math.min((tradePage + 1) * 6, tradeTotal)} / {tradeTotal}
-              </span>
-              <button
-                onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
-                disabled={!canNewer}
-                style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.2, transition: 'all 0.2s' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
-              </button>
-            </div>
-          )
-        })()}
       </section>
 
       {selectedTrade && (

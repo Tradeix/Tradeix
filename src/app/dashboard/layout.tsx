@@ -17,29 +17,20 @@ function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#4a7fff'
 }
 
-const NAV_ICONS: Record<string, string> = {
-  '/dashboard': 'dashboard',
-  '/add-trade': 'add_circle',
-  '/trades': 'receipt_long',
-  '/stats': 'query_stats',
-  '/portfolios': 'folder_open',
-  '/settings': 'manage_accounts',
-}
-
 function Header({ sidebarOpen, setSidebarOpen }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
-  const { language } = useApp()
+  const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const [showMenu, setShowMenu] = useState(false)
   const [user, setUser] = useState<any>(null)
   const supabase = createClient()
+  const isRTL = language === 'he'
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
   }, [])
 
   const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#4a7fff'
-  const isRTL = language === 'he'
 
   return (
     <header style={{
@@ -49,7 +40,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       WebkitBackdropFilter: 'blur(24px)',
       borderBottom: '1px solid var(--border)',
       display: 'flex', alignItems: 'center',
-      padding: '0 32px', gap: '16px',
+      padding: '0 24px', gap: '12px',
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
@@ -62,12 +53,11 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>menu</span>
       </button>
 
-      {/* Portfolio switcher — right side (hidden when no portfolios) */}
+      {/* Portfolio switcher */}
       {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          background: 'var(--bg3)',
-          border: '1px solid var(--border)',
+          background: 'var(--bg3)', border: '1px solid var(--border)',
           borderRadius: '12px', padding: '7px 14px',
           fontSize: '12px', color: 'var(--text)', cursor: 'pointer',
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
@@ -86,17 +76,11 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             <div style={{
               position: 'absolute', top: '48px',
               [isRTL ? 'right' : 'left']: 0,
-              background: 'var(--bg2)',
-              border: '1px solid var(--border2)',
+              background: 'var(--bg2)', border: '1px solid var(--border2)',
               borderRadius: '16px', zIndex: 200, minWidth: '220px',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.25)',
-              overflow: 'hidden',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.25)', overflow: 'hidden',
             }}>
-              {portfolios.length === 0 ? (
-                <div style={{ padding: '14px 18px', fontSize: '12px', color: 'var(--text3)' }}>
-                  {tr.noPortfolios}
-                </div>
-              ) : portfolios.map(p => {
+              {portfolios.map(p => {
                 const c = getPortfolioColor(p)
                 return (
                   <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
@@ -126,15 +110,33 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         )}
       </div>}
 
-      {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Current portfolio indicator — left side (hidden when no portfolios) */}
+      {/* Upgrade to PRO banner — free users only */}
+      {!subscriptionLoading && !isPro && (
+        <Link href="/upgrade" style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+          border: '1px solid rgba(245,158,11,0.4)',
+          borderRadius: '10px', padding: '7px 14px',
+          fontSize: '11px', fontWeight: '800', color: '#fff',
+          textDecoration: 'none', letterSpacing: '0.04em',
+          boxShadow: '0 0 18px rgba(245,158,11,0.25)',
+          transition: 'all 0.2s', whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+          className="upgrade-btn"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+          {language === 'he' ? 'שדרג ל PRO' : 'Upgrade to PRO'}
+        </Link>
+      )}
+
+      {/* Active portfolio badge */}
       {portfolios.length > 0 && activePortfolio && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          background: `${dotColor}12`,
-          border: `1px solid ${dotColor}30`,
+          background: `${dotColor}12`, border: `1px solid ${dotColor}30`,
           borderRadius: '20px', padding: '4px 14px',
           fontSize: '11px', color: dotColor, fontWeight: '700',
           letterSpacing: '0.05em', textTransform: 'uppercase',
@@ -144,13 +146,15 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         </div>
       )}
 
-      {/* User — avatar first, then name */}
+      {/* User info */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)' }}>
         <div style={{ position: 'relative' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
-            border: '1.5px solid rgba(74,127,255,0.4)',
+            background: isPro
+              ? 'linear-gradient(135deg, #f59e0b, #f97316)'
+              : 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
+            border: isPro ? '1.5px solid rgba(245,158,11,0.5)' : '1.5px solid rgba(74,127,255,0.4)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
           }}>
@@ -161,15 +165,24 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           </div>
           <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
         </div>
-        <div style={{ textAlign: isRTL ? 'right' : 'left' }}>
+        <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
           <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
             {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
-            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
-            <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              {tr.freeAccount}
-            </span>
+            {isPro ? (
+              <>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 6px #f59e0b' }} />
+                <span style={{ fontSize: '9px', color: '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>PRO</span>
+              </>
+            ) : (
+              <>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
+                <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  {tr.freeAccount}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -179,19 +192,20 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
 
 function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const pathname = usePathname()
-  const { language } = useApp()
+  const { language, isPro } = useApp()
   const tr = t[language]
   const isRTL = language === 'he'
 
+  // Stats and archive hidden for free users in sidebar
   const NAV_ITEMS = [
     { href: '/dashboard', icon: 'dashboard', label: tr.dashboard },
     { href: '/add-trade', icon: 'add_circle', label: tr.addTrade },
     { href: '/trades', icon: 'receipt_long', label: tr.allTrades },
-    { href: '/stats', icon: 'query_stats', label: tr.statistics },
+    ...(isPro ? [{ href: '/stats', icon: 'query_stats', label: tr.statistics }] : []),
   ]
   const BOTTOM_NAV = [
     { href: '/portfolios', icon: 'folder_open', label: tr.portfolioSettings },
-    { href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' },
+    ...(isPro ? [{ href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' }] : []),
     { href: '/settings', icon: 'manage_accounts', label: tr.personalSettings },
   ]
 
@@ -214,56 +228,33 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       >
         {active && (
           <div style={{
-            position: 'absolute',
-            [isRTL ? 'right' : 'left']: 0,
-            top: 0, bottom: 0,
-            width: '2px',
-            background: '#4a7fff',
-            boxShadow: '0 0 12px rgba(74,127,255,0.8)',
+            position: 'absolute', [isRTL ? 'right' : 'left']: 0,
+            top: 0, bottom: 0, width: '2px',
+            background: '#4a7fff', boxShadow: '0 0 12px rgba(74,127,255,0.8)',
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
           }} />
         )}
-        <span className="material-symbols-outlined" style={{
-          fontSize: '18px',
-          fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20",
-          color: 'inherit',
-        }}>{icon}</span>
+        <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20", color: 'inherit' }}>{icon}</span>
         {label}
       </Link>
     )
   }
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100vh',
-      background: 'var(--bg2)',
-      overflowY: 'auto',
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto' }}>
       {/* Logo */}
       <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Logo icon - diamond shape */}
           <div style={{
             width: '28px', height: '28px',
             background: 'linear-gradient(135deg, #4a7fff 0%, #8b5cf6 100%)',
             borderRadius: '5px', transform: 'rotate(-45deg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(74,127,255,0.4)',
-            flexShrink: 0,
+            boxShadow: '0 0 20px rgba(74,127,255,0.4)', flexShrink: 0,
           }}>
-            <div style={{
-              width: '10px', height: '10px',
-              border: '2px solid rgba(255,255,255,0.8)',
-              borderLeft: '2px solid transparent',
-              borderBottom: '2px solid transparent',
-              transform: 'rotate(45deg)',
-            }} />
+            <div style={{ width: '10px', height: '10px', border: '2px solid rgba(255,255,255,0.8)', borderLeft: '2px solid transparent', borderBottom: '2px solid transparent', transform: 'rotate(45deg)' }} />
           </div>
-          <span style={{
-            fontFamily: 'Manrope, Heebo, sans-serif',
-            fontWeight: '800', fontSize: '20px',
-            letterSpacing: '-0.02em', color: 'var(--text)',
-          }}>
+          <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             Trade<span style={{ background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IX</span>
           </span>
         </div>
@@ -275,6 +266,28 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
       </nav>
+
+      {/* Upgrade card for free users */}
+      {!isPro && (
+        <div style={{ margin: '0 12px 12px', padding: '14px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(249,115,22,0.06))', border: '1px solid rgba(245,158,11,0.2)' }}>
+          <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+            {language === 'he' ? 'מנוי חינמי' : 'Free Plan'}
+          </div>
+          <div style={{ fontSize: '10px', color: 'rgba(245,158,11,0.6)', marginBottom: '10px', lineHeight: 1.5 }}>
+            {language === 'he' ? 'שדרג לPRO לגישה מלאה' : 'Upgrade to PRO for full access'}
+          </div>
+          <Link href="/upgrade" onClick={() => setSidebarOpen(false)} style={{
+            display: 'block', textAlign: 'center',
+            background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+            color: '#fff', borderRadius: '9px', padding: '8px 12px',
+            fontSize: '11px', fontWeight: '800', textDecoration: 'none',
+            boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+          }}>
+            {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
+          </Link>
+        </div>
+      )}
 
       {/* Logout */}
       <div style={{ padding: '16px 8px', borderTop: '1px solid var(--border)' }}>
@@ -311,23 +324,19 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Google Material Symbols font */}
       <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
 
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
 
-      {/* Sidebar */}
       <div style={{
         width: '210px', height: '100vh',
         borderInlineEnd: '1px solid var(--border)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
-        transition: 'transform 0.3s ease',
-        overflow: 'hidden',
+        transition: 'transform 0.3s ease', overflow: 'hidden',
       }} className="sidebar-el">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
-      {/* Main */}
       <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '210px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }} className="page-content">
@@ -339,11 +348,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
         body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: var(--bg) !important; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
+        .upgrade-btn:hover { transform: scale(1.03); box-shadow: 0 0 24px rgba(245,158,11,0.4) !important; }
         @media (max-width: 640px) {
           .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
           .page-content { padding: 20px 16px !important; }
+          .upgrade-btn span:last-child { display: none; }
+          .user-name-block { display: none !important; }
         }
         @media (min-width: 641px) { .sidebar-el { transform: translateX(0) !important; } }
       `}</style>
