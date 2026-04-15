@@ -27,6 +27,7 @@ export default function DashboardPage() {
     totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
   })
   const [equityCurve, setEquityCurve] = useState<{date: string; value: number}[]>([])
+  const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const supabase = createClient()
 
   const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
@@ -100,7 +101,26 @@ export default function DashboardPage() {
         setStats({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
       }
 
-      // Equity curve (all time for visual context)
+      // All-time portfolio value + drawdown
+      const { data: allTimeTrades } = await supabase
+        .from('trades').select('pnl, traded_at')
+        .eq('portfolio_id', activePortfolio!.id)
+        .order('traded_at', { ascending: true })
+      if (allTimeTrades) {
+        const allTimePnl = allTimeTrades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
+        const initialCapital = activePortfolio!.initial_capital || 0
+        const currentValue = initialCapital + allTimePnl
+        const totalReturn = initialCapital > 0 ? (allTimePnl / initialCapital) * 100 : 0
+        let peak = initialCapital, maxDD = 0, running = initialCapital
+        for (const t of allTimeTrades) {
+          running += (t.pnl || 0)
+          if (running > peak) peak = running
+          if (peak > 0) { const dd = ((peak - running) / peak) * 100; if (dd > maxDD) maxDD = dd }
+        }
+        setPortfolioValue({ currentValue, allTimePnl, totalReturn, maxDrawdown: maxDD })
+      }
+
+      // Equity curve (filtered by time)
       const { data: allTrades } = await supabase
         .from('trades').select('pnl, traded_at')
         .eq('portfolio_id', activePortfolio!.id)
@@ -135,9 +155,127 @@ export default function DashboardPage() {
   }
 
   const pnlPositive = stats.totalPnl >= 0
+  const initialCapital = activePortfolio?.initial_capital || 0
+  const portfolioPositive = portfolioValue.allTimePnl >= 0
+  const marketTypeLabels: Record<string, string> = {
+    forex: 'FOREX', stocks: 'STOCKS', crypto: 'CRYPTO', commodities: 'COMMOD', other: 'OTHER',
+  }
+  const marketTypeColors: Record<string, string> = {
+    forex: '#06b6d4', stocks: '#4a7fff', crypto: '#f59e0b', commodities: '#f97316', other: '#8b5cf6',
+  }
+  const mktColor = marketTypeColors[activePortfolio?.market_type || 'other'] || '#8b5cf6'
+  const mktLabel = marketTypeLabels[activePortfolio?.market_type || 'other'] || 'OTHER'
+  // Progress bar: how much of initial capital is the current value (capped 0–200%)
+  const progressPct = initialCapital > 0
+    ? Math.min(200, Math.max(0, (portfolioValue.currentValue / initialCapital) * 100))
+    : 0
 
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
+
+      {/* ── PORTFOLIO DATA SECTION ── */}
+      <section style={{ marginBottom: '28px', position: 'relative', overflow: 'hidden', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid rgba(255,255,255,0.08)', padding: '24px' }}>
+
+        {/* Ambient glow */}
+        <div style={{ position: 'absolute', insetInlineEnd: '-60px', top: '-60px', width: '200px', height: '200px', background: `${mktColor}18`, filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', insetInlineStart: '-40px', bottom: '-40px', width: '160px', height: '160px', background: portfolioPositive ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+        {/* Top row: portfolio name + market type */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: `${mktColor}18`, border: `1px solid ${mktColor}35`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: mktColor, fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>account_balance</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.01em', lineHeight: 1 }}>{activePortfolio?.name}</div>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                {language === 'he' ? 'נתוני תיק' : 'Portfolio Overview'}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '10px', fontWeight: '800', color: mktColor, background: `${mktColor}15`, border: `1px solid ${mktColor}30`, padding: '4px 10px', borderRadius: '999px', letterSpacing: '0.12em' }}>{mktLabel}</span>
+            {initialCapital > 0 && (
+              <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '999px' }}>
+                {language === 'he' ? 'הון' : 'Capital'}: ${initialCapital.toLocaleString()}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Current value + return side by side */}
+        <div className="portfolio-main-row" style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', marginBottom: '20px', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>
+              {language === 'he' ? 'שווי תיק נוכחי' : 'Current Value'}
+            </div>
+            <div dir="ltr" style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', textShadow: portfolioPositive ? '0 0 40px rgba(34,197,94,0.3)' : '0 0 40px rgba(239,68,68,0.3)' }}>
+              ${portfolioValue.currentValue > 0 ? portfolioValue.currentValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : initialCapital.toLocaleString()}
+            </div>
+          </div>
+          <div style={{ paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: portfolioPositive ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>
+              {portfolioPositive ? 'trending_up' : 'trending_down'}
+            </span>
+            <span dir="ltr" style={{ fontSize: '22px', fontWeight: '900', color: portfolioPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.02em' }}>
+              {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {initialCapital > 0 && (
+          <div style={{ marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+            <div style={{ height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', borderRadius: '999px',
+                width: `${Math.min(100, progressPct)}%`,
+                background: portfolioPositive
+                  ? 'linear-gradient(90deg, #16a34a, #22c55e)'
+                  : 'linear-gradient(90deg, #dc2626, #ef4444)',
+                boxShadow: portfolioPositive ? '0 0 12px rgba(34,197,94,0.5)' : '0 0 12px rgba(239,68,68,0.4)',
+                transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
+              }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+              <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)' }}>$0</span>
+              <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)' }}>${initialCapital.toLocaleString()} {language === 'he' ? 'הון התחלתי' : 'initial'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom stats row */}
+        <div className="portfolio-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', position: 'relative', zIndex: 1 }}>
+
+          {/* All-time P&L */}
+          <div style={{ background: portfolioPositive ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`, borderRadius: '14px', padding: '12px 14px' }}>
+            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
+              {language === 'he' ? 'רווח/הפסד כולל' : 'All-time P&L'}
+            </div>
+            <div dir="ltr" style={{ fontSize: '18px', fontWeight: '900', color: portfolioPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.02em' }}>
+              {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            </div>
+          </div>
+
+          {/* ROI */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '12px 14px' }}>
+            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>ROI</div>
+            <div dir="ltr" style={{ fontSize: '18px', fontWeight: '900', color: portfolioPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.02em' }}>
+              {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(2)}%
+            </div>
+          </div>
+
+          {/* Max Drawdown */}
+          <div style={{ background: portfolioValue.maxDrawdown > 20 ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.03)', border: `1px solid ${portfolioValue.maxDrawdown > 20 ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '14px', padding: '12px 14px' }}>
+            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
+              {language === 'he' ? 'ירידה מקסימלית' : 'Max Drawdown'}
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: '900', color: portfolioValue.maxDrawdown > 20 ? '#ef4444' : portfolioValue.maxDrawdown > 10 ? '#f59e0b' : '#22c55e', letterSpacing: '-0.02em' }}>
+              -{portfolioValue.maxDrawdown.toFixed(1)}%
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── HEADER AREA ── */}
       <section className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
@@ -477,6 +615,16 @@ export default function DashboardPage() {
         /* ── EQUITY SECTION ── */
         @media (max-width: 600px) {
           .equity-section { padding: 20px !important; border-radius: 20px !important; }
+        }
+
+        /* ── PORTFOLIO SECTION ── */
+        @media (max-width: 600px) {
+          .portfolio-stats-row { grid-template-columns: 1fr 1fr !important; }
+          .portfolio-main-row { gap: 10px !important; margin-bottom: 16px !important; }
+          .portfolio-main-row > div:first-child div[dir="ltr"] { font-size: 30px !important; }
+        }
+        @media (max-width: 400px) {
+          .portfolio-stats-row { grid-template-columns: 1fr !important; gap: 8px !important; }
         }
       `}</style>
     </div>
