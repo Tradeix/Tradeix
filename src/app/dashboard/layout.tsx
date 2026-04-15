@@ -135,7 +135,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       )}
 
       {/* User info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)' }}>
+      <Link href="/settings" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)', textDecoration: 'none', cursor: 'pointer' }}>
         <div style={{ position: 'relative' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '50%',
@@ -173,7 +173,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
             )}
           </div>
         </div>
-      </div>
+      </Link>
     </header>
   )
 }
@@ -232,7 +232,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto' }}>
       {/* Logo */}
       <div style={{ padding: '32px 20px 40px', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{
             width: '28px', height: '28px',
             background: 'linear-gradient(135deg, #4a7fff 0%, #8b5cf6 100%)',
@@ -245,7 +245,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             Trade<span style={{ background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IX</span>
           </span>
-        </div>
+        </Link>
       </div>
 
       {/* Nav */}
