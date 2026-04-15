@@ -174,7 +174,7 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── PAGE TITLE ── */}
-      <div style={{ marginBottom: '16px', position: 'relative', display: 'inline-block' }}>
+      <div style={{ marginBottom: '28px', position: 'relative', display: 'inline-block' }}>
         <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
         <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
       </div>
