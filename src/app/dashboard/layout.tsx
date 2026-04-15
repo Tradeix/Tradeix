@@ -203,22 +203,22 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       <Link href={href} onClick={() => setSidebarOpen(false)} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
-        color: active ? '#4a7fff' : 'var(--text3)',
+        color: active ? '#10b981' : 'var(--text3)',
         fontWeight: active ? '700' : '500',
         fontSize: '13px', textDecoration: 'none',
-        background: active ? 'radial-gradient(circle at 100%, rgba(74,127,255,0.1) 0%, transparent 70%)' : 'transparent',
+        background: active ? 'radial-gradient(circle at 100%, rgba(16,185,129,0.1) 0%, transparent 70%)' : 'transparent',
         transition: 'all 0.2s', marginBottom: '2px',
         position: 'relative', letterSpacing: '0.02em',
         fontFamily: 'Heebo, Rubik, sans-serif',
       }}
         onMouseOver={e => { if (!active) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)' } }}
-        onMouseOut={e => { e.currentTarget.style.color = active ? '#4a7fff' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
+        onMouseOut={e => { e.currentTarget.style.color = active ? '#10b981' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
       >
         {active && (
           <div style={{
             position: 'absolute', [isRTL ? 'right' : 'left']: 0,
             top: 0, bottom: 0, width: '2px',
-            background: '#4a7fff', boxShadow: '0 0 12px rgba(74,127,255,0.8)',
+            background: '#10b981', boxShadow: '0 0 12px rgba(16,185,129,0.8)',
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
           }} />
         )}
