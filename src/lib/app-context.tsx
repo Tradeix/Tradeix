@@ -167,12 +167,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // 3. Delete all portfolios
     await supabase.from('portfolios').delete().eq('user_id', user.id)
 
-    // 4. Delete profile
-    await supabase.from('profiles').delete().eq('id', user.id)
+    // 4. Reset profile to free (keep the user account)
+    await supabase.from('profiles').upsert(
+      { id: user.id, subscription_tier: 'free', subscription_status: 'canceled' },
+      { onConflict: 'id' }
+    )
 
-    // 5. Sign out
-    await supabase.auth.signOut()
-    window.location.href = '/auth/login'
+    // 5. Update local state — stay logged in as free user
+    setSubscription('free')
   }
 
   const isPro = subscription === 'pro'
