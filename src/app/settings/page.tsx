@@ -186,25 +186,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div style={{ height: '1px', background: 'var(--border)', marginBottom: '20px' }} />
-
-          {/* Theme */}
-          <div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {language === 'he' ? 'עיצוב' : 'Theme'}
-            </div>
-            <ToggleGroup
-              value={theme}
-              onChange={setTheme}
-              options={[
-                { value: 'dark', label: language === 'he' ? '🌙 כהה' : '🌙 Dark' },
-                { value: 'light', label: language === 'he' ? '☀ בהיר' : '☀ Light' },
-              ]}
-            />
-            <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {language === 'he' ? 'השינוי חל על כל האתר' : 'Change applies to the entire site'}
-            </div>
-          </div>
         </div>
 
         {/* ── CARD 3: Subscription ── */}

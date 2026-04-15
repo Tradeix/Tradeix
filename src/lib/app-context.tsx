@@ -100,25 +100,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const supabase = createClient()
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem('tradeix-theme') as Theme) || 'dark'
+    // Theme locked to dark — light mode temporarily disabled
+    applyTheme('dark')
+    localStorage.setItem('tradeix-theme', 'dark')
+
     const savedLang = (localStorage.getItem('tradeix-lang') as Language) || 'he'
-    setThemeState(savedTheme)
     setLanguageState(savedLang)
-    applyTheme(savedTheme)
     applyLanguage(savedLang)
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { setSubscriptionLoading(false); return }
       supabase.from('profiles')
-        .select('theme, language, subscription_tier, subscription_status')
+        .select('language, subscription_tier, subscription_status')
         .eq('id', user.id).single()
         .then(({ data }) => {
           if (!data) { setSubscriptionLoading(false); return }
-          const t = (data.theme as Theme) || savedTheme
           const l = (data.language as Language) || savedLang
-          setThemeState(t); setLanguageState(l)
-          applyTheme(t); applyLanguage(l)
-          localStorage.setItem('tradeix-theme', t)
+          setLanguageState(l)
+          applyLanguage(l)
           localStorage.setItem('tradeix-lang', l)
           const tier = (data.subscription_tier as SubscriptionTier) || 'free'
           setSubscription(tier)
