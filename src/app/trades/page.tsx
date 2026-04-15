@@ -148,7 +148,11 @@ export default function TradesPage() {
         <div className="trades-filter-sep" style={{ width: '1px', height: '22px', background: 'var(--border)', flexShrink: 0 }} />
 
         {/* Time filter */}
-        <div className="trades-time-filter" style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+        <div className="trades-time-filter" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+            {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
+          </span>
+        <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
           {TIME_LABELS.map((label, i) => (
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
               padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
@@ -159,6 +163,7 @@ export default function TradesPage() {
               transition: 'all 0.2s', whiteSpace: 'nowrap',
             }}>{label}</button>
           ))}
+        </div>
         </div>
       </div>
 
