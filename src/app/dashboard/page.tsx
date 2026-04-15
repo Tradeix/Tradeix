@@ -621,7 +621,15 @@ export default function DashboardPage() {
       {/* ── DOWNGRADE POPUP ── */}
       {showDowngradePopup && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* X close button */}
+            <button onClick={() => setShowDowngradePopup(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text3)' }}
+            >✕</button>
+
             {/* Glow */}
             <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
@@ -669,14 +677,6 @@ export default function DashboardPage() {
                 <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
                 {language === 'he' ? 'חזור ל PRO — $20/חודש' : 'Upgrade back to PRO — $20/mo'}
               </Link>
-              <button onClick={() => setShowDowngradePopup(false)} style={{
-                background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '14px', padding: '12px', fontSize: '13px',
-                fontWeight: '700', color: 'var(--text3)', cursor: 'pointer',
-                fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s',
-              }}>
-                {language === 'he' ? 'המשך עם תכנית חינמית' : 'Continue with free plan'}
-              </button>
             </div>
           </div>
         </div>
