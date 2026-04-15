@@ -27,6 +27,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     outcome: (trade.outcome === 'win' ? 'win' : 'loss') as 'win' | 'loss',
     entry_price: trade.entry_price?.toString() || '',
     exit_price: trade.exit_price?.toString() || '',
+    stop_loss: trade.stop_loss?.toString() || '',
     pnl: Math.abs(trade.pnl ?? 0).toString(),
     notes: trade.notes || '',
     traded_at: trade.traded_at ? new Date(trade.traded_at).toISOString().split('T')[0] : '',
@@ -69,12 +70,23 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     try {
       const pnlAbs = Math.abs(parseFloat(form.pnl) || 0)
       const pnl = form.outcome === 'loss' ? -pnlAbs : pnlAbs
+      const entryNum = form.entry_price ? parseFloat(form.entry_price) : null
+      const exitNum = form.exit_price ? parseFloat(form.exit_price) : null
+      const slNum = form.stop_loss ? parseFloat(form.stop_loss) : null
+      let rrRatio: number | null = null
+      if (entryNum && exitNum && slNum) {
+        const reward = form.direction === 'long' ? exitNum - entryNum : entryNum - exitNum
+        const risk = form.direction === 'long' ? entryNum - slNum : slNum - entryNum
+        if (risk > 0) rrRatio = parseFloat((reward / risk).toFixed(2))
+      }
       const { error } = await supabase.from('trades').update({
         symbol: form.symbol.toUpperCase(),
         direction: form.direction,
-        entry_price: parseFloat(form.entry_price) || null,
-        exit_price: form.exit_price ? parseFloat(form.exit_price) : null,
+        entry_price: entryNum,
+        exit_price: exitNum,
+        stop_loss: slNum,
         pnl,
+        rr_ratio: rrRatio,
         notes: form.notes,
         traded_at: form.traded_at,
         outcome: form.outcome,
@@ -236,22 +248,33 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <WinLossToggle />
               </div>
 
-              {/* Entry + Exit */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              {/* Entry + SL + Exit */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
                 <div>
                   <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {language === 'he' ? 'מחיר כניסה' : 'Entry Price'}
+                    {language === 'he' ? 'כניסה' : 'Entry'}
                   </label>
-                  <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.0000" />
+                  <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.00" />
+                </div>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(239,68,68,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    SL
+                  </label>
+                  <input
+                    value={form.stop_loss}
+                    onChange={e => setForm(p => ({ ...p, stop_loss: e.target.value }))}
+                    placeholder="0.00"
+                    style={{ borderColor: form.stop_loss ? 'rgba(239,68,68,0.35)' : undefined }}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '10px', color: form.outcome === 'loss' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {language === 'he' ? 'מחיר יציאה' : 'Exit Price'}
+                    {language === 'he' ? 'יציאה' : 'Exit'}
                   </label>
                   <input
                     value={form.exit_price}
                     onChange={e => setForm(p => ({ ...p, exit_price: e.target.value }))}
-                    placeholder="0.0000"
+                    placeholder="0.00"
                     style={{ borderColor: form.exit_price ? (form.outcome === 'loss' ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)') : undefined }}
                   />
                 </div>
@@ -425,6 +448,16 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: trade.entry_price != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
                     {trade.entry_price ?? '—'}
+                  </span>
+                </div>
+                {/* SL — always shown */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>dangerous</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
+                  </div>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'rgba(255,255,255,0.2)' }}>
+                    {trade.stop_loss ?? '—'}
                   </span>
                 </div>
                 {/* Exit price — always shown */}

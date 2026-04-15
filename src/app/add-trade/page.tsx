@@ -19,6 +19,7 @@ interface TradeData {
   outcome: 'win' | 'loss'
   entry_price: string
   exit_price: string
+  stop_loss: string
   pnl: string
   traded_at: string
   notes: string
@@ -38,7 +39,7 @@ export default function AddTradePage() {
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
-    entry_price: '', exit_price: '',
+    entry_price: '', exit_price: '', stop_loss: '',
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
   })
   const router = useRouter()
@@ -107,6 +108,7 @@ export default function AddTradePage() {
         direction: data.direction === 'short' ? 'short' : 'long',
         entry_price: data.entry_price?.toString() || '',
         exit_price: data.exit_price?.toString() || '',
+        stop_loss: data.stop_loss?.toString() || '',
         ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
       }))
       setAiConfidence(data.confidence || 85)
@@ -187,15 +189,20 @@ export default function AddTradePage() {
       const pnl = tradeData.outcome === 'loss' ? -pnlAbs : pnlAbs
       const entryNum = tradeData.entry_price ? parseFloat(tradeData.entry_price) : null
       const exitNum = tradeData.exit_price ? parseFloat(tradeData.exit_price) : null
-      const rrRatio = tradeData.outcome === 'win' && entryNum && exitNum
-        ? Math.abs(exitNum - entryNum)
-        : null
+      const slNum = tradeData.stop_loss ? parseFloat(tradeData.stop_loss) : null
+      let rrRatio: number | null = null
+      if (entryNum && exitNum && slNum) {
+        const reward = tradeData.direction === 'long' ? exitNum - entryNum : entryNum - exitNum
+        const risk = tradeData.direction === 'long' ? entryNum - slNum : slNum - entryNum
+        if (risk > 0) rrRatio = parseFloat((reward / risk).toFixed(2))
+      }
       const { error } = await supabase.from('trades').insert({
         portfolio_id: portfolioId, user_id: user.id,
         symbol: tradeData.symbol.toUpperCase(),
         direction: tradeData.direction,
         entry_price: entryNum,
         exit_price: exitNum,
+        stop_loss: slNum,
         pnl,
         rr_ratio: rrRatio,
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
@@ -432,17 +439,28 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* Entry + Exit */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                {/* Entry + SL + Exit */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                      {language === 'he' ? 'נקודת כניסה' : 'Entry Price'}
+                      {language === 'he' ? 'כניסה' : 'Entry'}
                     </label>
                     <input value={tradeData.entry_price} onChange={e => setTradeData(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.00" />
                   </div>
                   <div>
+                    <label style={{ fontSize: '12px', marginBottom: '6px', display: 'block', fontWeight: '600', color: 'rgba(239,68,68,0.7)' }}>
+                      SL
+                    </label>
+                    <input
+                      value={tradeData.stop_loss}
+                      onChange={e => setTradeData(p => ({ ...p, stop_loss: e.target.value }))}
+                      placeholder="0.00"
+                      style={tradeData.stop_loss ? { borderColor: 'rgba(239,68,68,0.35)' } : {}}
+                    />
+                  </div>
+                  <div>
                     <label style={{ fontSize: '12px', marginBottom: '6px', display: 'block', fontWeight: '600', color: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.7)' : 'rgba(34,197,94,0.7)' }}>
-                      {language === 'he' ? 'נקודת יציאה' : 'Exit Price'}
+                      {language === 'he' ? 'יציאה' : 'Exit'}
                     </label>
                     <input
                       value={tradeData.exit_price}
