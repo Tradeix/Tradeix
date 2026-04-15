@@ -123,8 +123,8 @@ export default function TradesPage() {
 
       {/* Filters */}
       <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
-        {/* time + outcome filters — aligned end (left in RTL) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+        {/* time + outcome filters */}
+        <div className="trades-filter-inner" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           {/* Outcome */}
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setFilter(filter === key ? 'all' : key as any); setPage(0) }} style={{
@@ -262,6 +262,8 @@ export default function TradesPage() {
         }
         @media (max-width: 640px) {
           .trade-row { grid-template-columns: 1fr 86px 72px !important; gap: 6px !important; padding: 10px 6px !important; }
+          .trades-filter-row { justify-content: flex-end !important; }
+          .trades-filter-inner { justify-content: flex-end !important; width: 100%; }
         }
       `}</style>
     </div>

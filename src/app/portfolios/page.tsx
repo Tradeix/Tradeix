@@ -237,7 +237,7 @@ export default function PortfoliosPage() {
                     <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {MARKET_LABELS[language][p.market_type]} • {tr.initialCapitalLabel}: ${p.initial_capital?.toLocaleString() || 0}
+                    {MARKET_LABELS[language][p.market_type]} • <span className="portfolio-capital-label">{tr.initialCapitalLabel}: </span>${p.initial_capital?.toLocaleString() || 0}
                   </div>
                 </div>
 
@@ -266,7 +266,10 @@ export default function PortfoliosPage() {
         </div>
       )}
 
-      <style>{`@media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`
+        @media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 640px) { .portfolio-capital-label { display: none; } }
+      `}</style>
     </div>
   )
 }
