@@ -402,8 +402,8 @@ export default function DashboardPage() {
         border: '1px solid rgba(255,255,255,0.05)',
         borderRadius: '24px', overflow: 'hidden', marginBottom: '32px',
       }}>
-        <div style={{ padding: '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
+        <div className="trades-section-header" style={{ padding: '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+          <div style={{ flexShrink: 0 }}>
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
@@ -421,7 +421,7 @@ export default function DashboardPage() {
                 }}>{label}</button>
               ))}
             </div>
-            {/* Pagination arrows — only when more than one page */}
+            {/* Pagination arrows — desktop/tablet only */}
             {tradeTotal > 6 && (() => {
               const isRTL      = language === 'he'
               const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
@@ -430,7 +430,7 @@ export default function DashboardPage() {
               const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
               const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
               return (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div className="trades-arrows-header" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <button
                     onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                     disabled={!canOlder}
@@ -526,6 +526,37 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* Bottom pagination — mobile only */}
+        {tradeTotal > 6 && (() => {
+          const isRTL      = language === 'he'
+          const totalPages = Math.max(1, Math.ceil(tradeTotal / 6))
+          const canOlder   = tradePage < totalPages - 1
+          const canNewer   = tradePage > 0
+          const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
+          const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
+          return (
+            <div className="trades-arrows-bottom" style={{ display: 'none', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '12px 0 16px' }}>
+              <button
+                onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
+                disabled={!canOlder}
+                style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
+              </button>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)' }}>
+                {tradePage + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
+                disabled={!canNewer}
+                style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
+              </button>
+            </div>
+          )
+        })()}
+
       </section>
 
       {/* ── EQUITY CURVE ── */}
@@ -617,6 +648,14 @@ export default function DashboardPage() {
           .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; padding: 10px 8px !important; }
           .portfolio-stats-row { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
           .portfolio-main-row > div:first-child div[dir="ltr"] { font-size: 28px !important; }
+
+          /* Trades header — single row, no wrap */
+          .trades-section-header { padding: 16px !important; flex-wrap: nowrap !important; }
+          .trade-filter-pills button { font-size: 9px !important; padding: 3px 7px !important; }
+
+          /* Arrows: hide from header, show at bottom */
+          .trades-arrows-header { display: none !important; }
+          .trades-arrows-bottom { display: flex !important; }
         }
       `}</style>
     </div>
