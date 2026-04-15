@@ -153,11 +153,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   async function cancelSubscription() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    await supabase.from('profiles').upsert(
-      { id: user.id, subscription_tier: 'free', subscription_status: 'canceled' },
-      { onConflict: 'id' }
-    )
-    setSubscription('free')
+
+    // 1. Get all portfolio IDs for this user
+    const { data: portfolios } = await supabase
+      .from('portfolios').select('id').eq('user_id', user.id)
+    const portfolioIds = portfolios?.map((p: any) => p.id) || []
+
+    // 2. Delete all trades in those portfolios
+    if (portfolioIds.length > 0) {
+      await supabase.from('trades').delete().in('portfolio_id', portfolioIds)
+    }
+
+    // 3. Delete all portfolios
+    await supabase.from('portfolios').delete().eq('user_id', user.id)
+
+    // 4. Delete profile
+    await supabase.from('profiles').delete().eq('id', user.id)
+
+    // 5. Sign out
+    await supabase.auth.signOut()
+    window.location.href = '/auth/login'
   }
 
   const isPro = subscription === 'pro'

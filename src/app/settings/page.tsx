@@ -313,10 +313,10 @@ export default function SettingsPage() {
                 {language === 'he' ? 'חזור' : 'Go back'}
               </button>
               <button
-                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription(); setCancelingPro(false) }}
+                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription() }}
                 style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
-                {language === 'he' ? 'כן, בטל מנוי' : 'Yes, cancel'}
+                {language === 'he' ? 'כן, מחק הכל' : 'Yes, delete everything'}
               </button>
             </div>
           </div>
