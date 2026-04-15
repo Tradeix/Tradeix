@@ -15,6 +15,7 @@ type Step = 1 | 2 | 3
 
 interface TradeData {
   symbol: string
+  direction: 'long' | 'short'
   outcome: 'win' | 'loss'
   entry_price: string
   exit_price: string
@@ -36,7 +37,7 @@ export default function AddTradePage() {
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
-    symbol: '', outcome: 'win',
+    symbol: '', direction: 'long', outcome: 'win',
     entry_price: '', exit_price: '',
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
   })
@@ -103,6 +104,7 @@ export default function AddTradePage() {
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
+        direction: data.direction === 'short' ? 'short' : 'long',
         entry_price: data.entry_price?.toString() || '',
         exit_price: data.exit_price?.toString() || '',
         ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
@@ -186,6 +188,7 @@ export default function AddTradePage() {
       const { error } = await supabase.from('trades').insert({
         portfolio_id: portfolioId, user_id: user.id,
         symbol: tradeData.symbol.toUpperCase(),
+        direction: tradeData.direction,
         entry_price: tradeData.entry_price ? parseFloat(tradeData.entry_price) : null,
         exit_price: tradeData.exit_price ? parseFloat(tradeData.exit_price) : null,
         pnl,
@@ -380,38 +383,48 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* WIN / LOSS toggle */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
-                    {language === 'he' ? 'תוצאה' : 'Outcome'} <span style={{ color: '#ef4444' }}>*</span>
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    {(['win', 'loss'] as const).map(val => {
-                      const active = tradeData.outcome === val
-                      const color = val === 'win' ? '#22c55e' : '#ef4444'
-                      const bg = val === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
-                      const border = val === 'win' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
-                      return (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setTradeData(p => ({ ...p, outcome: val }))}
-                          style={{
-                            padding: '13px', borderRadius: '12px',
-                            background: active ? bg : 'var(--bg3)',
-                            border: `2px solid ${active ? border : 'var(--border)'}`,
-                            color: active ? color : 'var(--text3)',
-                            fontSize: '14px', fontWeight: '900', cursor: 'pointer',
-                            fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
-                            transition: 'all 0.18s',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          }}
-                        >
-                          <span>{val === 'win' ? '✓' : '✕'}</span>
-                          {val === 'win' ? 'WIN' : 'LOSS'}
-                        </button>
-                      )
-                    })}
+                {/* WIN / LOSS + LONG / SHORT toggles side by side */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  {/* Outcome */}
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'תוצאה' : 'Outcome'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                      {(['win', 'loss'] as const).map(val => {
+                        const active = tradeData.outcome === val
+                        const color = val === 'win' ? '#22c55e' : '#ef4444'
+                        const bg = val === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
+                        const border = val === 'win' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
+                        return (
+                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, outcome: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '13px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                            <span>{val === 'win' ? '✓' : '✕'}</span>
+                            {val === 'win' ? 'WIN' : 'LOSS'}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  {/* Direction */}
+                  <div>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'כיוון' : 'Direction'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                      {(['long', 'short'] as const).map(val => {
+                        const active = tradeData.direction === val
+                        const color = val === 'long' ? '#22c55e' : '#ef4444'
+                        const bg = val === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
+                        const border = val === 'long' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
+                        const icon = val === 'long' ? 'trending_up' : 'trending_down'
+                        return (
+                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, direction: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '13px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'inherit', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
+                            {val === 'long' ? 'LONG' : 'SHORT'}
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
                 </div>
 

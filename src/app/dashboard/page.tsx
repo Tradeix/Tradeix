@@ -416,8 +416,8 @@ export default function DashboardPage() {
 
               {/* P&L */}
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                  {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                <div dir="ltr" style={{ fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                  {trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}
                 </div>
                 <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
               </div>
@@ -464,8 +464,8 @@ export default function DashboardPage() {
           </div>
           <div style={{ textAlign: 'left' }}>
             <p style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY, letterSpacing: '0.05em', margin: '0 0 2px' }}>{tr.totalPnl}</p>
-            <p style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
-              {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
+            <p dir="ltr" style={{ fontSize: '20px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', margin: 0 }}>
+              {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString()}
             </p>
           </div>
         </div>
@@ -505,18 +505,16 @@ export default function DashboardPage() {
         @media (max-width: 768px) {
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .winrate-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 80px 52px 65px !important; padding: 14px 16px !important; }
+          /* Tablet: hide RR (col2) and Date (col4), show Symbol | P&L | Status */
+          .recent-trade-row { grid-template-columns: 1fr 100px 80px !important; gap: 8px !important; padding: 12px 10px !important; }
           .recent-trade-row > div:nth-child(2) { display: none !important; }
+          .recent-trade-row > div:nth-child(4) { display: none !important; }
           .time-filter-bar button { padding: 5px 10px !important; font-size: 10px !important; }
         }
-        @media (max-width: 540px) {
-          .stats-hero { grid-template-columns: 1fr !important; }
+        @media (max-width: 480px) {
+          .stats-hero { grid-template-columns: 1fr 1fr !important; }
+          .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; padding: 10px 8px !important; }
           .time-filter-bar button { padding: 5px 8px !important; font-size: 9px !important; }
-          .trade-filter-pills button { padding: 3px 8px !important; font-size: 9px !important; }
-        }
-        @media (max-width: 440px) {
-          .recent-trade-row { grid-template-columns: 1fr 52px 65px !important; }
-          .recent-trade-row > div:nth-child(3) { display: none !important; }
         }
       `}</style>
     </div>

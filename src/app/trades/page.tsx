@@ -218,8 +218,8 @@ export default function TradesPage() {
 
                 {/* P&L */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '15px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                  <div dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                    {trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}
                   </div>
                   <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
                 </div>
@@ -249,10 +249,13 @@ export default function TradesPage() {
       {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 640px) {
-          .trade-row { grid-template-columns: 1fr 80px 100px !important; }
-          .trade-row > div:nth-child(4),
-          .trade-row > div:nth-child(5) { display: none !important; }
+        @media (max-width: 768px) {
+          .trade-row { grid-template-columns: 1fr 100px 90px !important; gap: 8px !important; }
+          .trade-row > div:nth-child(2) { display: none !important; }
+          .trade-row > div:nth-child(4) { display: none !important; }
+        }
+        @media (max-width: 480px) {
+          .trade-row { grid-template-columns: 1fr 86px 72px !important; gap: 6px !important; padding: 10px 6px !important; }
         }
       `}</style>
     </div>

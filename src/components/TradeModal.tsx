@@ -23,6 +23,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   const [pnlError, setPnlError] = useState(false)
   const [form, setForm] = useState({
     symbol: trade.symbol,
+    direction: (trade.direction === 'short' ? 'short' : 'long') as 'long' | 'short',
     outcome: (trade.outcome === 'win' ? 'win' : 'loss') as 'win' | 'loss',
     entry_price: trade.entry_price?.toString() || '',
     exit_price: trade.exit_price?.toString() || '',
@@ -70,6 +71,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       const pnl = form.outcome === 'loss' ? -pnlAbs : pnlAbs
       const { error } = await supabase.from('trades').update({
         symbol: form.symbol.toUpperCase(),
+        direction: form.direction,
         entry_price: parseFloat(form.entry_price) || null,
         exit_price: form.exit_price ? parseFloat(form.exit_price) : null,
         pnl,
