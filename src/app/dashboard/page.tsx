@@ -140,7 +140,7 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── HEADER AREA ── */}
-      <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
+      <section className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
         <div style={{ position: 'relative' }}>
           <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
           <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
@@ -163,7 +163,7 @@ export default function DashboardPage() {
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }} className="stats-hero">
 
         {/* Trades card */}
-        <div style={{
+        <div className="stat-card" style={{
           background: 'linear-gradient(135deg, rgba(74,127,255,0.08) 0%, rgba(139,92,246,0.05) 100%)',
           border: '1px solid rgba(74,127,255,0.2)',
           boxShadow: '0 0 40px -10px rgba(74,127,255,0.2)',
@@ -189,7 +189,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Profit Factor card */}
-        <div style={{
+        <div className="stat-card" style={{
           background: 'linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(74,127,255,0.05) 100%)',
           border: '1px solid rgba(139,92,246,0.2)',
           boxShadow: '0 0 40px -10px rgba(139,92,246,0.2)',
@@ -210,7 +210,7 @@ export default function DashboardPage() {
         </div>
 
         {/* P&L hero card */}
-        <div style={{
+        <div className="stat-card" style={{
           background: pnlPositive
             ? 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(16,185,129,0.05) 100%)'
             : 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(220,38,38,0.05) 100%)',
@@ -233,7 +233,7 @@ export default function DashboardPage() {
         </div>
 
         {/* WIN RATE card */}
-        <div style={{
+        <div className="stat-card" style={{
           background: 'linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(16,185,129,0.05) 100%)',
           border: '1px solid rgba(34,197,94,0.2)',
           boxShadow: '0 0 40px -10px rgba(34,197,94,0.2)',
@@ -350,7 +350,7 @@ export default function DashboardPage() {
               </div>
 
               {/* RR */}
-              <div style={{ textAlign: 'center' }}>
+              <div className="trade-col-rr" style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '13px', fontWeight: '800', color: PRIMARY }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
                 <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
               </div>
@@ -364,7 +364,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Date */}
-              <div style={{ textAlign: 'center' }}>
+              <div className="trade-col-date" style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>
                   {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}
                 </div>
@@ -391,7 +391,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ── EQUITY CURVE ── */}
-      <section style={{
+      <section className="equity-section" style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
         border: '1px solid rgba(255,255,255,0.05)',
         borderRadius: '32px', padding: '32px',
@@ -443,19 +443,40 @@ export default function DashboardPage() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          .stats-hero { grid-template-columns: 1fr 1fr !important; }
-          .winrate-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-          /* Tablet: hide RR (col2) and Date (col4), show Symbol | P&L | Status */
-          .recent-trade-row { grid-template-columns: 1fr 100px 80px !important; gap: 8px !important; padding: 12px 10px !important; }
-          .recent-trade-row > div:nth-child(2) { display: none !important; }
-          .recent-trade-row > div:nth-child(4) { display: none !important; }
+
+        /* ── HEADER ── */
+        @media (max-width: 600px) {
+          .dash-header { flex-wrap: wrap !important; align-items: flex-start !important; gap: 10px !important; margin-bottom: 20px !important; }
+          .dash-header h2 { font-size: 22px !important; }
+          .time-filter-bar { width: 100% !important; }
+          .time-filter-bar button { flex: 1 !important; padding: 5px 6px !important; font-size: 10px !important; }
+        }
+
+        /* ── STAT CARDS: switch to 2×2 at 900px ── */
+        @media (max-width: 900px) {
+          .stats-hero { grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-bottom: 20px !important; }
+        }
+        @media (max-width: 600px) {
+          .stats-hero { gap: 10px !important; margin-bottom: 16px !important; }
+          .stat-card { padding: 14px !important; border-radius: 16px !important; }
+        }
+
+        /* ── TRADE ROWS: hide RR + Date at 900px ── */
+        @media (max-width: 900px) {
+          .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; gap: 8px !important; padding: 12px 10px !important; }
+          .trade-col-rr { display: none !important; }
+          .trade-col-date { display: none !important; }
           .time-filter-bar button { padding: 5px 10px !important; font-size: 10px !important; }
+          .trade-filter-pills button { padding: 3px 8px !important; font-size: 9px !important; }
         }
         @media (max-width: 480px) {
-          .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; padding: 10px 8px !important; }
           .time-filter-bar button { padding: 5px 8px !important; font-size: 9px !important; }
+        }
+
+        /* ── EQUITY SECTION ── */
+        @media (max-width: 600px) {
+          .equity-section { padding: 20px !important; border-radius: 20px !important; }
         }
       `}</style>
     </div>
