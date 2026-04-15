@@ -195,73 +195,125 @@ export default function StatsPage() {
 
       {/* Calendar */}
       <div ref={calendarRef} style={{ ...glass, padding: '24px' }}>
-        {/* Header: [prev] [centered title + camera] [next] */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexDirection: language === 'he' ? 'row-reverse' : 'row' }}>
-          {/* Prev month arrow */}
-          <button
-            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
-            onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)' }}
-            onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
-          </button>
 
-          {/* Center: title + camera */}
-          <div style={{ flex: 1, textAlign: 'center', position: 'relative', padding: '0 8px' }}>
-            <div style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.01em', color: 'var(--text)' }}>
-              {tr.monthlyCalendar}
-            </div>
-            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {format(currentMonth, 'MMMM yyyy')}
-            </div>
-            {/* Camera button — absolute top-right of center block */}
+        {/* Header row: camera right | [prev] title [next] centered */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+
+          {/* Left spacer (same width as camera btn to keep center balanced) */}
+          <div style={{ width: '36px', flexShrink: 0 }} />
+
+          {/* Center group: arrows tight around the title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, justifyContent: 'center' }}>
+            {/* Prev arrow */}
             <button
-              onClick={captureCalendar}
-              disabled={capturing}
-              title={language === 'he' ? 'שמור תמונה' : 'Save image'}
-              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', [language === 'he' ? 'left' : 'right']: 0, width: '32px', height: '32px', borderRadius: '9px', background: capturing ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: '1px solid var(--border)', color: capturing ? '#4a7fff' : 'var(--text3)', cursor: capturing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-              onMouseOver={e => { if (!capturing) { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)'; e.currentTarget.style.color = '#4a7fff' } }}
-              onMouseOut={e => { if (!capturing) { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)' } }}
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+              style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(6,182,212,0.1)'; e.currentTarget.style.borderColor = 'rgba(6,182,212,0.35)'; e.currentTarget.style.color = '#06b6d4' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text2)' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: `'FILL' ${capturing ? 1 : 0}, 'wght' 200, 'GRAD' -25, 'opsz' 20` }}>
-                {capturing ? 'hourglass_empty' : 'photo_camera'}
-              </span>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_left</span>
+            </button>
+
+            {/* Title block */}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+                {tr.monthlyCalendar}
+              </div>
+              {/* Month name with cyan underline */}
+              <div style={{ display: 'inline-block', position: 'relative' }}>
+                <div style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '-0.01em', color: 'var(--text)', textTransform: 'uppercase' }}>
+                  {format(currentMonth, 'MMMM yyyy')}
+                </div>
+                <div style={{ position: 'absolute', bottom: '-3px', left: '10%', right: '10%', height: '2px', background: 'linear-gradient(90deg, transparent, #06b6d4, transparent)', borderRadius: '2px' }} />
+              </div>
+            </div>
+
+            {/* Next arrow */}
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+              style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(6,182,212,0.1)'; e.currentTarget.style.borderColor = 'rgba(6,182,212,0.35)'; e.currentTarget.style.color = '#06b6d4' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text2)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
             </button>
           </div>
 
-          {/* Next month arrow */}
+          {/* Camera button — right side, cyan */}
           <button
-            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}
-            onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,127,255,0.3)' }}
-            onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+            onClick={captureCalendar}
+            disabled={capturing}
+            title={language === 'he' ? 'שמור תמונה' : 'Save image'}
+            style={{
+              width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+              background: capturing ? 'rgba(6,182,212,0.25)' : 'rgba(6,182,212,0.15)',
+              border: '1px solid rgba(6,182,212,0.4)',
+              color: '#06b6d4',
+              cursor: capturing ? 'wait' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.2s',
+              boxShadow: '0 0 10px rgba(6,182,212,0.2)',
+            }}
+            onMouseOver={e => { if (!capturing) { e.currentTarget.style.background = 'rgba(6,182,212,0.28)'; e.currentTarget.style.boxShadow = '0 0 16px rgba(6,182,212,0.4)' } }}
+            onMouseOut={e => { if (!capturing) { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.boxShadow = '0 0 10px rgba(6,182,212,0.2)' } }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>chevron_right</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '17px', fontVariationSettings: `'FILL' ${capturing ? 1 : 0}, 'wght' 300, 'GRAD' -25, 'opsz' 20` }}>
+              {capturing ? 'hourglass_empty' : 'photo_camera'}
+            </span>
           </button>
         </div>
 
+        {/* Day name headers */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
           {DAY_NAMES.map(d => (
             <div key={d} style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textAlign: 'center', padding: '4px 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{d}</div>
           ))}
         </div>
 
+        {/* Calendar grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
           {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
           {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
             const pnl = monthlyPnl[day]
             const count = monthlyCount[day]
+            const hasData = pnl !== undefined
             return (
-              <div key={day} style={{ background: pnl !== undefined ? (pnl > 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'var(--bg3)', border: `1px solid ${pnl !== undefined ? (pnl > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') : 'var(--border)'}`, borderRadius: '10px', minHeight: '72px', padding: '8px 6px 6px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', marginBottom: 'auto' }}>{day}</div>
-                {pnl !== undefined && (
-                  <div style={{ textAlign: 'center', marginTop: '4px' }}>
-                    <div style={{ fontSize: '14px', fontWeight: '900', color: pnl >= 0 ? '#22c55e' : '#ef4444', letterSpacing: '-0.01em', lineHeight: 1 }}>
-                      {pnl >= 0 ? '+' : ''}${pnl.toLocaleString()}
+              <div
+                key={day}
+                style={{
+                  background: hasData ? (pnl > 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'var(--bg3)',
+                  border: `1px solid ${hasData ? (pnl > 0 ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)') : 'var(--border)'}`,
+                  borderRadius: '10px', minHeight: '80px',
+                  padding: '6px 4px',
+                  transition: 'all 0.2s',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                }}
+              >
+                {/* Date number */}
+                <div style={{
+                  fontSize: '13px', fontWeight: '800',
+                  color: hasData ? (pnl > 0 ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)') : 'var(--text3)',
+                  alignSelf: 'flex-start', paddingInlineStart: '4px', lineHeight: 1, marginBottom: '4px',
+                }}>
+                  {day}
+                </div>
+
+                {/* P&L + count centered */}
+                {hasData && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', width: '100%' }}>
+                    <div style={{
+                      fontSize: '15px', fontWeight: '900',
+                      color: pnl >= 0 ? '#22c55e' : '#ef4444',
+                      letterSpacing: '-0.02em', lineHeight: 1,
+                      textAlign: 'center',
+                    }}>
+                      {pnl >= 0 ? '+' : ''}${Math.abs(pnl) >= 1000 ? (pnl / 1000).toFixed(1) + 'k' : pnl.toLocaleString()}
                     </div>
-                    <div style={{ fontSize: '9px', fontWeight: '600', color: 'var(--text3)', marginTop: '4px' }}>
-                      {count} {language === 'he' ? 'עסקאות' : count === 1 ? 'Trade' : 'Trades'}
+                    <div style={{
+                      fontSize: '10px', fontWeight: '700',
+                      color: 'var(--text3)', textAlign: 'center',
+                    }}>
+                      {count} {language === 'he' ? (count === 1 ? 'עסקה' : 'עסקאות') : count === 1 ? 'trade' : 'trades'}
                     </div>
                   </div>
                 )}
