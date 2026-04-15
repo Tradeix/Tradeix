@@ -10,7 +10,6 @@ import { t } from '@/lib/translations'
 import Link from 'next/link'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
-import Link from 'next/link'
 
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
