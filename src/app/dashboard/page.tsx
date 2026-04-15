@@ -173,6 +173,12 @@ export default function DashboardPage() {
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
+      {/* ── PAGE TITLE ── */}
+      <div style={{ marginBottom: '16px', position: 'relative', display: 'inline-block' }}>
+        <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
+        <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
+      </div>
+
       {/* ── PORTFOLIO DATA SECTION ── */}
       <section style={{ marginBottom: '28px', position: 'relative', overflow: 'hidden', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid rgba(255,255,255,0.08)', padding: '24px' }}>
 
@@ -278,10 +284,9 @@ export default function DashboardPage() {
       </section>
 
       {/* ── HEADER AREA ── */}
-      <section className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
-        <div style={{ position: 'relative' }}>
-          <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
-          <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
+      <section className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)' }}>
+          {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
         </div>
         <div className="time-filter-bar" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px' }}>
           {TIME_FILTERS.map((label, i) => (
