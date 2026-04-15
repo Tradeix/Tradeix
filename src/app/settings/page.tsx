@@ -13,6 +13,7 @@ export default function SettingsPage() {
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -281,7 +282,7 @@ export default function SettingsPage() {
           {/* CTA */}
           {isPro ? (
             <button
-              onClick={async () => { setCancelingPro(true); await cancelSubscription(); setCancelingPro(false) }}
+              onClick={() => setShowCancelConfirm(true)}
               disabled={cancelingPro}
               style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1 }}
               onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
@@ -307,6 +308,39 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Cancel subscription confirmation modal */}
+      {showCancelConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '24px', padding: '36px 32px', maxWidth: '420px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', textAlign: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '26px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 24" }}>warning</span>
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
+              {language === 'he' ? 'לבטל את המנוי?' : 'Cancel subscription?'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
+              {language === 'he'
+                ? 'האם אתה בטוח שברצונך לבטל את המנוי?\nכל ההיסטוריה, העסקאות והתוכן שלך יימחקו לצמיתות ולא ניתן יהיה לשחזרם.'
+                : 'Are you sure you want to cancel?\nAll your history, trades, and content will be permanently deleted and cannot be recovered.'}
+            </div>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowCancelConfirm(false)}
+                style={{ flex: 1, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
+              >
+                {language === 'he' ? 'חזור' : 'Go back'}
+              </button>
+              <button
+                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription(); setCancelingPro(false) }}
+                style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
+              >
+                {language === 'he' ? 'כן, בטל מנוי' : 'Yes, cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr !important; } }

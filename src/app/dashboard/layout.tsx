@@ -56,18 +56,20 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       {/* Portfolio switcher */}
       {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          background: 'var(--bg3)', border: '1px solid var(--border)',
-          borderRadius: '12px', padding: '7px 14px',
-          fontSize: '12px', color: 'var(--text)', cursor: 'pointer',
-          fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
+          display: 'flex', alignItems: 'center', gap: '9px',
+          background: `${dotColor}12`,
+          border: `1.5px solid ${dotColor}50`,
+          borderRadius: '12px', padding: '8px 16px',
+          fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
+          fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '700',
           transition: 'all 0.2s',
+          boxShadow: `0 0 12px ${dotColor}18`,
         }}>
-          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
           <span style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
           </span>
-          <span style={{ fontSize: '9px', color: 'var(--text3)', marginTop: '1px' }}>▼</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '14px', color: dotColor, fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>expand_more</span>
         </div>
 
         {showMenu && (
@@ -102,9 +104,9 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
               })}
               <Link href="/portfolios" onClick={() => setShowMenu(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 18px', fontSize: '12px', color: '#4a7fff',
-                textDecoration: 'none', fontWeight: '700',
-              }}>＋ {tr.newPortfolio}</Link>
+                padding: '12px 18px', fontSize: '13px', color: '#4a7fff',
+                textDecoration: 'none', fontWeight: '800',
+              }}>+ {tr.newPortfolio}</Link>
             </div>
           </>
         )}
@@ -130,20 +132,6 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
           {language === 'he' ? 'שדרג ל PRO' : 'Upgrade to PRO'}
         </Link>
-      )}
-
-      {/* Active portfolio badge */}
-      {portfolios.length > 0 && activePortfolio && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          background: `${dotColor}12`, border: `1px solid ${dotColor}30`,
-          borderRadius: '20px', padding: '4px 14px',
-          fontSize: '11px', color: dotColor, fontWeight: '700',
-          letterSpacing: '0.05em', textTransform: 'uppercase',
-        }}>
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, boxShadow: `0 0 8px ${dotColor}` }} />
-          {activePortfolio.name}
-        </div>
       )}
 
       {/* User info */}
