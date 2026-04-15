@@ -28,6 +28,7 @@ export default function DashboardPage() {
   })
   const [equityCurve, setEquityCurve] = useState<{date: string; value: number}[]>([])
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
+  const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const supabase = createClient()
 
   const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
@@ -44,6 +45,13 @@ export default function DashboardPage() {
       return new Date(now.getFullYear(), 0, 1).toISOString()
     }
   }
+
+  useEffect(() => {
+    if (localStorage.getItem('tradeix-show-downgrade') === '1') {
+      setShowDowngradePopup(true)
+      localStorage.removeItem('tradeix-show-downgrade')
+    }
+  }, [])
 
   useEffect(() => {
     if (activePortfolio) { setTradePage(0); loadData(0) }
@@ -608,6 +616,70 @@ export default function DashboardPage() {
 
       {selectedTrade && (
         <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadData() }} />
+      )}
+
+      {/* ── DOWNGRADE POPUP ── */}
+      {showDowngradePopup && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+            {/* Glow */}
+            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+            {/* Icon */}
+            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '32px', color: '#10b981', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 32" }}>sentiment_satisfied</span>
+            </div>
+
+            {/* Title */}
+            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
+              {language === 'he' ? 'חזרת לתכנית החינמית' : 'Back to Free Plan'}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
+              {language === 'he'
+                ? 'המנוי בוטל וכל הנתונים נמחקו. עדיין תוכל ליהנות מהמערכת!'
+                : 'Your subscription was canceled and all data was cleared. You can still enjoy the app!'}
+            </div>
+
+            {/* Free plan limits */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px 20px', marginBottom: '28px', textAlign: 'right' }}>
+              <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px', textAlign: 'center' }}>
+                {language === 'he' ? 'תכנית חינמית כוללת' : 'Free Plan includes'}
+              </div>
+              {[
+                { icon: 'folder_open', text: language === 'he' ? 'תיק מסחר אחד' : '1 trading portfolio' },
+                { icon: 'receipt_long', text: language === 'he' ? 'עד 20 עסקאות' : 'Up to 20 trades' },
+                { icon: 'lock', text: language === 'he' ? 'ללא עמוד סטטיסטיקות' : 'No statistics page' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: i < 2 ? '#10b981' : 'rgba(255,255,255,0.2)', fontVariationSettings: `'FILL' ${i < 2 ? 0 : 1}, 'wght' 200, 'GRAD' -25, 'opsz' 20` }}>{item.icon}</span>
+                  <span style={{ fontSize: '13px', color: i < 2 ? 'var(--text2)' : 'var(--text3)', fontWeight: '600' }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Link href="/upgrade" onClick={() => setShowDowngradePopup(false)} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: '#fff', borderRadius: '14px', padding: '13px',
+                fontSize: '14px', fontWeight: '800', textDecoration: 'none',
+                boxShadow: '0 0 24px rgba(16,185,129,0.35)',
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+                {language === 'he' ? 'חזור ל PRO — $20/חודש' : 'Upgrade back to PRO — $20/mo'}
+              </Link>
+              <button onClick={() => setShowDowngradePopup(false)} style={{
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '14px', padding: '12px', fontSize: '13px',
+                fontWeight: '700', color: 'var(--text3)', cursor: 'pointer',
+                fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s',
+              }}>
+                {language === 'he' ? 'המשך עם תכנית חינמית' : 'Continue with free plan'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <style>{`

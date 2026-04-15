@@ -175,6 +175,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // 5. Update local state — stay logged in as free user
     setSubscription('free')
+    localStorage.setItem('tradeix-show-downgrade', '1')
   }
 
   const isPro = subscription === 'pro'
