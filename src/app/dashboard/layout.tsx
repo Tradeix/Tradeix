@@ -305,10 +305,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
-  const { language } = useApp()
+  const [pageKey, setPageKey] = useState(0)
+  const { language, subscriptionLoading } = useApp()
+  const { portfoliosLoaded } = usePortfolio()
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClient()
   const isRTL = language === 'he'
+  const ready = portfoliosLoaded && !subscriptionLoading
+
+  // On every route change, briefly hide content so the new page renders invisibly
+  // then fades in — eliminates the flash of stale/empty state
+  useEffect(() => {
+    setPageKey(k => k + 1)
+  }, [pathname])
 
   useEffect(() => {
     if (localStorage.getItem('tradeix-show-downgrade') === '1') {
@@ -343,8 +353,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '210px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }} className="page-content">
-          {children}
+        <div
+          key={pageKey}
+          style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}
+          className={`page-content ${ready ? 'page-ready' : 'page-loading'}`}
+        >
+          {ready ? children : null}
         </div>
       </div>
 
@@ -456,6 +470,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
         body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: var(--bg) !important; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
+        @keyframes pageFadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .page-ready { animation: pageFadeIn 0.18s ease forwards; }
+        .page-loading { opacity: 0; }
         .upgrade-btn:hover { transform: scale(1.03); box-shadow: 0 0 24px rgba(245,158,11,0.4) !important; }
         /* ── TABLET + MOBILE: app mode (≤1024px) ── */
         @media (max-width: 1024px) {
