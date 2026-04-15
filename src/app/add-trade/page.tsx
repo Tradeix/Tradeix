@@ -15,10 +15,9 @@ type Step = 1 | 2 | 3
 
 interface TradeData {
   symbol: string
-  direction: 'long' | 'short'
+  outcome: 'win' | 'loss'
   entry_price: string
-  stop_loss: string
-  take_profit: string
+  exit_price: string
   pnl: string
   traded_at: string
   notes: string
@@ -37,8 +36,8 @@ export default function AddTradePage() {
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
-    symbol: '', direction: 'long',
-    entry_price: '', stop_loss: '', take_profit: '',
+    symbol: '', outcome: 'win',
+    entry_price: '', exit_price: '',
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
   })
   const router = useRouter()
@@ -91,17 +90,12 @@ export default function AddTradePage() {
       const missing: string[] = []
       if (!data.symbol) missing.push(language === 'he' ? 'שם הצמד' : 'Symbol')
       if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
-      if (data.stop_loss == null) missing.push('Stop Loss')
-      if (data.take_profit == null) missing.push('Take Profit')
       setAiMissingFields(missing)
 
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
-        direction: data.direction === 'short' ? 'short' : 'long',
         entry_price: data.entry_price?.toString() || '',
-        stop_loss: data.stop_loss?.toString() || '',
-        take_profit: data.take_profit?.toString() || '',
       }))
       setAiConfidence(data.confidence || 85)
       setAiRaw(data.analysis || '')
@@ -133,19 +127,11 @@ export default function AddTradePage() {
     setStep(3)
   }
 
-  function calcRR() {
-    const e = parseFloat(tradeData.entry_price)
-    const s = parseFloat(tradeData.stop_loss)
-    const tp = parseFloat(tradeData.take_profit)
-    if (isNaN(e) || isNaN(s) || isNaN(tp) || Math.abs(e - s) === 0) return null
-    return (Math.abs(tp - e) / Math.abs(e - s)).toFixed(2)
-  }
-
   async function handleSubmit() {
     const missingPnl = !tradeData.pnl || tradeData.pnl.trim() === ''
     if (missingPnl) setPnlError(true)
-    if (!tradeData.symbol || !tradeData.entry_price || !tradeData.stop_loss || !tradeData.take_profit || missingPnl) {
-      toast.error(language === 'he' ? 'נא למלא את כל השדות' : 'Please fill all fields')
+    if (!tradeData.symbol || missingPnl) {
+      toast.error(language === 'he' ? 'נא למלא שם צמד ו-P&L' : 'Please fill symbol and P&L')
       return
     }
     setSubmitting(true)
@@ -185,18 +171,17 @@ export default function AddTradePage() {
           imageUrl = urlData.publicUrl
         }
       }
-      const rr = calcRR()
-      const pnl = parseFloat(tradeData.pnl) || 0
+      const pnlAbs = Math.abs(parseFloat(tradeData.pnl) || 0)
+      const pnl = tradeData.outcome === 'loss' ? -pnlAbs : pnlAbs
       const { error } = await supabase.from('trades').insert({
         portfolio_id: portfolioId, user_id: user.id,
-        symbol: tradeData.symbol.toUpperCase(), direction: tradeData.direction,
-        entry_price: parseFloat(tradeData.entry_price),
-        stop_loss: parseFloat(tradeData.stop_loss),
-        take_profit: parseFloat(tradeData.take_profit),
-        pnl, rr_ratio: rr ? parseFloat(rr) : 0,
+        symbol: tradeData.symbol.toUpperCase(),
+        entry_price: tradeData.entry_price ? parseFloat(tradeData.entry_price) : null,
+        exit_price: tradeData.exit_price ? parseFloat(tradeData.exit_price) : null,
+        pnl,
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
         notes: tradeData.notes, traded_at: tradeData.traded_at,
-        outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
+        outcome: tradeData.outcome,
       })
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
@@ -207,8 +192,6 @@ export default function AddTradePage() {
       setSubmitting(false)
     }
   }
-
-  const rr = calcRR()
 
   // No portfolio state
   if (portfoliosLoaded && !activePortfolio) {
@@ -298,7 +281,7 @@ export default function AddTradePage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>{language === 'he' ? 'ניתוח AI הושלם' : 'AI Analysis Complete'}</div>
                   <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
-                    {tradeData.symbol} • {tradeData.direction === 'long' ? (language === 'he' ? 'לונג' : 'Long') : (language === 'he' ? 'שורט' : 'Short')} • {language === 'he' ? 'כניסה' : 'Entry'}: {tradeData.entry_price}
+                    {tradeData.symbol} {tradeData.entry_price ? `• ${language === 'he' ? 'כניסה' : 'Entry'}: ${tradeData.entry_price}` : ''}
                   </div>
                   {aiConfidence > 0 && (
                     <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '4px' }}>
@@ -371,75 +354,120 @@ export default function AddTradePage() {
                   )}
                 </div>
 
-                {/* Symbol + Direction */}
+                {/* Symbol + Date */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.symbolPair} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
                     <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.direction}</label>
-                    <select value={tradeData.direction} onChange={e => setTradeData(p => ({ ...p, direction: e.target.value as any }))}>
-                      <option value="long">{tr.long}</option>
-                      <option value="short">{tr.short}</option>
-                    </select>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'תאריך' : 'Date'}
+                    </label>
+                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
                   </div>
                 </div>
 
-                {/* Date + PnL */}
+                {/* WIN / LOSS toggle */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                    {language === 'he' ? 'תוצאה' : 'Outcome'} <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    {(['win', 'loss'] as const).map(val => {
+                      const active = tradeData.outcome === val
+                      const color = val === 'win' ? '#22c55e' : '#ef4444'
+                      const bg = val === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
+                      const border = val === 'win' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
+                      return (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => setTradeData(p => ({ ...p, outcome: val }))}
+                          style={{
+                            padding: '13px', borderRadius: '12px',
+                            background: active ? bg : 'var(--bg3)',
+                            border: `2px solid ${active ? border : 'var(--border)'}`,
+                            color: active ? color : 'var(--text3)',
+                            fontSize: '14px', fontWeight: '900', cursor: 'pointer',
+                            fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
+                            transition: 'all 0.18s',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          }}
+                        >
+                          <span>{val === 'win' ? '✓' : '✕'}</span>
+                          {val === 'win' ? 'WIN' : 'LOSS'}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Entry + Exit */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.date}</label>
-                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'נקודת כניסה' : 'Entry Price'}
+                    </label>
+                    <input value={tradeData.entry_price} onChange={e => setTradeData(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.00" />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
-                      {tr.pnl} <span style={{ color: '#ef4444' }}>*</span>
+                    <label style={{ fontSize: '12px', marginBottom: '6px', display: 'block', fontWeight: '600', color: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.7)' : 'rgba(34,197,94,0.7)' }}>
+                      {language === 'he' ? 'נקודת יציאה' : 'Exit Price'}
                     </label>
+                    <input
+                      value={tradeData.exit_price}
+                      onChange={e => setTradeData(p => ({ ...p, exit_price: e.target.value }))}
+                      placeholder="0.00"
+                      style={tradeData.exit_price ? { borderColor: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)' } : {}}
+                    />
+                  </div>
+                </div>
+
+                {/* P&L */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
                     <input
                       value={tradeData.pnl}
                       onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
-                      placeholder="+320 / -150"
+                      placeholder="500"
                       style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
                     />
-                    {pnlError && (
-                      <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
-                        {language === 'he' ? 'שדה חובה' : 'Required field'}
+                    {tradeData.pnl && (
+                      <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', fontWeight: '900', color: tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', pointerEvents: 'none' }}>
+                        {tradeData.outcome === 'win' ? '+' : '-'}${Math.abs(parseFloat(tradeData.pnl) || 0)}
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* Entry, SL, TP */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '4px' }}>
-                  {[{ key: 'entry_price', label: tr.entryPrice }, { key: 'stop_loss', label: tr.stopLoss }, { key: 'take_profit', label: tr.takeProfit }].map(({ key, label }) => (
-                    <div key={key}>
-                      <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{label} <span style={{ color: '#ef4444' }}>*</span></label>
-                      <input value={(tradeData as any)[key]} onChange={e => setTradeData(p => ({ ...p, [key]: e.target.value }))} placeholder="0.00" />
+                  {pnlError && (
+                    <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
+                      {language === 'he' ? 'שדה חובה' : 'Required field'}
                     </div>
-                  ))}
-                </div>
-
-                {/* RR */}
-                <div style={{ background: 'linear-gradient(135deg, #1a3a8f18, #7c3aed18)', border: '1px solid #4a7fff33', borderRadius: 'var(--radius-sm)', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '16px 0' }}>
-                  <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{tr.rrAuto}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{tr.rrBased}</div>
-                  </div>
-                  <div style={{ fontSize: '26px', fontWeight: '700', background: rr ? 'linear-gradient(90deg, var(--blue), var(--purple))' : undefined, WebkitBackgroundClip: rr ? 'text' : undefined, WebkitTextFillColor: rr ? 'transparent' : undefined, color: rr ? undefined : 'var(--text3)' }}>
-                    {rr ? `1:${rr}` : '—'}
-                  </div>
+                  )}
                 </div>
 
                 {/* Notes */}
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>{tr.notes}</label>
+                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    {language === 'he' ? 'הערות (אופציונלי)' : 'Notes (optional)'}
+                  </label>
                   <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder={tr.notesPlaceholder} rows={3} style={{ resize: 'vertical' }} />
                 </div>
 
-                <button onClick={handleSubmit} disabled={submitting} className="btn-primary" style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
-                  {submitting ? tr.submitting : tr.submitTrade}
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="btn-primary"
+                  style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <span>✓</span>
+                  {submitting ? tr.submitting : (language === 'he' ? 'העלאת עסקה' : 'Submit Trade')}
                 </button>
               </div>
             </div>

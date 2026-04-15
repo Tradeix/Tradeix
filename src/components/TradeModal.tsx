@@ -23,12 +23,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   const [pnlError, setPnlError] = useState(false)
   const [form, setForm] = useState({
     symbol: trade.symbol,
-    direction: trade.direction,
+    outcome: (trade.outcome === 'win' ? 'win' : 'loss') as 'win' | 'loss',
     entry_price: trade.entry_price?.toString() || '',
     exit_price: trade.exit_price?.toString() || '',
-    stop_loss: trade.stop_loss?.toString() || '',
-    take_profit: trade.take_profit?.toString() || '',
-    pnl: trade.pnl?.toString() || '',
+    pnl: Math.abs(trade.pnl ?? 0).toString(),
     notes: trade.notes || '',
     traded_at: trade.traded_at ? new Date(trade.traded_at).toISOString().split('T')[0] : '',
   })
@@ -63,31 +61,21 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     maxFiles: 1, maxSize: 10 * 1024 * 1024,
   })
 
-  function calcRR() {
-    const e = parseFloat(form.entry_price)
-    const s = parseFloat(form.stop_loss)
-    const tp = parseFloat(form.take_profit)
-    if (isNaN(e) || isNaN(s) || isNaN(tp) || Math.abs(e - s) === 0) return null
-    return (Math.abs(tp - e) / Math.abs(e - s)).toFixed(2)
-  }
-
   async function handleSave() {
     const missingPnl = !form.pnl || form.pnl.trim() === ''
     if (missingPnl) { setPnlError(true); toast.error(language === 'he' ? 'נא למלא P&L' : 'PNL is required'); return }
     setSaving(true)
     try {
-      const pnl = parseFloat(form.pnl) || 0
-      const rr = calcRR()
+      const pnlAbs = Math.abs(parseFloat(form.pnl) || 0)
+      const pnl = form.outcome === 'loss' ? -pnlAbs : pnlAbs
       const { error } = await supabase.from('trades').update({
         symbol: form.symbol.toUpperCase(),
-        direction: form.direction,
-        entry_price: parseFloat(form.entry_price),
+        entry_price: parseFloat(form.entry_price) || null,
         exit_price: form.exit_price ? parseFloat(form.exit_price) : null,
-        stop_loss: parseFloat(form.stop_loss),
-        take_profit: parseFloat(form.take_profit),
-        pnl, rr_ratio: rr ? parseFloat(rr) : trade.rr_ratio,
-        notes: form.notes, traded_at: form.traded_at,
-        outcome: pnl > 0 ? 'win' : pnl < 0 ? 'loss' : 'breakeven',
+        pnl,
+        notes: form.notes,
+        traded_at: form.traded_at,
+        outcome: form.outcome,
       }).eq('id', trade.id)
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
@@ -109,9 +97,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     finally { setDeleting(false) }
   }
 
-  const rr = calcRR()
-  const isWin = trade.outcome === 'win'
-  const isLong = trade.direction === 'long'
+  const isWin = editing ? form.outcome === 'win' : trade.outcome === 'win'
 
   const glass = {
     background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
@@ -119,9 +105,41 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
     borderRadius: '14px',
   }
 
-  const formattedDate = new Date(trade.traded_at).toLocaleDateString(
-    language === 'he' ? 'he-IL' : 'en-US',
-    { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+  // Numeric date: d/m/yyyy
+  const numericDate = (() => {
+    if (!trade.traded_at) return '—'
+    const d = new Date(trade.traded_at)
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+  })()
+
+  const WinLossToggle = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+      {(['win', 'loss'] as const).map(val => {
+        const active = form.outcome === val
+        const color = val === 'win' ? '#22c55e' : '#ef4444'
+        const bg = val === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'
+        const border = val === 'win' ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'
+        return (
+          <button
+            key={val}
+            onClick={() => setForm(p => ({ ...p, outcome: val }))}
+            style={{
+              padding: '12px', borderRadius: '12px',
+              background: active ? bg : 'rgba(255,255,255,0.02)',
+              border: `2px solid ${active ? border : 'rgba(255,255,255,0.07)'}`,
+              color: active ? color : 'rgba(229,226,225,0.3)',
+              fontSize: '14px', fontWeight: '900', cursor: 'pointer',
+              fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
+              transition: 'all 0.18s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            }}
+          >
+            <span style={{ fontSize: '15px' }}>{val === 'win' ? '✓' : '✕'}</span>
+            {val === 'win' ? 'WIN' : 'LOSS'}
+          </button>
+        )
+      })}
+    </div>
   )
 
   return (
@@ -161,14 +179,11 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             </div>
 
             <div style={{ padding: '20px 24px' }}>
-              {/* Image in edit mode */}
+              {/* Image */}
               <div style={{ marginBottom: '20px' }}>
                 {imageUrl ? (
                   <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <img src={imageUrl} alt="chart" onClick={() => setLightbox(true)} style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', display: 'block', background: 'var(--bg)', cursor: 'zoom-in' }} />
-                    <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '4px 8px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
-                    </div>
                     <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
                       <div {...getRootProps()}>
                         <input {...getInputProps()} />
@@ -187,90 +202,97 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                     ) : (
                       <>
                         <span className="material-symbols-outlined" style={{ fontSize: '28px', color: 'rgba(74,127,255,0.3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>{tr.uploadOptional}</div>
-                        <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>{tr.uploadOptionalHint}</div>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>{language === 'he' ? 'העלה תמונה (אופציונלי)' : 'Upload image (optional)'}</div>
+                        <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>PNG, JPG up to 10MB</div>
                       </>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* Form fields */}
+              {/* Symbol + Date */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.pair} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
+                  </label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tradeType}</label>
-                  <select value={form.direction} onChange={e => setForm(p => ({ ...p, direction: e.target.value as any }))}>
-                    <option value="long">{tr.directionLong}</option>
-                    <option value="short">{tr.directionShort}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.entryPriceLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
-                  <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.0000" />
-                </div>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.exitPrice}</label>
-                  <input value={form.exit_price} onChange={e => setForm(p => ({ ...p, exit_price: e.target.value }))} placeholder="0.0000" />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.slLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
-                  <input value={form.stop_loss} onChange={e => setForm(p => ({ ...p, stop_loss: e.target.value }))} placeholder="0.0000" />
-                </div>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.tpLabel} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span></label>
-                  <input value={form.take_profit} onChange={e => setForm(p => ({ ...p, take_profit: e.target.value }))} placeholder="0.0000" />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div>
-                  <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {tr.pnl} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'תאריך' : 'Date'}
                   </label>
-                  <input
-                    value={form.pnl}
-                    onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
-                    placeholder="+320"
-                    style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
-                  />
-                  {pnlError && (
-                    <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>error</span>
-                      {language === 'he' ? 'שדה חובה' : 'Required field'}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.dateLabel}</label>
                   <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
                 </div>
               </div>
 
-              <div style={{ ...glass, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.4)', fontWeight: '700' }}>{tr.rrLabel}</div>
-                <div style={{ fontSize: '20px', fontWeight: '900', color: rr ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>{rr ? `1:${rr}` : '—'}</div>
+              {/* WIN / LOSS toggle */}
+              <div style={{ marginBottom: '0' }}>
+                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {language === 'he' ? 'תוצאה' : 'Outcome'}
+                </label>
+                <WinLossToggle />
               </div>
 
+              {/* Entry + Exit */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'מחיר כניסה' : 'Entry Price'}
+                  </label>
+                  <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.0000" />
+                </div>
+                <div>
+                  <label style={{ fontSize: '10px', color: form.outcome === 'loss' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'מחיר יציאה' : 'Exit Price'}
+                  </label>
+                  <input
+                    value={form.exit_price}
+                    onChange={e => setForm(p => ({ ...p, exit_price: e.target.value }))}
+                    placeholder="0.0000"
+                    style={{ borderColor: form.exit_price ? (form.outcome === 'loss' ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)') : undefined }}
+                  />
+                </div>
+              </div>
+
+              {/* P&L */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '10px', color: pnlError ? '#ef4444' : 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {language === 'he' ? 'P&L ($) — הכנס מספר חיובי' : 'P&L ($) — enter positive amount'} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    value={form.pnl}
+                    onChange={e => { setForm(p => ({ ...p, pnl: e.target.value })); if (e.target.value.trim()) setPnlError(false) }}
+                    placeholder="500"
+                    style={pnlError ? { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.12)' } : {}}
+                  />
+                  {form.pnl && (
+                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', fontWeight: '900', color: form.outcome === 'win' ? '#22c55e' : '#ef4444', pointerEvents: 'none' }}>
+                      {form.outcome === 'win' ? '+' : '-'}${Math.abs(parseFloat(form.pnl) || 0)}
+                    </div>
+                  )}
+                </div>
+                {pnlError && (
+                  <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px' }}>
+                    {language === 'he' ? 'שדה חובה' : 'Required field'}
+                  </div>
+                )}
+              </div>
+
+              {/* Notes */}
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</label>
-                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={tr.notesPlaceholder} />
+                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {language === 'he' ? 'הערות (אופציונלי)' : 'Notes (optional)'}
+                </label>
+                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={language === 'he' ? 'מה למדת מהעסקה?' : 'What did you learn?'} />
               </div>
 
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px', fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif' }}>
-                  {saving ? tr.saving : tr.save}
+                <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
+                  <span>✓</span> {saving ? tr.saving : tr.save}
                 </button>
-                <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '11px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
+                <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
               </div>
             </div>
           </>
@@ -288,22 +310,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                     onClick={() => setLightbox(true)}
                     style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
                   />
-                  {/* Gradient overlay at bottom of image */}
                   <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
-                  {/* Zoom hint */}
                   <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '14px', left: '14px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
                     <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
                   </div>
-                  {/* Replace image */}
-                  <div style={{ position: 'absolute', bottom: '14px', right: language === 'he' ? 'auto' : '14px', left: language === 'he' ? '14px' : 'auto' }}>
-                    <div {...getRootProps()}>
-                      <input {...getInputProps()} />
-                    </div>
-                  </div>
                 </>
               ) : (
-                /* No image — compact upload zone */
                 <div {...getRootProps()} style={{ padding: '28px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.06)' : 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
                   <input {...getInputProps()} />
                   {uploadingImage ? (
@@ -320,7 +333,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </div>
               )}
 
-              {/* Floating action buttons — always top-right of image area */}
+              {/* Floating action buttons */}
               <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px', zIndex: 2 }}>
                 <button
                   onClick={() => setEditing(true)}
@@ -333,7 +346,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </button>
                 <button
                   onClick={() => setConfirmDelete(true)}
-                  title={language === 'he' ? 'מחק' : 'Delete'}
                   style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(10px)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                   onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.25)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)' }}
                   onMouseOut={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.25)' }}
@@ -357,31 +369,16 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {trade.symbol}
               </div>
 
-              {/* Direction + Outcome badges */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                {/* LONG / SHORT */}
+              {/* WIN / LOSS badge */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '7px 16px', borderRadius: '999px',
-                  background: isLong ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  border: `1px solid ${isLong ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
-                }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px', color: isLong ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>
-                    {isLong ? 'trending_up' : 'trending_down'}
-                  </span>
-                  <span style={{ fontSize: '12px', fontWeight: '900', color: isLong ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
-                    {isLong ? (language === 'he' ? 'לונג' : 'LONG') : (language === 'he' ? 'שורט' : 'SHORT')}
-                  </span>
-                </div>
-                {/* WIN / LOSS */}
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '7px 16px', borderRadius: '999px',
+                  padding: '7px 18px', borderRadius: '999px',
                   background: isWin ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
                   border: `1px solid ${isWin ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
                 }}>
-                  <span style={{ fontSize: '12px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
-                    {isWin ? (language === 'he' ? 'WIN ✓' : '✓ WIN') : (language === 'he' ? 'LOSS ✕' : '✕ LOSS')}
+                  <span style={{ fontSize: '13px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
+                    {isWin ? (language === 'he' ? '✓ WIN' : '✓ WIN') : (language === 'he' ? '✕ LOSS' : '✕ LOSS')}
                   </span>
                 </div>
               </div>
@@ -414,48 +411,31 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>calendar_today</span>
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.dateLabel}</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)' }}>{formattedDate}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)' }}>{numericDate}</span>
                 </div>
                 {/* Entry price */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: trade.exit_price ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(74,127,255,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>login</span>
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(74,127,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.entryPriceLabel}</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(74,127,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#4a7fff' }}>{trade.entry_price}</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#4a7fff' }}>{trade.entry_price || '—'}</span>
                 </div>
-                {/* Exit price */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.exitPrice}</span>
+                {/* Exit price — shown only if exists, colored by outcome */}
+                {trade.exit_price != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px', color: isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? 'rgba(34,197,94,0.55)' : 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
+                    </div>
+                    <span style={{ fontSize: '14px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444' }}>
+                      {trade.exit_price}
+                    </span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.exit_price ? 'rgba(229,226,225,0.75)' : 'rgba(208,197,175,0.2)' }}>
-                    {trade.exit_price || '—'}
-                  </span>
-                </div>
+                )}
               </div>
-
-              {/* RR card */}
-              {trade.rr_ratio != null && (
-                <div style={{
-                  borderRadius: '14px', padding: '16px 20px',
-                  background: 'linear-gradient(135deg, rgba(74,127,255,0.07), rgba(139,92,246,0.07))',
-                  border: '1px solid rgba(74,127,255,0.14)',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  marginBottom: '14px',
-                }}>
-                  <div>
-                    <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(74,127,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '3px' }}>Risk / Reward</div>
-                    <div style={{ fontSize: '11px', color: 'rgba(208,197,175,0.3)', fontWeight: '600' }}>{tr.rrBased2}</div>
-                  </div>
-                  <div style={{ fontSize: '30px', fontWeight: '900', background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    1:{trade.rr_ratio.toFixed(2)}
-                  </div>
-                </div>
-              )}
 
               {/* Notes */}
               {trade.notes && (
@@ -481,13 +461,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .fade-up { animation: fadeUp 0.2s ease; }
       `}</style>
 
-      {/* Delete confirmation overlay */}
+      {/* Delete confirmation */}
       {confirmDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.15s ease' }}>
-          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '20px', padding: '28px 28px 24px', width: '90%', maxWidth: '340px', boxShadow: '0 24px 60px rgba(0,0,0,0.6)', fontFamily: 'Heebo, sans-serif', animation: 'fadeUp 0.2s ease', position: 'relative', top: 0, left: 0, transform: 'none' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '20px', padding: '28px 28px 24px', width: '90%', maxWidth: '340px', boxShadow: '0 24px 60px rgba(0,0,0,0.6)', fontFamily: 'Heebo, sans-serif' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '22px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
             </div>
@@ -513,25 +492,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       {lightbox && imageUrl && (
         <div
           onClick={() => setLightbox(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 500,
-            background: 'rgba(0,0,0,0.92)',
-            backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'fadeIn 0.2s ease',
-            cursor: 'zoom-out',
-          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
         >
-          <button
-            onClick={() => setLightbox(false)}
-            style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}
-          >✕</button>
-          <img
-            src={imageUrl}
-            alt="chart"
-            onClick={e => e.stopPropagation()}
-            style={{ maxWidth: '94vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', cursor: 'default' }}
-          />
+          <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
+          <img src={imageUrl} alt="chart" onClick={e => e.stopPropagation()} style={{ maxWidth: '94vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', cursor: 'default' }} />
         </div>
       )}
     </>
