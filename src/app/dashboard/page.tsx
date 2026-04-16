@@ -148,7 +148,7 @@ export default function DashboardPage() {
         <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '28px' }}>
           {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
         </div>
-        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: `linear-gradient(135deg, ${PRIMARY}, #3366dd)`, color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', boxShadow: `0 0 24px rgba(74,127,255,0.4)`, fontFamily: 'Heebo, sans-serif' }}>
+        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: PRIMARY, color: '#fff', padding: '12px 28px', borderRadius: '8px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
           {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
         </button>
       </div>
@@ -175,22 +175,17 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── PAGE TITLE ── */}
-      <div style={{ marginBottom: '28px', position: 'relative', display: 'inline-block' }}>
-        <h2 style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
-        <div style={{ position: 'absolute', bottom: '-6px', insetInlineEnd: 0, width: '48px', height: '4px', background: PRIMARY, borderRadius: '999px' }} />
+      <div style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+        <h2 style={{ fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em', margin: 0, color: 'var(--text)' }}>{tr.overview}</h2>
       </div>
 
       {/* ── PORTFOLIO DATA SECTION ── */}
-      <section style={{ marginBottom: '28px', position: 'relative', overflow: 'hidden', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid rgba(255,255,255,0.08)', padding: '24px' }}>
-
-        {/* Ambient glow */}
-        <div style={{ position: 'absolute', insetInlineEnd: '-60px', top: '-60px', width: '200px', height: '200px', background: `${mktColor}18`, filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', insetInlineStart: '-40px', bottom: '-40px', width: '160px', height: '160px', background: portfolioPositive ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+      <section style={{ marginBottom: '28px', position: 'relative', overflow: 'hidden', borderRadius: '12px', background: 'var(--bg2)', border: '1px solid var(--border)', padding: '24px' }}>
 
         {/* Top row: portfolio name + market type */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: `${mktColor}18`, border: `1px solid ${mktColor}35`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '18px', color: mktColor, fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>account_balance</span>
             </div>
             <div>
@@ -201,9 +196,9 @@ export default function DashboardPage() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '10px', fontWeight: '800', color: mktColor, background: `${mktColor}15`, border: `1px solid ${mktColor}30`, padding: '4px 10px', borderRadius: '999px', letterSpacing: '0.12em' }}>{mktLabel}</span>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: mktColor, background: 'var(--bg3)', border: '1px solid var(--border)', padding: '4px 10px', borderRadius: '6px', letterSpacing: '0.08em' }}>{mktLabel}</span>
             {initialCapital > 0 && (
-              <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '999px' }}>
+              <span style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', background: 'var(--bg3)', border: '1px solid var(--border)', padding: '4px 10px', borderRadius: '6px' }}>
                 {language === 'he' ? 'הון' : 'Capital'}: ${initialCapital.toLocaleString()}
               </span>
             )}
@@ -216,7 +211,7 @@ export default function DashboardPage() {
             <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Current Value'}
             </div>
-            <div dir="ltr" style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', textShadow: portfolioPositive ? '0 0 40px rgba(34,197,94,0.3)' : '0 0 40px rgba(239,68,68,0.3)' }}>
+            <div dir="ltr" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
               ${portfolioValue.currentValue > 0 ? portfolioValue.currentValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : initialCapital.toLocaleString()}
             </div>
           </div>
@@ -233,14 +228,11 @@ export default function DashboardPage() {
         {/* Progress bar */}
         {initialCapital > 0 && (
           <div style={{ marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-            <div style={{ height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{ height: '6px', background: 'var(--bg3)', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
               <div style={{
-                height: '100%', borderRadius: '999px',
+                height: '100%', borderRadius: '3px',
                 width: `${Math.min(100, progressPct)}%`,
-                background: portfolioPositive
-                  ? 'linear-gradient(90deg, #16a34a, #22c55e)'
-                  : 'linear-gradient(90deg, #dc2626, #ef4444)',
-                boxShadow: portfolioPositive ? '0 0 12px rgba(34,197,94,0.5)' : '0 0 12px rgba(239,68,68,0.4)',
+                background: portfolioPositive ? '#22c55e' : '#ef4444',
                 transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
               }} />
             </div>
@@ -255,7 +247,7 @@ export default function DashboardPage() {
         <div className="portfolio-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', position: 'relative', zIndex: 1 }}>
 
           {/* All-time P&L */}
-          <div style={{ background: portfolioPositive ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`, borderRadius: '14px', padding: '12px 14px' }}>
+          <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
             <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
               {language === 'he' ? 'רווח/הפסד כולל' : 'All-time P&L'}
             </div>
@@ -265,7 +257,7 @@ export default function DashboardPage() {
           </div>
 
           {/* ROI */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '12px 14px' }}>
+          <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
             <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>ROI</div>
             <div dir="ltr" style={{ fontSize: '18px', fontWeight: '900', color: portfolioPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.02em' }}>
               {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(2)}%
@@ -273,7 +265,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Max Drawdown */}
-          <div style={{ background: portfolioValue.maxDrawdown > 20 ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.03)', border: `1px solid ${portfolioValue.maxDrawdown > 20 ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '14px', padding: '12px 14px' }}>
+          <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
             <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
               {language === 'he' ? 'ירידה מקסימלית' : 'Max Drawdown'}
             </div>
@@ -289,15 +281,14 @@ export default function DashboardPage() {
         <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
           {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
         </span>
-        <div className="time-filter-bar" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', gap: '2px' }}>
+        <div className="time-filter-bar" style={{ display: 'flex', background: 'var(--bg2)', padding: '3px', borderRadius: '8px', border: '1px solid var(--border)', gap: '2px' }}>
           {TIME_FILTERS.map((label, i) => (
             <button key={i} onClick={() => setTimeFilter(i)} style={{
-              padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: '700',
+              padding: '6px 16px', borderRadius: '6px', fontSize: '11px', fontWeight: '600',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
               background: timeFilter === i ? PRIMARY : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',
-              boxShadow: timeFilter === i ? `0 4px 16px rgba(74,127,255,0.35)` : 'none',
-              transition: 'all 0.2s',
+              transition: 'background 0.15s, color 0.15s',
             }}>{label}</button>
           ))}
         </div>
@@ -308,18 +299,17 @@ export default function DashboardPage() {
 
         {/* Trades card */}
         <div className="stat-card" style={{
-          background: 'linear-gradient(135deg, rgba(74,127,255,0.08) 0%, rgba(139,92,246,0.05) 100%)',
-          border: '1px solid rgba(74,127,255,0.2)',
-          boxShadow: '0 0 40px -10px rgba(74,127,255,0.2)',
-          borderRadius: '20px', padding: '20px',
-          position: 'relative', overflow: 'hidden',
+          background: 'var(--bg2)',
+          border: '1px solid var(--border)',
+          borderInlineStart: '3px solid #4a7fff',
+          borderRadius: '12px', padding: '20px',
+          position: 'relative',
         }}>
-          <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(74,127,255,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '900', color: 'rgba(74,127,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {tr.total} {tr.trades}
             </span>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>receipt_long</span>
             </div>
           </div>
@@ -334,20 +324,19 @@ export default function DashboardPage() {
 
         {/* Profit Factor card */}
         <div className="stat-card" style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(74,127,255,0.05) 100%)',
-          border: '1px solid rgba(139,92,246,0.2)',
-          boxShadow: '0 0 40px -10px rgba(139,92,246,0.2)',
-          borderRadius: '20px', padding: '20px',
-          position: 'relative', overflow: 'hidden',
+          background: 'var(--bg2)',
+          border: '1px solid var(--border)',
+          borderInlineStart: '3px solid #8b5cf6',
+          borderRadius: '12px', padding: '20px',
+          position: 'relative',
         }}>
-          <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(139,92,246,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '900', color: 'rgba(139,92,246,0.8)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tr.profitFactor}</span>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.profitFactor}</span>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
             </div>
           </div>
-          <p style={{ fontSize: '38px', fontWeight: '900', color: '#8b5cf6', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: '0 0 30px rgba(139,92,246,0.4)' }}>
+          <p style={{ fontSize: '38px', fontWeight: '800', color: '#8b5cf6', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1 }}>
             {stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—'}
           </p>
           <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', margin: 0 }}>{tr.ratio}</p>
@@ -355,22 +344,19 @@ export default function DashboardPage() {
 
         {/* P&L hero card */}
         <div className="stat-card" style={{
-          background: pnlPositive
-            ? 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(16,185,129,0.05) 100%)'
-            : 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(220,38,38,0.05) 100%)',
-          border: `1px solid ${pnlPositive ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
-          boxShadow: pnlPositive ? '0 0 40px -10px rgba(34,197,94,0.25)' : '0 0 40px -10px rgba(239,68,68,0.25)',
-          borderRadius: '20px', padding: '20px',
-          position: 'relative', overflow: 'hidden',
+          background: 'var(--bg2)',
+          border: '1px solid var(--border)',
+          borderInlineStart: `3px solid ${pnlPositive ? '#22c55e' : '#ef4444'}`,
+          borderRadius: '12px', padding: '20px',
+          position: 'relative',
         }}>
-          <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: pnlPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '900', color: pnlPositive ? 'rgba(34,197,94,0.8)' : 'rgba(239,68,68,0.8)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tr.portfolioPerformance}</span>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: pnlPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${pnlPositive ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioPerformance}</span>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: pnlPositive ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{pnlPositive ? 'trending_up' : 'trending_down'}</span>
             </div>
           </div>
-          <p style={{ fontSize: '34px', fontWeight: '900', color: pnlPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: pnlPositive ? '0 0 30px rgba(34,197,94,0.5)' : '0 0 30px rgba(239,68,68,0.5)' }}>
+          <p style={{ fontSize: '34px', fontWeight: '800', color: pnlPositive ? '#22c55e' : '#ef4444', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1 }}>
             {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString()}
           </p>
           <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', margin: 0 }}>{tr.totalPnl}</p>
@@ -378,20 +364,19 @@ export default function DashboardPage() {
 
         {/* WIN RATE card */}
         <div className="stat-card" style={{
-          background: 'linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(16,185,129,0.05) 100%)',
-          border: '1px solid rgba(34,197,94,0.2)',
-          boxShadow: '0 0 40px -10px rgba(34,197,94,0.2)',
-          borderRadius: '20px', padding: '20px',
-          position: 'relative', overflow: 'hidden',
+          background: 'var(--bg2)',
+          border: '1px solid var(--border)',
+          borderInlineStart: '3px solid #22c55e',
+          borderRadius: '12px', padding: '20px',
+          position: 'relative',
         }}>
-          <div style={{ position: 'absolute', insetInlineEnd: '-20px', top: '-20px', width: '100px', height: '100px', background: 'rgba(34,197,94,0.12)', filter: 'blur(40px)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '900', color: 'rgba(34,197,94,0.8)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tr.winRate}</span>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.winRate}</span>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#22c55e', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>emoji_events</span>
             </div>
           </div>
-          <p style={{ fontSize: '38px', fontWeight: '900', color: '#22c55e', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1, textShadow: '0 0 30px rgba(34,197,94,0.5)' }}>
+          <p style={{ fontSize: '38px', fontWeight: '800', color: '#22c55e', letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1 }}>
             {stats.winRate.toFixed(0)}%
           </p>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -404,26 +389,25 @@ export default function DashboardPage() {
 
       {/* ── RECENT TRADES ── */}
       <section style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: '24px', overflow: 'hidden', marginBottom: '32px',
+        background: 'var(--bg2)',
+        border: '1px solid var(--border)',
+        borderRadius: '12px', overflow: 'hidden', marginBottom: '32px',
       }}>
-        <div className="trades-section-header" style={{ padding: '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+        <div className="trades-section-header" style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div style={{ flexShrink: 0 }}>
             <h4 style={{ fontSize: '18px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.recentTrades}</h4>
             <p style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700', margin: 0 }}>{tr.liveActivity}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* Time filter — always visible */}
-            <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'rgba(255,255,255,0.04)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="trade-filter-pills" style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '8px', border: '1px solid var(--border)' }}>
               {[tr.daily, tr.weekly, tr.monthly].map((label, i) => (
                 <button key={i} onClick={() => { setTradeTimeFilter(i); setTradePage(0); loadData(0, i) }} style={{
-                  padding: '4px 12px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
+                  padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: '600',
                   cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
                   background: tradeTimeFilter === i ? '#4a7fff' : 'transparent',
                   color: tradeTimeFilter === i ? '#fff' : 'var(--text3)',
-                  boxShadow: tradeTimeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
-                  transition: 'all 0.2s', whiteSpace: 'nowrap',
+                  transition: 'background 0.15s, color 0.15s', whiteSpace: 'nowrap',
                 }}>{label}</button>
               ))}
             </div>
@@ -440,14 +424,14 @@ export default function DashboardPage() {
                   <button
                     onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                     disabled={!canOlder}
-                    style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
+                    style={{ width: '30px', height: '30px', borderRadius: '6px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'opacity 0.15s' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
                   </button>
                   <button
                     onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                     disabled={!canNewer}
-                    style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
+                    style={{ width: '30px', height: '30px', borderRadius: '6px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'opacity 0.15s' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
                   </button>
@@ -468,17 +452,17 @@ export default function DashboardPage() {
             <div
               key={trade.id}
               onClick={() => setSelectedTrade(trade)}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none' }}
-              onMouseOver={e => { e.currentTarget.style.background = 'rgba(74,127,255,0.04)' }}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '0', marginBottom: idx < trades.length - 1 ? '0' : '0', cursor: 'pointer', transition: 'background 0.12s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'var(--bg3)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
               className="recent-trade-row"
             >
               {/* Pair */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
-                  background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                  width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0,
+                  background: 'var(--bg3)',
+                  border: '1px solid var(--border)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '16px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
@@ -518,11 +502,11 @@ export default function DashboardPage() {
               {/* Status */}
               <div style={{ textAlign: 'center' }}>
                 <span style={{
-                  padding: '4px 10px', borderRadius: '999px',
-                  background: trade.outcome === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                  padding: '4px 10px', borderRadius: '6px',
+                  background: 'var(--bg3)',
                   color: trade.outcome === 'win' ? '#22c55e' : '#ef4444',
-                  fontSize: '10px', fontWeight: '900',
-                  border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                  fontSize: '10px', fontWeight: '700',
+                  border: '1px solid var(--border)',
                   whiteSpace: 'nowrap',
                 }}>
                   {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
@@ -545,7 +529,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => { const p = tradePage + 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                 disabled={!canOlder}
-                style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}
+                style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'opacity 0.15s' }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
               </button>
@@ -555,7 +539,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => { const p = tradePage - 1; setTradePage(p); loadData(p, tradeTimeFilter) }}
                 disabled={!canNewer}
-                style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}
+                style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'opacity 0.15s' }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
               </button>
@@ -567,13 +551,12 @@ export default function DashboardPage() {
 
       {/* ── EQUITY CURVE ── */}
       <section className="equity-section" style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: '32px', padding: '32px',
+        background: 'var(--bg2)',
+        border: '1px solid var(--border)',
+        borderRadius: '12px', padding: '28px',
         overflow: 'hidden', position: 'relative', marginBottom: '32px',
       }}>
-        <div style={{ position: 'absolute', left: '-80px', bottom: '-80px', width: '256px', height: '256px', background: 'rgba(74,127,255,0.05)', filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', position: 'relative', zIndex: 1 }}>
           <div>
             <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{tr.equityCurve}</h3>
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>{tr.performanceTimeline}</p>
@@ -598,10 +581,10 @@ export default function DashboardPage() {
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
               <Tooltip
-                contentStyle={{ background: 'var(--bg3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)' }}
                 formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
               />
-              <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2.5} fill="url(#equityGrad)" strokeLinecap="round" dot={false} activeDot={{ r: 6, fill: PRIMARY, strokeWidth: 0, filter: 'drop-shadow(0 0 8px rgba(74,127,255,0.8))' }} />
+              <Area type="monotone" dataKey="value" stroke={PRIMARY} strokeWidth={2} fill="url(#equityGrad)" strokeLinecap="butt" dot={false} activeDot={{ r: 5, fill: PRIMARY, stroke: 'var(--bg2)', strokeWidth: 2 }} />
             </AreaChart>
           </ResponsiveContainer>
         ) : (
@@ -630,7 +613,7 @@ export default function DashboardPage() {
 
           /* Stat cards → 2×2 */
           .stats-hero { grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-bottom: 20px !important; }
-          .stat-card { padding: 16px !important; border-radius: 16px !important; }
+          .stat-card { padding: 16px !important; border-radius: 12px !important; }
 
           /* Trade rows: hide RR + Date */
           .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; gap: 8px !important; padding: 12px 10px !important; }
@@ -642,7 +625,7 @@ export default function DashboardPage() {
           .portfolio-stats-row { grid-template-columns: 1fr 1fr 1fr !important; gap: 10px !important; }
 
           /* Equity */
-          .equity-section { padding: 20px !important; border-radius: 20px !important; }
+          .equity-section { padding: 20px !important; border-radius: 12px !important; }
         }
 
         /* ══════════════════════════════════════════
