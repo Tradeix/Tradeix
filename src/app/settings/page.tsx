@@ -7,6 +7,7 @@ import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Icon from '@/components/Icon'
 
 export default function SettingsPage() {
   const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription } = useApp()
@@ -66,9 +67,9 @@ export default function SettingsPage() {
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
 
   const glass = {
-    background: 'var(--glass-bg)',
-    border: '1px solid var(--glass-border)',
-    borderRadius: '20px',
+    background: 'var(--bg2)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius)',
     padding: '24px',
   }
 
@@ -80,7 +81,7 @@ export default function SettingsPage() {
           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
           border: `1px solid ${value === opt.value ? 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
           background: value === opt.value ? 'rgba(74,127,255,0.15)' : 'var(--bg3)',
-          color: value === opt.value ? '#4a7fff' : 'var(--text3)',
+          color: value === opt.value ? '#3b82f6' : 'var(--text3)',
           transition: 'all 0.2s',
         }}>{opt.label}</button>
       ))}
@@ -92,7 +93,7 @@ export default function SettingsPage() {
       <PageHeader
         title={language === 'he' ? 'הגדרות אישיות' : 'Personal Settings'}
         subtitle={language === 'he' ? 'ניהול חשבון והעדפות' : 'Account management & preferences'}
-        icon="manage_accounts"
+        icon="settings"
       />
 
       {/* 3 cards side by side */}
@@ -102,7 +103,7 @@ export default function SettingsPage() {
         <div style={{ ...glass }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>person</span>
+              <Icon name="person" size={16} color="#3b82f6" />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
@@ -114,12 +115,11 @@ export default function SettingsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
             <div onClick={() => fileRef.current?.click()} style={{
               width: '72px', height: '72px', borderRadius: '50%',
-              background: avatarUrl ? undefined : 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
+              background: avatarUrl ? undefined : '#3b82f6',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '26px', fontWeight: '700', color: '#fff',
               marginBottom: '10px', cursor: 'pointer', overflow: 'hidden', position: 'relative',
               border: '2px solid rgba(74,127,255,0.3)',
-              boxShadow: '0 0 24px rgba(74,127,255,0.2)',
             }}>
               {avatarUrl ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
               {uploadingAvatar && (
@@ -151,11 +151,10 @@ export default function SettingsPage() {
           </div>
 
           <button onClick={handleSave} disabled={saving} style={{
-            width: '100%', background: 'linear-gradient(135deg, #4a7fff, #3366dd)',
+            width: '100%', background: '#3b82f6',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
             fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
-            boxShadow: '0 0 20px rgba(74,127,255,0.3)',
           }}>
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
           </button>
@@ -165,7 +164,7 @@ export default function SettingsPage() {
         <div style={{ ...glass }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#8b5cf6', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>tune</span>
+              <Icon name="tune" size={16} color="#8b5cf6" />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
@@ -195,14 +194,14 @@ export default function SettingsPage() {
           ...glass, position: 'relative', overflow: 'hidden',
           border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(74,127,255,0.15)',
           background: isPro
-            ? 'linear-gradient(135deg, rgba(245,158,11,0.06), rgba(249,115,22,0.03))'
+            ? 'rgba(245,158,11,0.04)'
             : 'var(--glass-bg)',
         }}>
           <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(74,127,255,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(74,127,255,0.15)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.3)' : 'rgba(74,127,255,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', color: isPro ? '#f59e0b' : '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>workspace_premium</span>
+              <Icon name="workspace_premium" size={16} color={isPro ? '#f59e0b' : '#3b82f6'} />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
@@ -221,7 +220,7 @@ export default function SettingsPage() {
               <div style={{ fontSize: '11px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(74,127,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
-              <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#4a7fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
                 {isPro && <span style={{ fontSize: '12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700' }}>⚡ פעיל</span>}
               </div>
@@ -230,9 +229,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(74,127,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '22px', color: isPro ? '#f59e0b' : '#4a7fff', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
-                {isPro ? 'bolt' : 'verified'}
-              </span>
+              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={isPro ? '#f59e0b' : '#3b82f6'} />
             </div>
           </div>
 
@@ -252,9 +249,7 @@ export default function SettingsPage() {
               { feature: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades', ok: false },
             ]).map((item, i, arr) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: item.ok ? (isPro ? '#f59e0b' : '#22c55e') : 'var(--text3)', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
-                  {item.ok ? 'check_circle' : 'cancel'}
-                </span>
+                <Icon name={item.ok ? 'check_circle' : 'cancel'} size={14} color={item.ok ? (isPro ? '#f59e0b' : '#22c55e') : 'var(--text3)'} />
                 <span style={{ fontSize: '12px', color: item.ok ? 'var(--text2)' : 'var(--text3)', fontWeight: '600', textDecoration: item.ok ? 'none' : 'line-through' }}>
                   {item.feature}
                 </span>
@@ -271,21 +266,21 @@ export default function SettingsPage() {
               onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
               onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>cancel</span>
+              <Icon name="cancel" size={15} />
               {cancelingPro ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
             </button>
           ) : (
             <Link href="/upgrade" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              width: '100%', background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              width: '100%', background: '#f59e0b',
               color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
               fontSize: '13px', fontWeight: '800', textDecoration: 'none',
-              boxShadow: '0 4px 20px rgba(245,158,11,0.3)', transition: 'all 0.2s',
+              transition: 'all 0.15s',
             }}
-              onMouseOver={(e: any) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(245,158,11,0.4)' }}
-              onMouseOut={(e: any) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(245,158,11,0.3)' }}
+              onMouseOver={(e: any) => { e.currentTarget.style.opacity = '0.9' }}
+              onMouseOut={(e: any) => { e.currentTarget.style.opacity = '1' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+              <Icon name="bolt" size={16} />
               {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
             </Link>
           )}
@@ -297,7 +292,7 @@ export default function SettingsPage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
           <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '24px', padding: '36px 32px', maxWidth: '420px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', textAlign: 'center' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '26px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 24" }}>warning</span>
+              <Icon name="warning" size={26} color="#ef4444" />
             </div>
             <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
               {language === 'he' ? 'לבטל את המנוי?' : 'Cancel subscription?'}

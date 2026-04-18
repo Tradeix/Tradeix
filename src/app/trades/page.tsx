@@ -10,6 +10,7 @@ import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import Icon from '@/components/Icon'
 
 const PAGE_SIZE = 6
 
@@ -97,17 +98,17 @@ export default function TradesPage() {
         <PageHeader
           title={tr.allTradesTitle}
           subtitle={language === 'he' ? 'היסטוריית מסחר מלאה' : 'Full trading history'}
-          icon="receipt_long"
+          icon="swap_horiz"
         />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>📁</div>
-          <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
           <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 0 24px rgba(74,127,255,0.4)', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#3b82f6', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -120,7 +121,7 @@ export default function TradesPage() {
       <PageHeader
         title={tr.allTradesTitle}
         subtitle={language === 'he' ? 'היסטוריית מסחר מלאה' : 'Full trading history'}
-        icon="receipt_long"
+        icon="swap_horiz"
       />
 
       {/* Filters */}
@@ -134,10 +135,10 @@ export default function TradesPage() {
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
               border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
               background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(74,127,255,0.1)' : 'var(--bg3)',
-              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#4a7fff' : 'var(--text3)',
+              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#3b82f6' : 'var(--text3)',
               transition: 'all 0.2s',
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '13px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{icon}</span>
+              <Icon name={icon} size={13} />
               {label}
               {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '10px' }}>{total}</span>}
             </button>
@@ -157,10 +158,9 @@ export default function TradesPage() {
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
               padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-              background: timeFilter === i ? '#4a7fff' : 'transparent',
+              background: timeFilter === i ? '#3b82f6' : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',
-              boxShadow: timeFilter === i ? '0 2px 8px rgba(74,127,255,0.4)' : 'none',
-              transition: 'all 0.2s', whiteSpace: 'nowrap',
+              transition: 'all 0.15s', whiteSpace: 'nowrap',
             }}>{label}</button>
           ))}
         </div>
@@ -168,17 +168,17 @@ export default function TradesPage() {
       </div>
 
       {/* Trades list */}
-      <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
           </div>
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '48px', color: 'rgba(74,127,255,0.15)', display: 'block', marginBottom: '16px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 48" }}>receipt_long</span>
+            <Icon name="receipt_long" size={48} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px' }} />
             <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{tr.noTradesYet}</div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '24px' }}>{tr.noTradesDesc}</div>
-            <Link href="/add-trade" style={{ background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>
+            <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>
           </div>
         ) : (
           <div style={{ padding: '8px 12px' }}>
@@ -194,7 +194,7 @@ export default function TradesPage() {
                 {/* Symbol + direction */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0, background: isLong(trade.direction) ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${isLong(trade.direction) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: isLong(trade.direction) ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{isLong(trade.direction) ? 'trending_up' : 'trending_down'}</span>
+                    <Icon name={isLong(trade.direction) ? 'trending_up' : 'trending_down'} size={20} color={isLong(trade.direction) ? '#22c55e' : '#ef4444'} />
                   </div>
                   <div>
                     <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
@@ -206,13 +206,13 @@ export default function TradesPage() {
 
                 {/* RR */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#4a7fff' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#3b82f6' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
                   <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
                 </div>
 
                 {/* P&L */}
                 <div style={{ textAlign: 'center' }}>
-                  <div dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                  <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                     {trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}
                   </div>
                   <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
@@ -230,7 +230,7 @@ export default function TradesPage() {
 
                 {/* Status */}
                 <div style={{ textAlign: 'center' }}>
-                  <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '10px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
+                  <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '10px', fontWeight: '700', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
                     {trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}
                   </span>
                 </div>
@@ -245,14 +245,14 @@ export default function TradesPage() {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px 0' }}>
           <button onClick={() => changePage(1)} disabled={!canOlder}
             style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
+            <Icon name={olderIcon} size={18} />
           </button>
           <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)' }}>
             {page + 1} / {totalPages}
           </span>
           <button onClick={() => changePage(-1)} disabled={!canNewer}
             style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
+            <Icon name={newerIcon} size={18} />
           </button>
         </div>
       )}

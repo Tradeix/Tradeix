@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import Link from 'next/link'
+import Icon from '@/components/Icon'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 const PORTFOLIO_COLORS = [
@@ -121,7 +122,7 @@ export default function ArchivePage() {
         <PageHeader title={language === 'he' ? 'ארכיון תיקים' : 'Portfolio Archive'} subtitle={language === 'he' ? 'תיקים מועברים לארכיון' : 'Archived portfolios'} icon="inventory_2" />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '24px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '40px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 200, 'GRAD' -25, 'opsz' 40" }}>lock</span>
+            <Icon name="lock" size={40} color="#f59e0b" />
           </div>
           <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
             {language === 'he' ? 'ארכיון תיקים זמין ל PRO בלבד' : 'Portfolio archive is PRO only'}
@@ -132,7 +133,7 @@ export default function ArchivePage() {
               : 'Upgrade to PRO to access the portfolio archive and manage full trading history'}
           </div>
           <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '14px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+            <Icon name="bolt" size={18} />
             {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
           </Link>
         </div>
@@ -148,7 +149,7 @@ export default function ArchivePage() {
         icon="inventory_2"
         action={
           <Link href="/portfolios" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', padding: '10px 18px', borderRadius: '12px', textDecoration: 'none', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>arrow_back</span>
+            <Icon name="arrow_back" size={14} />
             {language === 'he' ? 'חזרה לתיקים' : 'Back to Portfolios'}
           </Link>
         }
@@ -159,7 +160,7 @@ export default function ArchivePage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}>
           <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '28px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete_forever</span>
+              <Icon name="delete_forever" size={28} color="#ef4444" />
             </div>
             <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
               {language === 'he' ? 'מחיקה לצמיתות' : 'Permanent Delete'}
@@ -186,7 +187,7 @@ export default function ArchivePage() {
         </div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '56px', color: 'rgba(74,127,255,0.15)', display: 'block', marginBottom: '16px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 48" }}>inventory_2</span>
+          <Icon name="inventory_2" size={56} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px' }} />
           <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
             {language === 'he' ? 'הארכיון ריק' : 'Archive is empty'}
           </div>
@@ -243,7 +244,7 @@ export default function ArchivePage() {
                   <div className="archive-actions" style={{ display: 'flex', gap: '8px', marginInlineStart: 'auto' }}>
                     {/* Stats toggle */}
                     <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(74,127,255,0.3)' : 'var(--border)'}`, color: isExpanded ? '#4a7fff' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{isExpanded ? 'expand_less' : 'bar_chart'}</span>
+                      <Icon name={isExpanded ? 'expand_less' : 'bar_chart'} size={16} />
                     </button>
 
                     {/* Restore */}
@@ -251,7 +252,7 @@ export default function ArchivePage() {
                       onMouseOver={e => e.currentTarget.style.background = 'rgba(16,185,129,0.15)'}
                       onMouseOut={e => e.currentTarget.style.background = 'rgba(16,185,129,0.08)'}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>restore</span>
+                      <Icon name="restore" size={14} />
                       <span className="restore-label">{language === 'he' ? 'שחזר' : 'Restore'}</span>
                     </button>
 
@@ -260,7 +261,7 @@ export default function ArchivePage() {
                       onMouseOver={e => e.currentTarget.style.background = 'rgba(239,68,68,0.15)'}
                       onMouseOut={e => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete_forever</span>
+                      <Icon name="delete_forever" size={16} />
                     </button>
                   </div>
                 </div>
@@ -305,14 +306,14 @@ export default function ArchivePage() {
                               disabled={!canOlder}
                               style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.3, transition: 'all 0.2s' }}
                             >
-                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{olderIcon}</span>
+                              <Icon name={olderIcon} size={16} />
                             </button>
                             <button
                               onClick={() => changePage(p.id, -1)}
                               disabled={!canNewer}
                               style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.3, transition: 'all 0.2s' }}
                             >
-                              <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>{newerIcon}</span>
+                              <Icon name={newerIcon} size={16} />
                             </button>
                           </div>
                         )
@@ -337,9 +338,7 @@ export default function ArchivePage() {
                           {/* Symbol */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
-                                {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
-                              </span>
+                              <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={14} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                             </div>
                             <div>
                               <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>

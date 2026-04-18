@@ -1,0 +1,81 @@
+import {
+  LayoutDashboard, FilePlus, ArrowLeftRight, Activity, Briefcase, Archive,
+  Settings, LogOut, Menu, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
+  Zap, X, Smile, FolderOpen, FileText, Lock, Rocket, TrendingUp, TrendingDown,
+  Trophy, BarChart3, Receipt, LineChart, Landmark, Plus, ImagePlus, Calendar,
+  LogIn, ShieldAlert, Trash2, Pencil, ZoomIn, StickyNote, AlertCircle,
+  AlertTriangle, User, SlidersHorizontal, BadgeCheck, Crown, Info, XCircle,
+  ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
+  RotateCcw,
+  type LucideProps,
+} from 'lucide-react'
+
+const MAP: Record<string, React.FC<LucideProps>> = {
+  space_dashboard: LayoutDashboard,
+  post_add: FilePlus,
+  swap_horiz: ArrowLeftRight,
+  monitoring: Activity,
+  cases: Briefcase,
+  inventory_2: Archive,
+  settings: Settings,
+  logout: LogOut,
+  menu: Menu,
+  expand_more: ChevronDown,
+  expand_less: ChevronUp,
+  chevron_left: ChevronLeft,
+  chevron_right: ChevronRight,
+  bolt: Zap,
+  close: X,
+  sentiment_satisfied: Smile,
+  folder_open: FolderOpen,
+  receipt_long: Receipt,
+  query_stats: BarChart3,
+  lock: Lock,
+  rocket_launch: Rocket,
+  trending_up: TrendingUp,
+  trending_down: TrendingDown,
+  emoji_events: Trophy,
+  analytics: BarChart3,
+  show_chart: LineChart,
+  account_balance: Landmark,
+  add: Plus,
+  add_photo_alternate: ImagePlus,
+  calendar_today: Calendar,
+  login: LogIn,
+  dangerous: ShieldAlert,
+  delete: Trash2,
+  delete_forever: Trash2,
+  edit: Pencil,
+  zoom_in: ZoomIn,
+  notes: StickyNote,
+  error: AlertCircle,
+  warning: AlertTriangle,
+  person: User,
+  tune: SlidersHorizontal,
+  verified: BadgeCheck,
+  workspace_premium: Crown,
+  info: Info,
+  cancel: XCircle,
+  check_circle: CheckCircle,
+  arrow_back: ArrowLeft,
+  bar_chart: BarChart2,
+  balance: Scale,
+  hourglass_empty: Hourglass,
+  insights: Lightbulb,
+  leaderboard: BarChart3,
+  photo_camera: Camera,
+  speed: Gauge,
+  arrow_circle_up: TrendingUp,
+  arrow_circle_down: TrendingDown,
+  restore: RotateCcw,
+}
+
+interface IconProps extends Omit<LucideProps, 'ref'> {
+  name: string
+}
+
+export default function Icon({ name, size = 18, strokeWidth = 1.5, ...props }: IconProps) {
+  const Comp = MAP[name]
+  if (!Comp) return null
+  return <Comp size={size} strokeWidth={strokeWidth} {...props} />
+}

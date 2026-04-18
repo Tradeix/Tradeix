@@ -7,6 +7,7 @@ import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import Icon from '@/components/Icon'
 
 interface TradeModalProps {
   trade: Trade
@@ -158,10 +159,9 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
 
-      <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+      <div onClick={e => e.stopPropagation()} style={{
         width: '90%', maxWidth: '540px', maxHeight: '92vh',
         background: 'var(--bg2)',
         border: '1px solid rgba(255,255,255,0.08)',
@@ -169,6 +169,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
         animation: 'fadeUp 0.25s ease',
         fontFamily: 'Heebo, sans-serif',
+        margin: 'auto',
       }}>
 
         {editing ? (
@@ -182,7 +183,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'rgba(74,127,255,0.1)', border: '1px solid rgba(74,127,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#4a7fff', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
+                  <Icon name="edit" size={15} color="#4a7fff" />
                 </div>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{trade.symbol}</div>
@@ -215,7 +216,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                       </div>
                     ) : (
                       <>
-                        <span className="material-symbols-outlined" style={{ fontSize: '28px', color: 'rgba(74,127,255,0.3)', display: 'block', marginBottom: '8px', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
+                        <Icon name="add_photo_alternate" size={28} color="rgba(74,127,255,0.3)" style={{ display: 'block', marginBottom: '8px' }} />
                         <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>{language === 'he' ? 'העלה תמונה (אופציונלי)' : 'Upload image (optional)'}</div>
                         <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>PNG, JPG up to 10MB</div>
                       </>
@@ -341,9 +342,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '17px', color: trade.direction === 'long' ? '#22c55e' : '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>
-                    {trade.direction === 'long' ? 'trending_up' : 'trending_down'}
-                  </span>
+                  <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={17} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                 </div>
                 <div>
                   <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.01em', lineHeight: 1 }}>{trade.symbol}</div>
@@ -359,13 +358,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   title={tr.editBtn}
                   style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(74,127,255,0.1)', border: '1px solid rgba(74,127,255,0.2)', color: '#4a7fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
+                  <Icon name="edit" size={15} />
                 </button>
                 <button
                   onClick={() => setConfirmDelete(true)}
                   style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
+                  <Icon name="delete" size={15} />
                 </button>
                 <button
                   onClick={onClose}
@@ -385,7 +384,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 />
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
                 <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '10px', left: '12px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>zoom_in</span>
+                  <Icon name="zoom_in" size={13} color="rgba(255,255,255,0.6)" />
                   <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
                 </div>
               </div>
@@ -399,7 +398,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(74,127,255,0.3)', fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20" }}>add_photo_alternate</span>
+                    <Icon name="add_photo_alternate" size={18} color="rgba(74,127,255,0.3)" />
                     <span style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.2)' }}>{language === 'he' ? 'הוסף תמונת גרף' : 'Add chart image'}</span>
                   </div>
                 )}
@@ -435,7 +434,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* Date */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.35)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>calendar_today</span>
+                    <Icon name="calendar_today" size={14} color="rgba(208,197,175,0.35)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)' }}>{numericDate}</span>
@@ -443,7 +442,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* Entry price */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(74,127,255,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>login</span>
+                    <Icon name="login" size={14} color="rgba(74,127,255,0.4)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(74,127,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: trade.entry_price != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
@@ -453,7 +452,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* SL — always shown */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>dangerous</span>
+                    <Icon name="dangerous" size={14} color="rgba(239,68,68,0.4)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'rgba(255,255,255,0.2)' }}>
@@ -463,7 +462,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* Exit price — always shown */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
+                    <Icon name="logout" size={14} color={isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'} />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? 'rgba(34,197,94,0.55)' : 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'rgba(255,255,255,0.2)' }}>
@@ -473,7 +472,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* RR ratio — always shown */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(74,127,255,0.4)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>analytics</span>
+                    <Icon name="analytics" size={14} color="rgba(74,127,255,0.4)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: trade.rr_ratio != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
@@ -483,7 +482,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 {/* Notes — always shown */}
                 <div style={{ padding: '12px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: trade.notes ? '8px' : '0' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'rgba(208,197,175,0.35)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>notes</span>
+                    <Icon name="notes" size={14} color="rgba(208,197,175,0.35)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
                   </div>
                   {trade.notes ? (
@@ -499,7 +498,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 onClick={() => setEditing(true)}
                 style={{ width: '100%', marginTop: '12px', background: 'rgba(74,127,255,0.08)', border: '1px solid rgba(74,127,255,0.2)', borderRadius: '12px', padding: '11px', fontSize: '12px', fontWeight: '700', color: 'rgba(74,127,255,0.7)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>edit</span>
+                <Icon name="edit" size={14} />
                 {language === 'he' ? 'ערוך פרטים חסרים' : 'Edit missing details'}
               </button>
 
@@ -508,11 +507,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         )}
 
       </div>
+      </div>
 
       <style>{`
         @keyframes fadeUp {
-          from { opacity: 0; transform: translate(-50%, -48%); }
-          to { opacity: 1; transform: translate(-50%, -50%); }
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -524,7 +524,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.15s ease' }}>
           <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '20px', padding: '28px 28px 24px', width: '90%', maxWidth: '340px', boxShadow: '0 24px 60px rgba(0,0,0,0.6)', fontFamily: 'Heebo, sans-serif' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '22px', color: '#ef4444', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>delete</span>
+              <Icon name="delete" size={22} color="#ef4444" />
             </div>
             <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--text)', textAlign: 'center', marginBottom: '8px' }}>
               {language === 'he' ? 'מחיקת עסקה' : 'Delete Trade'}

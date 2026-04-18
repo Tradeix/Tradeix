@@ -7,14 +7,15 @@ import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
 import { AppProvider, useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
+import Icon from '@/components/Icon'
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
-  blue: '#4a7fff', purple: '#8b5cf6', green: '#10b981',
+  blue: '#3b82f6', purple: '#8b5cf6', green: '#10b981',
   red: '#ef4444', amber: '#f59e0b', cyan: '#06b6d4',
   pink: '#ec4899', gray: '#6b7280',
 }
 function getPortfolioColor(portfolio: any) {
-  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#4a7fff'
+  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#3b82f6'
 }
 
 function Header({ sidebarOpen, setSidebarOpen }: any) {
@@ -30,7 +31,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
   }, [])
 
-  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#4a7fff'
+  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#3b82f6'
 
   return (
     <header style={{
@@ -48,11 +49,12 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         alignItems: 'center', justifyContent: 'center',
         color: 'var(--text2)',
       }}>
-        <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>menu</span>
+        <Icon name="menu" size={20} color="inherit" />
       </button>
 
       {/* Portfolio switcher */}
-      {portfolios.length > 0 && <div style={{ position: 'relative' }}>
+      {portfolios.length > 0 && <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'בחירת תיק:' : 'Portfolio:'}</span>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '9px',
           background: 'var(--bg3)',
@@ -66,7 +68,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           <span style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
           </span>
-          <span className="material-symbols-outlined" style={{ fontSize: '14px', color: dotColor, fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>expand_more</span>
+          <Icon name="expand_more" size={14} color={dotColor} />
         </div>
 
         {showMenu && (
@@ -99,12 +101,6 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
                   </div>
                 )
               })}
-              <button onClick={() => { setShowMenu(false); localStorage.setItem('tradeix-open-new-portfolio', '1'); window.location.href = '/portfolios' }} style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 18px', fontSize: '13px', color: '#4a7fff',
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontWeight: '800', fontFamily: 'Heebo, sans-serif', width: '100%',
-              }}>+ {tr.newPortfolio}</button>
             </div>
           </>
         )}
@@ -126,7 +122,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         }}
           className="upgrade-btn"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+          <Icon name="bolt" size={14} color="#fff" />
           {language === 'he' ? 'שדרג ל PRO' : 'Upgrade to PRO'}
         </Link>
       )}
@@ -136,7 +132,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         <div style={{ position: 'relative' }}>
           <div style={{
             width: '38px', height: '38px', borderRadius: '50%',
-            background: isPro ? '#f59e0b' : '#4a7fff',
+            background: isPro ? '#f59e0b' : '#3b82f6',
             border: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
@@ -160,8 +156,8 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
               </>
             ) : (
               <>
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4a7fff' }} />
-                <span style={{ fontSize: '9px', color: '#4a7fff', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#3b82f6' }} />
+                <span style={{ fontSize: '9px', color: '#3b82f6', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                   {tr.freeAccount}
                 </span>
               </>
@@ -181,15 +177,15 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
   // Stats and archive hidden for free users in sidebar
   const NAV_ITEMS = [
-    { href: '/dashboard', icon: 'dashboard', label: tr.dashboard },
-    { href: '/add-trade', icon: 'add_circle', label: tr.addTrade },
-    { href: '/trades', icon: 'receipt_long', label: tr.allTrades },
-    ...(isPro ? [{ href: '/stats', icon: 'query_stats', label: tr.statistics }] : []),
+    { href: '/dashboard', icon: 'space_dashboard', label: tr.dashboard },
+    { href: '/add-trade', icon: 'post_add', label: tr.addTrade },
+    { href: '/trades', icon: 'swap_horiz', label: tr.allTrades },
+    ...(isPro ? [{ href: '/stats', icon: 'monitoring', label: tr.statistics }] : []),
   ]
   const BOTTOM_NAV = [
-    { href: '/portfolios', icon: 'folder_open', label: tr.portfolioSettings },
+    { href: '/portfolios', icon: 'cases', label: tr.portfolioSettings },
     ...(isPro ? [{ href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' }] : []),
-    { href: '/settings', icon: 'manage_accounts', label: tr.personalSettings },
+    { href: '/settings', icon: 'settings', label: tr.personalSettings },
   ]
 
   const NavLink = ({ href, icon, label }: any) => {
@@ -218,7 +214,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
           }} />
         )}
-        <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20", color: 'inherit' }}>{icon}</span>
+        <Icon name={icon} size={18} color="inherit" />
         {label}
       </Link>
     )
@@ -258,7 +254,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {!isPro && (
         <div style={{ margin: '0 12px 12px', padding: '14px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)' }}>
           <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+            <Icon name="bolt" size={14} color="#f59e0b" />
             {language === 'he' ? 'מנוי חינמי' : 'Free Plan'}
           </div>
           <div style={{ fontSize: '10px', color: 'rgba(245,158,11,0.6)', marginBottom: '10px', lineHeight: 1.5 }}>
@@ -289,7 +285,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           onMouseOver={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.05)' }}
           onMouseOut={e => { e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.background = 'transparent' }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>logout</span>
+          <Icon name="logout" size={18} color="inherit" />
           {tr.logout}
         </button>
       </div>
@@ -334,8 +330,6 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
-
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
 
       <div style={{
@@ -343,7 +337,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         borderInlineEnd: '1px solid var(--border)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease', overflow: 'hidden',
-      }} className="sidebar-el">
+      }} className="sidebar-el" data-open={sidebarOpen ? '1' : '0'}>
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
@@ -366,11 +360,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>close</span>
+              <Icon name="close" size={18} color="inherit" />
             </button>
             <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
             <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '32px', color: '#10b981', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 32" }}>sentiment_satisfied</span>
+              <Icon name="sentiment_satisfied" size={32} color="#10b981" />
             </div>
             <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
               {language === 'he' ? 'חזרת לתכנית החינמית' : 'Back to Free Plan'}
@@ -390,7 +384,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 { icon: 'lock', text: language === 'he' ? 'ללא עמוד סטטיסטיקות' : 'No statistics page', ok: false },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: item.ok ? '#10b981' : 'rgba(255,255,255,0.2)', fontVariationSettings: `'FILL' ${item.ok ? 0 : 1}, 'wght' 200, 'GRAD' -25, 'opsz' 20` }}>{item.icon}</span>
+                  <Icon name={item.icon} size={15} color={item.ok ? '#10b981' : 'rgba(255,255,255,0.2)'} />
                   <span style={{ fontSize: '13px', color: item.ok ? 'rgba(229,226,225,0.6)' : 'rgba(229,226,225,0.3)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
@@ -402,7 +396,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               fontSize: '14px', fontWeight: '800', textDecoration: 'none',
               boxShadow: '0 0 24px rgba(16,185,129,0.35)',
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+              <Icon name="bolt" size={18} color="#fff" />
               {language === 'he' ? 'חזור ל PRO — $20/חודש' : 'Upgrade back to PRO — $20/mo'}
             </Link>
           </div>
@@ -417,11 +411,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' -25, 'opsz' 20" }}>close</span>
+              <Icon name="close" size={18} color="inherit" />
             </button>
             <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '220px', height: '220px', background: 'rgba(245,158,11,0.1)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
             <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '36px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 36" }}>bolt</span>
+              <Icon name="bolt" size={36} color="#f59e0b" />
             </div>
             <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
             <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
@@ -443,7 +437,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 { icon: 'inventory_2', text: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive' },
               ].map((item, i, arr) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#f59e0b', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>{item.icon}</span>
+                  <Icon name={item.icon} size={15} color="#f59e0b" />
                   <span style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
@@ -455,25 +449,23 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               fontSize: '14px', fontWeight: '800', border: 'none', cursor: 'pointer',
               boxShadow: '0 0 28px rgba(245,158,11,0.4)',
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>rocket_launch</span>
+              <Icon name="rocket_launch" size={18} color="#fff" />
               {language === 'he' ? 'בואו נתחיל!' : "Let's go!"}
             </button>
           </div>
         </div>
       )}
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&family=Manrope:wght@800&display=swap');
         body { font-family: 'Heebo', 'Rubik', sans-serif !important; background: var(--bg) !important; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20; }
         @keyframes pageFadeIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
         .page-ready { animation: pageFadeIn 0.18s ease forwards; }
         .page-loading { opacity: 0; }
         .upgrade-btn:hover { opacity: 0.92; }
-        /* ── TABLET + MOBILE: app mode (≤1024px) ── */
         @media (max-width: 1024px) {
           .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
@@ -481,14 +473,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .page-content { padding: 24px 20px !important; }
           .upgrade-btn span:last-child { display: none; }
         }
-        /* ── MOBILE SMALL (≤640px) ── */
         @media (max-width: 640px) {
           .page-content { padding: 16px 14px !important; }
           .user-name-block { display: none !important; }
         }
-        /* ── DESKTOP: sidebar always visible (>1024px) ── */
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }
-      `}</style>
+      ` }} />
     </div>
   )
 }

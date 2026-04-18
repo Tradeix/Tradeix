@@ -1,5 +1,7 @@
 'use client'
 
+import Icon from '@/components/Icon'
+
 interface PageHeaderProps {
   title: string
   subtitle?: string
@@ -11,58 +13,38 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
   return (
     <div className="page-header-row" style={{
       display: 'flex', justifyContent: 'space-between',
-      alignItems: 'flex-end', marginBottom: '32px',
-      position: 'relative', flexWrap: 'wrap', gap: '12px',
+      alignItems: 'flex-start', marginBottom: '28px',
+      flexWrap: 'wrap', gap: '16px',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', minWidth: 0 }}>
         {icon && (
           <div style={{
-            width: '48px', height: '48px', borderRadius: '14px',
-            background: 'linear-gradient(135deg, rgba(74,127,255,0.15), rgba(139,92,246,0.15))',
-            border: '1px solid rgba(74,127,255,0.2)',
+            width: '42px', height: '42px', borderRadius: '12px',
+            background: 'var(--bg3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(74,127,255,0.1)',
+            flexShrink: 0,
           }}>
-            <span className="material-symbols-outlined" style={{
-              fontSize: '22px', color: '#4a7fff',
-              fontVariationSettings: "'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 20",
-            }}>{icon}</span>
+            <Icon name={icon} size={20} color="var(--blue)" />
           </div>
         )}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 className="page-header-title" style={{
-              fontSize: '28px', fontWeight: '900',
-              letterSpacing: '-0.02em', margin: 0,
-              color: 'var(--text)',
-              fontFamily: 'Heebo, sans-serif',
-            }}>{title}</h2>
-            {/* Decorative dots */}
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', paddingBottom: '2px' }}>
-              <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#4a7fff', boxShadow: '0 0 6px #4a7fff' }} />
-              <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: '#8b5cf6', opacity: 0.6 }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: '#4a7fff', opacity: 0.3 }} />
-            </div>
-          </div>
+        <div style={{ minWidth: 0 }}>
+          <h2 className="page-header-title" style={{
+            fontSize: '22px', fontWeight: '600',
+            letterSpacing: '-0.02em', lineHeight: 1.15, margin: 0,
+            color: 'var(--text)',
+            fontFamily: 'Heebo, sans-serif',
+          }}>{title}</h2>
           {subtitle && (
             <p style={{
-              fontSize: '11px', fontWeight: '700', color: 'var(--text3)',
-              textTransform: 'uppercase', letterSpacing: '0.2em', margin: 0,
+              fontSize: '13px', fontWeight: '500', color: 'var(--text3)',
+              margin: '6px 0 0', lineHeight: 1.45,
               fontFamily: 'Heebo, sans-serif',
             }}>{subtitle}</p>
           )}
-          {/* Underline */}
-          <div style={{
-            marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px',
-          }}>
-            <div style={{ width: '40px', height: '3px', background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)', borderRadius: '999px' }} />
-            <div style={{ width: '8px', height: '3px', background: 'rgba(74,127,255,0.3)', borderRadius: '999px' }} />
-            <div style={{ width: '4px', height: '3px', background: 'rgba(74,127,255,0.15)', borderRadius: '999px' }} />
-          </div>
         </div>
       </div>
 
-      {action && <div>{action}</div>}
+      {action && <div style={{ flexShrink: 0 }}>{action}</div>}
     </div>
   )
 }
