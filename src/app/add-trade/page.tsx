@@ -455,7 +455,7 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* RR Ratio (live) */}
+                {/* RR Ratio (live card) */}
                 {(() => {
                   const entry = parseFloat(tradeData.entry_price)
                   const exit = parseFloat(tradeData.exit_price)
@@ -465,9 +465,20 @@ export default function AddTradePage() {
                     const risk = tradeData.direction === 'long' ? entry - sl : sl - entry
                     if (risk > 0) {
                       const rr = (reward / risk).toFixed(2)
+                      const rrNum = parseFloat(rr)
+                      const rrColor = rrNum >= 2 ? '#22c55e' : rrNum >= 1 ? '#f59e0b' : '#ef4444'
                       return (
-                        <div style={{ fontSize: '12px', color: '#4a7fff', fontWeight: '600', marginBottom: '16px', marginTop: '-8px' }}>
-                          RR: 1:{rr}
+                        <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Icon name="analytics" size={16} color={rrColor} />
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk / Reward</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '18px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>1:{rr}</span>
+                            <span style={{ fontSize: '10px', fontWeight: '700', color: rrColor, background: `${rrColor}15`, padding: '2px 8px', borderRadius: '6px' }}>
+                              {rrNum >= 2 ? (language === 'he' ? 'מצוין' : 'Great') : rrNum >= 1 ? (language === 'he' ? 'סביר' : 'Fair') : (language === 'he' ? 'נמוך' : 'Low')}
+                            </span>
+                          </div>
                         </div>
                       )
                     }
