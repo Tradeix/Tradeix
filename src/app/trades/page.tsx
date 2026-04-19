@@ -101,7 +101,9 @@ export default function TradesPage() {
           icon="swap_horiz"
         />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}><Icon name="folder_open" size={48} color="var(--text3)" style={{ opacity: 0.2 }} /></div>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="folder_open" size={32} color="var(--text3)" />
+          </div>
           <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>

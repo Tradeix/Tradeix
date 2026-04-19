@@ -223,7 +223,9 @@ export default function PortfoliosPage() {
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>{tr.loading}</div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'center' }}><Icon name="folder_open" size={40} color="var(--text3)" style={{ opacity: 0.3 }} /></div>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="folder_open" size={32} color="var(--text3)" />
+          </div>
           <div style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px', color: 'var(--text)' }}>{tr.noPortfoliosYet}</div>
           <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>

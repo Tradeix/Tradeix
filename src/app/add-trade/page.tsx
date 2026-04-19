@@ -240,7 +240,9 @@ export default function AddTradePage() {
           icon="post_add"
         />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>📁</div>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="folder_open" size={32} color="var(--text3)" />
+          </div>
           <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
