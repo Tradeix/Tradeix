@@ -121,15 +121,15 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── OVERVIEW TITLE ── */}
-      <h2 style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 24px', color: 'var(--text)', letterSpacing: '-0.03em' }}>{tr.overview}</h2>
+      <h2 className="section-anim" style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 24px', color: 'var(--text)', letterSpacing: '-0.03em' }}>{tr.overview}</h2>
 
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance (left) + Equity Chart (right)
           ══════════════════════════════════════════════ */}
-      <div className="top-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="top-row section-anim anim-delay-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '16px', marginBottom: '16px' }}>
 
         {/* ── LEFT: Total Balance Card ── */}
-        <div style={{ ...card, padding: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="card-hover" style={{ ...card, padding: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {/* Portfolio name + type badge */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── RIGHT: Equity Curve Card ── */}
-        <div style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column' }}>
+        <div className="card-hover" style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.equityCurve}</div>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           STAT CARDS ROW — with time filter
           ══════════════════════════════════════════════ */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+      <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap', flexShrink: 0 }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
         <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
@@ -263,7 +263,7 @@ export default function DashboardPage() {
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
           { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#8b5cf6' },
         ].map((s, i) => (
-          <div key={i} className="stat-card" style={{ ...card, padding: '20px' }}>
+          <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
               <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{s.label}</span>
               <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -279,7 +279,7 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           RECENT TRADES
           ══════════════════════════════════════════════ */}
-      <div style={{ ...card, overflow: 'hidden' }}>
+      <div className="section-anim anim-delay-8" style={{ ...card, overflow: 'hidden' }}>
         {/* Header */}
         <div className="trades-section-header" style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div>
@@ -307,8 +307,8 @@ export default function DashboardPage() {
               <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>{tr.noMoreTrades}</p>
             </div>
           ) : trades.map((trade, idx) => (
-            <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row"
-              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px' }}
+            <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row trade-row-anim"
+              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px', animationDelay: `${0.4 + idx * 0.06}s` }}
               onMouseOver={e => { e.currentTarget.style.background = 'var(--bg3)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
             >

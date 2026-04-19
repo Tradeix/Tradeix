@@ -127,7 +127,7 @@ export default function TradesPage() {
       />
 
       {/* Filters — hidden when no trades at all */}
-      {(total > 0 || filter !== 'all') && <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+      {(total > 0 || filter !== 'all') && <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
         {/* Outcome — WIN/LOSS */}
         <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
@@ -170,7 +170,7 @@ export default function TradesPage() {
       </div>}
 
       {/* Trades list */}
-      <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+      <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
@@ -192,10 +192,10 @@ export default function TradesPage() {
               <div
                 key={trade.id}
                 onClick={() => setSelectedTrade(trade)}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none' }}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', animationDelay: `${idx * 0.05}s` }}
                 onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
                 onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                className="trade-row"
+                className="trade-row trade-row-anim"
               >
                 {/* Symbol + direction */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

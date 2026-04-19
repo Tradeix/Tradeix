@@ -11,7 +11,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, subtitle, icon, action }: PageHeaderProps) {
   return (
-    <div className="page-header-row" style={{
+    <div className="page-header-row section-anim" style={{
       display: 'flex', justifyContent: 'space-between',
       alignItems: 'flex-start', marginBottom: '28px',
       flexWrap: 'wrap', gap: '16px',

@@ -132,11 +132,12 @@ export default function PortfoliosPage() {
           <button
             type="button"
             onClick={openNewForm}
+            className="btn-press"
             style={{
               flexShrink: 0, background: '#4a7fff', color: '#fff', border: 'none',
               borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '600',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s',
+              fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
             }}
           >
             <Icon name="add" size={16} />
@@ -147,8 +148,8 @@ export default function PortfoliosPage() {
 
       {/* ── POPUP FORM (new / edit) ── */}
       {showForm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px' }}>
-          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '520px', position: 'relative', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }} className="fade-up">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px', animation: 'overlayIn 0.2s ease' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '520px', position: 'relative', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             {/* Close button */}
             <button onClick={() => setShowForm(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontFamily: 'Heebo, sans-serif' }}>✕</button>
 
@@ -193,8 +194,8 @@ export default function PortfoliosPage() {
 
       {/* ── CONFIRM DELETE ── */}
       {confirmDelete && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}>
-          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center' }} className="fade-up">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', animation: 'overlayIn 0.2s ease' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '90%', textAlign: 'center', animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="delete_forever" size={28} color="#ef4444" />
             </div>
@@ -232,10 +233,10 @@ export default function PortfoliosPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {portfolios.map(p => {
+          {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
             return (
-              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div key={p.id} className="card-hover trade-row-anim" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${idx * 0.08}s` }}>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>

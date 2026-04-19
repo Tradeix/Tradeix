@@ -88,8 +88,8 @@ export default function StatsPage() {
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
-  const StatCard = ({ label, value, color, icon }: any) => (
-    <div style={{ ...card, padding: '20px' }}>
+  const StatCard = ({ label, value, color, icon, idx = 0 }: any) => (
+    <div className="card-hover stat-anim" style={{ ...card, padding: '20px', animationDelay: `${idx * 0.05}s` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
         <div style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
         <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -152,18 +152,18 @@ export default function StatsPage() {
 
       {/* Stats grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }} className="stats-grid-4">
-        <StatCard label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
-        <StatCard label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
-        <StatCard label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#8b5cf6" icon="insights" />
-        <StatCard label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
-        <StatCard label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
-        <StatCard label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
-        <StatCard label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="arrow_circle_down" />
-        <StatCard label={tr.avgRR} value={trades.length ? `1:${(trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length).toFixed(1)}` : '—'} color="#f59e0b" icon="balance" />
+        <StatCard idx={0} label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
+        <StatCard idx={1} label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
+        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#8b5cf6" icon="insights" />
+        <StatCard idx={3} label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
+        <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
+        <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
+        <StatCard idx={6} label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="arrow_circle_down" />
+        <StatCard idx={7} label={tr.avgRR} value={trades.length ? `1:${(trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length).toFixed(1)}` : '—'} color="#f59e0b" icon="balance" />
       </div>
 
       {/* Equity chart */}
-      <div style={{ ...card, padding: '24px', marginBottom: '16px' }}>
+      <div className="section-anim anim-delay-5" style={{ ...card, padding: '24px', marginBottom: '16px' }}>
         <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '18px', color: 'var(--text)' }}>{tr.cumulativeEquity}</div>
         {equityCurve.length > 0 ? (
           <ResponsiveContainer width="100%" height={200}>
@@ -186,7 +186,7 @@ export default function StatsPage() {
       </div>
 
       {/* Calendar */}
-      <div ref={calendarRef} className="cal-wrap" style={{ ...card, padding: '24px' }}>
+      <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div style={{ width: '34px', flexShrink: 0 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, justifyContent: 'center' }}>

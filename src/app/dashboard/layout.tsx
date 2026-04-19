@@ -79,6 +79,9 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
               background: 'var(--bg2)', border: '1px solid var(--border)',
               borderRadius: '8px', zIndex: 200, minWidth: '220px',
               overflow: 'hidden',
+              animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
+              transformOrigin: isRTL ? 'top right' : 'top left',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
             }}>
               {portfolios.map(p => {
                 const c = getPortfolioColor(p)
@@ -190,14 +193,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
-      <Link href={href} onClick={() => setSidebarOpen(false)} style={{
+      <Link href={href} onClick={() => setSidebarOpen(false)} className="nav-link-anim" style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
         color: active ? '#10b981' : 'var(--text3)',
         fontWeight: active ? '700' : '500',
         fontSize: '13px', textDecoration: 'none',
         background: active ? 'var(--bg3)' : 'transparent',
-        transition: 'background 0.15s, color 0.15s', marginBottom: '2px',
+        transition: 'background 0.15s, color 0.15s, transform 0.15s', marginBottom: '2px',
         position: 'relative', letterSpacing: '0.02em',
         fontFamily: 'Heebo, Rubik, sans-serif',
         borderRadius: '6px',
@@ -211,6 +214,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             top: 0, bottom: 0, width: '3px',
             background: '#10b981',
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
+            animation: 'pulseGlow 2s ease-in-out infinite',
           }} />
         )}
         <Icon name={icon} size={18} color="currentColor" />

@@ -159,7 +159,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 300, backdropFilter: 'blur(8px)', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'overlayIn 0.2s ease' }}>
 
       <div onClick={e => e.stopPropagation()} style={{
         width: '90%', maxWidth: '540px', maxHeight: '92vh',
@@ -167,7 +167,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '24px', zIndex: 301, overflowY: 'auto',
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
-        animation: 'fadeUp 0.25s ease',
+        animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         fontFamily: 'Heebo, sans-serif',
         margin: 'auto',
       }}>
