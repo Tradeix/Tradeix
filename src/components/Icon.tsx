@@ -6,7 +6,7 @@ import {
   LogIn, ShieldAlert, Trash2, Pencil, ZoomIn, StickyNote, AlertCircle,
   AlertTriangle, User, SlidersHorizontal, BadgeCheck, Crown, Info, XCircle,
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
-  RotateCcw,
+  RotateCcw, Wallet,
   type LucideProps,
 } from 'lucide-react'
 
@@ -68,6 +68,7 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   arrow_circle_up: TrendingUp,
   arrow_circle_down: TrendingDown,
   restore: RotateCcw,
+  account_balance_wallet: Wallet,
 }
 
 interface IconProps extends Omit<LucideProps, 'ref'> {

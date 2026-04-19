@@ -63,13 +63,10 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
           transition: 'background 0.15s, border-color 0.15s',
         }}>
-          <Icon name="account_balance" size={16} color={dotColor} />
-          <div>
-            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '500', lineHeight: 1, marginBottom: '2px' }}>{language === 'he' ? 'בחירת תיק' : 'Portfolio'}</div>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text)', lineHeight: 1, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
-            </div>
-          </div>
+          <Icon name="account_balance_wallet" size={16} color={dotColor} />
+          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
+            {language === 'he' ? 'בחירת תיק' : 'Portfolio'}
+          </span>
           <Icon name="expand_more" size={16} color="var(--text3)" />
         </div>
 
