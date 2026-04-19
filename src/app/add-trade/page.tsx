@@ -37,6 +37,7 @@ export default function AddTradePage() {
   const [pnlError, setPnlError] = useState(false)
   const [lightbox, setLightbox] = useState(false)
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
+  const [showAiSuccessPopup, setShowAiSuccessPopup] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
@@ -122,6 +123,7 @@ export default function AddTradePage() {
       }))
       setAiConfidence(data.confidence || 85)
       setAiRaw(data.analysis || '')
+      setShowAiSuccessPopup(true)
       setStep(3)
     } catch (err: any) {
       const msg = err.message || ''
@@ -268,7 +270,7 @@ export default function AddTradePage() {
           <div className="fade-up">
             <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
               <input {...getInputProps()} />
-              <div style={{ fontSize: '44px', marginBottom: '14px' }}>📈</div>
+              <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}><Icon name="zoom_in" size={44} color="var(--blue)" strokeWidth={1.2} /></div>
               <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
                 {isDragActive ? (language === 'he' ? 'שחרר כאן...' : 'Drop here...') : tr.uploadChart}
               </div>
@@ -310,34 +312,7 @@ export default function AddTradePage() {
         {/* STEP 3 */}
         {step === 3 && (
           <div className="fade-up">
-            {!isManual && imagePreview && tradeData.symbol && (
-              <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0, background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>✦</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--blue)', fontWeight: '500', marginBottom: '4px' }}>{language === 'he' ? 'ניתוח AI הושלם' : 'AI Analysis Complete'}</div>
-                  <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.5 }}>
-                    {tradeData.symbol} {tradeData.entry_price ? `• ${language === 'he' ? 'כניסה' : 'Entry'}: ${tradeData.entry_price}` : ''}
-                  </div>
-                  {aiConfidence > 0 && (
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '4px' }}>
-                      {language === 'he' ? 'ביטחון' : 'Confidence'}: {aiConfidence}%
-                    </div>
-                  )}
-                </div>
-                {/* PNL — bold, updates as user types */}
-                <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '3px' }}>P&L</div>
-                  <div dir="ltr" style={{
-                    fontSize: '22px', fontWeight: '900',
-                    color: tradeData.pnl ? (tradeData.outcome === 'win' ? '#10b981' : '#ef4444') : 'var(--text3)',
-                  }}>
-                    {tradeData.pnl
-                      ? `${tradeData.outcome === 'win' ? '+' : '-'}$${Math.abs(parseFloat(tradeData.pnl) || 0)}`
-                      : '—'}
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Inline AI success card removed — replaced by popup modal */}
 
             <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -380,7 +355,7 @@ export default function AddTradePage() {
                   ) : (
                     <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.2s' }}>
                       <input {...getManualInputProps()} />
-                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>📷</div>
+                      <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'center' }}><Icon name="photo_camera" size={24} color="var(--text3)" /></div>
                       <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px', color: 'var(--text)' }}>{language === 'he' ? 'העלה תמונת גרף' : 'Upload Chart Image'}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{language === 'he' ? 'אופציונלי' : 'Optional'} • PNG, JPG {language === 'he' ? 'עד' : 'up to'} 10MB</div>
                     </div>
@@ -439,7 +414,7 @@ export default function AddTradePage() {
                         const icon = val === 'long' ? 'trending_up' : 'trending_down'
                         return (
                           <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, direction: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '13px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-                            <Icon name={icon} size={15} color="inherit" />
+                            <Icon name={icon} size={15} color="currentColor" />
                             {val === 'long' ? 'LONG' : 'SHORT'}
                           </button>
                         )
@@ -479,6 +454,26 @@ export default function AddTradePage() {
                     />
                   </div>
                 </div>
+
+                {/* RR Ratio (live) */}
+                {(() => {
+                  const entry = parseFloat(tradeData.entry_price)
+                  const exit = parseFloat(tradeData.exit_price)
+                  const sl = parseFloat(tradeData.stop_loss)
+                  if (!isNaN(entry) && !isNaN(exit) && !isNaN(sl)) {
+                    const reward = tradeData.direction === 'long' ? exit - entry : entry - exit
+                    const risk = tradeData.direction === 'long' ? entry - sl : sl - entry
+                    if (risk > 0) {
+                      const rr = (reward / risk).toFixed(2)
+                      return (
+                        <div style={{ fontSize: '12px', color: '#4a7fff', fontWeight: '600', marginBottom: '16px', marginTop: '-8px' }}>
+                          RR: 1:{rr}
+                        </div>
+                      )
+                    }
+                  }
+                  return null
+                })()}
 
                 {/* P&L */}
                 <div style={{ marginBottom: '16px' }}>
@@ -535,6 +530,63 @@ export default function AddTradePage() {
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
       `}</style>
+
+      {/* AI Analysis Success Popup */}
+      {showAiSuccessPopup && (
+        <div
+          onClick={() => setShowAiSuccessPopup(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 600, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.25s ease', padding: '20px' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '36px 28px 28px', maxWidth: '400px', width: '100%', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}
+          >
+            {/* Success icon */}
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(16,185,129,0.12)', border: '2px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+              <Icon name="check_circle" size={32} color="#10b981" />
+            </div>
+
+            {/* Title */}
+            <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', marginBottom: '16px', lineHeight: 1.4 }}>
+              {language === 'he' ? 'ניתוח העסקה הושלם בהצלחה' : 'Trade Analysis Completed Successfully'}
+            </div>
+
+            {/* Confidence */}
+            {aiConfidence > 0 && (
+              <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#10b981' }}>
+                  {language === 'he' ? 'ביטחון לפי קריאת הנתונים' : 'Data reading confidence'}: {aiConfidence}%
+                </div>
+              </div>
+            )}
+
+            {/* Detected data summary */}
+            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '14px', direction: 'ltr' }}>
+              {tradeData.symbol && <span style={{ fontWeight: '700', color: 'var(--text)' }}>{tradeData.symbol}</span>}
+              {tradeData.entry_price ? ` • Entry: ${tradeData.entry_price}` : ''}
+              {tradeData.exit_price ? ` • Exit: ${tradeData.exit_price}` : ''}
+              {tradeData.stop_loss ? ` • SL: ${tradeData.stop_loss}` : ''}
+            </div>
+
+            {/* Disclaimer */}
+            <div style={{ fontSize: '11.5px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '22px', padding: '0 4px' }}>
+              {language === 'he'
+                ? 'חשוב לוודא שהנתונים שהוזנו נכונים. גם בינה מלאכותית יכולה לטעות לפעמים.'
+                : 'Please verify that the data entered is correct. AI can sometimes make mistakes.'}
+            </div>
+
+            {/* OK button */}
+            <button
+              onClick={() => setShowAiSuccessPopup(false)}
+              className="btn-primary"
+              style={{ width: '100%', padding: '13px', fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+            >
+              <Icon name="check" size={18} color="#fff" />
+              {language === 'he' ? 'אישור' : 'OK'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Image lightbox */}
       {lightbox && imagePreview && (

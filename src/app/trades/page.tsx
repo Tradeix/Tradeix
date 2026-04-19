@@ -101,7 +101,7 @@ export default function TradesPage() {
           icon="swap_horiz"
         />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>📁</div>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}><Icon name="folder_open" size={48} color="var(--text3)" style={{ opacity: 0.2 }} /></div>
           <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
@@ -175,7 +175,7 @@ export default function TradesPage() {
           </div>
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <Icon name="receipt_long" size={48} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px' }} />
+            <Icon name="receipt_long" size={48} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px', margin: '0 auto 16px' }} />
             <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{tr.noTradesYet}</div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '24px' }}>{tr.noTradesDesc}</div>
             <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>

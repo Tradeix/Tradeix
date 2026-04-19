@@ -49,26 +49,28 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
         alignItems: 'center', justifyContent: 'center',
         color: 'var(--text2)',
       }}>
-        <Icon name="menu" size={20} color="inherit" />
+        <Icon name="menu" size={20} color="currentColor" />
       </button>
 
       {/* Portfolio switcher */}
-      {portfolios.length > 0 && <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'בחירת תיק:' : 'Portfolio:'}</span>
+      {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
-          display: 'flex', alignItems: 'center', gap: '9px',
+          display: 'flex', alignItems: 'center', gap: '10px',
           background: 'var(--bg3)',
           border: '1px solid var(--border)',
-          borderRadius: '8px', padding: '8px 16px',
+          borderRadius: '10px', padding: '8px 14px',
           fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
           transition: 'background 0.15s, border-color 0.15s',
         }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor }} />
-          <span style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
-          </span>
-          <Icon name="expand_more" size={14} color={dotColor} />
+          <Icon name="account_balance" size={16} color={dotColor} />
+          <div>
+            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '500', lineHeight: 1, marginBottom: '2px' }}>{language === 'he' ? 'בחירת תיק' : 'Portfolio'}</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text)', lineHeight: 1, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {activePortfolio ? activePortfolio.name : tr.selectPortfolio}
+            </div>
+          </div>
+          <Icon name="expand_more" size={16} color="var(--text3)" />
         </div>
 
         {showMenu && (
@@ -214,7 +216,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
           }} />
         )}
-        <Icon name={icon} size={18} color="inherit" />
+        <Icon name={icon} size={18} color="currentColor" />
         {label}
       </Link>
     )
@@ -250,30 +252,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
       </nav>
 
-      {/* Upgrade card for free users */}
-      {!isPro && (
-        <div style={{ margin: '0 12px 12px', padding: '14px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)' }}>
-          <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Icon name="bolt" size={14} color="#f59e0b" />
-            {language === 'he' ? 'מנוי חינמי' : 'Free Plan'}
-          </div>
-          <div style={{ fontSize: '10px', color: 'rgba(245,158,11,0.6)', marginBottom: '10px', lineHeight: 1.5 }}>
-            {language === 'he' ? 'שדרג לPRO לגישה מלאה' : 'Upgrade to PRO for full access'}
-          </div>
-          <Link href="/upgrade" onClick={() => setSidebarOpen(false)} style={{
-            display: 'block', textAlign: 'center',
-            background: '#f59e0b',
-            color: '#fff', borderRadius: '8px', padding: '8px 12px',
-            fontSize: '11px', fontWeight: '700', textDecoration: 'none',
-            border: '1px solid rgba(180,83,9,0.35)',
-          }}>
-            {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
-          </Link>
-        </div>
-      )}
-
-      {/* Logout */}
-      <div style={{ padding: '16px 8px', borderTop: '1px solid var(--border)' }}>
+      {/* Logout — mobile only (below Personal Settings) */}
+      <div className="sidebar-logout" style={{ padding: '8px 8px 16px' }}>
+        <div style={{ height: '1px', background: 'var(--border)', margin: '0 12px 8px' }} />
         <button onClick={handleSignOut} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '11px 20px', width: '100%',
@@ -285,7 +266,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           onMouseOver={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.05)' }}
           onMouseOut={e => { e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.background = 'transparent' }}
         >
-          <Icon name="logout" size={18} color="inherit" />
+          <Icon name="logout" size={18} color="currentColor" />
           {tr.logout}
         </button>
       </div>
@@ -330,6 +311,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+      {/* Animated grid background */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
 
       <div style={{
@@ -360,7 +343,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
             >
-              <Icon name="close" size={18} color="inherit" />
+              <Icon name="close" size={18} color="currentColor" />
             </button>
             <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
             <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
@@ -411,7 +394,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
             >
-              <Icon name="close" size={18} color="inherit" />
+              <Icon name="close" size={18} color="currentColor" />
             </button>
             <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '220px', height: '220px', background: 'rgba(245,158,11,0.1)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
             <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
@@ -477,6 +460,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .page-content { padding: 16px 14px !important; }
           .user-name-block { display: none !important; }
         }
+        .sidebar-logout { display: block; }
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }
       ` }} />
     </div>

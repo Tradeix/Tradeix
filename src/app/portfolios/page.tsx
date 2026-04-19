@@ -223,7 +223,7 @@ export default function PortfoliosPage() {
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>{tr.loading}</div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.3 }}>📁</div>
+          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'center' }}><Icon name="folder_open" size={40} color="var(--text3)" style={{ opacity: 0.3 }} /></div>
           <div style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px', color: 'var(--text)' }}>{tr.noPortfoliosYet}</div>
           <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>
@@ -232,16 +232,11 @@ export default function PortfoliosPage() {
           {portfolios.map(p => {
             const color = getColor((p as any).color || 'blue')
             return (
-              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                {/* Icon */}
-                <div style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0, background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                  {MARKET_ICONS[p.market_type] || '📊'}
-                </div>
+              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: color, flexShrink: 0 }} />
                     <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -255,9 +250,9 @@ export default function PortfoliosPage() {
                     {tr.edit}
                     <Icon name="edit" size={14} />
                   </button>
-                  <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                  {isPro && <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                     <Icon name="inventory_2" size={15} />
-                  </button>
+                  </button>}
                   <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                     <Icon name="delete" size={15} />
                   </button>

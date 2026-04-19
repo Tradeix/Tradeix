@@ -493,14 +493,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </div>
               </div>
 
-              {/* Edit hint */}
-              <button
-                onClick={() => setEditing(true)}
-                style={{ width: '100%', marginTop: '12px', background: 'rgba(74,127,255,0.08)', border: '1px solid rgba(74,127,255,0.2)', borderRadius: '12px', padding: '11px', fontSize: '12px', fontWeight: '700', color: 'rgba(74,127,255,0.7)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-              >
-                <Icon name="edit" size={14} />
-                {language === 'he' ? 'ערוך פרטים חסרים' : 'Edit missing details'}
-              </button>
 
             </div>
           </div>

@@ -59,6 +59,12 @@ body {
   background-size: 44px 44px;
 }
 
+/* ── Animated grid background (dark theme) ── */
+@keyframes gridDrift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 50px 50px, 50px 50px; }
+}
+
 /* ── Scrollbar (neutral, minimal) ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

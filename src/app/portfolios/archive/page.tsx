@@ -147,12 +147,6 @@ export default function ArchivePage() {
         title={language === 'he' ? 'ארכיון תיקים' : 'Portfolio Archive'}
         subtitle={language === 'he' ? 'תיקים שהועברו לארכיון' : 'Archived portfolios'}
         icon="inventory_2"
-        action={
-          <Link href="/portfolios" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', padding: '10px 18px', borderRadius: '12px', textDecoration: 'none', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif' }}>
-            <Icon name="arrow_back" size={14} />
-            {language === 'he' ? 'חזרה לתיקים' : 'Back to Portfolios'}
-          </Link>
-        }
       />
 
       {/* Confirm Delete */}
@@ -208,17 +202,13 @@ export default function ArchivePage() {
             const totalPages = Math.ceil(total / PAGE_SIZE)
 
             return (
-              <div key={p.id} style={{ background: 'var(--glass-bg)', border: `1px solid ${color}22`, borderRadius: '16px', overflow: 'hidden', transition: 'all 0.3s' }}>
+              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s' }}>
 
                 {/* Main row */}
                 <div className="archive-main-row" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0, background: `${color}15`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', opacity: 0.7 }}>
-                    {MARKET_ICONS[p.market_type] || '📊'}
-                  </div>
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, opacity: 0.6, flexShrink: 0 }} />
                       <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', opacity: 0.8 }}>{p.name}</div>
                       <span style={{ fontSize: '10px', fontWeight: '700', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
                         {language === 'he' ? 'ארכיון' : 'ARCHIVED'}

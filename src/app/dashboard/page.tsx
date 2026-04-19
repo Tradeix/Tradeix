@@ -120,70 +120,15 @@ export default function DashboardPage() {
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
-      {/* ── TIME FILTER ROW ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="page-header-title" style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em' }}>{tr.overview}</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
-          <div className="time-filter-bar" style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
-            {TIME_FILTERS.map((label, i) => (
-              <button key={i} onClick={() => setTimeFilter(i)} style={{
-                padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '500',
-                cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-                background: timeFilter === i ? '#10b981' : 'transparent',
-                color: timeFilter === i ? '#fff' : 'var(--text3)',
-                transition: 'all 0.15s',
-              }}>{label}</button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* ── OVERVIEW TITLE ── */}
+      <h2 style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 24px', color: 'var(--text)', letterSpacing: '-0.03em' }}>{tr.overview}</h2>
 
       {/* ══════════════════════════════════════════════
-          TOP ROW — Equity Chart (left) + Balance (right)
+          TOP ROW — Balance (left) + Equity Chart (right)
           ══════════════════════════════════════════════ */}
-      <div className="top-row" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="top-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '16px', marginBottom: '16px' }}>
 
-        {/* ── LEFT: Equity Curve Card ── */}
-        <div style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.equityCurve}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '500' }}>{tr.performanceTimeline}</div>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>{tr.totalPnl}</div>
-              <div dir="ltr" style={{ fontSize: '20px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
-                {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString()}
-              </div>
-            </div>
-          </div>
-          <div style={{ flex: 1, minHeight: '200px' }}>
-            {equityCurve.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={equityCurve} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.20} />
-                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v: number) => `$${v}`} />
-                  <Tooltip contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} formatter={(v: any) => [`$${v}`, tr.cumulativePnl]} />
-                  <Area type="monotone" dataKey="value" stroke={ACCENT} strokeWidth={2.5} fill="url(#eqGrad)" dot={false} activeDot={{ r: 4, fill: ACCENT, stroke: 'var(--bg2)', strokeWidth: 2 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                <Icon name="show_chart" size={36} color="var(--bg4)" />
-                <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>{tr.noDataAddTrades}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── RIGHT: Total Balance Card ── */}
+        {/* ── LEFT: Total Balance Card ── */}
         <div style={{ ...card, padding: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {/* Portfolio name + type badge */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
@@ -246,11 +191,67 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* ── RIGHT: Equity Curve Card ── */}
+        <div style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.equityCurve}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '500' }}>{tr.performanceTimeline}</div>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>{tr.totalPnl}</div>
+              <div dir="ltr" style={{ fontSize: '20px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
+                {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString()}
+              </div>
+            </div>
+          </div>
+          <div style={{ flex: 1, minHeight: '200px' }}>
+            {equityCurve.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={equityCurve} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.20} />
+                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v: number) => `$${v}`} />
+                  <Tooltip contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} formatter={(v: any) => [`$${v}`, tr.cumulativePnl]} />
+                  <Area type="monotone" dataKey="value" stroke={ACCENT} strokeWidth={2.5} fill="url(#eqGrad)" dot={false} activeDot={{ r: 4, fill: ACCENT, stroke: 'var(--bg2)', strokeWidth: 2 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <Icon name="show_chart" size={36} color="var(--bg4)" />
+                <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>{tr.noDataAddTrades}</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* ══════════════════════════════════════════════
-          STAT CARDS ROW
+          STAT CARDS ROW — with time filter
           ══════════════════════════════════════════════ */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.03em', margin: 0 }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
+        <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
+          <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
+            {TIME_FILTERS.map((label, i) => (
+              <button key={i} onClick={() => setTimeFilter(i)} style={{
+                padding: '5px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '500',
+                cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
+                background: timeFilter === i ? '#10b981' : 'transparent',
+                color: timeFilter === i ? '#fff' : 'var(--text3)',
+                transition: 'all 0.15s',
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }}>
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,

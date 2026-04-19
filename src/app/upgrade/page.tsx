@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useApp } from '@/lib/app-context'
 import toast from 'react-hot-toast'
+import Icon from '@/components/Icon'
 
 const FREE_FEATURES = {
   he: [
@@ -95,7 +96,7 @@ export default function UpgradePage() {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '48px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '999px', padding: '6px 16px', marginBottom: '20px' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#f59e0b', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+          <Icon name="bolt" size={16} color="#f59e0b" />
           <span style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             {language === 'he' ? 'בחר את תוכנית המנוי שלך' : 'Choose Your Plan'}
           </span>
@@ -137,9 +138,7 @@ export default function UpgradePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {freeList.map((f, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: f.included ? 1 : 0.35 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', color: f.included ? '#22c55e' : 'var(--text3)', flexShrink: 0, fontVariationSettings: `'FILL' ${f.included ? 1 : 0}, 'wght' 400, 'GRAD' -25, 'opsz' 20` }}>
-                  {f.included ? 'check_circle' : 'cancel'}
-                </span>
+                <Icon name={f.included ? 'check_circle' : 'cancel'} size={16} color={f.included ? '#22c55e' : 'var(--text3)'} style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '500', textDecoration: f.included ? 'none' : 'line-through' }}>
                   {f.label}
                 </span>
@@ -185,9 +184,7 @@ export default function UpgradePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
             {proList.map((f, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#f59e0b', flexShrink: 0, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>
-                  check_circle
-                </span>
+                <Icon name="check_circle" size={16} color="#f59e0b" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '500' }}>{f.label}</span>
               </div>
             ))}
@@ -229,7 +226,7 @@ export default function UpgradePage() {
                 <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
               ) : (
                 <>
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' -25, 'opsz' 20" }}>bolt</span>
+                  <Icon name="bolt" size={18} />
                   {language === 'he' ? 'שדרג ל PRO עכשיו' : 'Upgrade to PRO Now'}
                 </>
               )}
@@ -241,7 +238,7 @@ export default function UpgradePage() {
       {/* Payment note */}
       <div style={{ textAlign: 'center', padding: '20px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(74,127,255,0.5)', fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' -25, 'opsz' 20" }}>info</span>
+          <Icon name="info" size={18} color="rgba(74,127,255,0.5)" />
           <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
             {language === 'he' ? 'שיטת תשלום' : 'Payment method'}
           </span>
