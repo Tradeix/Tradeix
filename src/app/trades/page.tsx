@@ -177,10 +177,14 @@ export default function TradesPage() {
           </div>
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <Icon name="receipt_long" size={48} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px', margin: '0 auto 16px' }} />
-            <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{tr.noTradesYet}</div>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '24px' }}>{tr.noTradesDesc}</div>
-            <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>
+            <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(74,127,255,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
+            <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
+              {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades') : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades') : tr.noTradesYet}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '24px' }}>
+              {filter !== 'all' ? (language === 'he' ? 'נסה לשנות את הפילטר' : 'Try changing the filter') : tr.noTradesDesc}
+            </div>
+            {filter === 'all' && <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
           </div>
         ) : (
           <div style={{ padding: '8px 12px' }}>
