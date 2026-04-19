@@ -84,6 +84,7 @@ export default function PortfoliosPage() {
     setSaving(false); setShowForm(false); setEditingId(null)
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
     loadPortfolios()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleArchive(id: string) {

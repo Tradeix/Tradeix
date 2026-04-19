@@ -222,6 +222,7 @@ export default function AddTradePage() {
       })
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
+      window.scrollTo({ top: 0 })
       router.push('/dashboard')
     } catch (err: any) {
       toast.error(err.message || (language === 'he' ? 'שגיאה' : 'Error'))

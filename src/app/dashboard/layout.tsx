@@ -64,7 +64,7 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
           transition: 'background 0.15s, border-color 0.15s',
         }}>
           <Icon name="account_balance_wallet" size={16} color={dotColor} />
-          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', whiteSpace: 'nowrap' }}>
             {language === 'he' ? 'בחירת תיק' : 'Portfolio'}
           </span>
           <Icon name="expand_more" size={16} color="var(--text3)" />

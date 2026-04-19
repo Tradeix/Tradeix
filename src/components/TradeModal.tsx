@@ -408,8 +408,8 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             {/* ── ALL TRADE DATA ── */}
             <div style={{ padding: '18px 20px 24px' }}>
 
-              {/* WIN/LOSS + P&L row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              {/* WIN/LOSS badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
                   padding: '8px 16px', borderRadius: '999px',
@@ -420,10 +420,22 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                     {isWin ? '✓ WIN' : '✕ LOSS'}
                   </span>
                 </div>
+              </div>
+
+              {/* P&L card */}
+              <div style={{
+                background: isWin ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                border: `1px solid ${isWin ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                borderRadius: '14px', padding: '16px 20px', marginBottom: '16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Icon name={isWin ? 'trending_up' : 'trending_down'} size={18} color={isWin ? '#22c55e' : '#ef4444'} />
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>P&L</span>
+                </div>
                 <div dir="ltr" style={{
-                  fontSize: '26px', fontWeight: '900', letterSpacing: '-0.02em',
+                  fontSize: '24px', fontWeight: '900', letterSpacing: '-0.02em',
                   color: isWin ? '#22c55e' : '#ef4444',
-                  textShadow: isWin ? '0 0 20px rgba(34,197,94,0.4)' : '0 0 20px rgba(239,68,68,0.4)',
                 }}>
                   {isWin ? '+' : '-'}${Math.abs(trade.pnl ?? 0)}
                 </div>
@@ -432,12 +444,12 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Data grid */}
               <div style={{ ...glass, overflow: 'hidden' }}>
                 {/* Date */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', flexWrap: 'wrap', gap: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0 }}>
                     <Icon name="calendar_today" size={14} color="rgba(208,197,175,0.35)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)' }}>{numericDate}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)', whiteSpace: 'nowrap' }}>{numericDate}</span>
                 </div>
                 {/* Entry price */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>

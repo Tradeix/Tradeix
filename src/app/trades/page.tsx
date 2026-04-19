@@ -126,8 +126,8 @@ export default function TradesPage() {
         icon="swap_horiz"
       />
 
-      {/* Filters */}
-      <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+      {/* Filters — hidden when no trades at all */}
+      {(total > 0 || filter !== 'all') && <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
         {/* Outcome — WIN/LOSS */}
         <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
@@ -160,14 +160,14 @@ export default function TradesPage() {
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
               padding: '4px 10px', borderRadius: '7px', fontSize: '10px', fontWeight: '700',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-              background: timeFilter === i ? '#3b82f6' : 'transparent',
+              background: timeFilter === i ? '#10b981' : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',
               transition: 'all 0.15s', whiteSpace: 'nowrap',
             }}>{label}</button>
           ))}
         </div>
         </div>
-      </div>
+      </div>}
 
       {/* Trades list */}
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
@@ -263,7 +263,7 @@ export default function TradesPage() {
         </div>
       )}
 
-      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page) }} />}
+      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 1024px) {
