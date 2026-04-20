@@ -419,16 +419,15 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 </div>
               ))}
             </div>
-            <Link href="/upgrade" onClick={() => setShowDowngradePopup(false)} style={{
+            <button onClick={() => setShowDowngradePopup(false)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              color: '#fff', borderRadius: '14px', padding: '13px',
-              fontSize: '14px', fontWeight: '800', textDecoration: 'none',
-              boxShadow: '0 0 24px rgba(16,185,129,0.35)',
+              width: '100%', background: 'var(--bg3)', border: '1px solid var(--border)',
+              color: 'var(--text2)', borderRadius: '14px', padding: '13px',
+              fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+              fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
             }}>
-              <Icon name="bolt" size={18} color="#fff" />
-              {language === 'he' ? 'חזור ל PRO — $20/חודש' : 'Upgrade back to PRO — $20/mo'}
-            </Link>
+              {language === 'he' ? 'הבנתי, תודה' : 'Got it, thanks'}
+            </button>
           </div>
         </div>
       )}
