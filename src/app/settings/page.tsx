@@ -45,23 +45,23 @@ export default function SettingsPage() {
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
       setAvatarUrl(data.publicUrl)
       await supabase.auth.updateUser({ data: { avatar_url: data.publicUrl } })
-      toast.success('תמונת פרופיל עודכנה')
+      toast.success(language === 'he' ? 'תמונת פרופיל עודכנה' : 'Profile photo updated')
     } catch {
-      toast.error('שגיאה בהעלאת התמונה')
+      toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading photo')
     } finally {
       setUploadingAvatar(false)
     }
   }
 
   async function handleSave() {
-    if (!nickname.trim()) { toast.error('נא להזין כינוי'); return }
+    if (!nickname.trim()) { toast.error(language === 'he' ? 'נא להזין כינוי' : 'Please enter a nickname'); return }
     setSaving(true)
     try {
       await supabase.auth.updateUser({ data: { full_name: nickname } })
       await supabase.from('profiles').update({ full_name: nickname }).eq('id', user.id)
-      toast.success('הפרטים נשמרו')
+      toast.success(language === 'he' ? 'הפרטים נשמרו' : 'Details saved')
     } catch {
-      toast.error('שגיאה בשמירה')
+      toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
     } finally {
       setSaving(false)
     }
