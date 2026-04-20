@@ -180,9 +180,11 @@ export default function ArchivePage() {
           <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
         </div>
       ) : portfolios.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '80px 20px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '20px' }}>
-          <Icon name="inventory_2" size={56} color="rgba(74,127,255,0.15)" style={{ display: 'block', marginBottom: '16px' }} />
-          <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="inventory_2" size={32} color="var(--text3)" />
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text)', marginBottom: '10px' }}>
             {language === 'he' ? 'הארכיון ריק' : 'Archive is empty'}
           </div>
           <div style={{ fontSize: '13px', color: 'var(--text3)' }}>

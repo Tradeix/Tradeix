@@ -101,7 +101,7 @@ export default function DashboardPage() {
         <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '28px' }}>
           {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
         </div>
-        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: ACCENT, color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
           {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
         </button>
       </div>
@@ -238,7 +238,7 @@ export default function DashboardPage() {
       <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap', flexShrink: 0 }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
         <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
+          <span className="data-by-label" style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
           <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
             {TIME_FILTERS.map((label, i) => (
               <button key={i} onClick={() => setTimeFilter(i)} style={{
@@ -294,7 +294,7 @@ export default function DashboardPage() {
             fontSize: '12px', fontWeight: '600', textDecoration: 'none',
             transition: 'all 0.15s',
           }}>
-            {language === 'he' ? 'כל העסקאות' : 'View All'}
+            {language === 'he' ? 'לכל העסקאות' : 'View All'}
             <Icon name={language === 'he' ? 'chevron_left' : 'chevron_right'} size={15} />
           </Link>
         </div>
@@ -304,7 +304,13 @@ export default function DashboardPage() {
           {trades.length === 0 ? (
             <div style={{ padding: '48px', textAlign: 'center' }}>
               <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', marginBottom: '8px' }} />
-              <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>{tr.noMoreTrades}</p>
+              <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>
+                {timeFilter === 0 ? (language === 'he' ? 'לא ביצעת עסקאות היום' : 'No trades today')
+                  : timeFilter === 1 ? (language === 'he' ? 'לא ביצעת עסקאות השבוע' : 'No trades this week')
+                  : timeFilter === 2 ? (language === 'he' ? 'לא ביצעת עסקאות החודש' : 'No trades this month')
+                  : timeFilter === 3 ? (language === 'he' ? 'לא ביצעת עסקאות השנה' : 'No trades this year')
+                  : tr.noMoreTrades}
+              </p>
             </div>
           ) : trades.map((trade, idx) => (
             <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row trade-row-anim"
@@ -352,8 +358,9 @@ export default function DashboardPage() {
         @media (max-width: 1024px) {
           .top-row { grid-template-columns: 1fr !important; }
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
-          .time-filter-bar { width: 100% !important; }
+          .time-filter-bar { flex: 1 !important; justify-content: flex-start !important; }
           .time-filter-bar button { flex: 1 !important; }
+          .data-by-label { display: none !important; }
           .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; }
           .trade-col-rr, .trade-col-date { display: none !important; }
         }

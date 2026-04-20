@@ -223,7 +223,7 @@ export default function AddTradePage() {
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
       window.scrollTo({ top: 0 })
-      router.push('/dashboard')
+      router.push('/trades')
     } catch (err: any) {
       toast.error(err.message || (language === 'he' ? 'שגיאה' : 'Error'))
     } finally {
@@ -250,7 +250,7 @@ export default function AddTradePage() {
           <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#3b82f6', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>

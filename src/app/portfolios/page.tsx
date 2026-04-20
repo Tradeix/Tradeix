@@ -134,7 +134,7 @@ export default function PortfoliosPage() {
             onClick={openNewForm}
             className="btn-press"
             style={{
-              flexShrink: 0, background: '#4a7fff', color: '#fff', border: 'none',
+              flexShrink: 0, background: '#10b981', color: '#fff', border: 'none',
               borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '600',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',

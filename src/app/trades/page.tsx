@@ -110,7 +110,7 @@ export default function TradesPage() {
           <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#3b82f6', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -152,7 +152,7 @@ export default function TradesPage() {
 
         {/* Time filter */}
         <div className="trades-time-filter" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+          <span className="trades-data-by-label" style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
             {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
           </span>
         <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
@@ -179,10 +179,17 @@ export default function TradesPage() {
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(74,127,255,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
             <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
-              {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades') : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades') : tr.noTradesYet}
+              {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades')
+                : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades')
+                : timeFilter === 1 ? (language === 'he' ? 'לא ביצעת עסקאות היום' : 'No trades today')
+                : timeFilter === 2 ? (language === 'he' ? 'לא ביצעת עסקאות השבוע' : 'No trades this week')
+                : timeFilter === 3 ? (language === 'he' ? 'לא ביצעת עסקאות החודש' : 'No trades this month')
+                : tr.noTradesYet}
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '24px' }}>
-              {filter !== 'all' ? (language === 'he' ? 'נסה לשנות את הפילטר' : 'Try changing the filter') : tr.noTradesDesc}
+              {filter !== 'all' ? (language === 'he' ? 'נסה לשנות את הפילטר' : 'Try changing the filter')
+                : timeFilter > 0 ? (language === 'he' ? 'נסה לשנות את טווח הזמן' : 'Try changing the time range')
+                : tr.noTradesDesc}
             </div>
             {filter === 'all' && <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
           </div>
@@ -277,6 +284,7 @@ export default function TradesPage() {
           .trades-time-filter { order: -1; }
           .trades-outcome-btns { order: 1; }
           .trades-filter-sep { display: none !important; }
+          .trades-data-by-label { display: none !important; }
         }
       `}</style>
     </div>
