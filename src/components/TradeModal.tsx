@@ -115,8 +115,8 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
   const isWin = editing ? form.outcome === 'win' : trade.outcome === 'win'
 
   const glass = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--bg3)',
+    border: '1px solid var(--border)',
     borderRadius: '14px',
   }
 
@@ -140,9 +140,9 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             onClick={() => setForm(p => ({ ...p, outcome: val }))}
             style={{
               padding: '12px', borderRadius: '12px',
-              background: active ? bg : 'rgba(255,255,255,0.02)',
-              border: `2px solid ${active ? border : 'rgba(255,255,255,0.07)'}`,
-              color: active ? color : 'rgba(229,226,225,0.3)',
+              background: active ? bg : 'var(--bg3)',
+              border: `2px solid ${active ? border : 'var(--border)'}`,
+              color: active ? color : 'var(--text3)',
               fontSize: '14px', fontWeight: '900', cursor: 'pointer',
               fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
               transition: 'all 0.18s',
@@ -164,7 +164,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       <div onClick={e => e.stopPropagation()} style={{
         width: '90%', maxWidth: '540px', maxHeight: '92vh',
         background: 'var(--bg2)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid var(--border2)',
         borderRadius: '24px', zIndex: 301, overflowY: 'auto',
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
         animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -177,7 +177,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
           <>
             {/* Edit header */}
             <div style={{
-              padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+              padding: '16px 20px', borderBottom: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 2, borderRadius: '24px 24px 0 0',
             }}>
@@ -187,10 +187,10 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </div>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{trade.symbol}</div>
-                  <div style={{ fontSize: '10px', color: 'rgba(74,127,255,0.6)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.editDetails}</div>
+                  <div style={{ fontSize: '10px', color: '#4a7fff', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.editDetails}</div>
                 </div>
               </div>
-              <button onClick={() => setEditing(false)} style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>✕</button>
+              <button onClick={() => setEditing(false)} style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>✕</button>
             </div>
 
             <div style={{ padding: '20px 24px' }}>
@@ -207,18 +207,18 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                     </div>
                   </div>
                 ) : (
-                  <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'rgba(74,127,255,0.5)' : 'rgba(255,255,255,0.08)'}`, borderRadius: '14px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.05)' : 'rgba(255,255,255,0.02)', transition: 'all 0.2s' }}>
+                  <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'rgba(74,127,255,0.5)' : 'var(--border2)'}`, borderRadius: '14px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.05)' : 'var(--bg3)', transition: 'all 0.2s' }}>
                     <input {...getInputProps()} />
                     {uploadingImage ? (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '24px', height: '24px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                        <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
+                        <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
                       </div>
                     ) : (
                       <>
-                        <Icon name="add_photo_alternate" size={28} color="rgba(74,127,255,0.3)" style={{ display: 'block', marginBottom: '8px' }} />
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.4)', marginBottom: '2px' }}>{language === 'he' ? 'העלה תמונה (אופציונלי)' : 'Upload image (optional)'}</div>
-                        <div style={{ fontSize: '10px', color: 'rgba(208,197,175,0.25)', fontWeight: '600' }}>PNG, JPG up to 10MB</div>
+                        <Icon name="add_photo_alternate" size={28} color="var(--text3)" style={{ display: 'block', marginBottom: '8px' }} />
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', marginBottom: '2px' }}>{language === 'he' ? 'העלה תמונה (אופציונלי)' : 'Upload image (optional)'}</div>
+                        <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>PNG, JPG up to 10MB</div>
                       </>
                     )}
                   </div>
@@ -228,13 +228,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Symbol + Date */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <label style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                   </label>
                   <input value={form.symbol} onChange={e => setForm(p => ({ ...p, symbol: e.target.value }))} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <label style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {language === 'he' ? 'תאריך' : 'Date'}
                   </label>
                   <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
@@ -243,7 +243,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               {/* WIN / LOSS toggle */}
               <div style={{ marginBottom: '0' }}>
-                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <label style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'תוצאה' : 'Outcome'}
                 </label>
                 <WinLossToggle />
@@ -252,7 +252,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Entry + SL + Exit */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <label style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {language === 'he' ? 'כניסה' : 'Entry'}
                   </label>
                   <input value={form.entry_price} onChange={e => setForm(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.00" />
@@ -309,7 +309,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
 
               {/* Notes */}
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '10px', color: 'rgba(208,197,175,0.5)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <label style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'הערות (אופציונלי)' : 'Notes (optional)'}
                 </label>
                 <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={language === 'he' ? 'מה למדת מהעסקה?' : 'What did you learn?'} />
@@ -319,7 +319,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #4a7fff, #3366dd)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
                   <span>✓</span> {saving ? tr.saving : tr.save}
                 </button>
-                <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', fontSize: '13px', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
+                <button onClick={() => setEditing(false)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px 16px', fontSize: '13px', color: 'var(--text3)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
               </div>
             </div>
           </>
@@ -330,7 +330,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
             {/* ── STICKY HEADER: Symbol + action buttons ── */}
             <div style={{
               position: 'sticky', top: 0, zIndex: 2,
-              padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+              padding: '16px 20px', borderBottom: '1px solid var(--border)',
               background: 'var(--bg2)', borderRadius: '24px 24px 0 0',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
             }}>
@@ -368,7 +368,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </button>
                 <button
                   onClick={onClose}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(229,226,225,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
+                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
                 >✕</button>
               </div>
             </div>
@@ -389,17 +389,17 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 </div>
               </div>
             ) : (
-              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.06)' : 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
+              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(74,127,255,0.06)' : 'transparent', borderBottom: '1px solid var(--border)', transition: 'all 0.2s' }}>
                 <input {...getInputProps()} />
                 {uploadingImage ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(208,197,175,0.4)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
+                    <div style={{ width: '18px', height: '18px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <Icon name="add_photo_alternate" size={18} color="rgba(74,127,255,0.3)" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'rgba(229,226,225,0.2)' }}>{language === 'he' ? 'הוסף תמונת גרף' : 'Add chart image'}</span>
+                    <Icon name="add_photo_alternate" size={18} color="var(--text3)" />
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)' }}>{language === 'he' ? 'הוסף תמונת גרף' : 'Add chart image'}</span>
                   </div>
                 )}
               </div>
@@ -444,63 +444,63 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               {/* Data grid */}
               <div style={{ ...glass, overflow: 'hidden' }}>
                 {/* Date */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', flexWrap: 'wrap', gap: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '4px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0 }}>
-                    <Icon name="calendar_today" size={14} color="rgba(208,197,175,0.35)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
+                    <Icon name="calendar_today" size={14} color="var(--text3)" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(229,226,225,0.75)', whiteSpace: 'nowrap' }}>{numericDate}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)', whiteSpace: 'nowrap' }}>{numericDate}</span>
                 </div>
                 {/* Entry price */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="login" size={14} color="rgba(74,127,255,0.4)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(74,127,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
+                    <Icon name="login" size={14} color="#4a7fff" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#4a7fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.entry_price != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.entry_price != null ? '#4a7fff' : 'var(--text3)' }}>
                     {trade.entry_price ?? '—'}
                   </span>
                 </div>
                 {/* SL — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="dangerous" size={14} color="rgba(239,68,68,0.4)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
+                    <Icon name="dangerous" size={14} color="#ef4444" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'rgba(255,255,255,0.2)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'var(--text3)' }}>
                     {trade.stop_loss ?? '—'}
                   </span>
                 </div>
                 {/* Exit price — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="logout" size={14} color={isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'} />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? 'rgba(34,197,94,0.55)' : 'rgba(239,68,68,0.55)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
+                    <Icon name="logout" size={14} color={isWin ? '#22c55e' : '#ef4444'} />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'rgba(255,255,255,0.2)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'var(--text3)' }}>
                     {trade.exit_price ?? '—'}
                   </span>
                 </div>
                 {/* RR ratio — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="analytics" size={14} color="rgba(74,127,255,0.4)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
+                    <Icon name="analytics" size={14} color="#4a7fff" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                   </div>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.rr_ratio != null ? '#4a7fff' : 'rgba(255,255,255,0.2)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: trade.rr_ratio != null ? '#4a7fff' : 'var(--text3)' }}>
                     {trade.rr_ratio != null ? `1:${trade.rr_ratio.toFixed(2)}` : '—'}
                   </span>
                 </div>
                 {/* Notes — always shown */}
                 <div style={{ padding: '12px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: trade.notes ? '8px' : '0' }}>
-                    <Icon name="notes" size={14} color="rgba(208,197,175,0.35)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(208,197,175,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
+                    <Icon name="notes" size={14} color="var(--text3)" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
                   </div>
                   {trade.notes ? (
-                    <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', lineHeight: 1.65, fontWeight: '500', paddingInlineStart: '21px' }}>{trade.notes}</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.65, fontWeight: '500', paddingInlineStart: '21px' }}>{trade.notes}</div>
                   ) : (
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.15)', fontStyle: 'italic', paddingInlineStart: '21px' }}>—</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text3)', fontStyle: 'italic', paddingInlineStart: '21px' }}>—</div>
                   )}
                 </div>
               </div>
