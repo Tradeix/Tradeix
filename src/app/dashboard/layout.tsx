@@ -277,13 +277,15 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           {/* Icon */}
           <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="38" height="38" rx="8" fill="#10b981"/>
-            {/* Bars */}
-            <rect x="7" y="22" width="5" height="9" rx="1.5" fill="rgba(255,255,255,0.45)"/>
-            <rect x="14" y="17" width="5" height="14" rx="1.5" fill="rgba(255,255,255,0.65)"/>
-            <rect x="21" y="12" width="5" height="19" rx="1.5" fill="rgba(255,255,255,0.85)"/>
-            {/* Arrow up-right */}
-            <polyline points="16,14 26,7 26,14" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="10" y1="20" x2="26" y2="7" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+            {/* Candlestick left */}
+            <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+            <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
+            {/* Candlestick center */}
+            <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+            <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)"/>
+            {/* Candlestick right */}
+            <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
+            <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
           </svg>
           {/* Text */}
           <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
