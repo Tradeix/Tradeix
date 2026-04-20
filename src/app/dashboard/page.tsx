@@ -121,7 +121,17 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── OVERVIEW TITLE ── */}
-      <h2 className="section-anim" style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 24px', color: 'var(--text)', letterSpacing: '-0.03em' }}>{tr.overview}</h2>
+      <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Icon name="space_dashboard" size={20} color="#10b981" />
+        </div>
+        <div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
+          <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+            {language === 'he' ? 'מבט כולל על ביצועי התיק שלך' : 'A complete look at your portfolio performance'}
+          </p>
+        </div>
+      </div>
 
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance (left) + Equity Chart (right)
@@ -235,8 +245,18 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           STAT CARDS ROW — with time filter
           ══════════════════════════════════════════════ */}
-      <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap', flexShrink: 0 }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
+      <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon name="monitoring" size={20} color="#10b981" />
+          </div>
+          <div>
+            <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
+            <p className="perf-subtitle" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+              {language === 'he' ? 'סטטיסטיקות מסחר לפי תקופה' : 'Trading statistics by period'}
+            </p>
+          </div>
+        </div>
         <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineStart: 'auto' }}>
           <span className="data-by-label" style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
           <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
@@ -369,6 +389,7 @@ export default function DashboardPage() {
           .stat-card { padding: 14px !important; }
           .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; }
           .trades-section-header { padding: 14px !important; }
+          .perf-subtitle { display: none !important; }
         }
       `}</style>
     </div>
