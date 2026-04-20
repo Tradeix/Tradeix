@@ -6,7 +6,7 @@ import {
   LogIn, ShieldAlert, Trash2, Pencil, ZoomIn, StickyNote, AlertCircle,
   AlertTriangle, User, SlidersHorizontal, BadgeCheck, Crown, Info, XCircle,
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
-  RotateCcw, Wallet,
+  RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
   type LucideProps,
 } from 'lucide-react'
 
@@ -69,6 +69,12 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   arrow_circle_down: TrendingDown,
   restore: RotateCcw,
   account_balance_wallet: Wallet,
+  all_inclusive: Infinity,
+  auto_awesome: Sparkles,
+  lock_open: LockOpen,
+  update: RefreshCw,
+  support_agent: HeadsetIcon,
+  shield: Shield,
 }
 
 interface IconProps extends Omit<LucideProps, 'ref'> {
