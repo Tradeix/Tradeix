@@ -175,12 +175,12 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <div onClick={() => setShowUserMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
               position: 'absolute', top: '48px',
-              [isRTL ? 'right' : 'left']: 0,
+              [isRTL ? 'left' : 'right']: 0,
               background: 'var(--bg2)', border: '1px solid var(--border)',
               borderRadius: '10px', zIndex: 200, minWidth: '180px',
               overflow: 'hidden', padding: '6px',
               animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
-              transformOrigin: isRTL ? 'top right' : 'top left',
+              transformOrigin: isRTL ? 'top left' : 'top right',
               boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
             }}>
               <Link href="/settings" onClick={() => setShowUserMenu(false)} style={{
