@@ -33,7 +33,7 @@ export default function AppToaster() {
           style: {
             background: isLight ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.15)',
             border: '1px solid rgba(16,185,129,0.25)',
-            color: isLight ? '#065f46' : '#e5e2e1',
+            color: isLight ? '#111827' : '#e5e2e1',
           },
           iconTheme: { primary: '#10b981', secondary: isLight ? '#ecfdf5' : 'rgba(16,185,129,0.15)' },
         },
@@ -41,7 +41,7 @@ export default function AppToaster() {
           style: {
             background: isLight ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.15)',
             border: '1px solid rgba(239,68,68,0.25)',
-            color: isLight ? '#7f1d1d' : '#e5e2e1',
+            color: isLight ? '#111827' : '#e5e2e1',
           },
           iconTheme: { primary: '#ef4444', secondary: isLight ? '#fef2f2' : 'rgba(239,68,68,0.15)' },
         },
