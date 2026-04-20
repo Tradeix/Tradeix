@@ -18,11 +18,12 @@ function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#3b82f6'
 }
 
-function Header({ sidebarOpen, setSidebarOpen }: any) {
+function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
   const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const [showMenu, setShowMenu] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const [user, setUser] = useState<any>(null)
   const supabase = createClient()
   const isRTL = language === 'he'
@@ -130,43 +131,88 @@ function Header({ sidebarOpen, setSidebarOpen }: any) {
       )}
 
       {/* User info */}
-      <Link href="/settings" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)', textDecoration: 'none', cursor: 'pointer' }}>
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            width: '38px', height: '38px', borderRadius: '50%',
-            background: isPro ? '#f59e0b' : '#3b82f6',
-            border: '1px solid var(--border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
-          }}>
-            {user?.user_metadata?.avatar_url
-              ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
-            }
+      <div style={{ position: 'relative' }}>
+        <div onClick={() => setShowUserMenu(!showUserMenu)} style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingInlineStart: '16px', borderInlineStart: '1px solid var(--border)', cursor: 'pointer' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: '38px', height: '38px', borderRadius: '50%',
+              background: isPro ? '#f59e0b' : '#3b82f6',
+              border: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
+            }}>
+              {user?.user_metadata?.avatar_url
+                ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
+              }
+            </div>
+            <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
           </div>
-          <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
+          <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
+            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
+              {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
+              {isPro ? (
+                <>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#f59e0b' }} />
+                  <span style={{ fontSize: '9px', color: '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>PRO</span>
+                </>
+              ) : (
+                <>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#3b82f6' }} />
+                  <span style={{ fontSize: '9px', color: '#3b82f6', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    {tr.freeAccount}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-        <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
-          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
-            {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
-            {isPro ? (
-              <>
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#f59e0b' }} />
-                <span style={{ fontSize: '9px', color: '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>PRO</span>
-              </>
-            ) : (
-              <>
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#3b82f6' }} />
-                <span style={{ fontSize: '9px', color: '#3b82f6', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  {tr.freeAccount}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-      </Link>
+
+        {showUserMenu && (
+          <>
+            <div onClick={() => setShowUserMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
+            <div style={{
+              position: 'absolute', top: '48px',
+              [isRTL ? 'right' : 'left']: 0,
+              background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: '10px', zIndex: 200, minWidth: '180px',
+              overflow: 'hidden', padding: '6px',
+              animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
+              transformOrigin: isRTL ? 'top right' : 'top left',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+            }}>
+              <Link href="/settings" onClick={() => setShowUserMenu(false)} style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '10px 14px', borderRadius: '8px',
+                fontSize: '13px', fontWeight: '600', color: 'var(--text2)',
+                textDecoration: 'none', transition: 'background 0.15s',
+              }}
+                onMouseOver={e => e.currentTarget.style.background = 'var(--bg3)'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <Icon name="settings" size={15} color="var(--text3)" />
+                {language === 'he' ? 'הגדרות' : 'Settings'}
+              </Link>
+              <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
+              <button onClick={() => { setShowUserMenu(false); handleSignOut() }} style={{
+                display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                padding: '10px 14px', borderRadius: '8px',
+                fontSize: '13px', fontWeight: '700', color: '#ef4444',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s',
+              }}
+                onMouseOver={e => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <Icon name="logout" size={15} color="#ef4444" />
+                {language === 'he' ? 'יציאה' : 'Log out'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </header>
   )
 }
@@ -326,7 +372,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       </div>
 
       <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '210px', flex: 1, minWidth: 0 }} className="main-content">
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
           style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}

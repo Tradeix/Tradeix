@@ -79,9 +79,9 @@ export default function SettingsPage() {
         <button key={opt.value} onClick={() => onChange(opt.value)} style={{
           padding: '7px 18px', borderRadius: '10px', fontSize: '12px',
           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-          border: `1px solid ${value === opt.value ? 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
-          background: value === opt.value ? 'rgba(74,127,255,0.15)' : 'var(--bg3)',
-          color: value === opt.value ? '#3b82f6' : 'var(--text3)',
+          border: `1px solid ${value === opt.value ? 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
+          background: value === opt.value ? 'rgba(16,185,129,0.15)' : 'var(--bg3)',
+          color: value === opt.value ? '#10b981' : 'var(--text3)',
           transition: 'all 0.2s',
         }}>{opt.label}</button>
       ))}
@@ -151,7 +151,7 @@ export default function SettingsPage() {
           </div>
 
           <button onClick={handleSave} disabled={saving} style={{
-            width: '100%', background: '#3b82f6',
+            width: '100%', background: '#10b981',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
             fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
@@ -222,7 +222,7 @@ export default function SettingsPage() {
               </div>
               <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
-                {isPro && <span style={{ fontSize: '12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700' }}>⚡ פעיל</span>}
+                {isPro && <span style={{ fontSize: '12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {language === 'he' ? 'פעיל' : 'Active'}</span>}
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
                 {isPro ? '$20 / ' + (language === 'he' ? 'חודש' : 'month') : (language === 'he' ? 'ללא עלות' : 'No charge')}
