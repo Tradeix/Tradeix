@@ -358,7 +358,7 @@ export default function DashboardPage() {
         @media (max-width: 1024px) {
           .top-row { grid-template-columns: 1fr !important; }
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
-          .time-filter-bar { flex: 1 !important; justify-content: flex-start !important; }
+          .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
           .data-by-label { display: none !important; }
           .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; }
