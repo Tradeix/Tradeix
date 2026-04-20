@@ -18,6 +18,9 @@ export default function SettingsPage() {
   const [cancelingPro, setCancelingPro] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [pendingLang, setPendingLang] = useState(language)
+  const [pendingTheme, setPendingTheme] = useState(theme)
+  const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
@@ -178,12 +181,12 @@ export default function SettingsPage() {
               {language === 'he' ? 'שפה' : 'Language'}
             </div>
             <ToggleGroup
-              value={language}
-              onChange={setLanguage}
+              value={pendingLang}
+              onChange={setPendingLang}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
             <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {language === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
+              {pendingLang === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
             </div>
           </div>
 
@@ -193,24 +196,35 @@ export default function SettingsPage() {
               {language === 'he' ? 'עיצוב' : 'Theme'}
             </div>
             <ToggleGroup
-              value={theme}
-              onChange={setTheme}
+              value={pendingTheme}
+              onChange={setPendingTheme}
               options={[{ value: 'dark', label: language === 'he' ? 'כהה' : 'Dark' }, { value: 'light', label: language === 'he' ? 'בהיר' : 'Light' }]}
             />
             <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {language === 'he'
-                ? (theme === 'dark' ? 'עיצוב כהה מופעל' : 'עיצוב בהיר מופעל')
-                : (theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled')}
+              {pendingTheme === 'dark'
+                ? (language === 'he' ? 'עיצוב כהה' : 'Dark mode')
+                : (language === 'he' ? 'עיצוב בהיר' : 'Light mode')}
             </div>
           </div>
 
-          <button onClick={() => { toast.success(language === 'he' ? 'ההעדפות נשמרו' : 'Preferences saved') }} style={{
+          <button onClick={async () => {
+            setSavingPrefs(true)
+            try {
+              if (pendingLang !== language) await setLanguage(pendingLang)
+              if (pendingTheme !== theme) await setTheme(pendingTheme)
+              toast.success(language === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
+            } catch {
+              toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
+            } finally { setSavingPrefs(false) }
+          }} disabled={savingPrefs} style={{
             width: '100%', background: '#10b981',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
-            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            fontSize: '13px', fontWeight: '700',
+            cursor: savingPrefs ? 'wait' : 'pointer',
+            opacity: savingPrefs ? 0.7 : 1,
             fontFamily: 'Heebo, sans-serif',
           }}>
-            {language === 'he' ? '✓ שמור שינויים' : '✓ Save changes'}
+            {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
           </button>
         </div>
 

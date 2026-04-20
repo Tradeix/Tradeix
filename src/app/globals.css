@@ -29,11 +29,11 @@
 }
 
 [data-theme="light"] {
-  --bg: #d6dff2; --bg2: #e0e9f8; --bg3: #c8d3e8; --bg4: #bbc8de;
-  --border: rgba(74,127,255,0.13); --border2: rgba(74,127,255,0.22);
-  --text: #111827; --text2: #2d3452; --text3: #6b7280;
-  --glass-bg: rgba(255,255,255,0.55);
-  --glass-border: rgba(74,127,255,0.13);
+  --bg: #ffffff; --bg2: #f5f6f8; --bg3: #ebedf2; --bg4: #e2e4ea;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.12);
+  --text: #111827; --text2: #374151; --text3: #6b7280;
+  --glass-bg: rgba(255,255,255,0.75);
+  --glass-border: rgba(0,0,0,0.06);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,8 +54,8 @@ body {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(74,127,255,0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(74,127,255,0.07) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
@@ -177,13 +177,13 @@ select option { background: var(--bg2); color: var(--text); }
    LIGHT MODE — glassmorphism overrides
    ══════════════════════════════════════ */
 [data-theme="light"] body {
-  background: #d6dff2;
+  background: #ffffff;
   color: #111827;
 }
 
 /* ── Sidebar ── */
 [data-theme="light"] .sidebar-el > div {
-  background: rgba(224,233,248,0.95) !important;
+  background: rgba(245,246,248,0.97) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
 }
@@ -192,7 +192,7 @@ select option { background: var(--bg2); color: var(--text); }
 }
 [data-theme="light"] .sidebar-el nav a:hover {
   color: var(--text2) !important;
-  background: rgba(74,127,255,0.08) !important;
+  background: rgba(0,0,0,0.04) !important;
 }
 [data-theme="light"] .sidebar-el nav a[style*="#4a7fff"] {
   color: #4a7fff !important;
@@ -203,26 +203,26 @@ select option { background: var(--bg2); color: var(--text); }
 
 /* ── Header ── */
 [data-theme="light"] header {
-  background: rgba(220,229,244,0.9) !important;
+  background: rgba(255,255,255,0.9) !important;
   backdrop-filter: blur(24px) !important;
   -webkit-backdrop-filter: blur(24px) !important;
-  box-shadow: 0 1px 0 rgba(74,127,255,0.1) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06) !important;
 }
 
 /* ── Glass cards — semi-transparent, no solid white ── */
 [data-theme="light"] div[style*="var(--glass-bg)"] {
-  background: rgba(255,255,255,0.55) !important;
-  border-color: rgba(74,127,255,0.12) !important;
-  box-shadow: 0 2px 16px rgba(30,50,120,0.08), inset 0 1px 0 rgba(255,255,255,0.7) !important;
+  background: rgba(255,255,255,0.75) !important;
+  border-color: rgba(0,0,0,0.06) !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
 }
 
 /* ── Section elements — only those with an explicit background ── */
 [data-theme="light"] section[style*="background"] {
-  background: rgba(255,255,255,0.5) !important;
-  border-color: rgba(74,127,255,0.12) !important;
-  box-shadow: 0 2px 16px rgba(30,50,120,0.07) !important;
+  background: rgba(255,255,255,0.7) !important;
+  border-color: rgba(0,0,0,0.06) !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.04) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   color: #111827 !important;
@@ -235,8 +235,8 @@ select option { background: var(--bg2); color: var(--text); }
 [data-theme="light"] div[style*="rgba(255,255,255,0.06)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.07)"],
 [data-theme="light"] div[style*="rgba(255,255,255,0.08)"] {
-  background: rgba(255,255,255,0.45) !important;
-  border-color: rgba(74,127,255,0.1) !important;
+  background: rgba(255,255,255,0.5) !important;
+  border-color: rgba(0,0,0,0.06) !important;
 }
 
 /* ── Text — white/near-white → dark ── */
@@ -292,15 +292,15 @@ select option { background: var(--bg2); color: var(--text); }
 [data-theme="light"] *[style*="border-bottom: 1px solid rgba(255,255,255,0.05)"],
 [data-theme="light"] *[style*="border-top: 1px solid rgba(255,255,255,0.05)"],
 [data-theme="light"] *[style*="border-top: 1px solid rgba(255,255,255,0.03)"] {
-  border-color: rgba(74,127,255,0.1) !important;
+  border-color: rgba(0,0,0,0.06) !important;
 }
 
 /* ── Inputs ── */
 [data-theme="light"] input,
 [data-theme="light"] select,
 [data-theme="light"] textarea {
-  background: rgba(255,255,255,0.7) !important;
-  border-color: rgba(74,127,255,0.15) !important;
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
   color: #111827 !important;
 }
 [data-theme="light"] input::placeholder,
@@ -308,9 +308,9 @@ select option { background: var(--bg2); color: var(--text); }
 
 /* ── Buttons ── */
 [data-theme="light"] .btn-ghost {
-  background: rgba(255,255,255,0.5) !important;
-  border-color: rgba(74,127,255,0.15) !important;
-  color: #2d3452 !important;
+  background: rgba(255,255,255,0.6) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  color: #374151 !important;
 }
 
 /* ── Chart tooltips ── */
@@ -326,30 +326,30 @@ select option { background: var(--bg2); color: var(--text); }
 }
 
 /* ── Scrollbar (light) ── */
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(74,127,255,0.18); }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(74,127,255,0.3); }
-[data-theme="light"] * { scrollbar-color: rgba(74,127,255,0.18) transparent; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+[data-theme="light"] * { scrollbar-color: rgba(0,0,0,0.12) transparent; }
 
 /* ── Dark rgba backgrounds in light mode ── */
 [data-theme="light"] *[style*="background: rgba(0,0,0,0.15)"],
 [data-theme="light"] *[style*="background: rgba(0,0,0,0.1)"],
 [data-theme="light"] *[style*="background: rgba(0,0,0,0.2)"] {
-  background: rgba(74,127,255,0.06) !important;
+  background: rgba(0,0,0,0.03) !important;
 }
 
 /* ── Cards using var(--bg2) ── */
 [data-theme="light"] div[style*="var(--bg2)"] {
-  box-shadow: 0 2px 12px rgba(30,50,120,0.06), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7) !important;
 }
 
 /* ── Dropdown / popup panels ── */
 [data-theme="light"] div[style*="var(--bg2)"][style*="position: absolute"],
 [data-theme="light"] div[style*="var(--bg2)"][style*="position: fixed"] {
-  box-shadow: 0 8px 32px rgba(30,50,120,0.15), inset 0 1px 0 rgba(255,255,255,0.7) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8) !important;
 }
 
 /* ── Feature grid borders ── */
 [data-theme="light"] *[style*="border-bottom: 1px solid rgba(255,255,255,0.04)"],
 [data-theme="light"] *[style*="borderInlineEnd: 1px solid rgba(255,255,255,0.04)"] {
-  border-color: rgba(74,127,255,0.08) !important;
+  border-color: rgba(0,0,0,0.06) !important;
 }

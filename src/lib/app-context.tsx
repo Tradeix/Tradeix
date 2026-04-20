@@ -30,18 +30,18 @@ function applyTheme(t: Theme) {
   const root = document.documentElement
   if (t === 'light') {
     root.setAttribute('data-theme', 'light')
-    root.style.setProperty('--bg', '#d6dff2')
-    root.style.setProperty('--bg2', '#e0e9f8')
-    root.style.setProperty('--bg3', '#c8d3e8')
-    root.style.setProperty('--bg4', '#bbc8de')
-    root.style.setProperty('--border', 'rgba(74,127,255,0.13)')
-    root.style.setProperty('--border2', 'rgba(74,127,255,0.22)')
+    root.style.setProperty('--bg', '#ffffff')
+    root.style.setProperty('--bg2', '#f5f6f8')
+    root.style.setProperty('--bg3', '#ebedf2')
+    root.style.setProperty('--bg4', '#e2e4ea')
+    root.style.setProperty('--border', 'rgba(0,0,0,0.08)')
+    root.style.setProperty('--border2', 'rgba(0,0,0,0.12)')
     root.style.setProperty('--text', '#111827')
-    root.style.setProperty('--text2', '#2d3452')
+    root.style.setProperty('--text2', '#374151')
     root.style.setProperty('--text3', '#6b7280')
-    root.style.setProperty('--glass-bg', 'rgba(255,255,255,0.55)')
-    root.style.setProperty('--glass-border', 'rgba(74,127,255,0.13)')
-    document.body.style.cssText = 'background: #d6dff2 !important; color: #111827 !important;'
+    root.style.setProperty('--glass-bg', 'rgba(255,255,255,0.75)')
+    root.style.setProperty('--glass-border', 'rgba(0,0,0,0.06)')
+    document.body.style.cssText = 'background: #ffffff !important; color: #111827 !important;'
     const style = document.getElementById('tradeix-theme-style') || document.createElement('style')
     style.id = 'tradeix-theme-style'
     style.textContent = `
