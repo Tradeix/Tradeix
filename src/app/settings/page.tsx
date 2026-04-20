@@ -187,6 +187,31 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {/* Theme */}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {language === 'he' ? 'עיצוב' : 'Theme'}
+            </div>
+            <ToggleGroup
+              value={theme}
+              onChange={setTheme}
+              options={[{ value: 'dark', label: language === 'he' ? 'כהה' : 'Dark' }, { value: 'light', label: language === 'he' ? 'בהיר' : 'Light' }]}
+            />
+            <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
+              {language === 'he'
+                ? (theme === 'dark' ? 'עיצוב כהה מופעל' : 'עיצוב בהיר מופעל')
+                : (theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled')}
+            </div>
+          </div>
+
+          <button onClick={() => { toast.success(language === 'he' ? 'ההעדפות נשמרו' : 'Preferences saved') }} style={{
+            width: '100%', background: '#10b981',
+            color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
+            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            fontFamily: 'Heebo, sans-serif',
+          }}>
+            {language === 'he' ? '✓ שמור שינויים' : '✓ Save changes'}
+          </button>
         </div>
 
         {/* ── CARD 3: Subscription ── */}

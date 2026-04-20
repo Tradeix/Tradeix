@@ -320,6 +320,36 @@ select option { background: var(--bg2); color: var(--text); }
 
 /* ── Modal overlay ── */
 [data-theme="light"] div[style*="rgba(0,0,0,0.7)"][style*="position: fixed"],
-[data-theme="light"] div[style*="rgba(0,0,0,0.85)"][style*="position: fixed"] {
-  background: rgba(15,17,23,0.5) !important;
+[data-theme="light"] div[style*="rgba(0,0,0,0.85)"][style*="position: fixed"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.75)"][style*="position: fixed"] {
+  background: rgba(15,17,23,0.45) !important;
+}
+
+/* ── Scrollbar (light) ── */
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(74,127,255,0.18); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(74,127,255,0.3); }
+[data-theme="light"] * { scrollbar-color: rgba(74,127,255,0.18) transparent; }
+
+/* ── Dark rgba backgrounds in light mode ── */
+[data-theme="light"] *[style*="background: rgba(0,0,0,0.15)"],
+[data-theme="light"] *[style*="background: rgba(0,0,0,0.1)"],
+[data-theme="light"] *[style*="background: rgba(0,0,0,0.2)"] {
+  background: rgba(74,127,255,0.06) !important;
+}
+
+/* ── Cards using var(--bg2) ── */
+[data-theme="light"] div[style*="var(--bg2)"] {
+  box-shadow: 0 2px 12px rgba(30,50,120,0.06), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+}
+
+/* ── Dropdown / popup panels ── */
+[data-theme="light"] div[style*="var(--bg2)"][style*="position: absolute"],
+[data-theme="light"] div[style*="var(--bg2)"][style*="position: fixed"] {
+  box-shadow: 0 8px 32px rgba(30,50,120,0.15), inset 0 1px 0 rgba(255,255,255,0.7) !important;
+}
+
+/* ── Feature grid borders ── */
+[data-theme="light"] *[style*="border-bottom: 1px solid rgba(255,255,255,0.04)"],
+[data-theme="light"] *[style*="borderInlineEnd: 1px solid rgba(255,255,255,0.04)"] {
+  border-color: rgba(74,127,255,0.08) !important;
 }

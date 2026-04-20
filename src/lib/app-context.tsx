@@ -100,9 +100,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const supabase = createClient()
 
   useEffect(() => {
-    // Theme locked to dark — light mode temporarily disabled
-    applyTheme('dark')
-    localStorage.setItem('tradeix-theme', 'dark')
+    const savedTheme = (localStorage.getItem('tradeix-theme') as Theme) || 'dark'
+    setThemeState(savedTheme)
+    applyTheme(savedTheme)
 
     const savedLang = (localStorage.getItem('tradeix-lang') as Language) || 'he'
     setLanguageState(savedLang)
