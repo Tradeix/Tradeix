@@ -14,7 +14,6 @@ const PRO_FEATURES = {
     { label: 'ניתוח AI לתמונות', icon: 'auto_awesome' },
     { label: 'עמוד סטטיסטיקות מלא', icon: 'monitoring' },
     { label: 'ארכיון תיקים', icon: 'inventory_2' },
-    { label: 'גישה לכל עמודי האתר', icon: 'lock_open' },
     { label: 'עדכונים ותכונות חדשות', icon: 'update' },
     { label: 'תמיכה מועדפת', icon: 'support_agent' },
   ],
@@ -25,7 +24,6 @@ const PRO_FEATURES = {
     { label: 'AI chart analysis', icon: 'auto_awesome' },
     { label: 'Full statistics page', icon: 'monitoring' },
     { label: 'Portfolio archive', icon: 'inventory_2' },
-    { label: 'Access to all pages', icon: 'lock_open' },
     { label: 'New features & updates', icon: 'update' },
     { label: 'Priority support', icon: 'support_agent' },
   ],
@@ -234,17 +232,6 @@ export default function UpgradePage() {
         ))}
       </div>
 
-      {/* Payment note */}
-      <div className="section-anim anim-delay-4" style={{
-        textAlign: 'center', padding: '16px 20px',
-        background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '14px',
-      }}>
-        <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0, lineHeight: 1.6, fontWeight: '500' }}>
-          {language === 'he'
-            ? 'מערכת התשלומים תתווסף בקרוב. כרגע השדרוג מופעל ישירות.'
-            : 'Payment system coming soon. Upgrade is activated directly for now.'}
-        </p>
-      </div>
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
