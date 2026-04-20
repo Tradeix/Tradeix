@@ -237,7 +237,7 @@ export default function DashboardPage() {
           ══════════════════════════════════════════════ */}
       <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap', flexShrink: 0 }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
-        <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineStart: 'auto' }}>
           <span className="data-by-label" style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
           <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
             {TIME_FILTERS.map((label, i) => (
