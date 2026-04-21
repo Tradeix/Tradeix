@@ -247,7 +247,7 @@ export default function StrategiesPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {strategies.map(s => {
+          {strategies.map((s, sIdx) => {
             const color = getColorHex(s.color)
             const isExpanded = expandedId === s.id
             const stats = strategyStats[s.id] || EMPTY_STATS
@@ -300,7 +300,11 @@ export default function StrategiesPage() {
                       transition: 'all 0.25s ease',
                       boxShadow: isExpanded ? `0 4px 20px ${color}20` : 'none',
                     }}>
-                      <Icon name="psychology" size={22} color={color} />
+                      <span style={{
+                        fontSize: '16px', fontWeight: '800', color,
+                        fontFamily: "'Heebo', sans-serif", letterSpacing: '-0.03em',
+                        lineHeight: 1,
+                      }}>#{sIdx + 1}</span>
                     </div>
                   </div>
 
