@@ -54,22 +54,22 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <Icon name="menu" size={20} color="currentColor" />
       </button>
 
-      {/* Portfolio switcher */}
+      {/* Portfolio switcher — left side */}
       {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
+          display: 'flex', alignItems: 'center', gap: '8px',
           background: 'var(--bg3)',
           border: '1px solid var(--border)',
-          borderRadius: '10px', padding: '8px 14px',
-          fontSize: '13px', color: 'var(--text)', cursor: 'pointer',
+          borderRadius: '10px', padding: '8px 12px',
+          fontSize: '12px', color: 'var(--text3)', cursor: 'pointer',
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
           transition: 'background 0.15s, border-color 0.15s',
         }}>
-          <Icon name="account_balance_wallet" size={16} color="var(--text3)" />
-          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', whiteSpace: 'nowrap' }}>
-            {language === 'he' ? 'בחירת תיק' : 'Portfolio'}
+          <Icon name="swap_horiz" size={14} color="var(--text3)" />
+          <span className="switcher-label" style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+            {language === 'he' ? 'החלף תיק' : 'Switch'}
           </span>
-          <Icon name="expand_more" size={16} color="var(--text3)" />
+          <Icon name="expand_more" size={14} color="var(--text3)" />
         </div>
 
         {showMenu && (
@@ -123,6 +123,32 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       </div>}
 
       <div style={{ flex: 1 }} />
+
+      {/* Active portfolio badge — always visible */}
+      {activePortfolio && (
+        <div className="active-portfolio-badge" style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          background: 'var(--bg3)', border: '1px solid rgba(16,185,129,0.15)',
+          borderRadius: '12px', padding: '6px 14px 6px 8px',
+          flexShrink: 0,
+        }}>
+          <div style={{
+            width: '30px', height: '30px', borderRadius: '8px',
+            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Icon name="cases" size={14} color="#10b981" />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+              {activePortfolio.name}
+            </div>
+            <div style={{ fontSize: '9px', fontWeight: '600', color: '#10b981', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: '1px' }}>
+              {language === 'he' ? 'תיק פעיל' : 'Active'}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Upgrade to PRO banner — free users only */}
       {!subscriptionLoading && !isPro && (
@@ -523,6 +549,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         @media (max-width: 640px) {
           .page-content { padding: 16px 14px !important; }
           .user-name-block { display: none !important; }
+          .switcher-label { display: none !important; }
+          .active-portfolio-badge > div:last-child > div:last-child { display: none !important; }
+          .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 7px !important; }
+          .active-portfolio-badge > div:last-child > div:first-child { max-width: 90px !important; font-size: 12px !important; }
         }
         .sidebar-logout { display: block; }
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }
