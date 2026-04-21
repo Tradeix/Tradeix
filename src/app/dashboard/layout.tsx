@@ -352,8 +352,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
   // On every route change, briefly hide content so the new page renders invisibly
   // then fades in — eliminates the flash of stale/empty state
+  // Also scroll to top (fixes mobile starting mid-page)
   useEffect(() => {
     setPageKey(k => k + 1)
+    window.scrollTo(0, 0)
   }, [pathname])
 
   useEffect(() => {
