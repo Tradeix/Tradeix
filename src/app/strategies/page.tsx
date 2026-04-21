@@ -513,7 +513,7 @@ export default function StrategiesPage() {
                     )}
 
                     {/* ── Actions ── */}
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                       <button onClick={() => startEdit(s)} style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '9px 18px', borderRadius: '10px',
