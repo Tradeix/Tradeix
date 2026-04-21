@@ -280,7 +280,7 @@ export default function StrategiesPage() {
                     transition: 'background 0.15s',
                   }}
                   onMouseOver={e => { if (!isExpanded) e.currentTarget.style.background = 'var(--bg3)' }}
-                  onMouseOut={e => { if (!isExpanded) e.currentTarget.style.background = 'transparent' }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   {/* Strategy icon with glow */}
                   <div style={{ position: 'relative' }}>
