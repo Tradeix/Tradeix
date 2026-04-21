@@ -54,7 +54,35 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <Icon name="menu" size={20} color="currentColor" />
       </button>
 
-      {/* Portfolio switcher — left side */}
+      {/* Active portfolio badge — left side */}
+      {activePortfolio && (
+        <div className="active-portfolio-badge" style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          background: 'var(--bg3)', border: '1px solid rgba(16,185,129,0.15)',
+          borderRadius: '12px', padding: '6px 14px 6px 8px',
+          flexShrink: 0,
+        }}>
+          <div style={{
+            width: '30px', height: '30px', borderRadius: '8px',
+            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Icon name="cases" size={14} color="#10b981" />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+              {activePortfolio.name}
+            </div>
+            <div style={{ fontSize: '9px', fontWeight: '600', color: '#10b981', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: '1px' }}>
+              {language === 'he' ? 'תיק פעיל' : 'Active'}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ flex: 1 }} />
+
+      {/* Portfolio switcher — right side */}
       {portfolios.length > 0 && <div style={{ position: 'relative' }}>
         <div onClick={() => setShowMenu(!showMenu)} style={{
           display: 'flex', alignItems: 'center', gap: '8px',
@@ -121,34 +149,6 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           </>
         )}
       </div>}
-
-      <div style={{ flex: 1 }} />
-
-      {/* Active portfolio badge — always visible */}
-      {activePortfolio && (
-        <div className="active-portfolio-badge" style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          background: 'var(--bg3)', border: '1px solid rgba(16,185,129,0.15)',
-          borderRadius: '12px', padding: '6px 14px 6px 8px',
-          flexShrink: 0,
-        }}>
-          <div style={{
-            width: '30px', height: '30px', borderRadius: '8px',
-            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            <Icon name="cases" size={14} color="#10b981" />
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
-              {activePortfolio.name}
-            </div>
-            <div style={{ fontSize: '9px', fontWeight: '600', color: '#10b981', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: '1px' }}>
-              {language === 'he' ? 'תיק פעיל' : 'Active'}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Upgrade to PRO banner — free users only */}
       {!subscriptionLoading && !isPro && (
