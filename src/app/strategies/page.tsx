@@ -442,42 +442,6 @@ export default function StrategiesPage() {
                             ))}
                           </div>
 
-                          {/* Best / Worst / Avg row */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '12px' }}>
-                            <div style={{
-                              background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.12)',
-                              borderRadius: '10px', padding: '12px', textAlign: 'center',
-                            }}>
-                              <div style={{ fontSize: '9px', fontWeight: '700', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-                                {language === 'he' ? 'עסקה טובה' : 'Best'}
-                              </div>
-                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: '#22c55e' }}>
-                                +${Math.abs(stats.bestTrade).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                              </div>
-                            </div>
-                            <div style={{
-                              background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)',
-                              borderRadius: '10px', padding: '12px', textAlign: 'center',
-                            }}>
-                              <div style={{ fontSize: '9px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-                                {language === 'he' ? 'עסקה גרועה' : 'Worst'}
-                              </div>
-                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: '#ef4444' }}>
-                                -${Math.abs(stats.worstTrade).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                              </div>
-                            </div>
-                            <div style={{
-                              background: `${color}08`, border: `1px solid ${color}15`,
-                              borderRadius: '10px', padding: '12px', textAlign: 'center',
-                            }}>
-                              <div style={{ fontSize: '9px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-                                {language === 'he' ? 'ממוצע' : 'Average'}
-                              </div>
-                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: stats.avgPnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                                {stats.avgPnl >= 0 ? '+' : '-'}${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                              </div>
-                            </div>
-                          </div>
                         </>
                       )}
                     </div>
