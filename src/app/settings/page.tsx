@@ -60,6 +60,7 @@ export default function SettingsPage() {
       await supabase.auth.updateUser({ data: { full_name: nickname } })
       await supabase.from('profiles').update({ full_name: nickname }).eq('id', user.id)
       toast.success(language === 'he' ? 'הפרטים נשמרו' : 'Details saved')
+      router.refresh()
     } catch {
       toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
     } finally {
@@ -213,6 +214,7 @@ export default function SettingsPage() {
               if (pendingLang !== language) await setLanguage(pendingLang)
               if (pendingTheme !== theme) await setTheme(pendingTheme)
               toast.success(language === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
+              router.refresh()
             } catch {
               toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
             } finally { setSavingPrefs(false) }

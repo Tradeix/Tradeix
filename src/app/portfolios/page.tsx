@@ -84,19 +84,20 @@ export default function PortfoliosPage() {
     setSaving(false); setShowForm(false); setEditingId(null)
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
     loadPortfolios()
+    router.refresh()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleArchive(id: string) {
     const { error } = await supabase.from('portfolios').update({ archived: true }).eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
-    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived'); loadPortfolios() }
+    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived'); loadPortfolios(); router.refresh() }
   }
 
   async function handleDelete(id: string) {
     const { error } = await supabase.from('portfolios').delete().eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
-    else { toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted'); setConfirmDelete(null); loadPortfolios() }
+    else { toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted'); setConfirmDelete(null); loadPortfolios(); router.refresh() }
   }
 
   function startEdit(p: Portfolio) {

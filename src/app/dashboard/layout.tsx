@@ -21,6 +21,7 @@ function getPortfolioColor(portfolio: any) {
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
   const { language, isPro, subscriptionLoading } = useApp()
+  const router = useRouter()
   const tr = t[language]
   const [showMenu, setShowMenu] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -87,7 +88,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               {portfolios.map(p => {
                 const isActive = activePortfolio?.id === p.id
                 return (
-                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }}
+                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.refresh() }}
                     className="portfolio-item-anim"
                     style={{
                       padding: '10px 16px', fontSize: '13px', cursor: 'pointer',

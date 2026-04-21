@@ -224,6 +224,7 @@ export default function AddTradePage() {
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
       window.scrollTo({ top: 0 })
       router.push('/trades')
+      router.refresh()
     } catch (err: any) {
       toast.error(err.message || (language === 'he' ? 'שגיאה' : 'Error'))
     } finally {

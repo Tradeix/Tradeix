@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trade } from '@/types'
 import { useDropzone } from 'react-dropzone'
@@ -16,6 +17,7 @@ interface TradeModalProps {
 }
 
 export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps) {
+  const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -96,6 +98,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
       setEditing(false)
       onUpdate()
+      router.refresh()
     } catch { toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed') }
     finally { setSaving(false) }
   }
@@ -108,6 +111,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       toast.success(language === 'he' ? 'העסקה הוסרה' : 'Trade removed')
       onUpdate()
       onClose()
+      router.refresh()
     } catch { toast.error(language === 'he' ? 'שגיאה בהסרה' : 'Delete failed') }
     finally { setDeleting(false) }
   }
