@@ -273,7 +273,7 @@ export default function StrategiesPage() {
 
                 {/* Header */}
                 <div
-                  onClick={() => handleExpand(s.id)}
+                  onClick={e => { e.currentTarget.style.background = 'transparent'; handleExpand(s.id) }}
                   style={{
                     padding: '20px 24px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '16px',
