@@ -26,6 +26,23 @@ function getColorHex(name: string) {
   return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#3b82f6'
 }
 
+type StrategyStats = {
+  totalTrades: number
+  wins: number
+  losses: number
+  winRate: number
+  totalPnl: number
+  profitFactor: number
+  bestTrade: number
+  worstTrade: number
+  avgPnl: number
+}
+
+const EMPTY_STATS: StrategyStats = {
+  totalTrades: 0, wins: 0, losses: 0, winRate: 0,
+  totalPnl: 0, profitFactor: 0, bestTrade: 0, worstTrade: 0, avgPnl: 0,
+}
+
 export default function StrategiesPage() {
   const { language } = useApp()
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -41,6 +58,8 @@ export default function StrategiesPage() {
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [strategyStats, setStrategyStats] = useState<Record<string, StrategyStats>>({})
+  const [loadingStats, setLoadingStats] = useState<string | null>(null)
   const [form, setForm] = useState({
     name: '', plan: '', details: '', color: 'blue',
   })
@@ -58,6 +77,47 @@ export default function StrategiesPage() {
       .order('created_at', { ascending: false })
     if (data) setStrategies(data)
     setLoading(false)
+  }
+
+  async function loadStrategyStats(strategyId: string) {
+    if (strategyStats[strategyId]) return
+    setLoadingStats(strategyId)
+    const { data: trades } = await supabase
+      .from('trades')
+      .select('pnl, outcome')
+      .eq('portfolio_id', activePortfolio!.id)
+      .eq('strategy_id', strategyId)
+
+    if (trades && trades.length > 0) {
+      const wins = trades.filter((x: any) => x.outcome === 'win')
+      const losses = trades.filter((x: any) => x.outcome === 'loss')
+      const totalPnl = trades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
+      const grossProfit = wins.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
+      const grossLoss = Math.abs(losses.reduce((s: number, x: any) => s + (x.pnl || 0), 0))
+      setStrategyStats(prev => ({
+        ...prev,
+        [strategyId]: {
+          totalTrades: trades.length,
+          wins: wins.length,
+          losses: losses.length,
+          winRate: (wins.length / trades.length) * 100,
+          totalPnl,
+          profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
+          bestTrade: Math.max(...trades.map((x: any) => x.pnl || 0)),
+          worstTrade: Math.min(...trades.map((x: any) => x.pnl || 0)),
+          avgPnl: totalPnl / trades.length,
+        },
+      }))
+    } else {
+      setStrategyStats(prev => ({ ...prev, [strategyId]: EMPTY_STATS }))
+    }
+    setLoadingStats(null)
+  }
+
+  function handleExpand(id: string) {
+    const next = expandedId === id ? null : id
+    setExpandedId(next)
+    if (next) loadStrategyStats(next)
   }
 
   function openNew() {
@@ -132,8 +192,6 @@ export default function StrategiesPage() {
     )
   }
 
-  const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
-
   return (
     <div>
       <PageHeader
@@ -162,86 +220,303 @@ export default function StrategiesPage() {
         </div>
       ) : strategies.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            <Icon name="psychology" size={32} color="var(--text3)" />
+          <div style={{
+            width: '80px', height: '80px', borderRadius: '24px',
+            background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(16,185,129,0.12))',
+            border: '1px solid rgba(139,92,246,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
+          }}>
+            <Icon name="psychology" size={36} color="#8b5cf6" />
           </div>
           <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: 'var(--text)' }}>
             {tr.noStrategiesYet}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
+          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px', maxWidth: '320px', margin: '0 auto 24px' }}>
             {tr.noStrategiesDesc}
           </div>
           <button onClick={openNew} style={{
-            background: '#10b981', color: '#fff', padding: '12px 28px',
+            background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', padding: '12px 28px',
             borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700',
             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
+            boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
           }}>
             <Icon name="add" size={16} color="#fff" />
             {tr.newStrategy}
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {strategies.map(s => {
             const color = getColorHex(s.color)
             const isExpanded = expandedId === s.id
+            const stats = strategyStats[s.id] || EMPTY_STATS
+            const isStatsLoading = loadingStats === s.id
+            const pnlPositive = stats.totalPnl >= 0
+
             return (
-              <div key={s.id} className="card-hover" style={{ ...card, overflow: 'hidden', borderColor: isExpanded ? `${color}30` : undefined }}>
+              <div key={s.id} style={{
+                background: 'var(--bg2)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: isExpanded ? `1px solid ${color}40` : '1px solid var(--border)',
+                transition: 'all 0.25s ease',
+                position: 'relative',
+              }}>
+                {/* Colored accent line at top */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+                  background: `linear-gradient(90deg, ${color}, ${color}80)`,
+                  opacity: isExpanded ? 1 : 0,
+                  transition: 'opacity 0.25s ease',
+                }} />
+
                 {/* Header */}
                 <div
-                  onClick={() => setExpandedId(isExpanded ? null : s.id)}
+                  onClick={() => handleExpand(s.id)}
                   style={{
-                    padding: '18px 20px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '14px',
+                    padding: '20px 24px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '16px',
                     transition: 'background 0.15s',
                   }}
                   onMouseOver={e => e.currentTarget.style.background = 'var(--bg3)'}
                   onMouseOut={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <div style={{
-                    width: '40px', height: '40px', borderRadius: '12px',
-                    background: `${color}15`, border: `1px solid ${color}30`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <Icon name="psychology" size={20} color={color} />
+                  {/* Strategy icon with glow */}
+                  <div style={{ position: 'relative' }}>
+                    {isExpanded && (
+                      <div style={{
+                        position: 'absolute', inset: '-6px',
+                        background: `radial-gradient(circle, ${color}20, transparent 70%)`,
+                        borderRadius: '50%',
+                      }} />
+                    )}
+                    <div style={{
+                      width: '46px', height: '46px', borderRadius: '14px',
+                      background: `linear-gradient(135deg, ${color}18, ${color}08)`,
+                      border: `1.5px solid ${color}30`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, position: 'relative',
+                      transition: 'all 0.25s ease',
+                      boxShadow: isExpanded ? `0 4px 20px ${color}20` : 'none',
+                    }}>
+                      <Icon name="psychology" size={22} color={color} />
+                    </div>
                   </div>
+
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text)', marginBottom: '2px' }}>{s.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
+                      <span style={{
+                        fontSize: '10px', fontWeight: '700', color, letterSpacing: '0.05em',
+                        background: `${color}12`, padding: '2px 8px', borderRadius: '6px',
+                        textTransform: 'uppercase',
+                      }}>
+                        {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
+                      </span>
+                    </div>
                     {s.plan && (
-                      <div style={{ fontSize: '12px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
                         {s.plan}
                       </div>
                     )}
                   </div>
-                  <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={20} color="var(--text3)" />
+
+                  {/* Stats preview when collapsed */}
+                  {!isExpanded && strategyStats[s.id] && stats.totalTrades > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
+                          {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </div>
+                        <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600' }}>P&L</div>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)' }}>{stats.winRate.toFixed(0)}%</div>
+                        <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600' }}>WIN</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{
+                    width: '32px', height: '32px', borderRadius: '10px',
+                    background: isExpanded ? `${color}12` : 'var(--bg3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.2s ease', flexShrink: 0,
+                  }}>
+                    <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={18} color={isExpanded ? color : 'var(--text3)'} />
+                  </div>
                 </div>
 
-                {/* Expanded content */}
+                {/* ── Expanded content ── */}
                 {isExpanded && (
-                  <div style={{ padding: '0 20px 20px', borderTop: '1px solid var(--border)' }}>
-                    {s.plan && (
-                      <div style={{ marginTop: '16px' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
-                          {tr.strategyPlan}
-                        </div>
-                        <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
+                  <div style={{ padding: '0 24px 24px' }}>
+
+                    {/* ── STRATEGY STATS ── */}
+                    <div style={{
+                      background: `linear-gradient(135deg, ${color}06, ${color}03)`,
+                      border: `1px solid ${color}18`,
+                      borderRadius: '14px',
+                      padding: '20px',
+                      marginBottom: '20px',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                        <Icon name="monitoring" size={16} color={color} />
+                        <span style={{ fontSize: '12px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          {language === 'he' ? 'סטטיסטיקות אסטרטגיה' : 'Strategy Statistics'}
+                        </span>
                       </div>
-                    )}
-                    {s.details && (
-                      <div style={{ marginTop: '16px' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
-                          {tr.strategyDetails}
+
+                      {isStatsLoading ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: color, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
                         </div>
-                        <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.details}</div>
+                      ) : stats.totalTrades === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '24px 12px' }}>
+                          <Icon name="show_chart" size={28} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
+                          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>
+                            {language === 'he' ? 'אין עסקאות עם אסטרטגיה זו עדיין' : 'No trades with this strategy yet'}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Big P&L + Win Rate row */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                            <div style={{
+                              background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
+                              border: '1px solid var(--border)',
+                            }}>
+                              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                                {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
+                              </div>
+                              <div dir="ltr" style={{
+                                fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
+                                color: pnlPositive ? '#22c55e' : '#ef4444',
+                              }}>
+                                {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                              </div>
+                            </div>
+                            <div style={{
+                              background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
+                              border: '1px solid var(--border)',
+                            }}>
+                              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                                Win Rate
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                <span style={{
+                                  fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
+                                  color: stats.winRate >= 50 ? '#22c55e' : '#ef4444',
+                                }}>
+                                  {stats.winRate.toFixed(0)}%
+                                </span>
+                              </div>
+                              {/* Mini win/loss bar */}
+                              <div style={{ display: 'flex', gap: '2px', marginTop: '8px', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
+                                <div style={{ flex: stats.wins, background: '#22c55e', borderRadius: '2px' }} />
+                                <div style={{ flex: stats.losses || 0.01, background: '#ef4444', borderRadius: '2px' }} />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Detailed stats grid */}
+                          <div style={{
+                            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px',
+                            background: 'var(--border)', borderRadius: '12px', overflow: 'hidden',
+                          }}>
+                            {[
+                              { label: language === 'he' ? 'עסקאות' : 'Trades', value: stats.totalTrades.toString(), icon: 'receipt_long' },
+                              { label: language === 'he' ? 'ניצחונות' : 'Wins', value: `${stats.wins}`, icon: 'trending_up', valueColor: '#22c55e' },
+                              { label: language === 'he' ? 'הפסדים' : 'Losses', value: `${stats.losses}`, icon: 'trending_down', valueColor: '#ef4444' },
+                              { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics' },
+                            ].map((item, i) => (
+                              <div key={i} style={{ background: 'var(--bg2)', padding: '14px 12px', textAlign: 'center' }}>
+                                <Icon name={item.icon} size={15} color={color} style={{ marginBottom: '6px', opacity: 0.7 }} />
+                                <div style={{ fontSize: '16px', fontWeight: '700', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
+                                <div style={{ fontSize: '9px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Best / Worst / Avg row */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '12px' }}>
+                            <div style={{
+                              background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.12)',
+                              borderRadius: '10px', padding: '12px', textAlign: 'center',
+                            }}>
+                              <div style={{ fontSize: '9px', fontWeight: '700', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+                                {language === 'he' ? 'עסקה טובה' : 'Best'}
+                              </div>
+                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: '#22c55e' }}>
+                                +${Math.abs(stats.bestTrade).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                              </div>
+                            </div>
+                            <div style={{
+                              background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)',
+                              borderRadius: '10px', padding: '12px', textAlign: 'center',
+                            }}>
+                              <div style={{ fontSize: '9px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+                                {language === 'he' ? 'עסקה גרועה' : 'Worst'}
+                              </div>
+                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: '#ef4444' }}>
+                                -${Math.abs(stats.worstTrade).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                              </div>
+                            </div>
+                            <div style={{
+                              background: `${color}08`, border: `1px solid ${color}15`,
+                              borderRadius: '10px', padding: '12px', textAlign: 'center',
+                            }}>
+                              <div style={{ fontSize: '9px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+                                {language === 'he' ? 'ממוצע' : 'Average'}
+                              </div>
+                              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: stats.avgPnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                                {stats.avgPnl >= 0 ? '+' : '-'}${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* ── PLAN & DETAILS ── */}
+                    {(s.plan || s.details) && (
+                      <div style={{ display: 'grid', gridTemplateColumns: s.plan && s.details ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
+                        {s.plan && (
+                          <div style={{
+                            background: 'var(--bg3)', borderRadius: '12px', padding: '16px',
+                            border: '1px solid var(--border)',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                              <Icon name="notes" size={14} color={color} />
+                              <span style={{ fontSize: '11px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                {tr.strategyPlan}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
+                          </div>
+                        )}
+                        {s.details && (
+                          <div style={{
+                            background: 'var(--bg3)', borderRadius: '12px', padding: '16px',
+                            border: '1px solid var(--border)',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                              <Icon name="info" size={14} color={color} />
+                              <span style={{ fontSize: '11px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                {tr.strategyDetails}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.details}</div>
+                          </div>
+                        )}
                       </div>
                     )}
 
-                    {/* Actions */}
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
+                    {/* ── Actions ── */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => startEdit(s)} style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
-                        padding: '8px 16px', borderRadius: '8px',
+                        padding: '9px 18px', borderRadius: '10px',
                         background: 'var(--bg3)', border: '1px solid var(--border)',
                         color: 'var(--text2)', fontSize: '12px', fontWeight: '600',
                         cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
@@ -252,7 +527,7 @@ export default function StrategiesPage() {
                       {confirmDelete === s.id ? (
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button onClick={() => handleDelete(s.id)} style={{
-                            padding: '8px 16px', borderRadius: '8px',
+                            padding: '9px 18px', borderRadius: '10px',
                             background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
                             color: '#ef4444', fontSize: '12px', fontWeight: '700',
                             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
@@ -260,7 +535,7 @@ export default function StrategiesPage() {
                             {language === 'he' ? 'כן, מחק' : 'Yes, delete'}
                           </button>
                           <button onClick={() => setConfirmDelete(null)} style={{
-                            padding: '8px 14px', borderRadius: '8px',
+                            padding: '9px 16px', borderRadius: '10px',
                             background: 'var(--bg3)', border: '1px solid var(--border)',
                             color: 'var(--text3)', fontSize: '12px', fontWeight: '600',
                             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
@@ -271,7 +546,7 @@ export default function StrategiesPage() {
                       ) : (
                         <button onClick={() => setConfirmDelete(s.id)} style={{
                           display: 'flex', alignItems: 'center', gap: '6px',
-                          padding: '8px 16px', borderRadius: '8px',
+                          padding: '9px 18px', borderRadius: '10px',
                           background: 'transparent', border: '1px solid var(--border)',
                           color: 'rgba(239,68,68,0.6)', fontSize: '12px', fontWeight: '600',
                           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
@@ -394,11 +669,12 @@ export default function StrategiesPage() {
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={handleSave} disabled={saving} style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  background: '#10b981', color: '#fff', border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
                   borderRadius: '12px', padding: '12px',
                   fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
                   fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
                   transition: 'opacity 0.15s',
+                  boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
                 }}>
                   {saving ? tr.saving : tr.save}
                 </button>
@@ -415,6 +691,12 @@ export default function StrategiesPage() {
           </div>
         </div>
       )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .strat-stats-grid-detail { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   )
 }

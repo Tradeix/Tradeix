@@ -329,7 +329,7 @@ export default function DashboardPage() {
         <div style={{ padding: '4px 12px' }}>
           {trades.length === 0 ? (
             <div style={{ padding: '48px', textAlign: 'center' }}>
-              <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', marginBottom: '8px' }} />
+              <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
               <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>
                 {timeFilter === 0 ? (language === 'he' ? 'לא ביצעת עסקאות היום' : 'No trades today')
                   : timeFilter === 1 ? (language === 'he' ? 'לא ביצעת עסקאות השבוע' : 'No trades this week')
