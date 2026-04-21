@@ -155,8 +155,8 @@ export default function DashboardPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                   <span style={{ fontSize: '11px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
                   {initialCapital > 0 && (
-                    <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>
-                      {language === 'he' ? 'הון' : 'Capital'}: ${initialCapital.toLocaleString()}
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>
+                      {language === 'he' ? 'קרן' : 'Capital'}: <span style={{ color: 'var(--text)' }}>${initialCapital.toLocaleString()}</span>
                     </span>
                   )}
                 </div>
