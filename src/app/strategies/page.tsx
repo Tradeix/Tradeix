@@ -32,6 +32,7 @@ export default function StrategiesPage() {
   const router = useRouter()
   const tr = t[language]
   const supabase = createClient()
+  const isRTL = language === 'he'
 
   const [strategies, setStrategies] = useState<Strategy[]>([])
   const [loading, setLoading] = useState(true)
@@ -57,6 +58,18 @@ export default function StrategiesPage() {
       .order('created_at', { ascending: false })
     if (data) setStrategies(data)
     setLoading(false)
+  }
+
+  function openNew() {
+    setEditingId(null)
+    setForm({ name: '', plan: '', details: '', color: 'blue' })
+    setShowForm(true)
+  }
+
+  function startEdit(s: Strategy) {
+    setForm({ name: s.name, plan: s.plan || '', details: s.details || '', color: s.color || 'blue' })
+    setEditingId(s.id)
+    setShowForm(true)
   }
 
   async function handleSave() {
@@ -97,13 +110,6 @@ export default function StrategiesPage() {
     else { toast.success(language === 'he' ? 'האסטרטגיה נמחקה' : 'Strategy deleted'); setConfirmDelete(null); loadStrategies(); router.refresh() }
   }
 
-  function startEdit(s: Strategy) {
-    setForm({ name: s.name, plan: s.plan || '', details: s.details || '', color: s.color || 'blue' })
-    setEditingId(s.id)
-    setShowForm(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   if (portfoliosLoaded && !activePortfolio) {
     return (
       <div>
@@ -135,99 +141,18 @@ export default function StrategiesPage() {
         subtitle={tr.strategiesSubtitle}
         icon="psychology"
         action={
-          !showForm ? (
-            <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ name: '', plan: '', details: '', color: 'blue' }) }} style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              background: '#10b981', color: '#fff', border: 'none',
-              borderRadius: '10px', padding: '10px 18px',
-              fontSize: '13px', fontWeight: '700', cursor: 'pointer',
-              fontFamily: 'Heebo, sans-serif', transition: 'opacity 0.15s',
-            }}>
-              <Icon name="add" size={16} color="#fff" />
-              {tr.newStrategy}
-            </button>
-          ) : undefined
+          <button onClick={openNew} style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: '#10b981', color: '#fff', border: 'none',
+            borderRadius: '10px', padding: '10px 18px',
+            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            fontFamily: 'Heebo, sans-serif', transition: 'opacity 0.15s',
+          }}>
+            <Icon name="add" size={16} color="#fff" />
+            {tr.newStrategy}
+          </button>
         }
       />
-
-      {/* ── FORM ── */}
-      {showForm && (
-        <div className="fade-up" style={{ ...card, overflow: 'hidden', marginBottom: '24px' }}>
-          <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)' }}>
-              {editingId ? tr.editStrategy : tr.newStrategy}
-            </div>
-            <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', padding: '4px' }}>
-              <Icon name="close" size={18} color="var(--text3)" />
-            </button>
-          </div>
-          <div style={{ padding: '20px' }}>
-            {/* Name */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                {tr.strategyName}
-              </label>
-              <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.strategyNamePlaceholder} />
-            </div>
-
-            {/* Plan */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                {tr.strategyPlan}
-              </label>
-              <textarea value={form.plan} onChange={e => setForm(p => ({ ...p, plan: e.target.value }))} placeholder={tr.strategyPlanPlaceholder} rows={3} style={{ resize: 'vertical' }} />
-            </div>
-
-            {/* Details */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                {tr.strategyDetails}
-              </label>
-              <textarea value={form.details} onChange={e => setForm(p => ({ ...p, details: e.target.value }))} placeholder={tr.strategyDetailsPlaceholder} rows={4} style={{ resize: 'vertical' }} />
-            </div>
-
-            {/* Color */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
-                {tr.strategyColor}
-              </label>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {STRATEGY_COLORS.map(c => (
-                  <button key={c.name} onClick={() => setForm(p => ({ ...p, color: c.name }))} style={{
-                    width: '32px', height: '32px', borderRadius: '10px',
-                    background: c.hex, border: form.color === c.name ? '2px solid #fff' : '2px solid transparent',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    boxShadow: form.color === c.name ? `0 0 0 2px ${c.hex}` : 'none',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    {form.color === c.name && <Icon name="check" size={14} color="#fff" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={handleSave} disabled={saving} style={{
-                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                background: '#10b981', color: '#fff', border: 'none',
-                borderRadius: '10px', padding: '11px',
-                fontSize: '13px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
-                fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
-              }}>
-                {saving ? tr.saving : tr.save}
-              </button>
-              <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
-                padding: '11px 20px', background: 'var(--bg3)', border: '1px solid var(--border)',
-                borderRadius: '10px', fontSize: '13px', fontWeight: '600',
-                color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-              }}>
-                {tr.cancel}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── STRATEGIES LIST ── */}
       {loading ? (
@@ -235,7 +160,7 @@ export default function StrategiesPage() {
           <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.loading}</div>
         </div>
-      ) : strategies.length === 0 && !showForm ? (
+      ) : strategies.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="psychology" size={32} color="var(--text3)" />
@@ -246,7 +171,7 @@ export default function StrategiesPage() {
           <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
             {tr.noStrategiesDesc}
           </div>
-          <button onClick={() => setShowForm(true)} style={{
+          <button onClick={openNew} style={{
             background: '#10b981', color: '#fff', padding: '12px 28px',
             borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700',
             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
@@ -361,6 +286,133 @@ export default function StrategiesPage() {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* ── POPUP MODAL ── */}
+      {showForm && (
+        <div
+          onClick={() => { setShowForm(false); setEditingId(null) }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px', animation: 'fadeIn 0.2s ease',
+          }}
+        >
+          <div
+            dir={isRTL ? 'rtl' : 'ltr'}
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: '20px', width: '100%', maxWidth: '480px',
+              maxHeight: '90vh', overflow: 'auto',
+              animation: 'modalIn 0.25s ease',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+            }}
+          >
+            {/* Modal header */}
+            <div style={{
+              padding: '20px 24px', borderBottom: '1px solid var(--border)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1,
+              borderRadius: '20px 20px 0 0',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '10px',
+                  background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon name="psychology" size={18} color="#10b981" />
+                </div>
+                <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>
+                  {editingId ? tr.editStrategy : tr.newStrategy}
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowForm(false); setEditingId(null) }}
+                style={{
+                  width: '32px', height: '32px', borderRadius: '10px',
+                  background: 'var(--bg3)', border: '1px solid var(--border)',
+                  color: 'var(--text3)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <Icon name="close" size={16} color="var(--text3)" />
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div style={{ padding: '24px' }}>
+              {/* Name */}
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                  {tr.strategyName}
+                </label>
+                <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.strategyNamePlaceholder} />
+              </div>
+
+              {/* Plan */}
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                  {tr.strategyPlan}
+                </label>
+                <textarea value={form.plan} onChange={e => setForm(p => ({ ...p, plan: e.target.value }))} placeholder={tr.strategyPlanPlaceholder} rows={3} style={{ resize: 'vertical' }} />
+              </div>
+
+              {/* Details */}
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                  {tr.strategyDetails}
+                </label>
+                <textarea value={form.details} onChange={e => setForm(p => ({ ...p, details: e.target.value }))} placeholder={tr.strategyDetailsPlaceholder} rows={4} style={{ resize: 'vertical' }} />
+              </div>
+
+              {/* Color */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                  {tr.strategyColor}
+                </label>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {STRATEGY_COLORS.map(c => (
+                    <button key={c.name} onClick={() => setForm(p => ({ ...p, color: c.name }))} style={{
+                      width: '34px', height: '34px', borderRadius: '10px',
+                      background: c.hex, border: form.color === c.name ? '2px solid #fff' : '2px solid transparent',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                      boxShadow: form.color === c.name ? `0 0 0 2px ${c.hex}` : 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {form.color === c.name && <Icon name="check" size={14} color="#fff" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={handleSave} disabled={saving} style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  background: '#10b981', color: '#fff', border: 'none',
+                  borderRadius: '12px', padding: '12px',
+                  fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+                  fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
+                  transition: 'opacity 0.15s',
+                }}>
+                  {saving ? tr.saving : tr.save}
+                </button>
+                <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
+                  padding: '12px 22px', background: 'var(--bg3)', border: '1px solid var(--border)',
+                  borderRadius: '12px', fontSize: '14px', fontWeight: '600',
+                  color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
+                  transition: 'all 0.15s',
+                }}>
+                  {tr.cancel}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
