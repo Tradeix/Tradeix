@@ -139,63 +139,69 @@ export default function DashboardPage() {
       <div className="top-row section-anim anim-delay-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '16px', marginBottom: '16px' }}>
 
         {/* ── LEFT: Total Balance Card ── */}
-        <div className="card-hover" style={{ ...card, padding: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          {/* Portfolio name + type badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="account_balance" size={18} color={ACCENT} />
+        <div className="card-hover balance-card" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: '1px solid rgba(16,185,129,0.15)', position: 'relative' }}>
+          {/* Green glow effect */}
+          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          {/* Portfolio name header */}
+          <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(16,185,129,0.08)', position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon name="account_balance" size={22} color="#10b981" />
               </div>
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)', lineHeight: 1.1 }}>{activePortfolio?.name}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{mktLabel}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em' }}>{activePortfolio?.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
+                  {initialCapital > 0 && (
+                    <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>
+                      {language === 'he' ? 'הון' : 'Capital'}: ${initialCapital.toLocaleString()}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-            {initialCapital > 0 && (
-              <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)', background: 'var(--bg3)', padding: '4px 10px', borderRadius: '8px' }}>
-                {language === 'he' ? 'הון' : 'Capital'}: ${initialCapital.toLocaleString()}
-              </span>
-            )}
           </div>
 
-          {/* Big balance number */}
-          <div style={{ marginBottom: '12px' }}>
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '500' }}>
+          {/* Balance section */}
+          <div style={{ padding: '20px 28px', position: 'relative' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
             </div>
-            <div dir="ltr" style={{ fontSize: '38px', fontWeight: '700', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)' }}>
+            <div dir="ltr" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', marginBottom: '12px' }}>
               ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-          </div>
 
-          {/* Return percentage */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: portfolioPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
-              <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
-              <span dir="ltr" style={{ fontSize: '13px', fontWeight: '600', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-                {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
-              </span>
+            {/* Return badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: portfolioPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding: '5px 12px', borderRadius: '20px', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}` }}>
+                <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
+                <span dir="ltr" style={{ fontSize: '13px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+                  {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
+                </span>
+              </div>
+              <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{language === 'he' ? 'תשואה כוללת' : 'all-time return'}</span>
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{language === 'he' ? 'תשואה כוללת' : 'all-time return'}</span>
           </div>
 
-          {/* Mini stats row inside balance card */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-            <div style={{ background: 'var(--bg3)', borderRadius: '10px', padding: '12px' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '4px', fontWeight: '500' }}>P&L</div>
-              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+          {/* Mini stats row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'rgba(16,185,129,0.06)', marginTop: 'auto' }}>
+            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
+              <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
-            <div style={{ background: 'var(--bg3)', borderRadius: '10px', padding: '12px' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '4px', fontWeight: '500' }}>ROI</div>
-              <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
+              <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
               </div>
             </div>
-            <div style={{ background: 'var(--bg3)', borderRadius: '10px', padding: '12px' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '4px', fontWeight: '500' }}>Drawdown</div>
-              <div style={{ fontSize: '15px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
+            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
                 -{portfolioValue.maxDrawdown.toFixed(1)}%
               </div>
             </div>
