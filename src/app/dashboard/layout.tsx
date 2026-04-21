@@ -241,6 +241,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     { href: '/dashboard', icon: 'space_dashboard', label: tr.dashboard },
     { href: '/add-trade', icon: 'post_add', label: tr.addTrade },
     { href: '/trades', icon: 'swap_horiz', label: tr.allTrades },
+    ...(isPro ? [{ href: '/strategies', icon: 'psychology', label: tr.strategies }] : []),
     ...(isPro ? [{ href: '/stats', icon: 'monitoring', label: tr.statistics }] : []),
   ]
   const BOTTOM_NAV = [

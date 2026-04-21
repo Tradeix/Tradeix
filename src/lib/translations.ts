@@ -111,6 +111,24 @@ export const t = {
     noTradesDesc: 'הוסף את העסקה הראשונה שלך',
     addTradeCta: '＋ הוסף עסקה',
 
+    // Strategies
+    strategies: 'אסטרטגיות',
+    strategiesTitle: 'אסטרטגיות',
+    strategiesSubtitle: 'בנה ונהל את אסטרטגיות המסחר שלך',
+    newStrategy: 'אסטרטגיה חדשה',
+    editStrategy: 'עריכת אסטרטגיה',
+    strategyName: 'שם האסטרטגיה *',
+    strategyNamePlaceholder: 'למשל: Breakout מומנטום',
+    strategyPlan: 'תכנית עבודה',
+    strategyPlanPlaceholder: 'מה התנאים לכניסה? מה הכללים?',
+    strategyDetails: 'פירוט האסטרטגיה',
+    strategyDetailsPlaceholder: 'פרט את האסטרטגיה בהרחבה...',
+    strategyColor: 'צבע האסטרטגיה',
+    noStrategiesYet: 'אין אסטרטגיות עדיין',
+    noStrategiesDesc: 'צור אסטרטגיה ראשונה כדי להתחיל',
+    selectStrategy: 'בחר אסטרטגיה',
+    noStrategy: 'ללא אסטרטגיה',
+
     // Stats
     statsTitle: 'סטטיסטיקות',
     cumulativeEquity: 'עקומת הון מצטברת',
@@ -266,6 +284,24 @@ export const t = {
     noTradesYet: 'No trades yet',
     noTradesDesc: 'Add your first trade',
     addTradeCta: '＋ Add Trade',
+
+    // Strategies
+    strategies: 'Strategies',
+    strategiesTitle: 'Strategies',
+    strategiesSubtitle: 'Build and manage your trading strategies',
+    newStrategy: 'New Strategy',
+    editStrategy: 'Edit Strategy',
+    strategyName: 'Strategy Name *',
+    strategyNamePlaceholder: 'e.g. Momentum Breakout',
+    strategyPlan: 'Work Plan',
+    strategyPlanPlaceholder: 'What are the entry conditions? What are the rules?',
+    strategyDetails: 'Strategy Details',
+    strategyDetailsPlaceholder: 'Describe your strategy in detail...',
+    strategyColor: 'Strategy Color',
+    noStrategiesYet: 'No strategies yet',
+    noStrategiesDesc: 'Create your first strategy to get started',
+    selectStrategy: 'Select Strategy',
+    noStrategy: 'No strategy',
 
     // Stats
     statsTitle: 'Statistics',

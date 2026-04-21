@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import { usePortfolio } from '@/lib/portfolio-context'
+import { Strategy } from '@/types'
 import Icon from '@/components/Icon'
 
 
@@ -24,6 +25,7 @@ interface TradeData {
   pnl: string
   traded_at: string
   notes: string
+  strategy_id: string
 }
 
 export default function AddTradePage() {
@@ -43,11 +45,22 @@ export default function AddTradePage() {
     symbol: '', direction: 'long', outcome: 'win',
     entry_price: '', exit_price: '', stop_loss: '',
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
+    strategy_id: '',
   })
+  const [strategies, setStrategies] = useState<Strategy[]>([])
   const router = useRouter()
   const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const supabase = createClient()
+
+  // Load strategies for PRO users
+  useEffect(() => {
+    if (isPro && activePortfolio) {
+      supabase.from('strategies').select('*').eq('portfolio_id', activePortfolio.id).order('name').then(({ data }) => {
+        if (data) setStrategies(data)
+      })
+    }
+  }, [isPro, activePortfolio])
 
   // Free users → manual form only, no steps
   useEffect(() => {
@@ -219,6 +232,7 @@ export default function AddTradePage() {
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
         notes: tradeData.notes, traded_at: tradeData.traded_at,
         outcome: tradeData.outcome,
+        strategy_id: tradeData.strategy_id || null,
       })
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
@@ -427,6 +441,26 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
+                {/* Strategy selector — PRO only */}
+                {isPro && strategies.length > 0 && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                      {tr.selectStrategy}
+                    </label>
+                    <div className="select-wrap">
+                      <select
+                        value={tradeData.strategy_id}
+                        onChange={e => setTradeData(p => ({ ...p, strategy_id: e.target.value }))}
+                      >
+                        <option value="">{tr.noStrategy}</option>
+                        {strategies.map(s => (
+                          <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
                 {/* Entry + SL + Exit */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
                   <div>
@@ -543,7 +577,6 @@ export default function AddTradePage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
       `}</style>
 
       {/* AI Analysis Success Popup */}

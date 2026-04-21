@@ -165,9 +165,11 @@ export default function PortfoliosPage() {
               </div>
               <div>
                 <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
-                <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
-                  {Object.entries(MARKET_LABELS[language]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                </select>
+                <div className="select-wrap">
+                  <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
+                    {Object.entries(MARKET_LABELS[language]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                  </select>
+                </div>
               </div>
             </div>
 

@@ -524,7 +524,6 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
       `}</style>
 
       {/* Delete confirmation */}

@@ -26,6 +26,7 @@ export type Trade = {
   traded_at: string
   created_at: string
   outcome: 'win' | 'loss' | 'breakeven'
+  strategy_id?: string
 }
 
 export type Profile = {
@@ -35,6 +36,17 @@ export type Profile = {
   avatar_url?: string
   language: 'he' | 'en'
   theme: 'dark' | 'light'
+  created_at: string
+}
+
+export type Strategy = {
+  id: string
+  user_id: string
+  portfolio_id: string
+  name: string
+  plan: string
+  details: string
+  color: string
   created_at: string
 }
 
