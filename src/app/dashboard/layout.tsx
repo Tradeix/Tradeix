@@ -64,7 +64,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           fontFamily: 'Heebo, Rubik, sans-serif', fontWeight: '600',
           transition: 'background 0.15s, border-color 0.15s',
         }}>
-          <Icon name="account_balance_wallet" size={16} color={dotColor} />
+          <Icon name="account_balance_wallet" size={16} color="var(--text3)" />
           <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', whiteSpace: 'nowrap' }}>
             {language === 'he' ? 'בחירת תיק' : 'Portfolio'}
           </span>
@@ -78,29 +78,41 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               position: 'absolute', top: '48px',
               [isRTL ? 'right' : 'left']: 0,
               background: 'var(--bg2)', border: '1px solid var(--border)',
-              borderRadius: '8px', zIndex: 200, minWidth: '220px',
-              overflow: 'hidden',
+              borderRadius: '10px', zIndex: 200, minWidth: '230px',
+              overflow: 'hidden', padding: '6px',
               animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
               transformOrigin: isRTL ? 'top right' : 'top left',
               boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
             }}>
               {portfolios.map(p => {
-                const c = getPortfolioColor(p)
+                const isActive = activePortfolio?.id === p.id
                 return (
-                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }} style={{
-                    padding: '12px 18px', fontSize: '13px', cursor: 'pointer',
-                    background: activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent',
-                    color: activePortfolio?.id === p.id ? c : 'var(--text2)',
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    transition: 'background 0.15s', borderBottom: '1px solid var(--border)',
-                    fontWeight: '600',
-                  }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
-                    onMouseOut={e => (e.currentTarget.style.background = activePortfolio?.id === p.id ? 'var(--bg3)' : 'transparent')}
+                  <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false) }}
+                    className="portfolio-item-anim"
+                    style={{
+                      padding: '10px 16px', fontSize: '13px', cursor: 'pointer',
+                      background: isActive ? 'var(--bg3)' : 'transparent',
+                      color: isActive ? '#10b981' : 'var(--text3)',
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      transition: 'all 0.15s', borderRadius: '6px',
+                      fontWeight: isActive ? '700' : '500',
+                      position: 'relative', marginBottom: '2px',
+                      letterSpacing: '0.02em',
+                      fontFamily: 'Heebo, Rubik, sans-serif',
+                    }}
+                    onMouseOver={e => { if (!isActive) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.transform = `translate${isRTL ? 'X(-4px)' : 'X(4px)'}` } }}
+                    onMouseOut={e => { e.currentTarget.style.color = isActive ? '#10b981' : 'var(--text3)'; if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateX(0)' } }}
                   >
-                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: c }} />
+                    {isActive && (
+                      <div style={{
+                        position: 'absolute', [isRTL ? 'right' : 'left']: 0,
+                        top: 0, bottom: 0, width: '3px',
+                        background: '#10b981',
+                        borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
+                      }} />
+                    )}
+                    <Icon name="cases" size={16} color="currentColor" />
                     <span style={{ flex: 1 }}>{p.name}</span>
-                    {activePortfolio?.id === p.id && <span style={{ fontSize: '12px', color: c }}>✓</span>}
                   </div>
                 )
               })}
