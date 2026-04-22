@@ -496,14 +496,14 @@ export default function DashboardPage() {
           .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
           .data-by-label { display: none !important; }
-          .recent-trade-row { grid-template-columns: 1fr 110px 90px !important; }
-          .trade-col-rr, .trade-col-date { display: none !important; }
+          .recent-trade-row { grid-template-columns: 1fr 70px 110px 90px !important; }
+          .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; }
+          .recent-trade-row { grid-template-columns: 1fr 58px 80px 65px !important; gap: 6px !important; }
           .trades-section-header { padding: 14px !important; }
           .balance-card .bal-amount { font-size: 28px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
