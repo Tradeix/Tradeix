@@ -300,10 +300,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Chart */}
-          <div style={{ flex: 1, minHeight: '180px', padding: '12px 8px 0 0' }}>
+          <div style={{ flex: 1, minHeight: '180px', padding: '12px 0 0 0' }}>
             {equityCurve.length > 0 ? (
               <ResponsiveContainer width="100%" height={190}>
-                <AreaChart data={equityCurve} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 0 }}>
                   <defs>
                     <linearGradient id="eqGradGreen" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
@@ -311,8 +311,8 @@ export default function DashboardPage() {
                       <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} />
-                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
                   <Tooltip
                     contentStyle={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}
                     formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
