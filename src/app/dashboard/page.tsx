@@ -65,13 +65,34 @@ export default function DashboardPage() {
     'Your discipline is your edge in the market.',
     'Start each trading day with a clear mind and a clear plan.',
   ]
-  const todayIndex = Math.floor(Date.now() / 86400000) % QUOTES_HE.length
-  const dailyQuote = language === 'he' ? QUOTES_HE[todayIndex] : QUOTES_EN[todayIndex]
+  const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * QUOTES_HE.length))
+  const currentQuote = language === 'he' ? QUOTES_HE[quoteIndex] : QUOTES_EN[quoteIndex]
+
+  function getGreeting(): string {
+    const h = new Date().getHours()
+    if (language === 'he') {
+      if (h >= 5 && h < 12) return 'בוקר טוב'
+      if (h >= 12 && h < 17) return 'צהריים טובים'
+      if (h >= 17 && h < 21) return 'ערב טוב'
+      return 'לילה טוב'
+    }
+    if (h >= 5 && h < 12) return 'Good morning'
+    if (h >= 12 && h < 17) return 'Good afternoon'
+    if (h >= 17 && h < 21) return 'Good evening'
+    return 'Good night'
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
     })
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex(prev => (prev + 1) % QUOTES_HE.length)
+    }, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
@@ -186,15 +207,16 @@ export default function DashboardPage() {
                 color: 'var(--text)', letterSpacing: '-0.01em',
                 fontFamily: 'Heebo, sans-serif',
               }}>
-                {language === 'he' ? `ברוכים השבים, ${userName}` : `Welcome back, ${userName}`}
+                {getGreeting()}, {userName}
               </h2>
             </div>
-            <p className="welcome-quote" style={{
-              fontSize: '13.5px', fontWeight: '400', color: 'var(--text3)',
+            <p className="welcome-quote" key={quoteIndex} style={{
+              fontSize: '14.5px', fontWeight: '400', color: 'var(--text3)',
               margin: 0, lineHeight: 1.6, fontStyle: 'italic',
               fontFamily: 'Heebo, sans-serif',
+              animation: 'quoteFade 5s ease-in-out',
             }}>
-              "{dailyQuote}"
+              "{currentQuote}"
             </p>
           </div>
         </div>
@@ -492,10 +514,16 @@ export default function DashboardPage() {
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
           .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
           .welcome-title { font-size: 17px !important; }
-          .welcome-quote { font-size: 12.5px !important; }
+          .welcome-quote { font-size: 13px !important; }
           .section-title { font-size: 18px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
+        }
+        @keyframes quoteFade {
+          0% { opacity: 0; transform: translateY(6px); }
+          10% { opacity: 1; transform: translateY(0); }
+          90% { opacity: 1; }
+          100% { opacity: 1; }
         }
       `}</style>
     </div>
