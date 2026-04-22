@@ -163,26 +163,60 @@ export default function StatsPage() {
       </div>
 
       {/* Equity chart */}
-      <div className="section-anim anim-delay-5" style={{ ...card, padding: '24px', marginBottom: '16px' }}>
-        <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '18px', color: 'var(--text)' }}>{tr.cumulativeEquity}</div>
-        {equityCurve.length > 0 ? (
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={equityCurve}>
-              <defs>
-                <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={ACCENT} stopOpacity={0.20} />
-                  <stop offset="100%" stopColor={ACCENT} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} />
-              <Tooltip contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} formatter={(v: any) => [`$${v}`, 'P&L']} />
-              <Area type="monotone" dataKey="value" stroke={ACCENT} strokeWidth={2.5} fill="url(#grad2)" dot={false} activeDot={{ r: 4, fill: ACCENT, stroke: 'var(--bg2)', strokeWidth: 2 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        ) : (
-          <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: '13px' }}>{tr.noData}</div>
-        )}
+      <div className="section-anim anim-delay-5" style={{ ...card, marginBottom: '16px', overflow: 'hidden', position: 'relative' }}>
+        {/* Subtle glow */}
+        <div style={{ position: 'absolute', top: '-60px', right: '20%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Header */}
+        <div style={{ padding: '22px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="show_chart" size={22} color="#10b981" />
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{language === 'he' ? 'עקומת הון מצטברת לכל העסקאות' : 'Cumulative equity across all trades'}</div>
+            </div>
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
+            <div dir="ltr" style={{ fontSize: '22px', fontWeight: '800', color: totalPnl >= 0 ? '#10b981' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
+              {totalPnl >= 0 ? '+' : '-'}${Math.abs(totalPnl).toLocaleString()}
+            </div>
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div style={{ minHeight: '180px', padding: '12px 0 0 0' }}>
+          {equityCurve.length > 0 ? (
+            <ResponsiveContainer width="100%" height={210}>
+              <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 16 }}>
+                <defs>
+                  <linearGradient id="eqGradGreenStats" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
+                    <stop offset="50%" stopColor="#10b981" stopOpacity={0.08} />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
+                <Tooltip
+                  contentStyle={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}
+                  formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
+                  cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                />
+                <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(16,185,129,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="show_chart" size={26} color="var(--text3)" />
+              </div>
+              <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>{tr.noData}</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Calendar */}
