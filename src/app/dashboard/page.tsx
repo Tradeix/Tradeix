@@ -287,38 +287,56 @@ export default function DashboardPage() {
         </div>
 
         {/* ── RIGHT: Equity Curve Card ── */}
-        <div className="card-hover" style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.equityCurve}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '500' }}>{tr.performanceTimeline}</div>
+        <div className="card-hover equity-card" style={{ ...card, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+          {/* Subtle glow */}
+          <div style={{ position: 'absolute', top: '-60px', right: '20%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          {/* Header */}
+          <div style={{ padding: '20px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="show_chart" size={18} color="#10b981" />
+              </div>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)', lineHeight: 1.2 }}>{tr.equityCurve}</div>
+                <div style={{ fontSize: '10.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '1px' }}>{tr.performanceTimeline}</div>
+              </div>
             </div>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>{tr.totalPnl}</div>
-              <div dir="ltr" style={{ fontSize: '20px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
+              <div dir="ltr" style={{ fontSize: '22px', fontWeight: '800', color: pnlPositive ? '#10b981' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
                 {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString()}
               </div>
             </div>
           </div>
-          <div style={{ flex: 1, minHeight: '200px' }}>
+
+          {/* Chart */}
+          <div style={{ flex: 1, minHeight: '180px', padding: '12px 8px 0 0' }}>
             {equityCurve.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={equityCurve} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+              <ResponsiveContainer width="100%" height={190}>
+                <AreaChart data={equityCurve} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.20} />
-                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0} />
+                    <linearGradient id="eqGradGreen" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
+                      <stop offset="50%" stopColor="#10b981" stopOpacity={0.08} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v: number) => `$${v}`} />
-                  <Tooltip contentStyle={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} formatter={(v: any) => [`$${v}`, tr.cumulativePnl]} />
-                  <Area type="monotone" dataKey="value" stroke={ACCENT} strokeWidth={2.5} fill="url(#eqGrad)" dot={false} activeDot={{ r: 4, fill: ACCENT, stroke: 'var(--bg2)', strokeWidth: 2 }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} />
+                  <Tooltip
+                    contentStyle={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}
+                    formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
+                    cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2.5} fill="url(#eqGradGreen)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                <Icon name="show_chart" size={36} color="var(--bg4)" />
+              <div style={{ height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(16,185,129,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="show_chart" size={26} color="var(--text3)" />
+                </div>
                 <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>{tr.noDataAddTrades}</p>
               </div>
             )}
