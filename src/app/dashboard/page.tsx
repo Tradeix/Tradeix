@@ -340,7 +340,19 @@ export default function DashboardPage() {
                   <Tooltip
                     contentStyle={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}
                     formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
+                    itemStyle={{ color: 'var(--text)' }}
                     cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    content={({ active, payload, label }: any) => {
+                      if (!active || !payload?.length) return null
+                      const val = payload[0].value
+                      return (
+                        <div style={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
+                          <div style={{ color: 'var(--text3)', fontSize: '10px', marginBottom: '4px' }}>{label}</div>
+                          <div style={{ color: val < 0 ? '#ef4444' : '#10b981', fontWeight: 700, fontSize: '14px' }}>${val.toLocaleString()}</div>
+                          <div style={{ color: 'var(--text3)', fontSize: '10px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
+                        </div>
+                      )
+                    }}
                   />
                   <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2.5} fill="url(#eqGradGreen)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
                 </AreaChart>

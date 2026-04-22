@@ -201,9 +201,18 @@ export default function StatsPage() {
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
                 <YAxis tick={{ fontSize: 10, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
                 <Tooltip
-                  contentStyle={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', color: 'var(--text)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}
-                  formatter={(v: any) => [`$${v}`, tr.cumulativePnl]}
                   cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  content={({ active, payload, label }: any) => {
+                    if (!active || !payload?.length) return null
+                    const val = payload[0].value
+                    return (
+                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
+                        <div style={{ color: 'var(--text3)', fontSize: '10px', marginBottom: '4px' }}>{label}</div>
+                        <div style={{ color: val < 0 ? '#ef4444' : '#10b981', fontWeight: 700, fontSize: '14px' }}>${val.toLocaleString()}</div>
+                        <div style={{ color: 'var(--text3)', fontSize: '10px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
+                      </div>
+                    )
+                  }}
                 />
                 <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
               </AreaChart>
@@ -221,26 +230,32 @@ export default function StatsPage() {
 
       {/* Calendar */}
       <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <div style={{ width: '34px', flexShrink: 0 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, justifyContent: 'center' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="calendar_today" size={22} color="#10b981" />
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{language === 'he' ? 'מעקב רווח והפסד יומי לפי חודש' : 'Track daily P&L by month'}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="chevron_right" size={18} />
             </button>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)', marginBottom: '2px' }}>{tr.monthlyCalendar}</div>
-              <div style={{ fontSize: '17px', fontWeight: '600', color: 'var(--text)' }}>{format(currentMonth, 'MMMM yyyy')}</div>
-            </div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="chevron_left" size={18} />
             </button>
+            <button onClick={captureCalendar} disabled={capturing} title={language === 'he' ? 'שמור תמונה' : 'Save image'}
+              style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: capturing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginInlineStart: '4px' }}>
+              <Icon name={capturing ? 'hourglass_empty' : 'photo_camera'} size={16} />
+            </button>
           </div>
-          <button onClick={captureCalendar} disabled={capturing} title={language === 'he' ? 'שמור תמונה' : 'Save image'}
-            style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: capturing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name={capturing ? 'hourglass_empty' : 'photo_camera'} size={16} />
-          </button>
         </div>
 
         <div className="cal-grid" style={{ marginBottom: '4px' }}>
