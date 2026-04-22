@@ -339,11 +339,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         {NAV_ITEMS.map(item => <NavLink key={item.href} {...item} />)}
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
-      </nav>
-
-      {/* Logout — mobile only (below Personal Settings) */}
-      <div className="sidebar-logout" style={{ padding: '8px 8px 16px' }}>
-        <div style={{ height: '1px', background: 'var(--border)', margin: '0 12px 8px' }} />
+        <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         <button onClick={handleSignOut} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '11px 20px', width: '100%',
@@ -358,7 +354,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <Icon name="logout" size={18} color="currentColor" />
           {tr.logout}
         </button>
-      </div>
+      </nav>
     </div>
   )
 }
