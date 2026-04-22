@@ -247,19 +247,8 @@ export default function DashboardPage() {
             <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
             </div>
-            <div dir="ltr" className="bal-amount" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', marginBottom: '12px' }}>
+            <div dir="ltr" className="bal-amount" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)' }}>
               ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-
-            {/* Return badge */}
-            <div className="bal-return-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: portfolioPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding: '5px 12px', borderRadius: '20px', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}` }}>
-                <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
-                <span dir="ltr" style={{ fontSize: '13px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-                  {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
-                </span>
-              </div>
-              <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{language === 'he' ? 'תשואה כוללת' : 'all-time return'}</span>
             </div>
           </div>
 
@@ -495,7 +484,6 @@ export default function DashboardPage() {
           .balance-card .bal-amount { font-size: 28px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
-          .balance-card .bal-section .bal-return-row { justify-content: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 16px !important; }
           .balance-card .bal-mini-val { font-size: 13px !important; }
