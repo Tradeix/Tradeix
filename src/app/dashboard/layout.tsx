@@ -59,7 +59,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <div className="active-portfolio-badge" style={{
           display: 'flex', alignItems: 'center', gap: '10px',
           background: 'var(--bg3)', border: '1px solid rgba(16,185,129,0.15)',
-          borderRadius: '12px', padding: '6px 14px 6px 8px',
+          borderRadius: '12px', padding: '7px 14px',
           flexShrink: 0,
         }}>
           <div style={{
@@ -67,7 +67,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
-            <Icon name="cases" size={14} color="#10b981" />
+            <Icon name="account_balance_wallet" size={14} color="#10b981" />
           </div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
