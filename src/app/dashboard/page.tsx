@@ -250,7 +250,7 @@ export default function DashboardPage() {
           <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(16,185,129,0.08)', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon name="account_balance" size={22} color="#10b981" />
+                <Icon name="cases" size={22} color="#10b981" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="bal-name" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
