@@ -121,7 +121,9 @@ export default function DashboardPage() {
         for (const t of allTimeTrades) { running += (t.pnl || 0); if (running > peak) peak = running; if (peak > 0) { const dd = ((peak - running) / peak) * 100; if (dd > maxDD) maxDD = dd } }
         setPortfolioValue({ currentValue, allTimePnl, totalReturn, maxDrawdown: maxDD })
       }
-      const { data: allTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', activePortfolio!.id).gte('traded_at', startDate).order('traded_at', { ascending: true })
+      /* Equity curve — always weekly */
+      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0)
+      const { data: allTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', activePortfolio!.id).gte('traded_at', weekAgo.toISOString()).order('traded_at', { ascending: true })
       if (allTrades && allTrades.length > 0) {
         const curve = allTrades.reduce((acc: any[], x: any, i: number) => {
           const prev = i === 0 ? 0 : acc[i-1].value
