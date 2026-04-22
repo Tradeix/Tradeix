@@ -305,14 +305,14 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', top: '-60px', right: '20%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
           {/* Header */}
-          <div style={{ padding: '20px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="show_chart" size={18} color="#10b981" />
+          <div style={{ padding: '22px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon name="show_chart" size={22} color="#10b981" />
               </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)', lineHeight: 1.2 }}>{tr.equityCurve}</div>
-                <div style={{ fontSize: '10.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '1px' }}>{tr.performanceTimeline}</div>
+                <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.equityCurve}</div>
+                <div style={{ fontSize: '11.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{tr.performanceTimeline}</div>
               </div>
             </div>
             <div style={{ textAlign: 'left' }}>
@@ -327,7 +327,7 @@ export default function DashboardPage() {
           <div style={{ flex: 1, minHeight: '180px', padding: '12px 0 0 0' }}>
             {equityCurve.length > 0 ? (
               <ResponsiveContainer width="100%" height={190}>
-                <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 0 }}>
+                <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 16 }}>
                   <defs>
                     <linearGradient id="eqGradGreen" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
