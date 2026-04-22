@@ -553,6 +553,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .active-portfolio-badge > div:last-child > div:last-child { display: none !important; }
           .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 7px !important; }
           .active-portfolio-badge > div:last-child > div:first-child { max-width: 90px !important; font-size: 12px !important; }
+          header { padding: 0 12px !important; gap: 8px !important; }
+          .upgrade-btn { padding: 6px 10px !important; font-size: 10px !important; }
         }
         .sidebar-logout { display: block; }
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }

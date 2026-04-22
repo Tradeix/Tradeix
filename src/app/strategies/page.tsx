@@ -273,6 +273,7 @@ export default function StrategiesPage() {
 
                 {/* Header */}
                 <div
+                  className="strat-header"
                   onClick={e => { e.currentTarget.style.background = 'transparent'; handleExpand(s.id) }}
                   style={{
                     padding: '20px 24px', cursor: 'pointer',
@@ -291,7 +292,7 @@ export default function StrategiesPage() {
                         borderRadius: '50%',
                       }} />
                     )}
-                    <div style={{
+                    <div className="strat-icon" style={{
                       width: '46px', height: '46px', borderRadius: '14px',
                       background: `linear-gradient(135deg, ${color}18, ${color}08)`,
                       border: `1.5px solid ${color}30`,
@@ -310,8 +311,8 @@ export default function StrategiesPage() {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
-                      <span style={{
+                      <span className="strat-name" style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
+                      <span className="strat-badge" style={{
                         fontSize: '10px', fontWeight: '700', color, letterSpacing: '0.05em',
                         background: `${color}12`, padding: '2px 8px', borderRadius: '6px',
                         textTransform: 'uppercase',
@@ -320,7 +321,7 @@ export default function StrategiesPage() {
                       </span>
                     </div>
                     {s.plan && (
-                      <div style={{ fontSize: '12px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
+                      <div className="strat-plan-preview" style={{ fontSize: '12px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
                         {s.plan}
                       </div>
                     )}
@@ -328,7 +329,7 @@ export default function StrategiesPage() {
 
                   {/* Stats preview when collapsed */}
                   {!isExpanded && strategyStats[s.id] && stats.totalTrades > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                    <div className="strat-preview-stats" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '14px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
                           {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -354,10 +355,10 @@ export default function StrategiesPage() {
 
                 {/* ── Expanded content ── */}
                 {isExpanded && (
-                  <div style={{ padding: '0 24px 24px' }}>
+                  <div className="strat-expanded" style={{ padding: '0 24px 24px' }}>
 
                     {/* ── STRATEGY STATS ── */}
-                    <div style={{
+                    <div className="strat-stats-wrap" style={{
                       background: `linear-gradient(135deg, ${color}06, ${color}03)`,
                       border: `1px solid ${color}18`,
                       borderRadius: '14px',
@@ -385,7 +386,7 @@ export default function StrategiesPage() {
                       ) : (
                         <>
                           {/* Big P&L + Win Rate row */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                          <div className="strat-pnl-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                             <div style={{
                               background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
                               border: '1px solid var(--border)',
@@ -393,7 +394,7 @@ export default function StrategiesPage() {
                               <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                                 {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
                               </div>
-                              <div dir="ltr" style={{
+                              <div dir="ltr" className="strat-pnl-big" style={{
                                 fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
                                 color: pnlPositive ? '#22c55e' : '#ef4444',
                               }}>
@@ -408,7 +409,7 @@ export default function StrategiesPage() {
                                 Win Rate
                               </div>
                               <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span style={{
+                                <span className="strat-pnl-big" style={{
                                   fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
                                   color: stats.winRate >= 50 ? '#22c55e' : '#ef4444',
                                 }}>
@@ -424,7 +425,7 @@ export default function StrategiesPage() {
                           </div>
 
                           {/* Detailed stats grid */}
-                          <div style={{
+                          <div className="strat-detail-grid" style={{
                             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px',
                             background: 'var(--border)', borderRadius: '12px', overflow: 'hidden',
                           }}>
@@ -448,7 +449,7 @@ export default function StrategiesPage() {
 
                     {/* ── PLAN & DETAILS ── */}
                     {(s.plan || s.details) && (
-                      <div style={{ display: 'grid', gridTemplateColumns: s.plan && s.details ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
+                      <div className="strat-plan-details" style={{ display: 'grid', gridTemplateColumns: s.plan && s.details ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
                         {s.plan && (
                           <div style={{
                             background: 'var(--bg3)', borderRadius: '12px', padding: '16px',
@@ -661,8 +662,20 @@ export default function StrategiesPage() {
       )}
 
       <style>{`
-        @media (max-width: 640px) {
-          .strat-stats-grid-detail { grid-template-columns: repeat(2, 1fr) !important; }
+        @media (max-width: 768px) {
+          .strat-header { padding: 16px !important; gap: 12px !important; }
+          .strat-header .strat-icon { width: 38px !important; height: 38px !important; }
+          .strat-header .strat-icon span { font-size: 13px !important; }
+          .strat-header .strat-name { font-size: 14px !important; }
+          .strat-header .strat-badge { display: none !important; }
+          .strat-header .strat-plan-preview { display: none !important; }
+          .strat-header .strat-preview-stats { display: none !important; }
+          .strat-expanded { padding: 0 16px 16px !important; }
+          .strat-expanded .strat-stats-wrap { padding: 14px !important; }
+          .strat-expanded .strat-pnl-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+          .strat-expanded .strat-pnl-big { font-size: 20px !important; }
+          .strat-expanded .strat-detail-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .strat-expanded .strat-plan-details { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

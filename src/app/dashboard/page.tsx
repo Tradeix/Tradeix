@@ -145,13 +145,13 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
           {/* Portfolio name header */}
-          <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(16,185,129,0.08)', position: 'relative' }}>
+          <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(16,185,129,0.08)', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Icon name="account_balance" size={22} color="#10b981" />
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em' }}>{activePortfolio?.name}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="bal-name" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                   <span style={{ fontSize: '11px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
                   {initialCapital > 0 && (
@@ -165,11 +165,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Balance section */}
-          <div style={{ padding: '20px 28px', position: 'relative' }}>
+          <div className="bal-section" style={{ padding: '20px 28px', position: 'relative' }}>
             <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
             </div>
-            <div dir="ltr" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', marginBottom: '12px' }}>
+            <div dir="ltr" className="bal-amount" style={{ fontSize: '40px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', marginBottom: '12px' }}>
               ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
 
@@ -189,19 +189,19 @@ export default function DashboardPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'rgba(16,185,129,0.06)', marginTop: 'auto' }}>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
-              <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
-              <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '16px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
+              <div className="bal-mini-val" style={{ fontSize: '16px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
                 -{portfolioValue.maxDrawdown.toFixed(1)}%
               </div>
             </div>
@@ -393,9 +393,18 @@ export default function DashboardPage() {
         @media (max-width: 640px) {
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
+          .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
           .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; }
           .trades-section-header { padding: 14px !important; }
           .perf-subtitle { display: none !important; }
+          .balance-card .bal-amount { font-size: 28px !important; }
+          .balance-card .bal-header { padding: 14px 16px 12px !important; }
+          .balance-card .bal-section { padding: 14px 16px !important; }
+          .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
+          .balance-card .bal-name { font-size: 16px !important; }
+          .balance-card .bal-mini-val { font-size: 13px !important; }
+          .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
+          .section-anim.anim-delay-3 > div:first-child h2 { font-size: 18px !important; }
         }
       `}</style>
     </div>

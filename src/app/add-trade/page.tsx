@@ -462,7 +462,7 @@ export default function AddTradePage() {
                 )}
 
                 {/* Entry + SL + Exit */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <div className="price-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'כניסה' : 'Entry'}
@@ -577,6 +577,10 @@ export default function AddTradePage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @media (max-width: 400px) {
+          .price-grid-3 { grid-template-columns: 1fr 1fr !important; }
+          .price-grid-3 > div:last-child { grid-column: 1 / -1; }
+        }
       `}</style>
 
       {/* AI Analysis Success Popup */}

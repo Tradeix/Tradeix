@@ -45,6 +45,14 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
       </div>
 
       {action && <div style={{ flexShrink: 0 }}>{action}</div>}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .page-header-row { gap: 12px !important; margin-bottom: 20px !important; }
+          .page-header-row .page-header-title { font-size: 18px !important; }
+          .page-header-row > div:first-child > div:first-child { width: 36px !important; height: 36px !important; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -244,6 +244,7 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 1024px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 640px) { .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 20px !important; } }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .cal-dayname { font-size: 10px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
         .cal-cell { border-radius: 12px; min-height: 84px; padding: 8px 6px 6px; display: flex; flex-direction: column; cursor: default; }

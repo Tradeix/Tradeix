@@ -239,7 +239,7 @@ export default function PortfoliosPage() {
           {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
             return (
-              <div key={p.id} className="card-hover trade-row-anim" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${idx * 0.08}s` }}>
+              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${idx * 0.08}s` }}>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -252,7 +252,7 @@ export default function PortfoliosPage() {
                 </div>
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
                   <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}>
                     {tr.edit}
                     <Icon name="edit" size={14} />
@@ -272,7 +272,12 @@ export default function PortfoliosPage() {
 
       <style>{`
         @media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }
-        @media (max-width: 640px) { .portfolio-capital-label { display: none; } }
+        @media (max-width: 640px) {
+          .portfolio-capital-label { display: none; }
+          .portfolio-card { flex-wrap: wrap !important; gap: 12px !important; padding: 14px 16px !important; }
+          .portfolio-card .portfolio-actions { width: 100%; justify-content: flex-end !important; }
+          .portfolio-card .portfolio-actions button { padding: 6px 12px !important; }
+        }
       `}</style>
     </div>
   )

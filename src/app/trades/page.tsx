@@ -126,8 +126,8 @@ export default function TradesPage() {
         icon="swap_horiz"
       />
 
-      {/* Filters — hidden when no trades at all */}
-      {(total > 0 || filter !== 'all') && <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+      {/* Filters — always visible */}
+      <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
         {/* Outcome — WIN/LOSS */}
         <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
@@ -167,7 +167,7 @@ export default function TradesPage() {
           ))}
         </div>
         </div>
-      </div>}
+      </div>
 
       {/* Trades list */}
       <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
