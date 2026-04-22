@@ -175,7 +175,6 @@ export default function StatsPage() {
             </div>
             <div>
               <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
-              <div style={{ fontSize: '11.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{language === 'he' ? 'עקומת הון מצטברת לכל העסקאות' : 'Cumulative equity across all trades'}</div>
             </div>
           </div>
           <div style={{ textAlign: 'left' }}>
@@ -238,7 +237,6 @@ export default function StatsPage() {
             </div>
             <div>
               <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
-              <div style={{ fontSize: '11.5px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{language === 'he' ? 'מעקב רווח והפסד יומי לפי חודש' : 'Track daily P&L by month'}</div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
