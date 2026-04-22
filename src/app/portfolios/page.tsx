@@ -25,11 +25,19 @@ const MARKET_LABELS: Record<string, Record<string, string>> = {
   en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
 }
 
+interface PortfolioStats {
+  totalTrades: number
+  wins: number
+  totalPnl: number
+  winRate: number
+}
+
 export default function PortfoliosPage() {
   const { language, isPro } = useApp()
   const tr = t[language]
   const router = useRouter()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
+  const [portfolioStats, setPortfolioStats] = useState<Record<string, PortfolioStats>>({})
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -63,7 +71,19 @@ export default function PortfoliosPage() {
       .eq('user_id', user.id)
       .eq('archived', false)
       .order('created_at', { ascending: false })
-    if (data) setPortfolios(data)
+    if (data) {
+      setPortfolios(data)
+      const statsMap: Record<string, PortfolioStats> = {}
+      for (const p of data) {
+        const { data: trades } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', p.id)
+        if (trades) {
+          const wins = trades.filter((t: any) => t.outcome === 'win')
+          const totalPnl = trades.reduce((s: number, t: any) => s + (t.pnl || 0), 0)
+          statsMap[p.id] = { totalTrades: trades.length, wins: wins.length, totalPnl, winRate: trades.length ? (wins.length / trades.length) * 100 : 0 }
+        }
+      }
+      setPortfolioStats(statsMap)
+    }
     setLoading(false)
   }
 
@@ -238,18 +258,36 @@ export default function PortfoliosPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
+            const s = portfolioStats[p.id]
+            const pnlPos = (s?.totalPnl || 0) >= 0
             return (
-              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${idx * 0.08}s` }}>
+              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', animationDelay: `${idx * 0.08}s`, flexWrap: 'wrap' }}>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                    <div
+                      onClick={() => router.push('/stats')}
+                      style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s' }}
+                      onMouseOver={e => e.currentTarget.style.color = '#10b981'}
+                      onMouseOut={e => e.currentTarget.style.color = 'var(--text)'}
+                    >{p.name}</div>
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {MARKET_LABELS[language][p.market_type]} • <span className="portfolio-capital-label">{tr.initialCapitalLabel}: </span>${p.initial_capital?.toLocaleString() || 0}
+                    {MARKET_LABELS[language][p.market_type]}
+                    {s && ` • ${s.totalTrades} ${language === 'he' ? 'עסקאות' : 'trades'} • ${s.winRate.toFixed(0)}% WIN`}
                   </div>
                 </div>
+
+                {/* Stats summary */}
+                {s && (
+                  <div className="portfolio-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: '16px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
+                      {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
@@ -273,10 +311,10 @@ export default function PortfoliosPage() {
       <style>{`
         @media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }
         @media (max-width: 640px) {
-          .portfolio-capital-label { display: none; }
           .portfolio-card { flex-wrap: wrap !important; gap: 12px !important; padding: 14px 16px !important; }
           .portfolio-card .portfolio-actions { width: 100%; justify-content: flex-end !important; }
           .portfolio-card .portfolio-actions button { padding: 6px 12px !important; }
+          .portfolio-pnl { display: none !important; }
         }
       `}</style>
     </div>
