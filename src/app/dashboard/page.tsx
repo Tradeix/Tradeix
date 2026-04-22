@@ -122,12 +122,12 @@ export default function DashboardPage() {
 
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
-        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Icon name="space_dashboard" size={20} color="#10b981" />
         </div>
         <div>
-          <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
-          <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+          <h2 className="section-title" style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
+          <p className="section-subtitle" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? 'מבט כולל על ביצועי התיק שלך' : 'A complete look at your portfolio performance'}
           </p>
         </div>
@@ -253,12 +253,12 @@ export default function DashboardPage() {
           ══════════════════════════════════════════════ */}
       <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Icon name="monitoring" size={20} color="#10b981" />
           </div>
           <div>
-            <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
-            <p className="perf-subtitle" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+            <h2 className="section-title" style={{ fontSize: '22px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
+            <p className="section-subtitle" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
               {language === 'he' ? 'סטטיסטיקות מסחר לפי תקופה' : 'Trading statistics by period'}
             </p>
           </div>
@@ -396,7 +396,6 @@ export default function DashboardPage() {
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
           .recent-trade-row { grid-template-columns: 1fr 90px 72px !important; gap: 6px !important; }
           .trades-section-header { padding: 14px !important; }
-          .perf-subtitle { display: none !important; }
           .balance-card .bal-amount { font-size: 28px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
           .balance-card .bal-section { padding: 14px 16px !important; }
@@ -404,7 +403,9 @@ export default function DashboardPage() {
           .balance-card .bal-name { font-size: 16px !important; }
           .balance-card .bal-mini-val { font-size: 13px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
-          .section-anim.anim-delay-3 > div:first-child h2 { font-size: 18px !important; }
+          .section-title { font-size: 18px !important; }
+          .section-subtitle { display: none !important; }
+          .section-icon { width: 36px !important; height: 36px !important; }
         }
       `}</style>
     </div>
