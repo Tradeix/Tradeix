@@ -28,7 +28,51 @@ export default function DashboardPage() {
   })
   const [equityCurve, setEquityCurve] = useState<{date: string; value: number}[]>([])
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
+  const [userName, setUserName] = useState('')
   const supabase = createClient()
+
+  const QUOTES_HE = [
+    'תכנן את העסקה שלך, ותסחור את התוכנית.',
+    'הפסדים הם חלק מהמשחק – ניהול סיכונים הוא המפתח.',
+    'סבלנות היא הכלי החזק ביותר של סוחר.',
+    'אל תרדוף אחרי עסקאות – תן להן לבוא אליך.',
+    'היומן שלך הוא המורה הכי טוב שיש לך.',
+    'עקביות מנצחת מוטיבציה כל יום.',
+    'שלוט ברגשות שלך, ותשלוט בתוצאות.',
+    'כל עסקה היא שיעור – למד ממנה.',
+    'אל תסחור כדי להרוויח, תסחור כדי לשפר.',
+    'הצלחה במסחר נמדדת לאורך זמן, לא בעסקה בודדת.',
+    'עדיף לפספס עסקה מאשר להפסיד כסף.',
+    'הרגל טוב הוא יותר חשוב מאסטרטגיה מושלמת.',
+    'אל תשווה את עצמך לאחרים – התחרה בעצמך.',
+    'המשמעת שלך היא היתרון שלך בשוק.',
+    'תתחיל כל יום מסחר עם ראש נקי ותוכנית ברורה.',
+  ]
+  const QUOTES_EN = [
+    'Plan your trade, and trade your plan.',
+    'Losses are part of the game – risk management is key.',
+    'Patience is a trader\'s most powerful tool.',
+    'Don\'t chase trades – let them come to you.',
+    'Your journal is the best teacher you have.',
+    'Consistency beats motivation every day.',
+    'Control your emotions, control your results.',
+    'Every trade is a lesson – learn from it.',
+    'Don\'t trade to earn, trade to improve.',
+    'Trading success is measured over time, not in a single trade.',
+    'Better to miss a trade than to lose money.',
+    'A good habit is more important than a perfect strategy.',
+    'Don\'t compare yourself to others – compete with yourself.',
+    'Your discipline is your edge in the market.',
+    'Start each trading day with a clear mind and a clear plan.',
+  ]
+  const todayIndex = Math.floor(Date.now() / 86400000) % QUOTES_HE.length
+  const dailyQuote = language === 'he' ? QUOTES_HE[todayIndex] : QUOTES_EN[todayIndex]
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
+    })
+  }, [])
 
   const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
 
@@ -120,6 +164,40 @@ export default function DashboardPage() {
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
+      {/* ── WELCOME SECTION ── */}
+      {userName && (
+        <div className="welcome-section section-anim" style={{
+          marginBottom: '28px',
+          padding: '24px 28px',
+          borderRadius: 'var(--radius)',
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(74,127,255,0.06) 100%)',
+          border: '1px solid rgba(16,185,129,0.12)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', top: '-30px', right: language === 'he' ? 'auto' : '-30px', left: language === 'he' ? '-30px' : 'auto', width: '140px', height: '140px', background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <Icon name="waving_hand" size={22} color="#10b981" />
+              <h2 className="welcome-title" style={{
+                fontSize: '20px', fontWeight: '700', margin: 0,
+                color: 'var(--text)', letterSpacing: '-0.01em',
+                fontFamily: 'Heebo, sans-serif',
+              }}>
+                {language === 'he' ? `ברוכים השבים, ${userName}` : `Welcome back, ${userName}`}
+              </h2>
+            </div>
+            <p className="welcome-quote" style={{
+              fontSize: '13.5px', fontWeight: '400', color: 'var(--text3)',
+              margin: 0, lineHeight: 1.6, fontStyle: 'italic',
+              fontFamily: 'Heebo, sans-serif',
+            }}>
+              "{dailyQuote}"
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -174,7 +252,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Return badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="bal-return-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: portfolioPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding: '5px 12px', borderRadius: '20px', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}` }}>
                 <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
                 <span dir="ltr" style={{ fontSize: '13px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
@@ -398,11 +476,15 @@ export default function DashboardPage() {
           .trades-section-header { padding: 14px !important; }
           .balance-card .bal-amount { font-size: 28px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
-          .balance-card .bal-section { padding: 14px 16px !important; }
+          .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
+          .balance-card .bal-section .bal-return-row { justify-content: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 16px !important; }
           .balance-card .bal-mini-val { font-size: 13px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
+          .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
+          .welcome-title { font-size: 17px !important; }
+          .welcome-quote { font-size: 12.5px !important; }
           .section-title { font-size: 18px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
