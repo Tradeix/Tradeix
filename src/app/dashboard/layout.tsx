@@ -400,6 +400,18 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/auth/login')
   }
 
+  if (!ready) {
+    return (
+      <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: '44px', height: '44px', border: '3px solid rgba(16,185,129,0.15)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Animated grid background */}
@@ -420,9 +432,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         <div
           key={pageKey}
           style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}
-          className={`page-content ${ready ? 'page-ready' : 'page-loading'}`}
+          className="page-content page-ready"
         >
-          {ready ? children : null}
+          {children}
         </div>
       </div>
 
