@@ -377,7 +377,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // Also scroll to top (fixes mobile starting mid-page)
   useEffect(() => {
     setPageKey(k => k + 1)
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }))
   }, [pathname])
 
   useEffect(() => {
