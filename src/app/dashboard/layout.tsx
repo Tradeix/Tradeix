@@ -54,10 +54,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <Icon name="menu" size={20} color="currentColor" />
       </button>
 
-      <div style={{ flex: 1 }} />
-
-      {/* Unified portfolio selector — shows active portfolio + acts as switcher.
-          Sits on the right in RTL (flex-start). */}
+      {/* Unified portfolio selector — anchored to the visual right in RTL
+          (flex-start). Spacer pushes everything else to the opposite side. */}
       {activePortfolio && portfolios.length > 0 && (
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
@@ -92,11 +90,10 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               paddingInlineStart: '10px',
               marginInlineStart: '2px',
               borderInlineStart: '1px solid var(--border)',
-              display: 'flex', alignItems: 'center', gap: '4px',
+              display: 'flex', alignItems: 'center',
               color: 'var(--text3)', flexShrink: 0,
             }}>
-              <Icon name="swap_horiz" size={15} color="var(--text3)" />
-              <Icon name="expand_more" size={15} color="var(--text3)" />
+              <Icon name="swap_horiz" size={16} color="var(--text3)" />
             </div>
           </div>
 
@@ -105,9 +102,10 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
               <div style={{
                 position: 'absolute', top: '56px',
-                [isRTL ? 'right' : 'left']: 0,
+                insetInlineStart: 'auto', insetInlineEnd: 0,
                 background: 'var(--bg2)', border: '1px solid var(--border)',
                 borderRadius: '10px', zIndex: 200, minWidth: '240px',
+                maxWidth: 'calc(100vw - 24px)',
                 overflow: 'hidden', padding: '6px',
                 animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
                 transformOrigin: isRTL ? 'top right' : 'top left',
@@ -150,6 +148,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           )}
         </div>
       )}
+
+      <div style={{ flex: 1 }} />
 
       {/* Upgrade to PRO banner — free users only */}
       {!subscriptionLoading && !isPro && (
