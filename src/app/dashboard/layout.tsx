@@ -102,7 +102,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
               <div style={{
                 position: 'absolute', top: '56px',
-                insetInlineStart: 'auto', insetInlineEnd: 0,
+                insetInlineStart: 0, insetInlineEnd: 'auto',
                 background: 'var(--bg2)', border: '1px solid var(--border)',
                 borderRadius: '10px', zIndex: 200, minWidth: '240px',
                 maxWidth: 'calc(100vw - 24px)',
@@ -591,8 +591,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .active-portfolio-badge > div:nth-child(1) { width: 30px !important; height: 30px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:first-child { display: none !important; }
           .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 90px !important; font-size: 12px !important; margin-top: 0 !important; }
-          .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 6px !important; }
-          .active-portfolio-badge > div:nth-child(3) > :first-child { display: none !important; }
+          .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 8px !important; margin-inline-start: 0 !important; }
           header { padding: 0 12px !important; gap: 8px !important; }
           .upgrade-btn { padding: 6px 10px !important; font-size: 10px !important; }
         }
