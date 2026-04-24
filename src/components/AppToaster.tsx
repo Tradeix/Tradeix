@@ -12,7 +12,6 @@ export default function AppToaster() {
     <Toaster
       position="top-center"
       gutter={8}
-      containerStyle={{ top: 80 }}
       toastOptions={{
         duration: 2800,
         style: {
