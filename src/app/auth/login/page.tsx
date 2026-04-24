@@ -33,12 +33,12 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', top: '20%', right: '30%',
           width: '400px', height: '400px', borderRadius: '50%',
-          background: '#4a7fff0a', filter: 'blur(80px)',
+          background: '#10b9810a', filter: 'blur(80px)',
         }} />
         <div style={{
           position: 'absolute', bottom: '20%', left: '30%',
           width: '300px', height: '300px', borderRadius: '50%',
-          background: '#8b5cf60a', filter: 'blur(80px)',
+          background: '#10b9810a', filter: 'blur(80px)',
         }} />
       </div>
 
@@ -47,16 +47,16 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{
             width: '64px', height: '64px', borderRadius: '16px',
-            background: 'linear-gradient(135deg, #4a7fff, #8b5cf6)',
+            background: 'linear-gradient(135deg, #10b981, #10b981)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '26px', fontWeight: '700', color: '#fff',
             margin: '0 auto 16px',
-            boxShadow: '0 0 40px #4a7fff33',
+            boxShadow: '0 0 40px #10b98133',
             animation: 'pulse-glow 3s ease-in-out infinite',
           }}>TX</div>
           <div style={{ fontSize: '28px', fontWeight: '700', letterSpacing: '2px' }}>
             <span style={{
-              background: 'linear-gradient(90deg, #4a7fff, #8b5cf6)',
+              background: 'linear-gradient(90deg, #10b981, #10b981)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>TRADE</span>

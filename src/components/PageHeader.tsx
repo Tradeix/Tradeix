@@ -13,8 +13,8 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
   return (
     <div className="page-header-row section-anim" style={{
       display: 'flex', justifyContent: 'space-between',
-      alignItems: 'flex-start', marginBottom: '28px',
-      flexWrap: 'wrap', gap: '16px',
+      alignItems: 'center', marginBottom: '28px',
+      gap: '12px',
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', minWidth: 0 }}>
         {icon && (

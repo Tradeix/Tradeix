@@ -11,10 +11,10 @@ import Icon from '@/components/Icon'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 const PORTFOLIO_COLORS = [
-  { id: 'blue', primary: '#4a7fff' }, { id: 'purple', primary: '#8b5cf6' },
-  { id: 'green', primary: '#10b981' }, { id: 'red', primary: '#ef4444' },
-  { id: 'amber', primary: '#f59e0b' }, { id: 'cyan', primary: '#06b6d4' },
-  { id: 'pink', primary: '#ec4899' }, { id: 'gray', primary: '#6b7280' },
+  { id: 'green', primary: '#10b981' }, { id: 'blue', primary: '#4b5563' },
+  { id: 'purple', primary: '#9ca3af' }, { id: 'gray', primary: '#6b7280' },
+  { id: 'cyan', primary: '#374151' }, { id: 'pink', primary: '#d1d5db' },
+  { id: 'red', primary: '#ef4444' }, { id: 'amber', primary: '#f59e0b' },
 ]
 const MARKET_LABELS: Record<string, Record<string, string>> = {
   he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
@@ -113,7 +113,7 @@ export default function ArchivePage() {
     else { toast.success(language === 'he' ? 'התיק נמחק לצמיתות' : 'Portfolio deleted forever'); setConfirmDelete(null); loadArchived() }
   }
 
-  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#4a7fff'
+  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#10b981'
 
   // Free tier paywall
   if (!subscriptionLoading && !isPro) {
@@ -177,7 +177,7 @@ export default function ArchivePage() {
 
       {loading ? (
         <div style={{ padding: '60px', textAlign: 'center' }}>
-          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
         </div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
@@ -235,7 +235,7 @@ export default function ArchivePage() {
                   {/* Actions */}
                   <div className="archive-actions" style={{ display: 'flex', gap: '8px', marginInlineStart: 'auto' }}>
                     {/* Stats toggle */}
-                    <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(74,127,255,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(74,127,255,0.3)' : 'var(--border)'}`, color: isExpanded ? '#4a7fff' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                    <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(16,185,129,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`, color: isExpanded ? '#10b981' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                       <Icon name={isExpanded ? 'expand_less' : 'bar_chart'} size={16} />
                     </button>
 
@@ -267,7 +267,7 @@ export default function ArchivePage() {
                       {[
                         { label: language === 'he' ? 'עסקאות' : 'Trades', value: s.totalTrades, color: 'var(--text2)' },
                         { label: language === 'he' ? 'ניצחונות' : 'Wins', value: s.wins, color: '#22c55e' },
-                        { label: language === 'he' ? 'אחוז הצלחה' : 'Win Rate', value: `${s.winRate.toFixed(1)}%`, color: '#4a7fff' },
+                        { label: language === 'he' ? 'אחוז הצלחה' : 'Win Rate', value: `${s.winRate.toFixed(1)}%`, color: '#10b981' },
                         { label: 'P&L', value: `${s.totalPnl >= 0 ? '+' : ''}$${s.totalPnl.toLocaleString()}`, color: s.totalPnl >= 0 ? '#22c55e' : '#ef4444' },
                       ].map(({ label, value, color: c }) => (
                         <div key={label} style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
@@ -316,7 +316,7 @@ export default function ArchivePage() {
                     <div style={{ background: 'var(--bg3)', borderRadius: '12px', overflow: 'hidden' }}>
                       {tradesLoading ? (
                         <div style={{ padding: '32px', textAlign: 'center' }}>
-                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#4a7fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
                         </div>
                       ) : trades.length === 0 ? (
                         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px', fontWeight: '600' }}>
@@ -342,7 +342,7 @@ export default function ArchivePage() {
 
                           {/* RR */}
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#4a7fff' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
                             <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
                           </div>
 

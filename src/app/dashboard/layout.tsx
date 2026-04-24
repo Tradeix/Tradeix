@@ -10,12 +10,12 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
-  blue: '#3b82f6', purple: '#8b5cf6', green: '#10b981',
-  red: '#ef4444', amber: '#f59e0b', cyan: '#06b6d4',
-  pink: '#ec4899', gray: '#6b7280',
+  green: '#10b981', blue: '#4b5563', purple: '#9ca3af',
+  gray: '#6b7280', cyan: '#374151', pink: '#d1d5db',
+  red: '#ef4444', amber: '#f59e0b',
 }
 function getPortfolioColor(portfolio: any) {
-  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#3b82f6'
+  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#10b981'
 }
 
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
@@ -33,7 +33,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
   }, [])
 
-  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#3b82f6'
+  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#10b981'
 
   return (
     <header style={{
@@ -175,7 +175,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <div style={{ position: 'relative' }}>
             <div style={{
               width: '38px', height: '38px', borderRadius: '50%',
-              background: isPro ? '#f59e0b' : '#3b82f6',
+              background: isPro ? '#f59e0b' : '#10b981',
               border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
@@ -199,8 +199,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 </>
               ) : (
                 <>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#3b82f6' }} />
-                  <span style={{ fontSize: '9px', color: '#3b82f6', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
+                  <span style={{ fontSize: '9px', color: '#10b981', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {tr.freeAccount}
                   </span>
                 </>

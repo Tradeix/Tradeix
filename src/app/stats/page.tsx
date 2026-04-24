@@ -13,7 +13,7 @@ import Icon from '@/components/Icon'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
 
-const ACCENT = '#4a7fff'
+const ACCENT = '#10b981'
 
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -154,7 +154,7 @@ export default function StatsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }} className="stats-grid-4">
         <StatCard idx={0} label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
         <StatCard idx={1} label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
-        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#8b5cf6" icon="insights" />
+        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#10b981" icon="insights" />
         <StatCard idx={3} label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
         <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
         <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />

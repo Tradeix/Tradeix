@@ -286,7 +286,7 @@ export default function AddTradePage() {
         {/* STEP 1 — PRO only */}
         {isPro && step === 1 && (
           <div className="fade-up">
-            <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
+            <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
               <input {...getInputProps()} />
               <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}><Icon name="zoom_in" size={44} color="var(--blue)" strokeWidth={1.2} /></div>
               <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
@@ -371,7 +371,7 @@ export default function AddTradePage() {
                       </button>
                     </div>
                   ) : (
-                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#4a7fff0a' : 'var(--bg3)', transition: 'all 0.2s' }}>
+                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.2s' }}>
                       <input {...getManualInputProps()} />
                       <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'center' }}><Icon name="photo_camera" size={24} color="var(--text3)" /></div>
                       <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px', color: 'var(--text)' }}>{language === 'he' ? 'העלה תמונת גרף' : 'Upload Chart Image'}</div>

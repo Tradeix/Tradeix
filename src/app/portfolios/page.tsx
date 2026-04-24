@@ -14,10 +14,10 @@ import Icon from '@/components/Icon'
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 
 const PORTFOLIO_COLORS = [
-  { id: 'blue', primary: '#3b82f6' }, { id: 'purple', primary: '#8b5cf6' },
-  { id: 'green', primary: '#10b981' }, { id: 'red', primary: '#ef4444' },
-  { id: 'amber', primary: '#f59e0b' }, { id: 'cyan', primary: '#06b6d4' },
-  { id: 'pink', primary: '#ec4899' }, { id: 'gray', primary: '#6b7280' },
+  { id: 'green', primary: '#10b981' }, { id: 'blue', primary: '#4b5563' },
+  { id: 'purple', primary: '#9ca3af' }, { id: 'gray', primary: '#6b7280' },
+  { id: 'cyan', primary: '#374151' }, { id: 'pink', primary: '#d1d5db' },
+  { id: 'red', primary: '#ef4444' }, { id: 'amber', primary: '#f59e0b' },
 ]
 
 const MARKET_LABELS: Record<string, Record<string, string>> = {
@@ -141,7 +141,7 @@ export default function PortfoliosPage() {
     setEditingId(null); setShowForm(true)
   }
 
-  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#3b82f6'
+  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#10b981'
 
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>

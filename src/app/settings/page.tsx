@@ -106,8 +106,8 @@ export default function SettingsPage() {
         {/* ── CARD 1: Profile ── */}
         <div style={{ ...glass }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(74,127,255,0.15)', border: '1px solid rgba(74,127,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="person" size={16} color="#3b82f6" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="person" size={16} color="#10b981" />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
@@ -119,11 +119,11 @@ export default function SettingsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
             <div onClick={() => fileRef.current?.click()} style={{
               width: '72px', height: '72px', borderRadius: '50%',
-              background: avatarUrl ? undefined : '#3b82f6',
+              background: avatarUrl ? undefined : '#10b981',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '26px', fontWeight: '700', color: '#fff',
               marginBottom: '10px', cursor: 'pointer', overflow: 'hidden', position: 'relative',
-              border: '2px solid rgba(74,127,255,0.3)',
+              border: '2px solid rgba(16,185,129,0.3)',
             }}>
               {avatarUrl ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
               {uploadingAvatar && (
@@ -167,8 +167,8 @@ export default function SettingsPage() {
         {/* ── CARD 2: Preferences ── */}
         <div style={{ ...glass }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="tune" size={16} color="#8b5cf6" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="tune" size={16} color="#10b981" />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
@@ -233,16 +233,16 @@ export default function SettingsPage() {
         {/* ── CARD 3: Subscription ── */}
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
-          border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(74,127,255,0.15)',
+          border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(16,185,129,0.15)',
           background: isPro
             ? 'rgba(245,158,11,0.04)'
             : 'var(--glass-bg)',
         }}>
-          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(74,127,255,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(74,127,255,0.15)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.3)' : 'rgba(74,127,255,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="workspace_premium" size={16} color={isPro ? '#f59e0b' : '#3b82f6'} />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="workspace_premium" size={16} color={isPro ? '#f59e0b' : '#10b981'} />
             </div>
             <div>
               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
@@ -253,15 +253,15 @@ export default function SettingsPage() {
           {/* Current plan badge */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: isPro ? 'rgba(245,158,11,0.1)' : 'rgba(74,127,255,0.08)',
-            border: `1px solid ${isPro ? 'rgba(245,158,11,0.25)' : 'rgba(74,127,255,0.2)'}`,
+            background: isPro ? 'rgba(245,158,11,0.1)' : 'rgba(16,185,129,0.08)',
+            border: `1px solid ${isPro ? 'rgba(245,158,11,0.25)' : 'rgba(16,185,129,0.2)'}`,
             borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
           }}>
             <div>
-              <div style={{ fontSize: '11px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(74,127,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '11px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(16,185,129,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
-              <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '22px', fontWeight: '900', color: isPro ? '#f59e0b' : '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
                 {isPro && <span style={{ fontSize: '12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {language === 'he' ? 'פעיל' : 'Active'}</span>}
               </div>
@@ -269,8 +269,8 @@ export default function SettingsPage() {
                 {isPro ? '$20 / ' + (language === 'he' ? 'חודש' : 'month') : (language === 'he' ? 'ללא עלות' : 'No charge')}
               </div>
             </div>
-            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(74,127,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={isPro ? '#f59e0b' : '#3b82f6'} />
+            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={isPro ? '#f59e0b' : '#10b981'} />
             </div>
           </div>
 

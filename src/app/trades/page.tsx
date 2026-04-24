@@ -135,9 +135,9 @@ export default function TradesPage() {
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '7px 14px', borderRadius: '10px', fontSize: '11px',
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(74,127,255,0.4)' : 'var(--border)'}`,
-              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(74,127,255,0.1)' : 'var(--bg3)',
-              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#3b82f6' : 'var(--text3)',
+              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
+              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)' : 'var(--bg3)',
+              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#10b981' : 'var(--text3)',
               transition: 'all 0.2s',
             }}>
               <Icon name={icon} size={13} />
@@ -173,11 +173,11 @@ export default function TradesPage() {
       <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
           </div>
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(74,127,255,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
+            <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
             <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
               {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades')
                 : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades')
@@ -191,7 +191,7 @@ export default function TradesPage() {
                 : timeFilter > 0 ? (language === 'he' ? 'נסה לשנות את טווח הזמן' : 'Try changing the time range')
                 : tr.noTradesDesc}
             </div>
-            {filter === 'all' && <Link href="/add-trade" style={{ background: '#3b82f6', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
+            {filter === 'all' && <Link href="/add-trade" style={{ background: '#10b981', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
           </div>
         ) : (
           <div style={{ padding: '8px 12px' }}>
@@ -219,7 +219,7 @@ export default function TradesPage() {
 
                 {/* RR */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#3b82f6' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
                   <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
                 </div>
 

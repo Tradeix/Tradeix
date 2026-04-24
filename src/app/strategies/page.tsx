@@ -13,17 +13,17 @@ import Icon from '@/components/Icon'
 
 const STRATEGY_COLORS = [
   { name: 'green', hex: '#10b981' },
-  { name: 'blue', hex: '#3b82f6' },
-  { name: 'purple', hex: '#8b5cf6' },
+  { name: 'blue', hex: '#4b5563' },
+  { name: 'purple', hex: '#9ca3af' },
+  { name: 'gray', hex: '#6b7280' },
+  { name: 'cyan', hex: '#374151' },
+  { name: 'pink', hex: '#d1d5db' },
   { name: 'amber', hex: '#f59e0b' },
   { name: 'red', hex: '#ef4444' },
-  { name: 'cyan', hex: '#06b6d4' },
-  { name: 'pink', hex: '#ec4899' },
-  { name: 'gray', hex: '#6b7280' },
 ]
 
 function getColorHex(name: string) {
-  return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#3b82f6'
+  return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#10b981'
 }
 
 type StrategyStats = {
@@ -222,11 +222,11 @@ export default function StrategiesPage() {
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '24px',
-            background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(16,185,129,0.12))',
-            border: '1px solid rgba(139,92,246,0.15)',
+            background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.12))',
+            border: '1px solid rgba(16,185,129,0.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
           }}>
-            <Icon name="psychology" size={36} color="#8b5cf6" />
+            <Icon name="psychology" size={36} color="#10b981" />
           </div>
           <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: 'var(--text)' }}>
             {tr.noStrategiesYet}

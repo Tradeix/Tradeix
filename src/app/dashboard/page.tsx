@@ -11,7 +11,7 @@ import TradeModal from '@/components/TradeModal'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 
-const ACCENT = '#4a7fff'
+const ACCENT = '#10b981'
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -180,7 +180,7 @@ export default function DashboardPage() {
           marginBottom: '28px',
           padding: '24px 28px',
           borderRadius: 'var(--radius)',
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(74,127,255,0.06) 100%)',
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.06) 100%)',
           border: '1px solid rgba(16,185,129,0.12)',
           position: 'relative',
           overflow: 'hidden',
@@ -327,7 +327,7 @@ export default function DashboardPage() {
             </div> },
           { label: tr.winRate, value: `${stats.winRate.toFixed(0)}%`, icon: 'emoji_events', color: '#22c55e' },
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
-          { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#8b5cf6' },
+          { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#10b981' },
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
