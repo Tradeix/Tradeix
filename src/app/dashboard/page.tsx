@@ -89,7 +89,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex(prev => (prev + 1) % QUOTES_HE.length)
-    }, 5000)
+    }, 18000)
     return () => clearInterval(interval)
   }, [])
 
@@ -175,39 +175,73 @@ export default function DashboardPage() {
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── WELCOME SECTION ── */}
-      {userName && (
+      {userName && (() => {
+        const now = new Date()
+        const dateLabel = now.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })
+        return (
         <div className="welcome-section section-anim" style={{
           marginBottom: '28px',
-          padding: '24px 28px',
+          padding: '28px 32px',
           borderRadius: 'var(--radius)',
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.06) 100%)',
-          border: '1px solid rgba(16,185,129,0.12)',
+          background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(16,185,129,0.04) 100%)',
+          border: '1px solid var(--border)',
           position: 'relative',
           overflow: 'hidden',
         }}>
-          <div style={{ position: 'absolute', top: '-30px', right: language === 'he' ? 'auto' : '-30px', left: language === 'he' ? '-30px' : 'auto', width: '140px', height: '140px', background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <Icon name="waving_hand" size={22} color="#10b981" />
-              <h2 className="welcome-title" style={{
-                fontSize: '20px', fontWeight: '700', margin: 0,
-                color: 'var(--text)', letterSpacing: '-0.01em',
-                fontFamily: 'Heebo, sans-serif',
-              }}>
-                {getGreeting()}, {userName}
-              </h2>
-            </div>
-            <p className="welcome-quote" key={quoteIndex} style={{
-              fontSize: '14.5px', fontWeight: '400', color: 'var(--text3)',
-              margin: 0, lineHeight: 1.6, fontStyle: 'italic',
-              fontFamily: 'Heebo, sans-serif',
-              animation: 'quoteFade 5s ease-in-out',
+          {/* Decorative glow */}
+          <div style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '260px', height: '260px', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-40px', insetInlineStart: '-40px', width: '160px', height: '160px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '22px' }}>
+            {/* Avatar tile */}
+            <div className="welcome-tile" style={{
+              width: '60px', height: '60px', borderRadius: '16px',
+              background: 'rgba(16,185,129,0.08)',
+              border: '1px solid rgba(16,185,129,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 0 24px rgba(16,185,129,0.08) inset',
             }}>
-              "{currentQuote}"
-            </p>
+              <Icon name="waving_hand" size={28} color="#10b981" />
+            </div>
+
+            {/* Greeting + meta + quote */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
+                <h2 className="welcome-title" style={{
+                  fontSize: '24px', fontWeight: '800', margin: 0,
+                  color: 'var(--text)', letterSpacing: '-0.02em',
+                  fontFamily: 'Heebo, sans-serif', lineHeight: 1.1,
+                }}>
+                  {getGreeting()}, {userName}
+                </h2>
+                <span className="welcome-date" style={{
+                  fontSize: '12px', fontWeight: '500', color: 'var(--text3)',
+                  letterSpacing: '0.01em',
+                }}>
+                  {dateLabel}
+                </span>
+              </div>
+
+              <div className="welcome-quote-wrap" style={{
+                marginTop: '14px',
+                paddingInlineStart: '14px',
+                borderInlineStart: '2px solid rgba(16,185,129,0.35)',
+              }}>
+                <p className="welcome-quote" key={quoteIndex} style={{
+                  fontSize: '14px', fontWeight: '500', color: 'var(--text2)',
+                  margin: 0, lineHeight: 1.55,
+                  fontFamily: 'Heebo, sans-serif',
+                  animation: 'quoteFade 18s ease-in-out',
+                }}>
+                  {currentQuote}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+        )
+      })()}
 
       {/* ══════════════════════════════════════════════
           OVERVIEW + PERFORMANCE — side-by-side on desktop,
@@ -456,8 +490,12 @@ export default function DashboardPage() {
           .balance-card .bal-mini-val { font-size: 13px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
           .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
-          .welcome-title { font-size: 17px !important; }
-          .welcome-quote { font-size: 13px !important; }
+          .welcome-inner { gap: 14px !important; }
+          .welcome-tile { width: 46px !important; height: 46px !important; border-radius: 13px !important; }
+          .welcome-tile > span { font-size: 22px !important; }
+          .welcome-title { font-size: 18px !important; }
+          .welcome-date { font-size: 11px !important; }
+          .welcome-quote { font-size: 12.5px !important; }
           .section-title { font-size: 18px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
