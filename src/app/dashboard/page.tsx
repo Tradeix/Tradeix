@@ -398,7 +398,7 @@ export default function DashboardPage() {
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-              <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text3)' }}>{s.label}</span>
+              <span style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text2)' }}>{s.label}</span>
               <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={s.icon} size={17} color={s.color} />
               </div>
