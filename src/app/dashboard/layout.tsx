@@ -55,34 +55,38 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       </button>
 
       {/* Unified portfolio selector — anchored to the visual right in RTL
-          (flex-start). Spacer pushes everything else to the opposite side. */}
-      {activePortfolio && portfolios.length > 0 && (
+          (flex-start). Spacer pushes everything else to the opposite side.
+          Frame/wallet stay gray; only the name + 'Active' label take the
+          portfolio's color so the user can tell which one is selected. */}
+      {activePortfolio && portfolios.length > 0 && (() => {
+        const activeColor = getPortfolioColor(activePortfolio)
+        return (
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
             onClick={() => setShowMenu(!showMenu)}
             className="active-portfolio-badge"
             style={{
               display: 'flex', alignItems: 'center', gap: '12px',
-              background: 'var(--bg3)', border: '1px solid rgba(16,185,129,0.2)',
+              background: 'var(--bg3)', border: '1px solid var(--border)',
               borderRadius: '12px', padding: '6px 10px 6px 6px',
               cursor: 'pointer',
               transition: 'background 0.15s, border-color 0.15s',
             }}
-            onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.35)' }}
-            onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.2)' }}
+            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--border2)' }}
+            onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
           >
             <div style={{
               width: '34px', height: '34px', borderRadius: '9px',
-              background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)',
+              background: 'var(--bg4)', border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <Icon name="account_balance_wallet" size={16} color="#10b981" />
+              <Icon name="account_balance_wallet" size={16} color="var(--text3)" />
             </div>
             <div style={{ minWidth: 0, textAlign: isRTL ? 'right' : 'left' }}>
-              <div style={{ fontSize: '9px', fontWeight: '700', color: '#10b981', letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
+              <div style={{ fontSize: '9px', fontWeight: '700', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
                 {language === 'he' ? 'תיק פעיל' : 'Active'}
               </div>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: activeColor, lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
                 {activePortfolio.name}
               </div>
             </div>
@@ -103,9 +107,10 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <div style={{
                 position: 'absolute', top: '56px',
                 insetInlineStart: 0, insetInlineEnd: 'auto',
-                background: 'var(--bg2)', border: '1px solid var(--border)',
-                borderRadius: '10px', zIndex: 200, minWidth: '240px',
+                width: '100%',
                 maxWidth: 'calc(100vw - 24px)',
+                background: 'var(--bg2)', border: '1px solid var(--border)',
+                borderRadius: '10px', zIndex: 200,
                 overflow: 'hidden', padding: '6px',
                 animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
                 transformOrigin: isRTL ? 'top right' : 'top left',
@@ -113,33 +118,35 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               }}>
                 {portfolios.map(p => {
                   const isActive = activePortfolio?.id === p.id
+                  const pColor = getPortfolioColor(p)
                   return (
                     <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.refresh() }}
                       className="portfolio-item-anim"
                       style={{
-                        padding: '10px 16px', fontSize: '13px', cursor: 'pointer',
+                        padding: '10px 14px', fontSize: '13px', cursor: 'pointer',
                         background: isActive ? 'var(--bg3)' : 'transparent',
-                        color: isActive ? '#10b981' : 'var(--text3)',
-                        display: 'flex', alignItems: 'center', gap: '12px',
+                        color: pColor,
+                        display: 'flex', alignItems: 'center', gap: '10px',
                         transition: 'all 0.15s', borderRadius: '6px',
-                        fontWeight: isActive ? '700' : '500',
+                        fontWeight: isActive ? '700' : '600',
                         position: 'relative', marginBottom: '2px',
                         letterSpacing: '0.02em',
                         fontFamily: 'Heebo, Rubik, sans-serif',
                       }}
-                      onMouseOver={e => { if (!isActive) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.transform = `translate${isRTL ? 'X(-4px)' : 'X(4px)'}` } }}
-                      onMouseOut={e => { e.currentTarget.style.color = isActive ? '#10b981' : 'var(--text3)'; if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateX(0)' } }}
+                      onMouseOver={e => { if (!isActive) { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.transform = `translate${isRTL ? 'X(-4px)' : 'X(4px)'}` } }}
+                      onMouseOut={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateX(0)' } }}
                     >
-                      {isActive && (
-                        <div style={{
-                          position: 'absolute', [isRTL ? 'right' : 'left']: 0,
-                          top: 0, bottom: 0, width: '3px',
-                          background: '#10b981',
-                          borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
-                        }} />
-                      )}
-                      <Icon name="cases" size={16} color="currentColor" />
-                      <span style={{ flex: 1 }}>{p.name}</span>
+                      {/* Color stripe — always shown in the portfolio's own color */}
+                      <div style={{
+                        position: 'absolute', [isRTL ? 'right' : 'left']: 0,
+                        top: '4px', bottom: '4px', width: '3px',
+                        background: pColor,
+                        borderRadius: '2px',
+                        opacity: isActive ? 1 : 0.65,
+                      }} />
+                      <Icon name="account_balance_wallet" size={16} color={pColor} />
+                      <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
+                      {isActive && <Icon name="check" size={14} color={pColor} />}
                     </div>
                   )
                 })}
@@ -147,7 +154,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             </>
           )}
         </div>
-      )}
+        )
+      })()}
 
       <div style={{ flex: 1 }} />
 
