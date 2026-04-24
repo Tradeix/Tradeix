@@ -6,6 +6,7 @@ import { Portfolio } from '@/types'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
+import { usePortfolio } from '@/lib/portfolio-context'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -36,6 +37,7 @@ export default function PortfoliosPage() {
   const { language, isPro } = useApp()
   const tr = t[language]
   const router = useRouter()
+  const { setActivePortfolio } = usePortfolio()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [portfolioStats, setPortfolioStats] = useState<Record<string, PortfolioStats>>({})
   const [loading, setLoading] = useState(true)
@@ -267,7 +269,7 @@ export default function PortfoliosPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <div
-                      onClick={() => router.push('/stats')}
+                      onClick={() => { setActivePortfolio(p); router.push('/dashboard') }}
                       style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s' }}
                       onMouseOver={e => e.currentTarget.style.color = '#10b981'}
                       onMouseOut={e => e.currentTarget.style.color = 'var(--text)'}
