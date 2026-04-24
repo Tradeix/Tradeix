@@ -209,6 +209,13 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* ══════════════════════════════════════════════
+          OVERVIEW + PERFORMANCE — side-by-side on desktop,
+          stacked on tablet/mobile
+          ══════════════════════════════════════════════ */}
+      <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'start' }}>
+
+      <div className="overview-col">
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -225,7 +232,7 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance Card
           ══════════════════════════════════════════════ */}
-      <div className="top-row section-anim anim-delay-1" style={{ marginBottom: '40px' }}>
+      <div className="top-row section-anim anim-delay-1">
 
         {/* ── Total Balance Card ── */}
         <div className="card-hover balance-card" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: '1px solid rgba(16,185,129,0.15)', position: 'relative' }}>
@@ -287,7 +294,9 @@ export default function DashboardPage() {
         </div>
 
       </div>
+      </div>
 
+      <div className="perf-col">
       {/* ══════════════════════════════════════════════
           STAT CARDS ROW — with time filter
           ══════════════════════════════════════════════ */}
@@ -318,7 +327,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '40px' }}>
+      <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
             sub: <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
@@ -340,6 +349,9 @@ export default function DashboardPage() {
             {s.sub || null}
           </div>
         ))}
+      </div>
+      </div>
+
       </div>
 
       {/* ══════════════════════════════════════════════
@@ -422,6 +434,7 @@ export default function DashboardPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 1024px) {
+          .overview-perf-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
