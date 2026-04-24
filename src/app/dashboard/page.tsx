@@ -27,6 +27,7 @@ export default function DashboardPage() {
   })
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const [userName, setUserName] = useState('')
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
   const supabase = createClient()
 
   const QUOTES_HE = [
@@ -82,7 +83,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
+      if (user) {
+        setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
+        setUserAvatar(user.user_metadata?.avatar_url || null)
+      }
     })
   }, [])
 
@@ -193,16 +197,36 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', bottom: '-40px', insetInlineStart: '-40px', width: '160px', height: '160px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
           <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '22px' }}>
-            {/* Avatar tile */}
+            {/* Avatar tile — user photo if available, else initial */}
             <div className="welcome-tile" style={{
               width: '60px', height: '60px', borderRadius: '16px',
-              background: 'rgba(16,185,129,0.08)',
-              border: '1px solid rgba(16,185,129,0.2)',
+              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06))',
+              border: '1px solid rgba(16,185,129,0.25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
+              flexShrink: 0, position: 'relative',
+              overflow: 'hidden',
               boxShadow: '0 0 24px rgba(16,185,129,0.08) inset',
             }}>
-              <Icon name="waving_hand" size={28} color="#10b981" />
+              {userAvatar ? (
+                <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{
+                  fontSize: '26px', fontWeight: '800', color: '#10b981',
+                  letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
+                  textTransform: 'uppercase',
+                }}>
+                  {userName.charAt(0) || 'U'}
+                </span>
+              )}
+              {/* Wave badge — signals the greeting context */}
+              <div className="welcome-wave-badge" style={{
+                position: 'absolute', bottom: '-4px', insetInlineEnd: '-4px',
+                width: '24px', height: '24px', borderRadius: '50%',
+                background: 'var(--bg)', border: '2px solid var(--bg2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon name="waving_hand" size={13} color="#10b981" />
+              </div>
             </div>
 
             {/* Greeting + meta + quote */}
