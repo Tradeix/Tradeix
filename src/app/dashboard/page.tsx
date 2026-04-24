@@ -385,6 +385,14 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      {trades.length === 0 ? (
+        <div style={{ ...card, padding: '48px', textAlign: 'center' }}>
+          <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
+          <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>
+            {language === 'he' ? 'לא ביצעת עסקאות עדיין' : 'No trades yet'}
+          </p>
+        </div>
+      ) : (
       <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
@@ -408,6 +416,7 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+      )}
       </div>
 
       </div>
