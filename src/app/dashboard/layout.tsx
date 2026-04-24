@@ -381,6 +381,34 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }))
   }, [pathname])
 
+  // Disable browser scroll restoration and force top on initial load, bfcache restores,
+  // and when async content finishes loading (the spinner-to-page transition on mobile
+  // was letting the browser restore a mid-page scroll position from a prior session).
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const prev = history.scrollRestoration
+    try { history.scrollRestoration = 'manual' } catch {}
+    const toTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    }
+    toTop()
+    requestAnimationFrame(toTop)
+    const onPageShow = () => { toTop(); requestAnimationFrame(toTop) }
+    window.addEventListener('pageshow', onPageShow)
+    return () => {
+      window.removeEventListener('pageshow', onPageShow)
+      try { history.scrollRestoration = prev } catch {}
+    }
+  }, [])
+
+  // When the ready gate flips (spinner → content), the page height suddenly grows;
+  // force scroll back to top so the header is visible.
+  useEffect(() => {
+    if (!ready) return
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }))
+  }, [ready])
+
   useEffect(() => {
     if (localStorage.getItem('tradeix-show-downgrade') === '1') {
       localStorage.removeItem('tradeix-show-downgrade')
