@@ -142,7 +142,7 @@ export default function GalleryPage() {
       <PageHeader
         title={language === 'he' ? 'גלריה' : 'Gallery'}
         subtitle={language === 'he' ? 'תשלומים, צילומי מסך, תעודות ופרטי גישה' : 'Payouts, screenshots, certificates and credentials'}
-        icon="collections"
+        icon="photo_library"
         action={(
           <button
             type="button"
@@ -169,7 +169,7 @@ export default function GalleryPage() {
       ) : items.length === 0 ? (
         <div style={{ ...card, padding: '64px 24px', textAlign: 'center' }}>
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-            <Icon name="collections" size={32} color="var(--text3)" />
+            <Icon name="photo_library" size={32} color="var(--text3)" />
           </div>
           <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>
             {language === 'he' ? 'הגלריה ריקה' : 'Gallery is empty'}
