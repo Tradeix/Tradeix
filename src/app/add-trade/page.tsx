@@ -587,10 +587,12 @@ export default function AddTradePage() {
       {showAiSuccessPopup && (
         <div
           onClick={() => setShowAiSuccessPopup(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 600, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.25s ease', padding: '20px' }}
+          className="app-modal-overlay"
+          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.25s ease' }}
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="app-modal-card" data-tight="1"
             style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '36px 28px 28px', maxWidth: '400px', width: '100%', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}
           >
             {/* Success icon */}
@@ -644,7 +646,8 @@ export default function AddTradePage() {
       {lightbox && imagePreview && (
         <div
           onClick={() => setLightbox(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
+          className="app-modal-overlay app-modal-overlay--top2"
+          style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
         >
           <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '17px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
           <img src={imagePreview} alt="גרף" onClick={e => e.stopPropagation()} style={{ maxWidth: '94vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', cursor: 'default' }} />

@@ -270,8 +270,8 @@ export default function GalleryPage() {
 
       {/* ── UPLOAD MODAL ── */}
       {showUpload && (
-        <div onClick={() => { if (!uploading) { setShowUpload(false); resetForm() } }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'} style={{ width: '100%', maxWidth: '480px', background: 'var(--bg2)', border: '1px solid var(--border2)', borderRadius: '20px', padding: '24px', maxHeight: '92vh', overflowY: 'auto' }}>
+        <div className="app-modal-overlay" onClick={() => { if (!uploading) { setShowUpload(false); resetForm() } }} style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
+          <div className="app-modal-card" data-tight="1" onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'} style={{ width: '100%', maxWidth: '480px', background: 'var(--bg2)', border: '1px solid var(--border2)', borderRadius: '20px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
               <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)' }}>
                 {language === 'he' ? 'העלאת תמונה' : 'Upload image'}
@@ -383,7 +383,7 @@ export default function GalleryPage() {
 
       {/* ── LIGHTBOX ── */}
       {lightbox && (
-        <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div className="app-modal-overlay app-modal-overlay--top2" onClick={() => setLightbox(null)} style={{ background: 'rgba(0,0,0,0.95)', flexDirection: 'column' as any, padding: '24px' }}>
           <button
             onClick={(e) => { e.stopPropagation(); setLightbox(null) }}
             style={{ position: 'fixed', top: '20px', insetInlineEnd: '20px', width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', fontSize: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 401 }}
@@ -411,8 +411,8 @@ export default function GalleryPage() {
 
       {/* ── DELETE CONFIRM ── */}
       {confirmDelete && (
-        <div onClick={() => setConfirmDelete(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(8px)' }}>
-          <div onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'} style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '28px', maxWidth: '380px', width: '100%', textAlign: 'center' }}>
+        <div className="app-modal-overlay app-modal-overlay--top" onClick={() => setConfirmDelete(null)} style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
+          <div className="app-modal-card" data-tight="1" onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'} style={{ background: 'var(--bg2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '20px', padding: '28px', maxWidth: '380px', width: '100%', textAlign: 'center' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
               <Icon name="delete_forever" size={28} color="#ef4444" />
             </div>
