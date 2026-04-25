@@ -322,56 +322,53 @@ export default function ArchivePage() {
                         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px', fontWeight: '600' }}>
                           {language === 'he' ? 'אין עסקאות בתיק זה' : 'No trades in this portfolio'}
                         </div>
-                      ) : trades.map((trade, idx) => (
-                        <div key={trade.id} className="archive-trade-row" style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px 70px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
-                          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
-                          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                          {/* Symbol */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={14} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
-                            </div>
-                            <div>
-                              <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
-                              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                {language === 'he' ? 'צמד' : 'Pair'}
+                      ) : (
+                        <>
+                          {/* Column header row */}
+                          <div className="archive-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '8px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                            <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
+                            <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
+                            <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
+                            <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
+                            <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                          </div>
+
+                          {trades.map((trade, idx) => (
+                            <div key={trade.id} className="archive-trade-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
+                              onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                              onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                            >
+                              {/* Symbol */}
+                              <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={14} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                              </div>
+
+                              {/* Outcome */}
+                              <div style={{ textAlign: 'center' }}>
+                                <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', whiteSpace: 'nowrap' }}>
+                                  {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
+                                </span>
+                              </div>
+
+                              {/* Date */}
+                              <div style={{ textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>
+                                {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                              </div>
+
+                              {/* RR */}
+                              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+
+                              {/* P&L */}
+                              <div style={{ textAlign: 'center', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                                {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                               </div>
                             </div>
-                          </div>
-
-                          {/* RR */}
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                            <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
-                          </div>
-
-                          {/* P&L */}
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                              {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
-                            </div>
-                            <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
-                          </div>
-
-                          {/* Date */}
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>
-                              {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
-                            </div>
-                            <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
-                              {language === 'he' ? 'תאריך' : 'Date'}
-                            </div>
-                          </div>
-
-                          {/* Outcome */}
-                          <div style={{ textAlign: 'center' }}>
-                            <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', whiteSpace: 'nowrap' }}>
-                              {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                          ))}
+                        </>
+                      )}
                     </div>
 
                   </div>
@@ -389,13 +386,15 @@ export default function ArchivePage() {
           .archive-restore-btn { padding: 7px 10px !important; }
           .restore-label { display: none; }
           .archive-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .archive-trade-row { grid-template-columns: 1fr 90px 65px !important; }
-          .archive-trade-row > div:nth-child(3),
-          .archive-trade-row > div:nth-child(4) { display: none !important; }
+          .archive-trade-row { grid-template-columns: 1fr 100px 100px 100px !important; gap: 8px !important; padding-inline: 12px !important; }
+          .archive-trade-row .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
           .archive-pnl { padding-inline: 10px !important; }
           .archive-pnl { display: none !important; }
+          .archive-trade-row { grid-template-columns: 1fr 80px 80px 90px !important; gap: 6px !important; padding-inline: 10px !important; }
+          .archive-trade-row .trade-col-symbol > div:first-child { width: 26px !important; height: 26px !important; }
+          .archive-trade-row .trade-col-symbol > div:last-child { font-size: 12px !important; }
         }
       `}</style>
     </div>

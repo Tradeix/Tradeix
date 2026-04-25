@@ -271,8 +271,10 @@ export default function TradesPage() {
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
-          .trade-row { grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important; padding: 10px 6px !important; }
-          .trade-col-symbol { display: none !important; }
+          .trade-row { grid-template-columns: 1fr 80px 80px 90px !important; gap: 6px !important; padding: 10px 6px !important; }
+          .trade-row .trade-col-symbol > div:first-child { width: 32px !important; height: 32px !important; border-radius: 10px !important; }
+          .trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; }
+          .trade-row .trade-col-symbol { gap: 8px !important; }
           .trades-filter-row { justify-content: space-between !important; width: 100%; }
           .trades-time-filter { order: -1; }
           .trades-outcome-btns { order: 1; }

@@ -514,8 +514,10 @@ export default function DashboardPage() {
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important; }
-          .trade-col-symbol { display: none !important; }
+          .recent-trade-row { grid-template-columns: 1fr 80px 80px 90px !important; gap: 6px !important; padding-inline: 8px !important; }
+          .recent-trade-row .trade-col-symbol > div:first-child { width: 30px !important; height: 30px !important; border-radius: 9px !important; }
+          .recent-trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; }
+          .recent-trade-row .trade-col-symbol { gap: 8px !important; }
           .trades-section-header { padding: 14px !important; }
           .balance-card .bal-amount { font-size: 29px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
