@@ -7,7 +7,7 @@ import {
   AlertTriangle, User, SlidersHorizontal, BadgeCheck, Crown, Info, XCircle,
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
   RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
-  Check, Brain,
+  Check, Brain, Images, Image as ImageIcon, UploadCloud, Banknote, Key, Monitor,
   type LucideProps,
 } from 'lucide-react'
 
@@ -78,6 +78,14 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   shield: Shield,
   check: Check,
   psychology: Brain,
+  photo_library: Images,
+  collections: Images,
+  add_a_photo: ImagePlus,
+  cloud_upload: UploadCloud,
+  image: ImageIcon,
+  payments: Banknote,
+  key: Key,
+  screenshot_monitor: Monitor,
 }
 
 interface IconProps extends Omit<LucideProps, 'ref'> {
