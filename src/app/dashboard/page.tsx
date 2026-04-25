@@ -457,40 +457,41 @@ export default function DashboardPage() {
                   : tr.noMoreTrades}
               </p>
             </div>
-          ) : trades.map((trade, idx) => (
-            <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row trade-row-anim"
-              style={{ display: 'grid', gridTemplateColumns: '1fr 80px 110px 90px 100px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px', animationDelay: `${0.4 + idx * 0.06}s` }}
-              onMouseOver={e => { e.currentTarget.style.background = 'var(--bg3)' }}
-              onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={16} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
+          ) : (
+            <>
+              {/* Column header row */}
+              <div className="recent-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
+                <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
+                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
+                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
+                <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
+                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+              </div>
+
+              {trades.map((trade, idx) => (
+                <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row trade-row-anim"
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px', animationDelay: `${0.4 + idx * 0.06}s` }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'var(--bg3)' }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                  <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={16} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
+                    </div>
+                    <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <span style={{ padding: '4px 12px', borderRadius: '8px', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                      {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
+                    </span>
+                  </div>
+                  <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
+                  <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '600', color: ACCENT }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div dir="ltr" style={{ textAlign: 'center', fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{tr.pair}</div>
-                </div>
-              </div>
-              <div className="trade-col-rr" style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: ACCENT }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>RR</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>P&L</div>
-              </div>
-              <div className="trade-col-date" style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>{tr.dateLabel}</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ padding: '4px 12px', borderRadius: '8px', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                  {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
-                </span>
-              </div>
-            </div>
-          ))}
+              ))}
+            </>
+          )}
         </div>
 
       </div>
@@ -506,14 +507,15 @@ export default function DashboardPage() {
           .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
           .data-by-label { display: none !important; }
-          .recent-trade-row { grid-template-columns: 1fr 70px 110px 90px !important; }
+          .recent-trade-row { grid-template-columns: 1fr 100px 90px 110px !important; }
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
-          .recent-trade-row { grid-template-columns: 1fr 58px 80px 65px !important; gap: 6px !important; }
+          .recent-trade-row { grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important; }
+          .trade-col-symbol { display: none !important; }
           .trades-section-header { padding: 14px !important; }
           .balance-card .bal-amount { font-size: 29px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
