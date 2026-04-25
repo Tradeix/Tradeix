@@ -472,9 +472,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         onClick={() => setSidebarCollapsed(v => !v)}
         title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
         style={{
-          position: 'fixed', top: '92px',
+          position: 'fixed', top: '22px',
           [isRTL ? 'right' : 'left']: `calc(${sidebarWidth} - 13px)`,
-          width: '26px', height: '52px',
+          width: '26px', height: '28px',
           borderRadius: '999px',
           background: 'var(--bg2)',
           border: '1px solid var(--border)',
