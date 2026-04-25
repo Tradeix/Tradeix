@@ -10,12 +10,21 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
-  green: '#10b981', blue: '#4b5563', purple: '#9ca3af',
-  gray: '#6b7280', cyan: '#374151', pink: '#d1d5db',
-  red: '#ef4444', amber: '#f59e0b',
+  green:  '#10b981',
+  blue:   '#3b82f6',
+  purple: '#8b5cf6',
+  red:    '#ef4444',
+  amber:  '#f59e0b',
+  cyan:   '#06b6d4',
+  pink:   '#ec4899',
+  teal:   '#14b8a6',
+  indigo: '#6366f1',
+  rose:   '#f43f5e',
+  // legacy aliases so previously saved values still resolve
+  gray:   '#6b7280',
 }
 function getPortfolioColor(portfolio: any) {
-  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'blue'] || '#10b981'
+  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'green'] || '#10b981'
 }
 
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
@@ -120,7 +129,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                   const isActive = activePortfolio?.id === p.id
                   const pColor = getPortfolioColor(p)
                   return (
-                    <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.refresh() }}
+                    <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.push('/dashboard') }}
                       className="portfolio-item-anim"
                       style={{
                         padding: '10px 14px', fontSize: '14px', cursor: 'pointer',
