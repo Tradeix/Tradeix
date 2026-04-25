@@ -79,13 +79,13 @@ export default function UpgradePage() {
         </div>
 
         <h1 style={{
-          fontSize: '34px', fontWeight: '900', color: 'var(--text)',
+          fontSize: '33px', fontWeight: '900', color: 'var(--text)',
           letterSpacing: '-0.03em', margin: '0 0 10px', lineHeight: 1.15,
         }}>
           {language === 'he' ? 'שדרג ל' : 'Upgrade to '}
           <span style={{ color: '#f59e0b' }}>PRO</span>
         </h1>
-        <p style={{ fontSize: '16px', color: 'var(--text3)', fontWeight: '500', margin: 0, lineHeight: 1.6 }}>
+        <p style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '500', margin: 0, lineHeight: 1.6 }}>
           {language === 'he'
             ? 'קבל גישה מלאה לכל הכלים שתצטרך לנתח ולשפר את ביצועי המסחר שלך'
             : 'Get full access to all the tools you need to analyze and improve your trading'}
@@ -107,13 +107,13 @@ export default function UpgradePage() {
         <div style={{ textAlign: 'center', marginBottom: '28px', position: 'relative' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '999px', padding: '5px 14px', marginBottom: '16px' }}>
             <Icon name="workspace_premium" size={14} color="#f59e0b" />
-            <span style={{ fontSize: '13px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               {language === 'he' ? 'מנוי פרימיום' : 'Premium Plan'}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '4px' }}>
-            <span style={{ fontSize: '54px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>$20</span>
-            <span style={{ fontSize: '16px', color: 'var(--text3)', fontWeight: '600', paddingBottom: '10px' }}>
+            <span style={{ fontSize: '53px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>$20</span>
+            <span style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '600', paddingBottom: '10px' }}>
               / {language === 'he' ? 'חודש' : 'month'}
             </span>
           </div>
@@ -140,7 +140,7 @@ export default function UpgradePage() {
               }}>
                 <Icon name={f.icon} size={14} color="#f59e0b" />
               </div>
-              <span style={{ fontSize: '14px', color: 'var(--text2)', fontWeight: '600' }}>{f.label}</span>
+              <span style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '600' }}>{f.label}</span>
             </div>
           ))}
         </div>
@@ -155,7 +155,7 @@ export default function UpgradePage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             }}>
               <Icon name="bolt" size={16} color="#f59e0b" />
-              <span style={{ fontSize: '16px', fontWeight: '800', color: '#f59e0b' }}>
+              <span style={{ fontSize: '15px', fontWeight: '800', color: '#f59e0b' }}>
                 {language === 'he' ? 'המנוי הפעיל שלך' : 'Your active plan'}
               </span>
             </div>
@@ -165,7 +165,7 @@ export default function UpgradePage() {
               style={{
                 width: '100%', background: 'transparent',
                 border: '1px solid rgba(239,68,68,0.25)', borderRadius: '12px',
-                padding: '10px', fontSize: '14px', fontWeight: '700',
+                padding: '10px', fontSize: '13px', fontWeight: '700',
                 color: 'rgba(239,68,68,0.6)', cursor: loading ? 'wait' : 'pointer',
                 fontFamily: 'Heebo, sans-serif', opacity: loading ? 0.7 : 1,
                 transition: 'all 0.2s',
@@ -185,7 +185,7 @@ export default function UpgradePage() {
               width: '100%',
               background: loading ? 'rgba(245,158,11,0.5)' : 'linear-gradient(135deg, #f59e0b, #f97316)',
               border: 'none', borderRadius: '16px', padding: '16px',
-              fontSize: '18px', fontWeight: '900', color: '#fff',
+              fontSize: '17px', fontWeight: '900', color: '#fff',
               cursor: loading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif',
               boxShadow: '0 8px 32px rgba(245,158,11,0.35)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -227,7 +227,7 @@ export default function UpgradePage() {
             }}>
               <Icon name={badge.icon} size={18} color={badge.color} />
             </div>
-            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>{badge.label}</div>
+            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>{badge.label}</div>
           </div>
         ))}
       </div>

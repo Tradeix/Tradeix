@@ -81,7 +81,7 @@ body {
 .btn-primary {
   background: var(--blue);
   color: #fff; border: none; border-radius: 999px;
-  padding: 10px 22px; font-size: 15px; font-weight: 600; cursor: pointer;
+  padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer;
   transition: background .15s, opacity .15s;
   font-family: 'Heebo','Rubik',sans-serif;
 }
@@ -90,7 +90,7 @@ body {
 
 .btn-ghost {
   background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
-  border-radius: var(--radius-sm); padding: 10px 20px; font-size: 15px;
+  border-radius: var(--radius-sm); padding: 10px 20px; font-size: 14px;
   font-weight: 600; cursor: pointer; transition: all .2s;
   font-family: 'Heebo','Rubik',sans-serif;
 }
@@ -100,7 +100,7 @@ body {
 input, select, textarea {
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text);
-  font-size: 16px; font-family: 'Heebo','Rubik',sans-serif;
+  font-size: 15px; font-family: 'Heebo','Rubik',sans-serif;
   width: 100%; transition: border .2s, background .2s; outline: none;
 }
 input:focus, select:focus, textarea:focus {
@@ -117,7 +117,7 @@ select option { background: var(--bg2); color: var(--text); }
 .select-wrap::after {
   content: 'expand_more';
   font-family: 'Material Symbols Outlined';
-  font-size: 20px;
+  font-size: 19px;
   position: absolute; top: 50%; transform: translateY(-50%);
   inset-inline-end: 12px; pointer-events: none;
   color: var(--text3);
@@ -193,7 +193,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 640px) {
   /* PageHeader */
   .page-header-row { margin-bottom: 20px !important; }
-  .page-header-title { font-size: 24px !important; }
+  .page-header-title { font-size: 23px !important; }
 }
 
 /* ══════════════════════════════════════

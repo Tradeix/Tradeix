@@ -91,12 +91,12 @@ export default function StatsPage() {
   const StatCard = ({ label, value, color, icon, idx = 0 }: any) => (
     <div className="card-hover stat-anim" style={{ ...card, padding: '20px', animationDelay: `${idx * 0.05}s` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-        <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
+        <div style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
         <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name={icon} size={16} color={color} />
         </div>
       </div>
-      <div style={{ fontSize: '26px', fontWeight: '700', color, letterSpacing: '-0.02em' }}>{value}</div>
+      <div style={{ fontSize: '25px', fontWeight: '700', color, letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
 
@@ -109,13 +109,13 @@ export default function StatsPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', marginBottom: '24px' }}>
             <Icon name="lock" size={32} color="#f59e0b" />
           </div>
-          <div style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text)', marginBottom: '12px' }}>
+          <div style={{ fontSize: '23px', fontWeight: '600', color: 'var(--text)', marginBottom: '12px' }}>
             {language === 'he' ? 'עמוד הסטטיסטיקות זמין ל PRO בלבד' : 'Statistics page is PRO only'}
           </div>
-          <div style={{ fontSize: '16px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
             {language === 'he' ? 'שדרג למנוי PRO כדי לגשת לניתוחים מעמיקים, גרפים ולוח שנה חודשי' : 'Upgrade to PRO to access deep analytics, charts and monthly calendar'}
           </div>
-          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f59e0b', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '16px', fontWeight: '600' }}>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f59e0b', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px', fontWeight: '600' }}>
             <Icon name="bolt" size={16} />
             {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
           </Link>
@@ -132,13 +132,13 @@ export default function StatsPage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="folder_open" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '22px', fontWeight: '600', marginBottom: '10px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '21px', fontWeight: '600', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
-          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '24px' }}>
+          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -174,12 +174,12 @@ export default function StatsPage() {
               <Icon name="show_chart" size={22} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
+              <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
             </div>
           </div>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
-            <div dir="ltr" style={{ fontSize: '24px', fontWeight: '800', color: totalPnl >= 0 ? '#10b981' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
+            <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', color: totalPnl >= 0 ? '#10b981' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
               {totalPnl >= 0 ? '+' : '-'}${Math.abs(totalPnl).toLocaleString()}
             </div>
           </div>
@@ -197,18 +197,18 @@ export default function StatsPage() {
                     <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
-                <YAxis tick={{ fontSize: 12, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
+                <YAxis tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
                 <Tooltip
                   cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
                   content={({ active, payload, label }: any) => {
                     if (!active || !payload?.length) return null
                     const val = payload[0].value
                     return (
-                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '14px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
-                        <div style={{ color: 'var(--text3)', fontSize: '12px', marginBottom: '4px' }}>{label}</div>
-                        <div style={{ color: val < 0 ? '#ef4444' : '#10b981', fontWeight: 700, fontSize: '16px' }}>${val.toLocaleString()}</div>
-                        <div style={{ color: 'var(--text3)', fontSize: '12px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
+                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
+                        <div style={{ color: 'var(--text3)', fontSize: '11px', marginBottom: '4px' }}>{label}</div>
+                        <div style={{ color: val < 0 ? '#ef4444' : '#10b981', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
+                        <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
                       </div>
                     )
                   }}
@@ -221,7 +221,7 @@ export default function StatsPage() {
               <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(16,185,129,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="show_chart" size={26} color="var(--text3)" />
               </div>
-              <p style={{ fontSize: '14px', color: 'var(--text3)', margin: 0 }}>{tr.noData}</p>
+              <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>{tr.noData}</p>
             </div>
           )}
         </div>
@@ -236,7 +236,7 @@ export default function StatsPage() {
               <Icon name="calendar_today" size={22} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
+              <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -244,7 +244,7 @@ export default function StatsPage() {
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="chevron_right" size={18} />
             </button>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
+            <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="chevron_left" size={18} />
@@ -291,27 +291,27 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 1024px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 640px) { .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 22px !important; } }
+        @media (max-width: 640px) { .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 21px !important; } }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .cal-dayname { font-size: 12px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .cal-dayname { font-size: 11px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
         .cal-cell { border-radius: 12px; min-height: 84px; padding: 8px 6px 6px; display: flex; flex-direction: column; cursor: default; }
-        .cal-day { font-size: 14px; font-weight: 600; line-height: 1; margin-bottom: 4px; align-self: flex-start; padding-inline-start: 2px; }
+        .cal-day { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; align-self: flex-start; padding-inline-start: 2px; }
         .cal-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
-        .cal-pnl { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-align: center; }
-        .cal-wr { font-size: 11px; font-weight: 600; text-align: center; letter-spacing: 0.04em; }
+        .cal-pnl { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-align: center; }
+        .cal-wr { font-size: 10px; font-weight: 600; text-align: center; letter-spacing: 0.04em; }
         @media (max-width: 640px) {
           .cal-wrap { padding: 14px !important; }
           .cal-grid { gap: 4px; }
           .cal-cell { min-height: 68px; border-radius: 10px; padding: 5px 4px; }
-          .cal-day { font-size: 12px; } .cal-pnl { font-size: 13px; } .cal-wr { font-size: 10px; }
-          .cal-dayname { font-size: 11px; }
+          .cal-day { font-size: 11px; } .cal-pnl { font-size: 12px; } .cal-wr { font-size: 9px; }
+          .cal-dayname { font-size: 10px; }
         }
         @media (max-width: 400px) {
           .cal-wrap { padding: 12px !important; }
           .cal-grid { gap: 3px; }
           .cal-cell { min-height: 56px; border-radius: 8px; padding: 4px 3px; }
-          .cal-day { font-size: 11px; } .cal-pnl { font-size: 12px; } .cal-wr { font-size: 10px; }
-          .cal-dayname { font-size: 10px; }
+          .cal-day { font-size: 10px; } .cal-pnl { font-size: 11px; } .cal-wr { font-size: 9px; }
+          .cal-dayname { font-size: 9px; }
         }
       `}</style>
     </div>

@@ -81,7 +81,7 @@ export default function SettingsPage() {
     <div style={{ display: 'flex', gap: '6px' }}>
       {options.map(opt => (
         <button key={opt.value} onClick={() => onChange(opt.value)} style={{
-          padding: '7px 18px', borderRadius: '10px', fontSize: '14px',
+          padding: '7px 18px', borderRadius: '10px', fontSize: '13px',
           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
           border: `1px solid ${value === opt.value ? 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
           background: value === opt.value ? 'rgba(16,185,129,0.15)' : 'var(--bg3)',
@@ -110,8 +110,8 @@ export default function SettingsPage() {
               <Icon name="person" size={16} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'פרופיל ותמונה' : 'Profile & photo'}</div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'פרטי חשבון' : 'Account Details'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'פרופיל ותמונה' : 'Profile & photo'}</div>
             </div>
           </div>
 
@@ -121,7 +121,7 @@ export default function SettingsPage() {
               width: '72px', height: '72px', borderRadius: '50%',
               background: avatarUrl ? undefined : '#10b981',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '28px', fontWeight: '700', color: '#fff',
+              fontSize: '27px', fontWeight: '700', color: '#fff',
               marginBottom: '10px', cursor: 'pointer', overflow: 'hidden', position: 'relative',
               border: '2px solid rgba(16,185,129,0.3)',
             }}>
@@ -133,14 +133,14 @@ export default function SettingsPage() {
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
-            <button onClick={() => fileRef.current?.click()} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '5px 14px', fontSize: '13px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
+            <button onClick={() => fileRef.current?.click()} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '5px 14px', fontSize: '12px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>
               {language === 'he' ? '✎ שינוי תמונה' : '✎ Change photo'}
             </button>
           </div>
 
           {/* Nickname */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'כינוי' : 'Nickname'}
             </label>
             <input value={nickname} onChange={e => setNickname(e.target.value)} placeholder={language === 'he' ? 'הכינוי שלך' : 'Your nickname'} />
@@ -148,7 +148,7 @@ export default function SettingsPage() {
 
           {/* Email */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'אימייל' : 'Email'}
             </label>
             <input value={user?.email || ''} disabled style={{ opacity: 0.4, cursor: 'not-allowed' }} />
@@ -157,7 +157,7 @@ export default function SettingsPage() {
           <button onClick={handleSave} disabled={saving} style={{
             width: '100%', background: '#10b981',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
-            fontSize: '15px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+            fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
           }}>
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
@@ -171,14 +171,14 @@ export default function SettingsPage() {
               <Icon name="tune" size={16} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
             </div>
           </div>
 
           {/* Language */}
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'שפה' : 'Language'}
             </div>
             <ToggleGroup
@@ -186,14 +186,14 @@ export default function SettingsPage() {
               onChange={setPendingLang}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
               {pendingLang === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
             </div>
           </div>
 
           {/* Theme */}
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {language === 'he' ? 'עיצוב' : 'Theme'}
             </div>
             <ToggleGroup
@@ -201,7 +201,7 @@ export default function SettingsPage() {
               onChange={setPendingTheme}
               options={[{ value: 'dark', label: language === 'he' ? 'כהה' : 'Dark' }, { value: 'light', label: language === 'he' ? 'בהיר' : 'Light' }]}
             />
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
               {pendingTheme === 'dark'
                 ? (language === 'he' ? 'עיצוב כהה' : 'Dark mode')
                 : (language === 'he' ? 'עיצוב בהיר' : 'Light mode')}
@@ -221,7 +221,7 @@ export default function SettingsPage() {
           }} disabled={savingPrefs} style={{
             width: '100%', background: '#10b981',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
-            fontSize: '15px', fontWeight: '700',
+            fontSize: '14px', fontWeight: '700',
             cursor: savingPrefs ? 'wait' : 'pointer',
             opacity: savingPrefs ? 0.7 : 1,
             fontFamily: 'Heebo, sans-serif',
@@ -245,8 +245,8 @@ export default function SettingsPage() {
               <Icon name="workspace_premium" size={16} color={isPro ? '#f59e0b' : '#10b981'} />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing'}</div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing'}</div>
             </div>
           </div>
 
@@ -258,14 +258,14 @@ export default function SettingsPage() {
             borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
           }}>
             <div>
-              <div style={{ fontSize: '13px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(16,185,129,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(16,185,129,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
-              <div style={{ fontSize: '24px', fontWeight: '900', color: isPro ? '#f59e0b' : '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '23px', fontWeight: '900', color: isPro ? '#f59e0b' : '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
-                {isPro && <span style={{ fontSize: '14px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {language === 'he' ? 'פעיל' : 'Active'}</span>}
+                {isPro && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {language === 'he' ? 'פעיל' : 'Active'}</span>}
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
                 {isPro ? '$20 / ' + (language === 'he' ? 'חודש' : 'month') : (language === 'he' ? 'ללא עלות' : 'No charge')}
               </div>
             </div>
@@ -291,7 +291,7 @@ export default function SettingsPage() {
             ]).map((item, i, arr) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
                 <Icon name={item.ok ? 'check_circle' : 'cancel'} size={14} color={item.ok ? (isPro ? '#f59e0b' : '#22c55e') : 'var(--text3)'} />
-                <span style={{ fontSize: '14px', color: item.ok ? 'var(--text2)' : 'var(--text3)', fontWeight: '600', textDecoration: item.ok ? 'none' : 'line-through' }}>
+                <span style={{ fontSize: '13px', color: item.ok ? 'var(--text2)' : 'var(--text3)', fontWeight: '600', textDecoration: item.ok ? 'none' : 'line-through' }}>
                   {item.feature}
                 </span>
               </div>
@@ -303,7 +303,7 @@ export default function SettingsPage() {
             <button
               onClick={() => setShowCancelConfirm(true)}
               disabled={cancelingPro}
-              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '15px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1 }}
+              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1 }}
               onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
               onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
             >
@@ -315,7 +315,7 @@ export default function SettingsPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               width: '100%', background: '#f59e0b',
               color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
-              fontSize: '15px', fontWeight: '800', textDecoration: 'none',
+              fontSize: '14px', fontWeight: '800', textDecoration: 'none',
               transition: 'all 0.15s',
             }}
               onMouseOver={(e: any) => { e.currentTarget.style.opacity = '0.9' }}
@@ -335,10 +335,10 @@ export default function SettingsPage() {
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="warning" size={26} color="#ef4444" />
             </div>
-            <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
+            <div style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
               {language === 'he' ? 'לבטל את המנוי?' : 'Cancel subscription?'}
             </div>
-            <div style={{ fontSize: '15px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
+            <div style={{ fontSize: '14px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
                 ? 'האם אתה בטוח שברצונך לבטל את המנוי?\nכל ההיסטוריה, העסקאות והתוכן שלך יימחקו לצמיתות ולא ניתן יהיה לשחזרם.'
                 : 'Are you sure you want to cancel?\nAll your history, trades, and content will be permanently deleted and cannot be recovered.'}
@@ -346,13 +346,13 @@ export default function SettingsPage() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => setShowCancelConfirm(false)}
-                style={{ flex: 1, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '11px', fontSize: '15px', fontWeight: '700', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
+                style={{ flex: 1, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
                 {language === 'he' ? 'חזור' : 'Go back'}
               </button>
               <button
                 onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription(); router.push('/dashboard') }}
-                style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '15px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
+                style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
                 {language === 'he' ? 'כן, מחק הכל' : 'Yes, delete everything'}
               </button>

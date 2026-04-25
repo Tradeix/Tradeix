@@ -29,14 +29,14 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
         )}
         <div style={{ minWidth: 0 }}>
           <h2 className="page-header-title" style={{
-            fontSize: '24px', fontWeight: '600',
+            fontSize: '23px', fontWeight: '600',
             letterSpacing: '-0.02em', lineHeight: 1.15, margin: 0,
             color: 'var(--text)',
             fontFamily: 'Heebo, sans-serif',
           }}>{title}</h2>
           {subtitle && (
             <p style={{
-              fontSize: '15px', fontWeight: '500', color: 'var(--text3)',
+              fontSize: '14px', fontWeight: '500', color: 'var(--text3)',
               margin: '6px 0 0', lineHeight: 1.45,
               fontFamily: 'Heebo, sans-serif',
             }}>{subtitle}</p>
@@ -49,7 +49,7 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
       <style>{`
         @media (max-width: 640px) {
           .page-header-row { gap: 12px !important; margin-bottom: 20px !important; }
-          .page-header-row .page-header-title { font-size: 20px !important; }
+          .page-header-row .page-header-title { font-size: 19px !important; }
           .page-header-row > div:first-child > div:first-child { width: 36px !important; height: 36px !important; }
         }
       `}</style>

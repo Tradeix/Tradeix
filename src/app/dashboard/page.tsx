@@ -153,13 +153,13 @@ export default function DashboardPage() {
         <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
           <Icon name="folder_open" size={32} color="var(--text3)" />
         </div>
-        <div style={{ fontSize: '22px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+        <div style={{ fontSize: '21px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
           {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
         </div>
-        <div style={{ fontSize: '16px', color: 'var(--text3)', marginBottom: '28px' }}>
+        <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '28px' }}>
           {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
         </div>
-        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '16px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
           {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
         </button>
       </div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                 <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{
-                  fontSize: '28px', fontWeight: '800', color: '#10b981',
+                  fontSize: '27px', fontWeight: '800', color: '#10b981',
                   letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
                   textTransform: 'uppercase',
                 }}>
@@ -233,14 +233,14 @@ export default function DashboardPage() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
                 <h2 className="welcome-title" style={{
-                  fontSize: '26px', fontWeight: '800', margin: 0,
+                  fontSize: '25px', fontWeight: '800', margin: 0,
                   color: 'var(--text)', letterSpacing: '-0.02em',
                   fontFamily: 'Heebo, sans-serif', lineHeight: 1.1,
                 }}>
                   {getGreeting()}, {userName}
                 </h2>
                 <span className="welcome-date" style={{
-                  fontSize: '14px', fontWeight: '500', color: 'var(--text3)',
+                  fontSize: '13px', fontWeight: '500', color: 'var(--text3)',
                   letterSpacing: '0.01em',
                 }}>
                   {dateLabel}
@@ -253,7 +253,7 @@ export default function DashboardPage() {
                 borderInlineStart: '2px solid rgba(16,185,129,0.35)',
               }}>
                 <p className="welcome-quote" key={quoteIndex} style={{
-                  fontSize: '16px', fontWeight: '500', color: 'var(--text2)',
+                  fontSize: '15px', fontWeight: '500', color: 'var(--text2)',
                   margin: 0, lineHeight: 1.55,
                   fontFamily: 'Heebo, sans-serif',
                   animation: 'quoteFade 18s ease-in-out',
@@ -280,8 +280,8 @@ export default function DashboardPage() {
           <Icon name="space_dashboard" size={20} color="#10b981" />
         </div>
         <div>
-          <h2 className="section-title" style={{ fontSize: '24px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
-          <p className="section-subtitle" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+          <h2 className="section-title" style={{ fontSize: '23px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
+          <p className="section-subtitle" style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? 'מבט כולל על ביצועי התיק שלך' : 'A complete look at your portfolio performance'}
           </p>
         </div>
@@ -305,11 +305,11 @@ export default function DashboardPage() {
                 <Icon name="cases" size={22} color="#10b981" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="bal-name" style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
+                <div className="bal-name" style={{ fontSize: '21px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
                   {initialCapital > 0 && (
-                    <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text2)' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
                       {language === 'he' ? 'קרן' : 'Capital'}: <span style={{ color: 'var(--text)' }}>${initialCapital.toLocaleString()}</span>
                     </span>
                   )}
@@ -320,10 +320,10 @@ export default function DashboardPage() {
 
           {/* Balance section */}
           <div className="bal-section" style={{ padding: '20px 28px', position: 'relative' }}>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
             </div>
-            <div dir="ltr" className="bal-amount" style={{ fontSize: '42px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)' }}>
+            <div dir="ltr" className="bal-amount" style={{ fontSize: '41px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)' }}>
               ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
@@ -331,20 +331,20 @@ export default function DashboardPage() {
           {/* Mini stats row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'rgba(16,185,129,0.06)', marginTop: 'auto' }}>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
-              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '18px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
+              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
-              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '18px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
+              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
-              <div className="bal-mini-val" style={{ fontSize: '18px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
+              <div className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioValue.maxDrawdown > 15 ? '#ef4444' : portfolioValue.maxDrawdown > 5 ? '#f59e0b' : '#22c55e' }}>
                 -{portfolioValue.maxDrawdown.toFixed(1)}%
               </div>
             </div>
@@ -364,18 +364,18 @@ export default function DashboardPage() {
             <Icon name="monitoring" size={20} color="#10b981" />
           </div>
           <div>
-            <h2 className="section-title" style={{ fontSize: '24px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
-            <p className="section-subtitle" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
+            <h2 className="section-title" style={{ fontSize: '23px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
+            <p className="section-subtitle" style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text3)', margin: '4px 0 0', lineHeight: 1.4, fontFamily: 'Heebo, sans-serif' }}>
               {language === 'he' ? 'סטטיסטיקות מסחר לפי תקופה' : 'Trading statistics by period'}
             </p>
           </div>
         </div>
         <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineStart: 'auto' }}>
-          <span className="data-by-label" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
+          <span className="data-by-label" style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
           <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
             {TIME_FILTERS.map((label, i) => (
               <button key={i} onClick={() => setTimeFilter(i)} style={{
-                padding: '5px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: '500',
+                padding: '5px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '500',
                 cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
                 background: timeFilter === i ? '#10b981' : 'transparent',
                 color: timeFilter === i ? '#fff' : 'var(--text3)',
@@ -388,7 +388,7 @@ export default function DashboardPage() {
       {trades.length === 0 ? (
         <div style={{ ...card, padding: '48px', textAlign: 'center' }}>
           <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: '15px', color: 'var(--text3)', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: 'var(--text3)', margin: 0 }}>
             {language === 'he' ? 'לא ביצעת עסקאות עדיין' : 'No trades yet'}
           </p>
         </div>
@@ -397,8 +397,8 @@ export default function DashboardPage() {
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
             sub: <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '600', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.wins}W</span>
-              <span style={{ fontSize: '13px', fontWeight: '600', color: '#ef4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.losses}L</span>
+              <span style={{ fontSize: '12px', fontWeight: '600', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.wins}W</span>
+              <span style={{ fontSize: '12px', fontWeight: '600', color: '#ef4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.losses}L</span>
             </div> },
           { label: tr.winRate, value: `${stats.winRate.toFixed(0)}%`, icon: 'emoji_events', color: '#22c55e' },
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
@@ -406,12 +406,12 @@ export default function DashboardPage() {
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-              <span style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text2)' }}>{s.label}</span>
+              <span style={{ fontSize: '17px', fontWeight: '600', color: 'var(--text2)' }}>{s.label}</span>
               <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={s.icon} size={17} color={s.color} />
               </div>
             </div>
-            <div style={{ fontSize: '30px', fontWeight: '700', color: typeof s.value === 'string' && s.value.startsWith('+') ? s.color : typeof s.value === 'string' && s.value.startsWith('-') ? '#ef4444' : 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: '29px', fontWeight: '700', color: typeof s.value === 'string' && s.value.startsWith('+') ? s.color : typeof s.value === 'string' && s.value.startsWith('-') ? '#ef4444' : 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>{s.value}</div>
             {s.sub || null}
           </div>
         ))}
@@ -428,15 +428,15 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="trades-section-header" style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div>
-            <div style={{ fontSize: '17px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.recentTrades}</div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '500' }}>{tr.liveActivity}</div>
+            <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.recentTrades}</div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '500' }}>{tr.liveActivity}</div>
           </div>
           <Link href="/trades" style={{
             display: 'flex', alignItems: 'center', gap: '5px',
             padding: '7px 16px', borderRadius: '8px',
             background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
             color: '#10b981',
-            fontSize: '14px', fontWeight: '600', textDecoration: 'none',
+            fontSize: '13px', fontWeight: '600', textDecoration: 'none',
             transition: 'all 0.15s',
           }}>
             {language === 'he' ? 'לכל העסקאות' : 'View All'}
@@ -449,7 +449,7 @@ export default function DashboardPage() {
           {trades.length === 0 ? (
             <div style={{ padding: '48px', textAlign: 'center' }}>
               <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
-              <p style={{ fontSize: '15px', color: 'var(--text3)', margin: 0 }}>
+              <p style={{ fontSize: '14px', color: 'var(--text3)', margin: 0 }}>
                 {timeFilter === 0 ? (language === 'he' ? 'לא ביצעת עסקאות היום' : 'No trades today')
                   : timeFilter === 1 ? (language === 'he' ? 'לא ביצעת עסקאות השבוע' : 'No trades this week')
                   : timeFilter === 2 ? (language === 'he' ? 'לא ביצעת עסקאות החודש' : 'No trades this month')
@@ -468,24 +468,24 @@ export default function DashboardPage() {
                   <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={16} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{tr.pair}</div>
+                  <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '500', marginTop: '3px' }}>{tr.pair}</div>
                 </div>
               </div>
               <div className="trade-col-rr" style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '15px', fontWeight: '600', color: ACCENT }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>RR</div>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: ACCENT }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>RR</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>P&L</div>
+                <div dir="ltr" style={{ fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
+                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>P&L</div>
               </div>
               <div className="trade-col-date" style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{tr.dateLabel}</div>
+                <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
+                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>{tr.dateLabel}</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <span style={{ padding: '4px 12px', borderRadius: '8px', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                <span style={{ padding: '4px 12px', borderRadius: '8px', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
                   {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
                 </span>
               </div>
@@ -515,21 +515,21 @@ export default function DashboardPage() {
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
           .recent-trade-row { grid-template-columns: 1fr 58px 80px 65px !important; gap: 6px !important; }
           .trades-section-header { padding: 14px !important; }
-          .balance-card .bal-amount { font-size: 30px !important; }
+          .balance-card .bal-amount { font-size: 29px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
-          .balance-card .bal-name { font-size: 18px !important; }
-          .balance-card .bal-mini-val { font-size: 15px !important; }
+          .balance-card .bal-name { font-size: 17px !important; }
+          .balance-card .bal-mini-val { font-size: 14px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
           .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
           .welcome-inner { gap: 14px !important; }
           .welcome-tile { width: 46px !important; height: 46px !important; border-radius: 13px !important; }
-          .welcome-tile > span { font-size: 24px !important; }
-          .welcome-title { font-size: 20px !important; }
-          .welcome-date { font-size: 13px !important; }
-          .welcome-quote { font-size: 14.5px !important; }
-          .section-title { font-size: 20px !important; }
+          .welcome-tile > span { font-size: 23px !important; }
+          .welcome-title { font-size: 19px !important; }
+          .welcome-date { font-size: 12px !important; }
+          .welcome-quote { font-size: 13.5px !important; }
+          .section-title { font-size: 19px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
         }

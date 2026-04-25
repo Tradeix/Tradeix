@@ -104,13 +104,13 @@ export default function TradesPage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="folder_open" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '22px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '21px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
-          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '24px' }}>
+          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -133,7 +133,7 @@ export default function TradesPage() {
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setFilter(filter === key ? 'all' : key as any); setPage(0) }} style={{
               display: 'flex', alignItems: 'center', gap: '5px',
-              padding: '7px 14px', borderRadius: '10px', fontSize: '13px',
+              padding: '7px 14px', borderRadius: '10px', fontSize: '12px',
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
               border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
               background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)' : 'var(--bg3)',
@@ -142,7 +142,7 @@ export default function TradesPage() {
             }}>
               <Icon name={icon} size={13} />
               {label}
-              {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '12px' }}>{total}</span>}
+              {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '11px' }}>{total}</span>}
             </button>
           ))}
         </div>
@@ -152,13 +152,13 @@ export default function TradesPage() {
 
         {/* Time filter */}
         <div className="trades-time-filter" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span className="trades-data-by-label" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+          <span className="trades-data-by-label" style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
             {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
           </span>
         <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
           {TIME_LABELS.map((label, i) => (
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
-              padding: '4px 10px', borderRadius: '7px', fontSize: '12px', fontWeight: '700',
+              padding: '4px 10px', borderRadius: '7px', fontSize: '11px', fontWeight: '700',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
               background: timeFilter === i ? '#10b981' : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',
@@ -178,7 +178,7 @@ export default function TradesPage() {
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
-            <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
               {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades')
                 : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades')
                 : timeFilter === 1 ? (language === 'he' ? 'לא ביצעת עסקאות היום' : 'No trades today')
@@ -186,12 +186,12 @@ export default function TradesPage() {
                 : timeFilter === 3 ? (language === 'he' ? 'לא ביצעת עסקאות החודש' : 'No trades this month')
                 : tr.noTradesYet}
             </div>
-            <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
               {filter !== 'all' ? (language === 'he' ? 'נסה לשנות את הפילטר' : 'Try changing the filter')
                 : timeFilter > 0 ? (language === 'he' ? 'נסה לשנות את טווח הזמן' : 'Try changing the time range')
                 : tr.noTradesDesc}
             </div>
-            {filter === 'all' && <Link href="/add-trade" style={{ background: '#10b981', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
+            {filter === 'all' && <Link href="/add-trade" style={{ background: '#10b981', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
           </div>
         ) : (
           <div style={{ padding: '8px 12px' }}>
@@ -210,8 +210,8 @@ export default function TradesPage() {
                     <Icon name={isLong(trade.direction) ? 'trending_up' : 'trending_down'} size={20} color={isLong(trade.direction) ? '#22c55e' : '#ef4444'} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                    <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
                       {language === 'he' ? 'צמד' : 'Pair'}
                     </div>
                   </div>
@@ -219,31 +219,31 @@ export default function TradesPage() {
 
                 {/* RR */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
                 </div>
 
                 {/* P&L */}
                 <div style={{ textAlign: 'center' }}>
-                  <div dir="ltr" style={{ fontSize: '17px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                  <div dir="ltr" style={{ fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                     {trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
+                  <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
                 </div>
 
                 {/* Date */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text2)' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
                     {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
                     {language === 'he' ? 'תאריך' : 'Date'}
                   </div>
                 </div>
 
                 {/* Status */}
                 <div style={{ textAlign: 'center' }}>
-                  <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: '700', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
+                  <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '700', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
                     {trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}
                   </span>
                 </div>
@@ -260,7 +260,7 @@ export default function TradesPage() {
             style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
             <Icon name={olderIcon} size={18} />
           </button>
-          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)' }}>
+          <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)' }}>
             {page + 1} / {totalPages}
           </span>
           <button onClick={() => changePage(-1)} disabled={!canNewer}
