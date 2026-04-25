@@ -271,9 +271,9 @@ export default function DashboardPage() {
           OVERVIEW + PERFORMANCE — side-by-side on desktop,
           stacked on tablet/mobile
           ══════════════════════════════════════════════ */}
-      <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'start' }}>
+      <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'stretch' }}>
 
-      <div className="overview-col">
+      <div className="overview-col" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -290,10 +290,10 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance Card
           ══════════════════════════════════════════════ */}
-      <div className="top-row section-anim anim-delay-1">
+      <div className="top-row section-anim anim-delay-1" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Total Balance Card ── */}
-        <div className="card-hover balance-card" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: '1px solid rgba(16,185,129,0.15)', position: 'relative' }}>
+        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: '1px solid rgba(16,185,129,0.15)', position: 'relative' }}>
           {/* Green glow effect */}
           <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -354,7 +354,7 @@ export default function DashboardPage() {
       </div>
       </div>
 
-      <div className="perf-col">
+      <div className="perf-col" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* ══════════════════════════════════════════════
           STAT CARDS ROW — with time filter
           ══════════════════════════════════════════════ */}
@@ -393,7 +393,7 @@ export default function DashboardPage() {
           </p>
         </div>
       ) : (
-      <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+      <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', flex: 1, alignContent: 'stretch' }}>
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
             sub: <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
