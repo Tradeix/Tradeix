@@ -280,7 +280,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     ...(isPro ? [{ href: '/stats', icon: 'monitoring', label: tr.statistics }] : []),
   ]
   const BOTTOM_NAV = [
-    { href: '/gallery', icon: 'collections', label: language === 'he' ? 'גלריה' : 'Gallery' },
+    { href: '/gallery', icon: 'photo_library', label: language === 'he' ? 'גלריה' : 'Gallery' },
     { href: '/portfolios', icon: 'cases', label: tr.portfolioSettings },
     ...(isPro ? [{ href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' }] : []),
     { href: '/settings', icon: 'settings', label: tr.personalSettings },
