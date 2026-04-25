@@ -472,17 +472,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         onClick={() => setSidebarCollapsed(v => !v)}
         title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
         style={{
-          position: 'fixed', top: '22px',
-          [isRTL ? 'right' : 'left']: `calc(${sidebarWidth} - 13px)`,
-          width: '26px', height: '28px',
-          borderRadius: '999px',
+          position: 'fixed', top: '50%',
+          [isRTL ? 'right' : 'left']: sidebarWidth,
+          [isRTL ? 'marginRight' : 'marginLeft']: '-1px',
+          transform: 'translateY(-50%)',
+          width: '20px', height: '64px',
+          borderRadius: isRTL ? '999px 0 0 999px' : '0 999px 999px 0',
           background: 'var(--bg2)',
           border: '1px solid var(--border)',
+          borderInlineStart: 'none',
           color: 'var(--text3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', zIndex: 101,
           transition: 'all 0.2s ease',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
+          boxShadow: '4px 0 14px rgba(0,0,0,0.12)',
         }}
         onMouseOver={e => { e.currentTarget.style.background = '#10b981'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(16,185,129,0.35)' }}
         onMouseOut={e => { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.18)' }}
