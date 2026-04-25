@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
+import TradeModal from '@/components/TradeModal'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 const PORTFOLIO_COLORS = [
@@ -41,6 +42,7 @@ export default function ArchivePage() {
   const [tradePage, setTradePage] = useState<Record<string, number>>({})
   const [tradeTotal, setTradeTotal] = useState<Record<string, number>>({})
   const [tradesLoading, setTradesLoading] = useState(false)
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
 
   useEffect(() => { loadArchived() }, [])
@@ -290,9 +292,6 @@ export default function ArchivePage() {
                         const newerIcon = isRTL ? 'chevron_left'  : 'chevron_right'
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
-                              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
-                            </span>
                             <button
                               onClick={() => changePage(p.id, 1)}
                               disabled={!canOlder}
@@ -334,7 +333,7 @@ export default function ArchivePage() {
                           </div>
 
                           {trades.map((trade, idx) => (
-                            <div key={trade.id} className="archive-trade-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s' }}
+                            <div key={trade.id} className="archive-trade-row" onClick={() => setSelectedTrade(trade)} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s', cursor: 'pointer' }}
                               onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                               onMouseOut={e => e.currentTarget.style.background = 'transparent'}
                             >
@@ -377,6 +376,10 @@ export default function ArchivePage() {
             )
           })}
         </div>
+      )}
+
+      {selectedTrade && (
+        <TradeModal trade={selectedTrade} readOnly onClose={() => setSelectedTrade(null)} />
       )}
 
       <style>{`

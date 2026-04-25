@@ -13,10 +13,11 @@ import Icon from '@/components/Icon'
 interface TradeModalProps {
   trade: Trade
   onClose: () => void
-  onUpdate: () => void
+  onUpdate?: () => void
+  readOnly?: boolean
 }
 
-export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps) {
+export default function TradeModal({ trade, onClose, onUpdate, readOnly = false }: TradeModalProps) {
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -56,7 +57,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       setImageUrl(data.publicUrl)
       await supabase.from('trades').update({ image_url: data.publicUrl }).eq('id', trade.id)
       toast.success(language === 'he' ? 'התמונה הועלתה' : 'Image uploaded')
-      onUpdate()
+      onUpdate?.()
     } catch { toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Upload failed') }
     finally { setUploadingImage(false) }
   }, [trade.id, language])
@@ -97,7 +98,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
       setEditing(false)
-      onUpdate()
+      onUpdate?.()
       router.refresh()
     } catch { toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed') }
     finally { setSaving(false) }
@@ -109,7 +110,7 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
       const { error } = await supabase.from('trades').delete().eq('id', trade.id)
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הוסרה' : 'Trade removed')
-      onUpdate()
+      onUpdate?.()
       onClose()
       router.refresh()
     } catch { toast.error(language === 'he' ? 'שגיאה בהסרה' : 'Delete failed') }
@@ -357,19 +358,23 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
               </div>
               {/* Right: action buttons */}
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                <button
-                  onClick={() => setEditing(true)}
-                  title={tr.editBtn}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                >
-                  <Icon name="edit" size={15} />
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(true)}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                >
-                  <Icon name="delete" size={15} />
-                </button>
+                {!readOnly && (
+                  <>
+                    <button
+                      onClick={() => setEditing(true)}
+                      title={tr.editBtn}
+                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                    >
+                      <Icon name="edit" size={15} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(true)}
+                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                    >
+                      <Icon name="delete" size={15} />
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={onClose}
                   style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', transition: 'all 0.2s' }}
@@ -390,6 +395,13 @@ export default function TradeModal({ trade, onClose, onUpdate }: TradeModalProps
                 <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '10px', left: '12px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Icon name="zoom_in" size={13} color="rgba(255,255,255,0.6)" />
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
+                </div>
+              </div>
+            ) : readOnly ? (
+              <div style={{ padding: '20px 24px', textAlign: 'center', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Icon name="image" size={18} color="var(--text3)" />
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)' }}>{language === 'he' ? 'אין תמונה לעסקה זו' : 'No chart image'}</span>
                 </div>
               </div>
             ) : (
