@@ -21,7 +21,7 @@ export default function AppToaster() {
           color: isLight ? '#111827' : '#e5e2e1',
           border: `1px solid ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'}`,
           fontFamily: 'Heebo, sans-serif',
-          fontSize: '13px',
+          fontSize: '15px',
           fontWeight: '600',
           padding: '12px 18px',
           borderRadius: '14px',

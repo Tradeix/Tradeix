@@ -124,15 +124,15 @@ export default function ArchivePage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '24px' }}>
             <Icon name="lock" size={40} color="#f59e0b" />
           </div>
-          <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
+          <div style={{ fontSize: '26px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
             {language === 'he' ? 'ארכיון תיקים זמין ל PRO בלבד' : 'Portfolio archive is PRO only'}
           </div>
-          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+          <div style={{ fontSize: '16px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
             {language === 'he'
               ? 'שדרג למנוי PRO כדי לגשת לארכיון התיקים ולנהל היסטוריית מסחר מלאה'
               : 'Upgrade to PRO to access the portfolio archive and manage full trading history'}
           </div>
-          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '14px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '16px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
             <Icon name="bolt" size={18} />
             {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
           </Link>
@@ -156,17 +156,17 @@ export default function ArchivePage() {
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="delete_forever" size={28} color="#ef4444" />
             </div>
-            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
+            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
               {language === 'he' ? 'מחיקה לצמיתות' : 'Permanent Delete'}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', lineHeight: 1.6 }}>
+            <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '6px', lineHeight: 1.6 }}>
               {language === 'he' ? 'פעולה זו תמחק את התיק וכל העסקאות בו לצמיתות.' : 'This will permanently delete the portfolio and all its trades.'}
             </div>
-            <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '700', marginBottom: '24px' }}>
+            <div style={{ fontSize: '14px', color: '#ef4444', fontWeight: '700', marginBottom: '24px' }}>
               {language === 'he' ? '⚠ לא ניתן לשחזר פעולה זו!' : '⚠ This action cannot be undone!'}
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={() => handleDelete(confirmDelete)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px 24px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+              <button onClick={() => handleDelete(confirmDelete)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px 24px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
                 {language === 'he' ? 'כן, מחק לצמיתות' : 'Yes, Delete Forever'}
               </button>
               <button onClick={() => setConfirmDelete(null)} className="btn-ghost">{language === 'he' ? 'ביטול' : 'Cancel'}</button>
@@ -184,10 +184,10 @@ export default function ArchivePage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="inventory_2" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text)', marginBottom: '10px' }}>
+          <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text)', marginBottom: '10px' }}>
             {language === 'he' ? 'הארכיון ריק' : 'Archive is empty'}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>
+          <div style={{ fontSize: '15px', color: 'var(--text3)' }}>
             {language === 'he' ? 'תיקים שתעביר לארכיון יופיעו כאן' : 'Portfolios you archive will appear here'}
           </div>
         </div>
@@ -211,12 +211,12 @@ export default function ArchivePage() {
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', opacity: 0.8 }}>{p.name}</div>
-                      <span style={{ fontSize: '10px', fontWeight: '700', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
+                      <div style={{ fontWeight: '800', fontSize: '17px', color: 'var(--text)', opacity: 0.8 }}>{p.name}</div>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
                         {language === 'he' ? 'ארכיון' : 'ARCHIVED'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600' }}>
                       {MARKET_LABELS[language][p.market_type]}
                       {s && ` • ${s.totalTrades} ${language === 'he' ? 'עסקאות' : 'trades'} • ${s.winRate.toFixed(0)}% WIN`}
                     </div>
@@ -225,10 +225,10 @@ export default function ArchivePage() {
                   {/* Stats summary */}
                   {s && (
                     <div className="archive-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
-                      <div style={{ fontSize: '16px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
+                      <div style={{ fontSize: '18px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
                         {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
                       </div>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
                     </div>
                   )}
 
@@ -240,7 +240,7 @@ export default function ArchivePage() {
                     </button>
 
                     {/* Restore */}
-                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} className="archive-restore-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
+                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} className="archive-restore-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', fontSize: '14px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
                       onMouseOver={e => e.currentTarget.style.background = 'rgba(16,185,129,0.15)'}
                       onMouseOut={e => e.currentTarget.style.background = 'rgba(16,185,129,0.08)'}
                     >
@@ -271,15 +271,15 @@ export default function ArchivePage() {
                         { label: 'P&L', value: `${s.totalPnl >= 0 ? '+' : ''}$${s.totalPnl.toLocaleString()}`, color: s.totalPnl >= 0 ? '#22c55e' : '#ef4444' },
                       ].map(({ label, value, color: c }) => (
                         <div key={label} style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</div>
-                          <div style={{ fontSize: '18px', fontWeight: '900', color: c }}>{value}</div>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</div>
+                          <div style={{ fontSize: '20px', fontWeight: '900', color: c }}>{value}</div>
                         </div>
                       ))}
                     </div>
 
                     {/* Trades section header + pagination */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         {language === 'he' ? 'עסקאות אחרונות' : 'Recent Trades'}
                       </div>
                       {totalPages > 1 && (() => {
@@ -290,7 +290,7 @@ export default function ArchivePage() {
                         const newerIcon = isRTL ? 'chevron_left'  : 'chevron_right'
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+                            <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>
                               {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total}
                             </span>
                             <button
@@ -319,7 +319,7 @@ export default function ArchivePage() {
                           <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
                         </div>
                       ) : trades.length === 0 ? (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px', fontWeight: '600' }}>
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '15px', fontWeight: '600' }}>
                           {language === 'he' ? 'אין עסקאות בתיק זה' : 'No trades in this portfolio'}
                         </div>
                       ) : trades.map((trade, idx) => (
@@ -333,8 +333,8 @@ export default function ArchivePage() {
                               <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={14} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                             </div>
                             <div>
-                              <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
-                              <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 {language === 'he' ? 'צמד' : 'Pair'}
                               </div>
                             </div>
@@ -342,31 +342,31 @@ export default function ArchivePage() {
 
                           {/* RR */}
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
-                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
+                            <div style={{ fontSize: '14px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>RR</div>
                           </div>
 
                           {/* P&L */}
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                            <div style={{ fontSize: '15px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                               {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                             </div>
-                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
+                            <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>P&L</div>
                           </div>
 
                           {/* Date */}
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text2)' }}>
+                            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
                               {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                             </div>
-                            <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>
                               {language === 'he' ? 'תאריך' : 'Date'}
                             </div>
                           </div>
 
                           {/* Outcome */}
                           <div style={{ textAlign: 'center' }}>
-                            <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '10px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', whiteSpace: 'nowrap' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: '900', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', whiteSpace: 'nowrap' }}>
                               {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
                             </span>
                           </div>

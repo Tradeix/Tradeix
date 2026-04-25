@@ -259,13 +259,13 @@ export default function AddTradePage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="folder_open" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '22px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
+          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -289,20 +289,20 @@ export default function AddTradePage() {
             <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
               <input {...getInputProps()} />
               <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}><Icon name="zoom_in" size={44} color="var(--blue)" strokeWidth={1.2} /></div>
-              <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+              <div style={{ fontSize: '17px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
                 {isDragActive ? (language === 'he' ? 'שחרר כאן...' : 'Drop here...') : tr.uploadChart}
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
+              <div style={{ fontSize: '15px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
                 {language === 'he' ? 'גרור תמונת גרף לכאן, או לחץ לבחירת קובץ' : 'Drag a chart image here, or click to choose'}
               </div>
-              <span className="btn-primary" style={{ padding: '10px 24px', fontSize: '13px' }}>
+              <span className="btn-primary" style={{ padding: '10px 24px', fontSize: '15px' }}>
                 {language === 'he' ? 'בחר קובץ' : 'Choose File'}
               </span>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP {language === 'he' ? 'עד' : 'up to'} 10MB</div>
+              <div style={{ fontSize: '13px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP {language === 'he' ? 'עד' : 'up to'} 10MB</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '12px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
+              <span style={{ fontSize: '14px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
             <button onClick={skipToManual} className="btn-ghost" style={{ width: '100%' }}>
@@ -320,8 +320,8 @@ export default function AddTradePage() {
               )}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', gap: '14px' }}>
                 <div style={{ width: '44px', height: '44px', border: '3px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>{language === 'he' ? 'מזהה נתונים...' : 'Analyzing...'}</div>
-                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{language === 'he' ? 'ניתוח AI • אנא המתן' : 'AI Analysis • Please wait'}</div>
+                <div style={{ fontSize: '16px', color: 'var(--text)', fontWeight: '500' }}>{language === 'he' ? 'מזהה נתונים...' : 'Analyzing...'}</div>
+                <div style={{ fontSize: '14px', color: 'var(--text3)' }}>{language === 'he' ? 'ניתוח AI • אנא המתן' : 'AI Analysis • Please wait'}</div>
               </div>
             </div>
           </div>
@@ -334,8 +334,8 @@ export default function AddTradePage() {
 
             <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)' }}>{tr.tradeDetails}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{isManual ? tr.manualMode : tr.editableMode}</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)' }}>{tr.tradeDetails}</div>
+                <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{isManual ? tr.manualMode : tr.editableMode}</div>
               </div>
               <div style={{ padding: '20px' }}>
                 {/* Missing fields warning */}
@@ -343,10 +343,10 @@ export default function AddTradePage() {
                   <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                     <Icon name="warning" size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', marginBottom: '3px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#f59e0b', marginBottom: '3px' }}>
                         {language === 'he' ? 'ה-AI לא הצליח לזהות:' : 'AI could not identify:'}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: '600' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '600' }}>
                         {aiMissingFields.join(' • ')} — {language === 'he' ? 'נא למלא ידנית' : 'please fill manually'}
                       </div>
                     </div>
@@ -366,7 +366,7 @@ export default function AddTradePage() {
                       <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '4px 8px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Icon name="zoom_in" size={14} color="rgba(255,255,255,0.7)" />
                       </div>
-                      <button onClick={() => { setImageFile(null); setImagePreview(null) }} style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+                      <button onClick={() => { setImageFile(null); setImagePreview(null) }} style={{ position: 'absolute', top: '8px', left: '8px', background: '#00000088', border: '1px solid #ffffff22', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', color: '#fff', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
                         {language === 'he' ? '✕ הסר' : '✕ Remove'}
                       </button>
                     </div>
@@ -374,8 +374,8 @@ export default function AddTradePage() {
                     <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.2s' }}>
                       <input {...getManualInputProps()} />
                       <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'center' }}><Icon name="photo_camera" size={24} color="var(--text3)" /></div>
-                      <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px', color: 'var(--text)' }}>{language === 'he' ? 'העלה תמונת גרף' : 'Upload Chart Image'}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{language === 'he' ? 'אופציונלי' : 'Optional'} • PNG, JPG {language === 'he' ? 'עד' : 'up to'} 10MB</div>
+                      <div style={{ fontSize: '15px', fontWeight: '500', marginBottom: '2px', color: 'var(--text)' }}>{language === 'he' ? 'העלה תמונת גרף' : 'Upload Chart Image'}</div>
+                      <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{language === 'he' ? 'אופציונלי' : 'Optional'} • PNG, JPG {language === 'he' ? 'עד' : 'up to'} 10MB</div>
                     </div>
                   )}
                 </div>
@@ -383,13 +383,13 @@ export default function AddTradePage() {
                 {/* Symbol + Date */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'תאריך' : 'Date'}
                     </label>
                     <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
@@ -400,7 +400,7 @@ export default function AddTradePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   {/* Outcome */}
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'תוצאה' : 'Outcome'} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -410,7 +410,7 @@ export default function AddTradePage() {
                         const bg = val === 'win' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
                         const border = val === 'win' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
                         return (
-                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, outcome: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '13px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, outcome: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '15px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
                             <span>{val === 'win' ? '✓' : '✕'}</span>
                             {val === 'win' ? 'WIN' : 'LOSS'}
                           </button>
@@ -420,7 +420,7 @@ export default function AddTradePage() {
                   </div>
                   {/* Direction */}
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'כיוון' : 'Direction'} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -431,7 +431,7 @@ export default function AddTradePage() {
                         const border = val === 'long' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'
                         const icon = val === 'long' ? 'trending_up' : 'trending_down'
                         return (
-                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, direction: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '13px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                          <button key={val} type="button" onClick={() => setTradeData(p => ({ ...p, direction: val }))} style={{ padding: '11px 6px', borderRadius: '10px', background: active ? bg : 'var(--bg3)', border: `2px solid ${active ? border : 'var(--border)'}`, color: active ? color : 'var(--text3)', fontSize: '15px', fontWeight: '900', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', letterSpacing: '0.05em', transition: 'all 0.18s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
                             <Icon name={icon} size={15} color="currentColor" />
                             {val === 'long' ? 'LONG' : 'SHORT'}
                           </button>
@@ -444,7 +444,7 @@ export default function AddTradePage() {
                 {/* Strategy selector — PRO only */}
                 {isPro && strategies.length > 0 && (
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {tr.selectStrategy}
                     </label>
                     <div className="select-wrap">
@@ -464,13 +464,13 @@ export default function AddTradePage() {
                 {/* Entry + SL + Exit */}
                 <div className="price-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                    <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'כניסה' : 'Entry'}
                     </label>
                     <input value={tradeData.entry_price} onChange={e => setTradeData(p => ({ ...p, entry_price: e.target.value }))} placeholder="0.00" />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', marginBottom: '6px', display: 'block', fontWeight: '600', color: 'rgba(239,68,68,0.7)' }}>
+                    <label style={{ fontSize: '14px', marginBottom: '6px', display: 'block', fontWeight: '600', color: 'rgba(239,68,68,0.7)' }}>
                       SL
                     </label>
                     <input
@@ -481,7 +481,7 @@ export default function AddTradePage() {
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', marginBottom: '6px', display: 'block', fontWeight: '600', color: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.7)' : 'rgba(34,197,94,0.7)' }}>
+                    <label style={{ fontSize: '14px', marginBottom: '6px', display: 'block', fontWeight: '600', color: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.7)' : 'rgba(34,197,94,0.7)' }}>
                       {language === 'he' ? 'יציאה' : 'Exit'}
                     </label>
                     <input
@@ -509,11 +509,11 @@ export default function AddTradePage() {
                         <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Icon name="analytics" size={16} color={rrColor} />
-                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk / Reward</span>
+                            <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk / Reward</span>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '18px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>1:{rr}</span>
-                            <span style={{ fontSize: '10px', fontWeight: '700', color: rrColor, background: `${rrColor}15`, padding: '2px 8px', borderRadius: '6px' }}>
+                            <span style={{ fontSize: '20px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>1:{rr}</span>
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: rrColor, background: `${rrColor}15`, padding: '2px 8px', borderRadius: '6px' }}>
                               {rrNum >= 2 ? (language === 'he' ? 'מצוין' : 'Great') : rrNum >= 1 ? (language === 'he' ? 'סביר' : 'Fair') : (language === 'he' ? 'נמוך' : 'Low')}
                             </span>
                           </div>
@@ -526,7 +526,7 @@ export default function AddTradePage() {
 
                 {/* P&L */}
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ fontSize: '12px', color: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                  <label style={{ fontSize: '14px', color: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                     P&L ($) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
@@ -544,7 +544,7 @@ export default function AddTradePage() {
                       }
                     />
                   {pnlError && (
-                    <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '13px', color: '#ef4444', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Icon name="error" size={13} />
                       {language === 'he' ? 'שדה חובה' : 'Required field'}
                     </div>
@@ -553,7 +553,7 @@ export default function AddTradePage() {
 
                 {/* Notes */}
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                  <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                     {language === 'he' ? 'הערות (אופציונלי)' : 'Notes (optional)'}
                   </label>
                   <textarea value={tradeData.notes} onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))} placeholder={tr.notesPlaceholder} rows={3} style={{ resize: 'vertical' }} />
@@ -565,7 +565,7 @@ export default function AddTradePage() {
                   className="btn-primary"
                   style={{ width: '100%', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', direction: 'ltr' }}
                 >
-                  <span style={{ fontSize: '16px' }}>✓</span>
+                  <span style={{ fontSize: '18px' }}>✓</span>
                   {submitting ? tr.submitting : (language === 'he' ? 'העלאת עסקה' : 'Submit Trade')}
                 </button>
               </div>
@@ -599,21 +599,21 @@ export default function AddTradePage() {
             </div>
 
             {/* Title */}
-            <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', marginBottom: '16px', lineHeight: 1.4 }}>
+            <div style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text)', marginBottom: '16px', lineHeight: 1.4 }}>
               {language === 'he' ? 'ניתוח העסקה הושלם בהצלחה' : 'Trade Analysis Completed Successfully'}
             </div>
 
             {/* Confidence */}
             {aiConfidence > 0 && (
               <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#10b981' }}>
+                <div style={{ fontSize: '15px', fontWeight: '700', color: '#10b981' }}>
                   {language === 'he' ? 'ביטחון לפי קריאת הנתונים' : 'Data reading confidence'}: {aiConfidence}%
                 </div>
               </div>
             )}
 
             {/* Detected data summary */}
-            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '14px', direction: 'ltr' }}>
+            <div style={{ fontSize: '15px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '14px', direction: 'ltr' }}>
               {tradeData.symbol && <span style={{ fontWeight: '700', color: 'var(--text)' }}>{tradeData.symbol}</span>}
               {tradeData.entry_price ? ` • Entry: ${tradeData.entry_price}` : ''}
               {tradeData.exit_price ? ` • Exit: ${tradeData.exit_price}` : ''}
@@ -621,7 +621,7 @@ export default function AddTradePage() {
             </div>
 
             {/* Disclaimer */}
-            <div style={{ fontSize: '11.5px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '22px', padding: '0 4px' }}>
+            <div style={{ fontSize: '13.5px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '22px', padding: '0 4px' }}>
               {language === 'he'
                 ? 'חשוב לוודא שהנתונים שהוזנו נכונים. גם בינה מלאכותית יכולה לטעות לפעמים.'
                 : 'Please verify that the data entered is correct. AI can sometimes make mistakes.'}
@@ -631,7 +631,7 @@ export default function AddTradePage() {
             <button
               onClick={() => setShowAiSuccessPopup(false)}
               className="btn-primary"
-              style={{ width: '100%', padding: '13px', fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              style={{ width: '100%', padding: '13px', fontSize: '16px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
               <Icon name="check" size={18} color="#fff" />
               {language === 'he' ? 'אישור' : 'OK'}
@@ -646,7 +646,7 @@ export default function AddTradePage() {
           onClick={() => setLightbox(false)}
           style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
         >
-          <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
+          <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
           <img src={imagePreview} alt="גרף" onClick={e => e.stopPropagation()} style={{ maxWidth: '94vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', cursor: 'default' }} />
         </div>
       )}

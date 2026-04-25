@@ -178,13 +178,13 @@ export default function StrategiesPage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="folder_open" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '22px', fontWeight: '900', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px' }}>
+          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -203,7 +203,7 @@ export default function StrategiesPage() {
             display: 'flex', alignItems: 'center', gap: '6px',
             background: '#10b981', color: '#fff', border: 'none',
             borderRadius: '10px', padding: '10px 18px',
-            fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            fontSize: '15px', fontWeight: '700', cursor: 'pointer',
             fontFamily: 'Heebo, sans-serif', transition: 'opacity 0.15s',
           }}>
             <Icon name="add" size={16} color="#fff" />
@@ -216,7 +216,7 @@ export default function StrategiesPage() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.loading}</div>
+          <div style={{ fontSize: '15px', color: 'var(--text3)' }}>{tr.loading}</div>
         </div>
       ) : strategies.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
@@ -228,15 +228,15 @@ export default function StrategiesPage() {
           }}>
             <Icon name="psychology" size={36} color="#10b981" />
           </div>
-          <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: 'var(--text)' }}>
+          <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text)' }}>
             {tr.noStrategiesYet}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '24px', maxWidth: '320px', margin: '0 auto 24px' }}>
+          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '24px', maxWidth: '320px', margin: '0 auto 24px' }}>
             {tr.noStrategiesDesc}
           </div>
           <button onClick={openNew} style={{
             background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', padding: '12px 28px',
-            borderRadius: '12px', border: 'none', fontSize: '13px', fontWeight: '700',
+            borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '700',
             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
@@ -302,7 +302,7 @@ export default function StrategiesPage() {
                       boxShadow: isExpanded ? `0 4px 20px ${color}20` : 'none',
                     }}>
                       <span style={{
-                        fontSize: '16px', fontWeight: '800', color,
+                        fontSize: '18px', fontWeight: '800', color,
                         fontFamily: "'Heebo', sans-serif", letterSpacing: '-0.03em',
                         lineHeight: 1,
                       }}>#{sIdx + 1}</span>
@@ -311,9 +311,9 @@ export default function StrategiesPage() {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
-                      <span className="strat-name" style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
+                      <span className="strat-name" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
                       <span className="strat-badge" style={{
-                        fontSize: '10px', fontWeight: '700', color, letterSpacing: '0.05em',
+                        fontSize: '12px', fontWeight: '700', color, letterSpacing: '0.05em',
                         background: `${color}12`, padding: '2px 8px', borderRadius: '6px',
                         textTransform: 'uppercase',
                       }}>
@@ -321,7 +321,7 @@ export default function StrategiesPage() {
                       </span>
                     </div>
                     {s.plan && (
-                      <div className="strat-plan-preview" style={{ fontSize: '12px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
+                      <div className="strat-plan-preview" style={{ fontSize: '14px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
                         {s.plan}
                       </div>
                     )}
@@ -331,14 +331,14 @@ export default function StrategiesPage() {
                   {!isExpanded && strategyStats[s.id] && stats.totalTrades > 0 && (
                     <div className="strat-preview-stats" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '14px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
+                        <div style={{ fontSize: '16px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
                           {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </div>
-                        <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600' }}>P&L</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>P&L</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)' }}>{stats.winRate.toFixed(0)}%</div>
-                        <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: '600' }}>WIN</div>
+                        <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{stats.winRate.toFixed(0)}%</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>WIN</div>
                       </div>
                     </div>
                   )}
@@ -367,7 +367,7 @@ export default function StrategiesPage() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                         <Icon name="monitoring" size={16} color={color} />
-                        <span style={{ fontSize: '12px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                           {language === 'he' ? 'סטטיסטיקות אסטרטגיה' : 'Strategy Statistics'}
                         </span>
                       </div>
@@ -379,7 +379,7 @@ export default function StrategiesPage() {
                       ) : stats.totalTrades === 0 ? (
                         <div style={{ textAlign: 'center', padding: '24px 12px' }}>
                           <Icon name="show_chart" size={28} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
-                          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>
+                          <div style={{ fontSize: '15px', color: 'var(--text3)' }}>
                             {language === 'he' ? 'אין עסקאות עם אסטרטגיה זו עדיין' : 'No trades with this strategy yet'}
                           </div>
                         </div>
@@ -391,11 +391,11 @@ export default function StrategiesPage() {
                               background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
                               border: '1px solid var(--border)',
                             }}>
-                              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                                 {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
                               </div>
                               <div dir="ltr" className="strat-pnl-big" style={{
-                                fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
+                                fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em',
                                 color: pnlPositive ? '#22c55e' : '#ef4444',
                               }}>
                                 {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -405,12 +405,12 @@ export default function StrategiesPage() {
                               background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
                               border: '1px solid var(--border)',
                             }}>
-                              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                                 Win Rate
                               </div>
                               <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
                                 <span className="strat-pnl-big" style={{
-                                  fontSize: '26px', fontWeight: '800', letterSpacing: '-0.02em',
+                                  fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em',
                                   color: stats.winRate >= 50 ? '#22c55e' : '#ef4444',
                                 }}>
                                   {stats.winRate.toFixed(0)}%
@@ -437,8 +437,8 @@ export default function StrategiesPage() {
                             ].map((item, i) => (
                               <div key={i} style={{ background: 'var(--bg2)', padding: '14px 12px', textAlign: 'center' }}>
                                 <Icon name={item.icon} size={15} color={color} style={{ marginBottom: '6px', opacity: 0.7 }} />
-                                <div style={{ fontSize: '16px', fontWeight: '700', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
-                                <div style={{ fontSize: '9px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
+                                <div style={{ fontSize: '18px', fontWeight: '700', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
+                                <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
                               </div>
                             ))}
                           </div>
@@ -457,11 +457,11 @@ export default function StrategiesPage() {
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                               <Icon name="notes" size={14} color={color} />
-                              <span style={{ fontSize: '11px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              <span style={{ fontSize: '13px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                 {tr.strategyPlan}
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
+                            <div style={{ fontSize: '15px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
                           </div>
                         )}
                         {s.details && (
@@ -471,11 +471,11 @@ export default function StrategiesPage() {
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                               <Icon name="info" size={14} color={color} />
-                              <span style={{ fontSize: '11px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              <span style={{ fontSize: '13px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                 {tr.strategyDetails}
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.details}</div>
+                            <div style={{ fontSize: '15px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.details}</div>
                           </div>
                         )}
                       </div>
@@ -487,7 +487,7 @@ export default function StrategiesPage() {
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '9px 18px', borderRadius: '10px',
                         background: 'var(--bg3)', border: '1px solid var(--border)',
-                        color: 'var(--text2)', fontSize: '12px', fontWeight: '600',
+                        color: 'var(--text2)', fontSize: '14px', fontWeight: '600',
                         cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
                       }}>
                         <Icon name="edit" size={14} color="var(--text3)" />
@@ -498,7 +498,7 @@ export default function StrategiesPage() {
                           <button onClick={() => handleDelete(s.id)} style={{
                             padding: '9px 18px', borderRadius: '10px',
                             background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-                            color: '#ef4444', fontSize: '12px', fontWeight: '700',
+                            color: '#ef4444', fontSize: '14px', fontWeight: '700',
                             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
                           }}>
                             {language === 'he' ? 'כן, מחק' : 'Yes, delete'}
@@ -506,7 +506,7 @@ export default function StrategiesPage() {
                           <button onClick={() => setConfirmDelete(null)} style={{
                             padding: '9px 16px', borderRadius: '10px',
                             background: 'var(--bg3)', border: '1px solid var(--border)',
-                            color: 'var(--text3)', fontSize: '12px', fontWeight: '600',
+                            color: 'var(--text3)', fontSize: '14px', fontWeight: '600',
                             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
                           }}>
                             {tr.cancel}
@@ -517,7 +517,7 @@ export default function StrategiesPage() {
                           display: 'flex', alignItems: 'center', gap: '6px',
                           padding: '9px 18px', borderRadius: '10px',
                           background: 'transparent', border: '1px solid var(--border)',
-                          color: 'rgba(239,68,68,0.6)', fontSize: '12px', fontWeight: '600',
+                          color: 'rgba(239,68,68,0.6)', fontSize: '14px', fontWeight: '600',
                           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
                         }}>
                           <Icon name="delete" size={14} color="currentColor" />
@@ -570,7 +570,7 @@ export default function StrategiesPage() {
                 }}>
                   <Icon name="psychology" size={18} color="#10b981" />
                 </div>
-                <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>
+                <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)' }}>
                   {editingId ? tr.editStrategy : tr.newStrategy}
                 </div>
               </div>
@@ -592,7 +592,7 @@ export default function StrategiesPage() {
             <div style={{ padding: '24px' }}>
               {/* Name */}
               <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                   {tr.strategyName}
                 </label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.strategyNamePlaceholder} />
@@ -600,7 +600,7 @@ export default function StrategiesPage() {
 
               {/* Plan */}
               <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                   {tr.strategyPlan}
                 </label>
                 <textarea value={form.plan} onChange={e => setForm(p => ({ ...p, plan: e.target.value }))} placeholder={tr.strategyPlanPlaceholder} rows={3} style={{ resize: 'vertical' }} />
@@ -608,7 +608,7 @@ export default function StrategiesPage() {
 
               {/* Details */}
               <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                   {tr.strategyDetails}
                 </label>
                 <textarea value={form.details} onChange={e => setForm(p => ({ ...p, details: e.target.value }))} placeholder={tr.strategyDetailsPlaceholder} rows={4} style={{ resize: 'vertical' }} />
@@ -616,7 +616,7 @@ export default function StrategiesPage() {
 
               {/* Color */}
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
+                <label style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
                   {tr.strategyColor}
                 </label>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -640,7 +640,7 @@ export default function StrategiesPage() {
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                   background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
                   borderRadius: '12px', padding: '12px',
-                  fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+                  fontSize: '16px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
                   fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
                   transition: 'opacity 0.15s',
                   boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
@@ -649,7 +649,7 @@ export default function StrategiesPage() {
                 </button>
                 <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
                   padding: '12px 22px', background: 'var(--bg3)', border: '1px solid var(--border)',
-                  borderRadius: '12px', fontSize: '14px', fontWeight: '600',
+                  borderRadius: '12px', fontSize: '16px', fontWeight: '600',
                   color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
                   transition: 'all 0.15s',
                 }}>
@@ -665,15 +665,15 @@ export default function StrategiesPage() {
         @media (max-width: 768px) {
           .strat-header { padding: 16px !important; gap: 12px !important; }
           .strat-header .strat-icon { width: 38px !important; height: 38px !important; }
-          .strat-header .strat-icon span { font-size: 13px !important; }
-          .strat-header .strat-name { font-size: 14px !important; }
+          .strat-header .strat-icon span { font-size: 15px !important; }
+          .strat-header .strat-name { font-size: 16px !important; }
           .strat-header .strat-badge { display: none !important; }
           .strat-header .strat-plan-preview { display: none !important; }
           .strat-header .strat-preview-stats { display: none !important; }
           .strat-expanded { padding: 0 16px 16px !important; }
           .strat-expanded .strat-stats-wrap { padding: 14px !important; }
           .strat-expanded .strat-pnl-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-          .strat-expanded .strat-pnl-big { font-size: 20px !important; }
+          .strat-expanded .strat-pnl-big { font-size: 22px !important; }
           .strat-expanded .strat-detail-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .strat-expanded .strat-plan-details { grid-template-columns: 1fr !important; }
         }

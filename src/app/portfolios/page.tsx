@@ -158,7 +158,7 @@ export default function PortfoliosPage() {
             className="btn-press"
             style={{
               flexShrink: 0, background: '#10b981', color: '#fff', border: 'none',
-              borderRadius: '12px', padding: '10px 20px', fontSize: '12px', fontWeight: '600',
+              borderRadius: '12px', padding: '10px 20px', fontSize: '14px', fontWeight: '600',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
             }}
@@ -174,19 +174,19 @@ export default function PortfoliosPage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px', animation: 'overlayIn 0.2s ease' }}>
           <div style={{ background: 'var(--bg2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '520px', position: 'relative', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             {/* Close button */}
-            <button onClick={() => setShowForm(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontFamily: 'Heebo, sans-serif' }}>✕</button>
+            <button onClick={() => setShowForm(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontFamily: 'Heebo, sans-serif' }}>✕</button>
 
-            <div style={{ fontSize: '18px', fontWeight: '900', marginBottom: '24px', color: 'var(--text)' }}>
+            <div style={{ fontSize: '20px', fontWeight: '900', marginBottom: '24px', color: 'var(--text)' }}>
               {editingId ? tr.editPortfolio : tr.newPortfolioForm}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }} className="form-grid">
               <div>
-                <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioName.replace(' *', '')}</label>
+                <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioName.replace(' *', '')}</label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.portfolioNamePlaceholder} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
+                <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
                 <div className="select-wrap">
                   <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
                     {Object.entries(MARKET_LABELS[language]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
@@ -196,12 +196,12 @@ export default function PortfoliosPage() {
             </div>
 
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.initialCapital}</label>
+              <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.initialCapital}</label>
               <input type="number" value={form.initial_capital} onChange={e => setForm(p => ({ ...p, initial_capital: e.target.value }))} placeholder="10,000" />
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
+              <label style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {PORTFOLIO_COLORS.map(c => (
                   <div key={c.id} onClick={() => setForm(p => ({ ...p, color: c.id }))} style={{ width: '32px', height: '32px', borderRadius: '50%', background: c.primary, cursor: 'pointer', border: form.color === c.id ? '3px solid #fff' : '3px solid transparent', transition: 'all 0.15s', transform: form.color === c.id ? 'scale(1.1)' : 'scale(1)' }} />
@@ -224,17 +224,17 @@ export default function PortfoliosPage() {
             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="delete_forever" size={28} color="#ef4444" />
             </div>
-            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
+            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px' }}>
               {language === 'he' ? 'מחיקת תיק' : 'Delete Portfolio'}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '6px', lineHeight: 1.6 }}>
+            <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '6px', lineHeight: 1.6 }}>
               {language === 'he' ? 'פעולה זו תמחק את התיק וכל העסקאות בו לצמיתות.' : 'This will permanently delete the portfolio and all its trades.'}
             </div>
-            <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '700', marginBottom: '24px' }}>
+            <div style={{ fontSize: '14px', color: '#ef4444', fontWeight: '700', marginBottom: '24px' }}>
               {language === 'he' ? '⚠ לא ניתן לשחזר פעולה זו!' : '⚠ This action cannot be undone!'}
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={() => handleDelete(confirmDelete)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px 24px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+              <button onClick={() => handleDelete(confirmDelete)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', padding: '11px 24px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
                 {language === 'he' ? 'כן, מחק לצמיתות' : 'Yes, Delete Forever'}
               </button>
               <button onClick={() => setConfirmDelete(null)} className="btn-ghost">
@@ -253,8 +253,8 @@ export default function PortfoliosPage() {
           <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="folder_open" size={32} color="var(--text3)" />
           </div>
-          <div style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px', color: 'var(--text)' }}>{tr.noPortfoliosYet}</div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
+          <div style={{ fontSize: '17px', fontWeight: '800', marginBottom: '8px', color: 'var(--text)' }}>{tr.noPortfoliosYet}</div>
+          <div style={{ fontSize: '15px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -270,12 +270,12 @@ export default function PortfoliosPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <div
                       onClick={() => { setActivePortfolio(p); router.push('/dashboard') }}
-                      style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s' }}
+                      style={{ fontWeight: '800', fontSize: '17px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s' }}
                       onMouseOver={e => e.currentTarget.style.color = '#10b981'}
                       onMouseOut={e => e.currentTarget.style.color = 'var(--text)'}
                     >{p.name}</div>
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {MARKET_LABELS[language][p.market_type]}
                     {s && ` • ${s.totalTrades} ${language === 'he' ? 'עסקאות' : 'trades'} • ${s.winRate.toFixed(0)}% WIN`}
                   </div>
@@ -284,16 +284,16 @@ export default function PortfoliosPage() {
                 {/* Stats summary */}
                 {s && (
                   <div className="portfolio-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
-                    <div style={{ fontSize: '16px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
+                    <div style={{ fontSize: '18px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
                       {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
                     </div>
-                    <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
                   </div>
                 )}
 
                 {/* Actions */}
                 <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
-                  <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}>
+                  <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '7px 14px', fontSize: '14px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}>
                     {tr.edit}
                     <Icon name="edit" size={14} />
                   </button>

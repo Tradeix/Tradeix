@@ -83,10 +83,10 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <Icon name="account_balance_wallet" size={16} color="var(--text3)" />
             </div>
             <div style={{ minWidth: 0, textAlign: isRTL ? 'right' : 'left' }}>
-              <div style={{ fontSize: '9px', fontWeight: '700', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
                 {language === 'he' ? 'תיק פעיל' : 'Active'}
               </div>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: activeColor, lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+              <div style={{ fontSize: '15px', fontWeight: '700', color: activeColor, lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
                 {activePortfolio.name}
               </div>
             </div>
@@ -123,7 +123,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                     <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.refresh() }}
                       className="portfolio-item-anim"
                       style={{
-                        padding: '10px 14px', fontSize: '13px', cursor: 'pointer',
+                        padding: '10px 14px', fontSize: '15px', cursor: 'pointer',
                         background: isActive ? 'var(--bg3)' : 'transparent',
                         color: pColor,
                         display: 'flex', alignItems: 'center', gap: '10px',
@@ -166,7 +166,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           background: '#f59e0b',
           border: '1px solid rgba(180,83,9,0.35)',
           borderRadius: '8px', padding: '7px 14px',
-          fontSize: '11px', fontWeight: '700', color: '#fff',
+          fontSize: '13px', fontWeight: '700', color: '#fff',
           textDecoration: 'none', letterSpacing: '0.03em',
           transition: 'opacity 0.15s', whiteSpace: 'nowrap',
           flexShrink: 0,
@@ -187,7 +187,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               background: isPro ? '#f59e0b' : '#10b981',
               border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
+              fontSize: '16px', fontWeight: '700', color: '#fff', overflow: 'hidden',
             }}>
               {user?.user_metadata?.avatar_url
                 ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -197,19 +197,19 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
           </div>
           <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
-            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
+            <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
               {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
               {isPro ? (
                 <>
                   <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#f59e0b' }} />
-                  <span style={{ fontSize: '9px', color: '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>PRO</span>
+                  <span style={{ fontSize: '11px', color: '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>PRO</span>
                 </>
               ) : (
                 <>
                   <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
-                  <span style={{ fontSize: '9px', color: '#10b981', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {tr.freeAccount}
                   </span>
                 </>
@@ -234,7 +234,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <Link href="/settings" onClick={() => setShowUserMenu(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 14px', borderRadius: '8px',
-                fontSize: '13px', fontWeight: '600', color: 'var(--text2)',
+                fontSize: '15px', fontWeight: '600', color: 'var(--text2)',
                 textDecoration: 'none', transition: 'background 0.15s',
               }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--bg3)'}
@@ -247,7 +247,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               <button onClick={() => { setShowUserMenu(false); handleSignOut() }} style={{
                 display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
                 padding: '10px 14px', borderRadius: '8px',
-                fontSize: '13px', fontWeight: '700', color: '#ef4444',
+                fontSize: '15px', fontWeight: '700', color: '#ef4444',
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s',
               }}
@@ -293,7 +293,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         padding: '11px 20px',
         color: active ? '#10b981' : 'var(--text3)',
         fontWeight: active ? '700' : '500',
-        fontSize: '13px', textDecoration: 'none',
+        fontSize: '15px', textDecoration: 'none',
         background: active ? 'var(--bg3)' : 'transparent',
         transition: 'background 0.15s, color 0.15s, transform 0.15s', marginBottom: '2px',
         position: 'relative', letterSpacing: '0.02em',
@@ -332,7 +332,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
             <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
           </svg>
-          <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
+          <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '22px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             Trade<span style={{ color: '#10b981' }}>IX</span>
           </span>
         </Link>
@@ -347,7 +347,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <button onClick={handleSignOut} className="sidebar-link" title={tr.logout} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '11px 20px', width: '100%',
-          color: 'rgba(239,68,68,0.6)', fontSize: '13px', fontWeight: '500',
+          color: 'rgba(239,68,68,0.6)', fontSize: '15px', fontWeight: '500',
           cursor: 'pointer', background: 'transparent', border: 'none',
           fontFamily: 'Heebo, Rubik, sans-serif', letterSpacing: '0.02em',
           borderRadius: '8px', transition: 'all 0.2s',
@@ -523,16 +523,16 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="sentiment_satisfied" size={32} color="#10b981" />
             </div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
               {language === 'he' ? 'חזרת לתכנית החינמית' : 'Back to Free Plan'}
             </div>
-            <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.3)', lineHeight: 1.7, marginBottom: '28px' }}>
+            <div style={{ fontSize: '15px', color: 'rgba(229,226,225,0.3)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
                 ? 'המנוי בוטל וכל הנתונים נמחקו. עדיין תוכל ליהנות מהמערכת!'
                 : 'Your subscription was canceled and all data was cleared. You can still enjoy the app!'}
             </div>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px 20px', marginBottom: '28px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
                 {language === 'he' ? 'תכנית חינמית כוללת' : 'Free Plan includes'}
               </div>
               {[
@@ -542,7 +542,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                   <Icon name={item.icon} size={15} color={item.ok ? '#10b981' : 'rgba(255,255,255,0.2)'} />
-                  <span style={{ fontSize: '13px', color: item.ok ? 'rgba(229,226,225,0.6)' : 'rgba(229,226,225,0.3)', fontWeight: '600' }}>{item.text}</span>
+                  <span style={{ fontSize: '15px', color: item.ok ? 'rgba(229,226,225,0.6)' : 'rgba(229,226,225,0.3)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
             </div>
@@ -550,7 +550,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               width: '100%', background: 'var(--bg3)', border: '1px solid var(--border)',
               color: 'var(--text2)', borderRadius: '14px', padding: '13px',
-              fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+              fontSize: '16px', fontWeight: '700', cursor: 'pointer',
               fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
             }}>
               {language === 'he' ? 'הבנתי, תודה' : 'Got it, thanks'}
@@ -573,17 +573,17 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Icon name="bolt" size={36} color="#f59e0b" />
             </div>
-            <div style={{ fontSize: '11px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
+            <div style={{ fontSize: '26px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
               {language === 'he' ? 'ברוכים הבאים למועדון!' : 'Welcome to PRO!'}
             </div>
-            <div style={{ fontSize: '13px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.7, marginBottom: '28px' }}>
+            <div style={{ fontSize: '15px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
                 ? 'המנוי שלך פעיל. עכשיו יש לך גישה מלאה לכל הכלים המקצועיים.'
                 : 'Your subscription is now active. You have full access to all professional tools.'}
             </div>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px 20px', marginBottom: '28px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
                 {language === 'he' ? 'מה כלול ב PRO' : 'PRO includes'}
               </div>
               {[
@@ -594,7 +594,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               ].map((item, i, arr) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                   <Icon name={item.icon} size={15} color="#f59e0b" />
-                  <span style={{ fontSize: '13px', color: 'rgba(229,226,225,0.6)', fontWeight: '600' }}>{item.text}</span>
+                  <span style={{ fontSize: '15px', color: 'rgba(229,226,225,0.6)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
             </div>
@@ -602,7 +602,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%',
               background: 'linear-gradient(135deg, #f59e0b, #f97316)',
               color: '#fff', borderRadius: '14px', padding: '13px',
-              fontSize: '14px', fontWeight: '800', border: 'none', cursor: 'pointer',
+              fontSize: '16px', fontWeight: '800', border: 'none', cursor: 'pointer',
               boxShadow: '0 0 28px rgba(245,158,11,0.4)',
             }}>
               <Icon name="rocket_launch" size={18} color="#fff" />
@@ -662,10 +662,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .active-portfolio-badge { padding: 4px 8px 4px 4px !important; gap: 8px !important; }
           .active-portfolio-badge > div:nth-child(1) { width: 30px !important; height: 30px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:first-child { display: none !important; }
-          .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 90px !important; font-size: 12px !important; margin-top: 0 !important; }
+          .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 90px !important; font-size: 14px !important; margin-top: 0 !important; }
           .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 8px !important; margin-inline-start: 0 !important; }
           header { padding: 0 12px !important; gap: 8px !important; }
-          .upgrade-btn { padding: 6px 10px !important; font-size: 10px !important; }
+          .upgrade-btn { padding: 6px 10px !important; font-size: 12px !important; }
         }
         .sidebar-logout { display: block; }
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }

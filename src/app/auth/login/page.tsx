@@ -49,12 +49,12 @@ export default function LoginPage() {
             width: '64px', height: '64px', borderRadius: '16px',
             background: 'linear-gradient(135deg, #10b981, #10b981)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '26px', fontWeight: '700', color: '#fff',
+            fontSize: '28px', fontWeight: '700', color: '#fff',
             margin: '0 auto 16px',
             boxShadow: '0 0 40px #10b98133',
             animation: 'pulse-glow 3s ease-in-out infinite',
           }}>TX</div>
-          <div style={{ fontSize: '28px', fontWeight: '700', letterSpacing: '2px' }}>
+          <div style={{ fontSize: '30px', fontWeight: '700', letterSpacing: '2px' }}>
             <span style={{
               background: 'linear-gradient(90deg, #10b981, #10b981)',
               WebkitBackgroundClip: 'text',
@@ -62,7 +62,7 @@ export default function LoginPage() {
             }}>TRADE</span>
             <span style={{ color: 'var(--text)' }}>IX</span>
           </div>
-          <div style={{ fontSize: '14px', color: 'var(--text3)', marginTop: '8px' }}>
+          <div style={{ fontSize: '16px', color: 'var(--text3)', marginTop: '8px' }}>
             יומן מסחר חכם עם ניתוח AI
           </div>
         </div>
@@ -74,10 +74,10 @@ export default function LoginPage() {
           borderRadius: '16px',
           padding: '32px',
         }}>
-          <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', textAlign: 'center' }}>
+          <div style={{ fontSize: '22px', fontWeight: '600', marginBottom: '8px', textAlign: 'center' }}>
             ברוך הבא
           </div>
-          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '28px', textAlign: 'center' }}>
+          <div style={{ fontSize: '16px', color: 'var(--text3)', marginBottom: '28px', textAlign: 'center' }}>
             התחבר כדי לנהל את יומן המסחר שלך
           </div>
 
@@ -91,7 +91,7 @@ export default function LoginPage() {
               borderRadius: '10px',
               padding: '14px',
               color: 'var(--text)',
-              fontSize: '15px',
+              fontSize: '17px',
               fontWeight: '500',
               cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex',
@@ -124,14 +124,14 @@ export default function LoginPage() {
 
           <div style={{
             marginTop: '20px', padding: '12px', background: 'var(--bg3)',
-            borderRadius: '8px', fontSize: '12px', color: 'var(--text3)',
+            borderRadius: '8px', fontSize: '14px', color: 'var(--text3)',
             textAlign: 'center', lineHeight: '1.6',
           }}>
             בהתחברות אתה מסכים לתנאי השימוש ומדיניות הפרטיות
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '12px', color: 'var(--text3)' }}>
+        <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '14px', color: 'var(--text3)' }}>
           TRADEIX © 2024 • כל הזכויות שמורות
         </div>
       </div>
