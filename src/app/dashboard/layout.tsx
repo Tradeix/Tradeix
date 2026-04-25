@@ -265,7 +265,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   )
 }
 
-function Sidebar({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed, handleSignOut }: any) {
+function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const pathname = usePathname()
   const { language, isPro } = useApp()
   const tr = t[language]
@@ -318,15 +318,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarColl
     )
   }
 
-  // RTL: sidebar sits on the right. Collapse arrow points right (toward edge);
-  // expand arrow points left (toward content). LTR mirrors.
-  const expandIconName = isRTL ? 'chevron_left' : 'chevron_right'
-  const collapseIconName = isRTL ? 'chevron_right' : 'chevron_left'
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto', overflowX: 'hidden' }}>
-      {/* Logo + collapse toggle */}
-      <div className="sidebar-top" style={{ padding: '20px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', gap: '8px' }}>
+      {/* Logo */}
+      <div className="sidebar-top" style={{ padding: '24px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
           <svg width="36" height="36" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="38" height="38" rx="8" fill="#10b981"/>
@@ -341,24 +336,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarColl
             Trade<span style={{ color: '#10b981' }}>IX</span>
           </span>
         </Link>
-        <button
-          className="sidebar-collapse-btn"
-          onClick={() => setSidebarCollapsed((v: boolean) => !v)}
-          title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
-          style={{
-            width: '28px', height: '28px', flexShrink: 0,
-            borderRadius: '8px',
-            background: 'var(--bg3)', border: '1px solid var(--border)',
-            color: 'var(--text3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.15s',
-          }}
-          onMouseOver={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.1)'; e.currentTarget.style.color = '#10b981'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)' }}
-          onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
-        >
-          <Icon name={sidebarCollapsed ? expandIconName : collapseIconName} size={16} color="currentColor" />
-        </button>
       </div>
 
       {/* Nav */}
@@ -486,8 +463,40 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
         transition: 'transform 0.3s ease, width 0.25s ease', overflow: 'hidden',
       }} className="sidebar-el" data-open={sidebarOpen ? '1' : '0'} data-collapsed={sidebarCollapsed ? '1' : '0'}>
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} handleSignOut={handleSignOut} />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
+
+      {/* Floating collapse/expand handle pinned to the sidebar boundary. Desktop only. */}
+      <button
+        className="sidebar-rail-handle"
+        onClick={() => setSidebarCollapsed(v => !v)}
+        title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
+        style={{
+          position: 'fixed', top: '92px',
+          [isRTL ? 'right' : 'left']: `calc(${sidebarWidth} - 13px)`,
+          width: '26px', height: '52px',
+          borderRadius: '999px',
+          background: 'var(--bg2)',
+          border: '1px solid var(--border)',
+          color: 'var(--text3)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', zIndex: 101,
+          transition: 'all 0.2s ease',
+          boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
+        }}
+        onMouseOver={e => { e.currentTarget.style.background = '#10b981'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(16,185,129,0.35)' }}
+        onMouseOut={e => { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.18)' }}
+      >
+        <Icon
+          name={
+            sidebarCollapsed
+              ? (isRTL ? 'chevron_left' : 'chevron_right')
+              : (isRTL ? 'chevron_right' : 'chevron_left')
+          }
+          size={16}
+          color="currentColor"
+        />
+      </button>
 
       <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: sidebarWidth, flex: 1, minWidth: 0, transition: 'margin 0.25s ease' }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
@@ -614,33 +623,34 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         .page-loading { opacity: 0; }
         .upgrade-btn:hover { opacity: 0.92; }
 
-        /* Collapsed sidebar (desktop only): labels disappear, icons center,
-           hover scales the icon and lights up the row */
-        .sidebar-el[data-collapsed="1"] .sidebar-label,
-        .sidebar-el[data-collapsed="1"] .sidebar-wordmark { display: none !important; }
-        .sidebar-el[data-collapsed="1"] .sidebar-link {
-          justify-content: center !important;
-          padding: 11px 12px !important;
-        }
+        /* Sidebar link interactions (desktop & mobile both benefit from the
+           hover/active polish — they don't change layout). */
         .sidebar-link { will-change: transform; }
         .sidebar-link .material-symbols-outlined { transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-link:hover .material-symbols-outlined { transform: scale(1.15); }
         .sidebar-link[data-active="1"] {
           box-shadow: inset 0 0 0 1px rgba(16,185,129,0.18), 0 0 18px rgba(16,185,129,0.08);
         }
-        .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] {
-          background: rgba(16,185,129,0.12) !important;
-        }
-        .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] .material-symbols-outlined {
-          filter: drop-shadow(0 0 8px rgba(16,185,129,0.45));
+
+        /* Collapsed rail mode is desktop-only. Mobile keeps the original drawer. */
+        @media (min-width: 1025px) {
+          .sidebar-el[data-collapsed="1"] .sidebar-label,
+          .sidebar-el[data-collapsed="1"] .sidebar-wordmark { display: none !important; }
+          .sidebar-el[data-collapsed="1"] .sidebar-link {
+            justify-content: center !important;
+            padding: 11px 12px !important;
+          }
+          .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] {
+            background: rgba(16,185,129,0.12) !important;
+          }
+          .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] .material-symbols-outlined {
+            filter: drop-shadow(0 0 8px rgba(16,185,129,0.45));
+          }
         }
 
         @media (max-width: 1024px) {
-          /* Mobile: ignore the collapsed flag — drawer stays full width and slides in/out */
           .sidebar-el { width: 210px !important; transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
-          .sidebar-el .sidebar-label, .sidebar-el .sidebar-wordmark { display: inline !important; }
-          .sidebar-el .sidebar-link { justify-content: flex-start !important; padding: 11px 20px !important; }
-          .sidebar-collapse-btn { display: none !important; }
+          .sidebar-rail-handle { display: none !important; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
           .page-content { padding: 24px 20px !important; }
