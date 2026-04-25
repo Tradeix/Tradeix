@@ -265,7 +265,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   )
 }
 
-function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
+function Sidebar({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed, handleSignOut }: any) {
   const pathname = usePathname()
   const { language, isPro } = useApp()
   const tr = t[language]
@@ -288,7 +288,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
-      <Link href={href} onClick={() => setSidebarOpen(false)} className="nav-link-anim" style={{
+      <Link href={href} onClick={() => setSidebarOpen(false)} title={label} className="nav-link-anim sidebar-link" data-active={active ? '1' : '0'} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
         color: active ? '#10b981' : 'var(--text3)',
@@ -298,13 +298,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         transition: 'background 0.15s, color 0.15s, transform 0.15s', marginBottom: '2px',
         position: 'relative', letterSpacing: '0.02em',
         fontFamily: 'Heebo, Rubik, sans-serif',
-        borderRadius: '6px',
+        borderRadius: '8px',
       }}
         onMouseOver={e => { if (!active) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)' } }}
         onMouseOut={e => { e.currentTarget.style.color = active ? '#10b981' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
       >
         {active && (
-          <div style={{
+          <div className="sidebar-link-stripe" style={{
             position: 'absolute', [isRTL ? 'right' : 'left']: 0,
             top: 0, bottom: 0, width: '3px',
             background: '#10b981',
@@ -312,35 +312,53 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             animation: 'pulseGlow 2s ease-in-out infinite',
           }} />
         )}
-        <Icon name={icon} size={18} color="currentColor" />
-        {label}
+        <Icon name={icon} size={20} color="currentColor" />
+        <span className="sidebar-label">{label}</span>
       </Link>
     )
   }
 
+  // RTL: sidebar sits on the right. Collapse arrow points right (toward edge);
+  // expand arrow points left (toward content). LTR mirrors.
+  const expandIconName = isRTL ? 'chevron_left' : 'chevron_right'
+  const collapseIconName = isRTL ? 'chevron_right' : 'chevron_left'
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto' }}>
-      {/* Logo */}
-      <div style={{ padding: '28px 20px 36px', display: 'flex', justifyContent: 'center' }}>
-        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          {/* Icon */}
-          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg2)', overflowY: 'auto', overflowX: 'hidden' }}>
+      {/* Logo + collapse toggle */}
+      <div className="sidebar-top" style={{ padding: '20px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', gap: '8px' }}>
+        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
+          <svg width="36" height="36" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="38" height="38" rx="8" fill="#10b981"/>
-            {/* Candlestick left */}
             <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
             <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
-            {/* Candlestick center */}
             <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
             <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)"/>
-            {/* Candlestick right */}
             <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
             <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
           </svg>
-          {/* Text */}
-          <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
+          <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             Trade<span style={{ color: '#10b981' }}>IX</span>
           </span>
         </Link>
+        <button
+          className="sidebar-collapse-btn"
+          onClick={() => setSidebarCollapsed((v: boolean) => !v)}
+          title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
+          style={{
+            width: '28px', height: '28px', flexShrink: 0,
+            borderRadius: '8px',
+            background: 'var(--bg3)', border: '1px solid var(--border)',
+            color: 'var(--text3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+          }}
+          onMouseOver={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.1)'; e.currentTarget.style.color = '#10b981'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)' }}
+          onMouseOut={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+        >
+          <Icon name={sidebarCollapsed ? expandIconName : collapseIconName} size={16} color="currentColor" />
+        </button>
       </div>
 
       {/* Nav */}
@@ -349,7 +367,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
-        <button onClick={handleSignOut} style={{
+        <button onClick={handleSignOut} className="sidebar-link" title={tr.logout} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '11px 20px', width: '100%',
           color: 'rgba(239,68,68,0.6)', fontSize: '13px', fontWeight: '500',
@@ -360,8 +378,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           onMouseOver={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.05)' }}
           onMouseOut={e => { e.currentTarget.style.color = 'rgba(239,68,68,0.6)'; e.currentTarget.style.background = 'transparent' }}
         >
-          <Icon name="logout" size={18} color="currentColor" />
-          {tr.logout}
+          <Icon name="logout" size={20} color="currentColor" />
+          <span className="sidebar-label">{tr.logout}</span>
         </button>
       </nav>
     </div>
@@ -370,6 +388,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
@@ -427,7 +446,16 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       localStorage.removeItem('tradeix-show-upgrade')
       setShowUpgradePopup(true)
     }
+    if (localStorage.getItem('tradeix-sidebar-collapsed') === '1') {
+      setSidebarCollapsed(true)
+    }
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('tradeix-sidebar-collapsed', sidebarCollapsed ? '1' : '0')
+  }, [sidebarCollapsed])
+
+  const sidebarWidth = sidebarCollapsed ? '72px' : '210px'
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -453,15 +481,15 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
 
       <div style={{
-        width: '210px', height: '100vh',
+        width: sidebarWidth, height: '100vh',
         borderInlineEnd: '1px solid var(--border)',
         position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
-        transition: 'transform 0.3s ease', overflow: 'hidden',
-      }} className="sidebar-el" data-open={sidebarOpen ? '1' : '0'}>
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
+        transition: 'transform 0.3s ease, width 0.25s ease', overflow: 'hidden',
+      }} className="sidebar-el" data-open={sidebarOpen ? '1' : '0'} data-collapsed={sidebarCollapsed ? '1' : '0'}>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} handleSignOut={handleSignOut} />
       </div>
 
-      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '210px', flex: 1, minWidth: 0 }} className="main-content">
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: sidebarWidth, flex: 1, minWidth: 0, transition: 'margin 0.25s ease' }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
@@ -585,8 +613,34 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         .page-ready { animation: pageFadeIn 0.18s ease forwards; }
         .page-loading { opacity: 0; }
         .upgrade-btn:hover { opacity: 0.92; }
+
+        /* Collapsed sidebar (desktop only): labels disappear, icons center,
+           hover scales the icon and lights up the row */
+        .sidebar-el[data-collapsed="1"] .sidebar-label,
+        .sidebar-el[data-collapsed="1"] .sidebar-wordmark { display: none !important; }
+        .sidebar-el[data-collapsed="1"] .sidebar-link {
+          justify-content: center !important;
+          padding: 11px 12px !important;
+        }
+        .sidebar-link { will-change: transform; }
+        .sidebar-link .material-symbols-outlined { transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
+        .sidebar-link:hover .material-symbols-outlined { transform: scale(1.15); }
+        .sidebar-link[data-active="1"] {
+          box-shadow: inset 0 0 0 1px rgba(16,185,129,0.18), 0 0 18px rgba(16,185,129,0.08);
+        }
+        .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] {
+          background: rgba(16,185,129,0.12) !important;
+        }
+        .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] .material-symbols-outlined {
+          filter: drop-shadow(0 0 8px rgba(16,185,129,0.45));
+        }
+
         @media (max-width: 1024px) {
-          .sidebar-el { transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
+          /* Mobile: ignore the collapsed flag — drawer stays full width and slides in/out */
+          .sidebar-el { width: 210px !important; transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
+          .sidebar-el .sidebar-label, .sidebar-el .sidebar-wordmark { display: inline !important; }
+          .sidebar-el .sidebar-link { justify-content: flex-start !important; padding: 11px 20px !important; }
+          .sidebar-collapse-btn { display: none !important; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
           .page-content { padding: 24px 20px !important; }
