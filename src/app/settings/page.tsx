@@ -72,10 +72,10 @@ export default function SettingsPage() {
 
   const glass = {
     background: 'var(--bg2)',
-    border: '1px solid rgba(255,255,255,0.14)',
+    border: '1px solid var(--border)',
     borderRadius: 'var(--radius)',
     padding: '24px',
-    boxShadow: '0 8px 28px rgba(0,0,0,0.32)',
+    boxShadow: '0 6px 22px rgba(0,0,0,0.25)',
   }
 
   const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
