@@ -53,6 +53,7 @@ export default function PortfoliosPage() {
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [pendingOpenNew, setPendingOpenNew] = useState(false)
+  const [maxBannerDismissed, setMaxBannerDismissed] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -179,18 +180,33 @@ export default function PortfoliosPage() {
       />
 
       {/* ── MAX-LIMIT BANNER ── */}
-      {atMaxPortfolios && !loading && (
+      {atMaxPortfolios && !loading && !maxBannerDismissed && (
         <div style={{
           background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
           borderRadius: '12px', padding: '14px 18px', marginBottom: '20px',
           display: 'flex', alignItems: 'center', gap: '12px',
         }}>
           <Icon name="info" size={18} color="#f59e0b" />
-          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)', lineHeight: 1.5 }}>
+          <div style={{ flex: 1, fontSize: '13px', fontWeight: '700', color: 'var(--text2)', lineHeight: 1.5 }}>
             {isPro
               ? (language === 'he' ? 'הגעת למקסימום של 3 תיקים פעילים. כדי להוסיף תיק חדש, מחק או העבר לארכיון אחד מהקיימים.' : 'You have reached the maximum of 3 active portfolios. Delete or archive one to add a new one.')
               : (language === 'he' ? 'תכנית חינמית מוגבלת לתיק אחד. שדרג ל-PRO כדי לפתוח עד 3 תיקים.' : 'Free plan is limited to 1 portfolio. Upgrade to PRO to create up to 3.')}
           </div>
+          <button
+            onClick={() => setMaxBannerDismissed(true)}
+            aria-label={language === 'he' ? 'סגור' : 'Close'}
+            style={{
+              flexShrink: 0, width: '28px', height: '28px', borderRadius: '8px',
+              background: 'transparent', border: 'none',
+              color: 'var(--text3)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'var(--text)' }}
+            onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)' }}
+          >
+            <Icon name="close" size={16} color="currentColor" />
+          </button>
         </div>
       )}
 

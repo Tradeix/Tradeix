@@ -155,10 +155,10 @@ export default function TradesPage() {
           <span className="trades-data-by-label" style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
             {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
           </span>
-        <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '2px', borderRadius: '10px', border: '1px solid var(--border)' }}>
           {TIME_LABELS.map((label, i) => (
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
-              padding: '4px 10px', borderRadius: '7px', fontSize: '11px', fontWeight: '700',
+              padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
               background: timeFilter === i ? '#10b981' : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',

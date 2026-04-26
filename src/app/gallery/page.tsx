@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import Icon from '@/components/Icon'
 import { useApp } from '@/lib/app-context'
+import { usePortfolio } from '@/lib/portfolio-context'
 
 const PAGE_SIZE = 6
 const LOAD_MORE_SIZE = 3
@@ -30,6 +31,7 @@ const CATEGORIES = (lang: 'he' | 'en') => [
 
 export default function GalleryPage() {
   const { language } = useApp()
+  const { activePortfolio, portfolios } = usePortfolio()
   const isRTL = language === 'he'
   const supabase = createClient()
   const cats = CATEGORIES(language)
@@ -99,8 +101,16 @@ export default function GalleryPage() {
       const { error: upErr } = await supabase.storage.from('trade-images').upload(path, pickedFile)
       if (upErr) throw upErr
       const { data: pub } = supabase.storage.from('trade-images').getPublicUrl(path)
+      // Schema requires portfolio_id NOT NULL, but the gallery is global —
+      // pin to the active portfolio (or any owned portfolio) just to satisfy
+      // the constraint; queries don't filter by portfolio_id.
+      const portfolioId = activePortfolio?.id || portfolios[0]?.id
+      if (!portfolioId) {
+        throw new Error(language === 'he' ? 'צור תיק לפני העלאה' : 'Create a portfolio before uploading')
+      }
       const { error: insErr } = await supabase.from('gallery_items').insert({
         user_id: user.id,
+        portfolio_id: portfolioId,
         title: form.title.trim(),
         description: form.description.trim() || null,
         category: form.category,

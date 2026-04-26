@@ -198,7 +198,7 @@ export default function StrategiesPage() {
         title={tr.strategiesTitle}
         subtitle={tr.strategiesSubtitle}
         icon="psychology"
-        action={
+        action={strategies.length > 0 ? (
           <button onClick={openNew} style={{
             display: 'flex', alignItems: 'center', gap: '6px',
             background: '#10b981', color: '#fff', border: 'none',
@@ -209,7 +209,7 @@ export default function StrategiesPage() {
             <Icon name="add" size={16} color="#fff" />
             {tr.newStrategy}
           </button>
-        }
+        ) : undefined}
       />
 
       {/* ── STRATEGIES LIST ── */}
