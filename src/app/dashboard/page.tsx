@@ -385,11 +385,11 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      {trades.length === 0 ? (
+      {stats.totalTrades === 0 ? (
         <div style={{ ...card, padding: '48px 24px', textAlign: 'center', minHeight: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
           <p style={{ fontSize: '14px', color: 'var(--text3)', margin: 0 }}>
-            {language === 'he' ? 'אין עסקאות לביצוע נתוני ביצועים' : 'No trades for performance analysis'}
+            {language === 'he' ? 'אין עסקאות קיימות במערכת לקריאת נתונים' : 'No trades to read data from'}
           </p>
         </div>
       ) : (
