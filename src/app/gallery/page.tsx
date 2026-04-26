@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import Icon from '@/components/Icon'
 import { useApp } from '@/lib/app-context'
-import { usePortfolio } from '@/lib/portfolio-context'
 
 const PAGE_SIZE = 6
 const LOAD_MORE_SIZE = 3
@@ -15,7 +14,6 @@ const LOAD_MORE_SIZE = 3
 interface GalleryItem {
   id: string
   user_id: string
-  portfolio_id: string
   title: string
   description: string | null
   image_url: string
@@ -32,7 +30,6 @@ const CATEGORIES = (lang: 'he' | 'en') => [
 
 export default function GalleryPage() {
   const { language } = useApp()
-  const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const isRTL = language === 'he'
   const supabase = createClient()
   const cats = CATEGORIES(language)
@@ -50,25 +47,18 @@ export default function GalleryPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
 
-  useEffect(() => {
-    if (activePortfolio) load()
-    else if (portfoliosLoaded) { setItems([]); setLoading(false) }
-  }, [activePortfolio, portfoliosLoaded])
+  useEffect(() => { load() }, [])
 
   async function load() {
-    if (!activePortfolio) return
     setLoading(true)
-    setVisibleCount(PAGE_SIZE)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
     const { data, error } = await supabase
       .from('gallery_items')
       .select('*')
       .eq('user_id', user.id)
-      .eq('portfolio_id', activePortfolio.id)
       .order('created_at', { ascending: false })
     if (!error && data) setItems(data)
-    else setItems([])
     setLoading(false)
   }
 
@@ -92,10 +82,6 @@ export default function GalleryPage() {
   }
 
   async function handleUpload() {
-    if (!activePortfolio) {
-      toast.error(language === 'he' ? 'בחר תיק לפני העלאה' : 'Select a portfolio first')
-      return
-    }
     if (!pickedFile) {
       toast.error(language === 'he' ? 'נא לבחור תמונה' : 'Please pick an image')
       return
@@ -115,7 +101,6 @@ export default function GalleryPage() {
       const { data: pub } = supabase.storage.from('trade-images').getPublicUrl(path)
       const { error: insErr } = await supabase.from('gallery_items').insert({
         user_id: user.id,
-        portfolio_id: activePortfolio.id,
         title: form.title.trim(),
         description: form.description.trim() || null,
         category: form.category,
@@ -155,10 +140,10 @@ export default function GalleryPage() {
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
-        title={language === 'he' ? `גלריה${activePortfolio ? ' · ' + activePortfolio.name : ''}` : `Gallery${activePortfolio ? ' · ' + activePortfolio.name : ''}`}
+        title={language === 'he' ? 'גלריה' : 'Gallery'}
         subtitle={language === 'he' ? 'תשלומים, צילומי מסך, תעודות ופרטי גישה' : 'Payouts, screenshots, certificates and credentials'}
         icon="photo_library"
-        action={activePortfolio ? (
+        action={items.length > 0 ? (
           <button
             type="button"
             onClick={() => setShowUpload(true)}
@@ -177,19 +162,7 @@ export default function GalleryPage() {
       />
 
       {/* Body */}
-      {portfoliosLoaded && !activePortfolio ? (
-        <div style={{ ...card, padding: '64px 24px', textAlign: 'center' }}>
-          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-            <Icon name="folder_open" size={32} color="var(--text3)" />
-          </div>
-          <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>
-            {language === 'he' ? 'אין תיק פעיל' : 'No active portfolio'}
-          </div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)' }}>
-            {language === 'he' ? 'בחר תיק כדי לראות את הגלריה שלו' : 'Select a portfolio to see its gallery'}
-          </div>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div style={{ padding: '64px', textAlign: 'center' }}>
           <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
         </div>

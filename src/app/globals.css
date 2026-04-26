@@ -206,6 +206,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* Trim chunky inner spacing so the modal fits without scrolling */
   .app-modal-card[data-tight="1"] { padding: 18px !important; }
 }
+/* While any modal is open on mobile, hide the sticky page header so the
+   modal isn't visually overlapped by it. */
+@media (max-width: 1024px) {
+  body:has(.app-modal-overlay) header[style*="sticky"] { display: none !important; }
+}
 
 /* ══════════════════════════════════════
    RESPONSIVE — mobile fixes

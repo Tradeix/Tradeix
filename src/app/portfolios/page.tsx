@@ -208,15 +208,32 @@ export default function PortfoliosPage() {
 
             <div style={{ marginBottom: '24px' }}>
               <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {PORTFOLIO_COLORS.map(c => (
-                  <div key={c.id} onClick={() => setForm(p => ({ ...p, color: c.id }))} style={{ width: '32px', height: '32px', borderRadius: '50%', background: c.primary, cursor: 'pointer', border: form.color === c.id ? '3px solid #fff' : '3px solid transparent', transition: 'all 0.15s', transform: form.color === c.id ? 'scale(1.1)' : 'scale(1)' }} />
-                ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+                {PORTFOLIO_COLORS.map(c => {
+                  const active = form.color === c.id
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setForm(p => ({ ...p, color: c.id }))}
+                      style={{
+                        aspectRatio: '1 / 1', borderRadius: '12px',
+                        background: c.primary, cursor: 'pointer',
+                        border: active ? '2px solid #fff' : '2px solid transparent',
+                        boxShadow: active ? `0 0 0 2px ${c.primary}, 0 6px 18px ${c.primary}55` : 'none',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s', padding: 0,
+                      }}
+                    >
+                      {active && <Icon name="check" size={18} color="#fff" />}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ flex: 1, opacity: saving ? 0.7 : 1 }}>{saving ? tr.saving : tr.save}</button>
+              <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ flex: 1, opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}</button>
               <button onClick={() => setShowForm(false)} className="btn-ghost">{tr.cancel}</button>
             </div>
           </div>
@@ -269,7 +286,7 @@ export default function PortfoliosPage() {
             const s = portfolioStats[p.id]
             const pnlPos = (s?.totalPnl || 0) >= 0
             return (
-              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', animationDelay: `${idx * 0.08}s`, flexWrap: 'wrap' }}>
+              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderBottom: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', animationDelay: `${idx * 0.08}s` }}>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -299,15 +316,14 @@ export default function PortfoliosPage() {
 
                 {/* Actions */}
                 <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
-                  <button onClick={() => startEdit(p)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '7px 14px', fontSize: '13px', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}>
-                    {tr.edit}
-                    <Icon name="edit" size={14} />
+                  <button onClick={() => startEdit(p)} title={tr.edit} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <Icon name="edit" size={17} />
                   </button>
-                  {isPro && <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                    <Icon name="inventory_2" size={15} />
+                  {isPro && <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <Icon name="inventory_2" size={17} />
                   </button>}
-                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                    <Icon name="delete" size={15} />
+                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <Icon name="delete" size={17} />
                   </button>
                 </div>
               </div>
@@ -319,9 +335,10 @@ export default function PortfoliosPage() {
       <style>{`
         @media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }
         @media (max-width: 640px) {
-          .portfolio-card { flex-wrap: wrap !important; gap: 12px !important; padding: 14px 16px !important; }
-          .portfolio-card .portfolio-actions { width: 100%; justify-content: flex-end !important; }
-          .portfolio-card .portfolio-actions button { padding: 6px 12px !important; }
+          .portfolio-card { gap: 8px !important; padding: 14px 16px !important; flex-wrap: nowrap !important; }
+          .portfolio-card .portfolio-actions { gap: 6px !important; flex-shrink: 0 !important; }
+          .portfolio-card .portfolio-actions button { width: 40px !important; height: 40px !important; padding: 0 !important; }
+          .portfolio-card .portfolio-actions button svg { width: 19px !important; height: 19px !important; }
           .portfolio-pnl { display: none !important; }
         }
       `}</style>

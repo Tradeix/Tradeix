@@ -27,11 +27,15 @@ function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'green'] || '#10b981'
 }
 
+const PORTFOLIO_AGNOSTIC_PATHS = ['/portfolios', '/portfolios/archive', '/gallery', '/settings']
+
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
   const { language, isPro, subscriptionLoading } = useApp()
   const router = useRouter()
+  const pathname = usePathname()
   const tr = t[language]
+  const hideSelector = PORTFOLIO_AGNOSTIC_PATHS.includes(pathname)
   const [showMenu, setShowMenu] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -63,11 +67,9 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         <Icon name="menu" size={20} color="currentColor" />
       </button>
 
-      {/* Unified portfolio selector — anchored to the visual right in RTL
-          (flex-start). Spacer pushes everything else to the opposite side.
-          Frame/wallet stay gray; only the name + 'Active' label take the
-          portfolio's color so the user can tell which one is selected. */}
-      {activePortfolio && portfolios.length > 0 && (() => {
+      {/* Unified portfolio selector — hidden on portfolio-agnostic pages
+          (Portfolio Settings, Gallery, Archive, Settings). */}
+      {!hideSelector && activePortfolio && portfolios.length > 0 && (() => {
         const activeColor = getPortfolioColor(activePortfolio)
         return (
         <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -292,7 +294,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     { href: '/gallery', icon: 'photo_library', label: language === 'he' ? 'גלריה' : 'Gallery' },
     { href: '/portfolios', icon: 'cases', label: tr.portfolioSettings },
     ...(isPro ? [{ href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' }] : []),
-    { href: '/settings', icon: 'settings', label: tr.personalSettings },
+    { href: '/settings', icon: 'settings', label: language === 'he' ? 'הגדרות' : 'Settings' },
   ]
 
   const NavLink = ({ href, icon, label }: any) => {
@@ -672,11 +674,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         @media (max-width: 640px) {
           .page-content { padding: 16px 14px !important; }
           .user-name-block { display: none !important; }
-          .active-portfolio-badge { padding: 4px 8px 4px 4px !important; gap: 8px !important; }
-          .active-portfolio-badge > div:nth-child(1) { width: 30px !important; height: 30px !important; }
-          .active-portfolio-badge > div:nth-child(2) > div:first-child { display: none !important; }
-          .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 90px !important; font-size: 13px !important; margin-top: 0 !important; }
-          .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 8px !important; margin-inline-start: 0 !important; }
+          .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 10px !important; }
+          .active-portfolio-badge > div:nth-child(1) { width: 32px !important; height: 32px !important; }
+          .active-portfolio-badge > div:nth-child(2) > div:first-child { font-size: 9px !important; }
+          .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 200px !important; font-size: 14px !important; }
+          .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 10px !important; margin-inline-start: 0 !important; }
           header { padding: 0 12px !important; gap: 8px !important; }
           .upgrade-btn { padding: 6px 10px !important; font-size: 11px !important; }
         }

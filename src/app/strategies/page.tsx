@@ -614,26 +614,6 @@ export default function StrategiesPage() {
                 <textarea value={form.details} onChange={e => setForm(p => ({ ...p, details: e.target.value }))} placeholder={tr.strategyDetailsPlaceholder} rows={4} style={{ resize: 'vertical' }} />
               </div>
 
-              {/* Color */}
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '8px', display: 'block', fontWeight: '600' }}>
-                  {tr.strategyColor}
-                </label>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {STRATEGY_COLORS.map(c => (
-                    <button key={c.name} onClick={() => setForm(p => ({ ...p, color: c.name }))} style={{
-                      width: '34px', height: '34px', borderRadius: '10px',
-                      background: c.hex, border: form.color === c.name ? '2px solid #fff' : '2px solid transparent',
-                      cursor: 'pointer', transition: 'all 0.15s',
-                      boxShadow: form.color === c.name ? `0 0 0 2px ${c.hex}` : 'none',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {form.color === c.name && <Icon name="check" size={14} color="#fff" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Buttons */}
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={handleSave} disabled={saving} style={{
@@ -645,7 +625,7 @@ export default function StrategiesPage() {
                   transition: 'opacity 0.15s',
                   boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
                 }}>
-                  {saving ? tr.saving : tr.save}
+                  <Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}
                 </button>
                 <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
                   padding: '12px 22px', background: 'var(--bg3)', border: '1px solid var(--border)',

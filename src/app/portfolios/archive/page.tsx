@@ -110,6 +110,19 @@ export default function ArchivePage() {
   }
 
   async function handleRestore(id: string) {
+    // Enforce the 3-active-portfolio limit
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { count } = await supabase
+        .from('portfolios')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('archived', false)
+      if ((count ?? 0) >= 3) {
+        toast.error(language === 'he' ? 'כבר יש 3 תיקים פעילים — מחק אחד כדי לשחזר את התיק' : 'You already have 3 active portfolios — delete one to restore this')
+        return
+      }
+    }
     const { error } = await supabase.from('portfolios').update({ archived: false }).eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה בשחזור' : 'Restore error')
     else { toast.success(language === 'he' ? 'התיק שוחזר' : 'Portfolio restored'); loadArchived() }

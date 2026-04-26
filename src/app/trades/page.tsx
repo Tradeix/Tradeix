@@ -191,7 +191,6 @@ export default function TradesPage() {
                 : timeFilter > 0 ? (language === 'he' ? 'נסה לשנות את טווח הזמן' : 'Try changing the time range')
                 : tr.noTradesDesc}
             </div>
-            {filter === 'all' && <Link href="/add-trade" style={{ background: '#10b981', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', fontWeight: '700' }}>{tr.addTradeCta}</Link>}
           </div>
         ) : (
           <div style={{ padding: '8px 12px' }}>
@@ -271,10 +270,10 @@ export default function TradesPage() {
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
-          .trade-row { grid-template-columns: 1fr 80px 80px 90px !important; gap: 6px !important; padding: 10px 6px !important; }
-          .trade-row .trade-col-symbol > div:first-child { width: 32px !important; height: 32px !important; border-radius: 10px !important; }
-          .trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; }
-          .trade-row .trade-col-symbol { gap: 8px !important; }
+          .trade-row { grid-template-columns: minmax(0, 1.2fr) 80px 80px 90px !important; gap: 6px !important; padding: 10px 6px !important; }
+          .trade-row .trade-col-symbol { gap: 8px !important; min-width: 0 !important; overflow: hidden !important; }
+          .trade-row .trade-col-symbol > div:first-child { width: 32px !important; height: 32px !important; border-radius: 10px !important; flex-shrink: 0 !important; }
+          .trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; min-width: 0 !important; }
           .trades-filter-row { justify-content: space-between !important; width: 100%; }
           .trades-time-filter { order: -1; }
           .trades-outcome-btns { order: 1; }

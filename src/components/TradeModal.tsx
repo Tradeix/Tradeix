@@ -322,7 +322,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
 
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: 'linear-gradient(135deg, #10b981, #0ea772)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
-                  <span>✓</span> {saving ? tr.saving : tr.save}
+                  <Icon name="save" size={15} color="#fff" /> {saving ? tr.saving : tr.save}
                 </button>
                 <button onClick={() => setEditing(false)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', color: 'var(--text3)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700' }}>{tr.cancel}</button>
               </div>

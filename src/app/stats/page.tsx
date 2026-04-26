@@ -146,6 +146,25 @@ export default function StatsPage() {
     )
   }
 
+  if (trades.length === 0) {
+    return (
+      <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="monitoring" />
+        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '64px 24px', textAlign: 'center' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+            <Icon name="receipt_long" size={32} color="var(--text3)" />
+          </div>
+          <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>
+            {language === 'he' ? 'אין עסקאות לביצוע ניתוח סטטיסטיקות' : 'Not enough trades for statistics'}
+          </div>
+          <div style={{ fontSize: '13px', color: 'var(--text3)', maxWidth: '400px', margin: '0 auto', lineHeight: 1.6 }}>
+            {language === 'he' ? 'הוסף עסקאות לתיק כדי לראות ניתוח ביצועים מעמיק' : 'Add trades to this portfolio to see deep performance analysis'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="monitoring" />
