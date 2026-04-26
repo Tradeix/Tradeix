@@ -343,7 +343,7 @@ export default function ArchivePage() {
                       ) : (
                         <>
                           {/* Column header row */}
-                          <div className="archive-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '8px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                          <div className="archive-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '8px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
                             <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
                             <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
                             <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
@@ -352,16 +352,16 @@ export default function ArchivePage() {
                           </div>
 
                           {trades.map((trade, idx) => (
-                            <div key={trade.id} className="archive-trade-row" onClick={() => setSelectedTrade(trade)} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s', cursor: 'pointer' }}
+                            <div key={trade.id} className="archive-trade-row" onClick={() => setSelectedTrade(trade)} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 100px', alignItems: 'center', gap: '8px', padding: '11px 16px', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', transition: 'background 0.15s', cursor: 'pointer' }}
                               onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                               onMouseOut={e => e.currentTarget.style.background = 'transparent'}
                             >
                               {/* Symbol */}
-                              <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                                 <div style={{ width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                   <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={14} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                                 </div>
-                                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{trade.symbol}</div>
                               </div>
 
                               {/* Outcome */}
@@ -408,7 +408,7 @@ export default function ArchivePage() {
           .archive-restore-btn { padding: 7px 10px !important; }
           .restore-label { display: none; }
           .archive-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .archive-trade-row { grid-template-columns: 1fr 100px 100px 100px !important; gap: 8px !important; padding-inline: 12px !important; }
+          .archive-trade-row { grid-template-columns: minmax(0, 1fr) 100px 100px 100px !important; gap: 8px !important; padding-inline: 12px !important; }
           .archive-trade-row .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {

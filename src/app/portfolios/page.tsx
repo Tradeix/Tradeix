@@ -151,13 +151,16 @@ export default function PortfoliosPage() {
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#10b981'
 
+  const maxPortfolios = isPro ? 3 : 1
+  const atMaxPortfolios = portfolios.length >= maxPortfolios
+
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
         title={tr.portfoliosTitle}
         subtitle={language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage your trading portfolios'}
         icon="cases"
-        action={(
+        action={!atMaxPortfolios ? (
           <button
             type="button"
             onClick={openNewForm}
@@ -172,8 +175,24 @@ export default function PortfoliosPage() {
             <Icon name="add" size={16} />
             {tr.newPortfolioBtn}
           </button>
-        )}
+        ) : undefined}
       />
+
+      {/* ── MAX-LIMIT BANNER ── */}
+      {atMaxPortfolios && !loading && (
+        <div style={{
+          background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
+          borderRadius: '12px', padding: '14px 18px', marginBottom: '20px',
+          display: 'flex', alignItems: 'center', gap: '12px',
+        }}>
+          <Icon name="info" size={18} color="#f59e0b" />
+          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)', lineHeight: 1.5 }}>
+            {isPro
+              ? (language === 'he' ? 'הגעת למקסימום של 3 תיקים פעילים. כדי להוסיף תיק חדש, מחק או העבר לארכיון אחד מהקיימים.' : 'You have reached the maximum of 3 active portfolios. Delete or archive one to add a new one.')
+              : (language === 'he' ? 'תכנית חינמית מוגבלת לתיק אחד. שדרג ל-PRO כדי לפתוח עד 3 תיקים.' : 'Free plan is limited to 1 portfolio. Upgrade to PRO to create up to 3.')}
+          </div>
+        </div>
+      )}
 
       {/* ── POPUP FORM (new / edit) ── */}
       {showForm && (
@@ -208,7 +227,7 @@ export default function PortfoliosPage() {
 
             <div style={{ marginBottom: '24px' }}>
               <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.portfolioColor}</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {PORTFOLIO_COLORS.map(c => {
                   const active = form.color === c.id
                   return (
@@ -217,25 +236,22 @@ export default function PortfoliosPage() {
                       type="button"
                       onClick={() => setForm(p => ({ ...p, color: c.id }))}
                       style={{
-                        aspectRatio: '1 / 1', borderRadius: '12px',
+                        width: '28px', height: '28px', borderRadius: '50%',
                         background: c.primary, cursor: 'pointer',
                         border: active ? '2px solid #fff' : '2px solid transparent',
-                        boxShadow: active ? `0 0 0 2px ${c.primary}, 0 6px 18px ${c.primary}55` : 'none',
+                        boxShadow: active ? `0 0 0 2px ${c.primary}` : 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s', padding: 0,
                       }}
                     >
-                      {active && <Icon name="check" size={18} color="#fff" />}
+                      {active && <Icon name="check" size={13} color="#fff" />}
                     </button>
                   )
                 })}
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ flex: 1, opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}</button>
-              <button onClick={() => setShowForm(false)} className="btn-ghost">{tr.cancel}</button>
-            </div>
+            <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ width: '100%', opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}</button>
           </div>
         </div>
       )}

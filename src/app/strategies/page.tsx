@@ -614,28 +614,18 @@ export default function StrategiesPage() {
                 <textarea value={form.details} onChange={e => setForm(p => ({ ...p, details: e.target.value }))} placeholder={tr.strategyDetailsPlaceholder} rows={4} style={{ resize: 'vertical' }} />
               </div>
 
-              {/* Buttons */}
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={handleSave} disabled={saving} style={{
-                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
-                  borderRadius: '12px', padding: '12px',
-                  fontSize: '15px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
-                  fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
-                  transition: 'opacity 0.15s',
-                  boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
-                }}>
-                  <Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}
-                </button>
-                <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
-                  padding: '12px 22px', background: 'var(--bg3)', border: '1px solid var(--border)',
-                  borderRadius: '12px', fontSize: '15px', fontWeight: '600',
-                  color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                  transition: 'all 0.15s',
-                }}>
-                  {tr.cancel}
-                </button>
-              </div>
+              {/* Save button */}
+              <button onClick={handleSave} disabled={saving} style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
+                borderRadius: '12px', padding: '12px',
+                fontSize: '15px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+                fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
+                transition: 'opacity 0.15s',
+                boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
+              }}>
+                <Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}
+              </button>
             </div>
           </div>
         </div>

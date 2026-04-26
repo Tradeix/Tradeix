@@ -381,18 +381,18 @@ export default function AddTradePage() {
                 </div>
 
                 {/* Symbol + Date */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                  <div>
+                <div className="symbol-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div style={{ minWidth: 0 }}>
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
-                    <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." />
+                    <input value={tradeData.symbol} onChange={e => setTradeData(p => ({ ...p, symbol: e.target.value }))} placeholder="EUR/USD, GOLD, BTC..." style={{ width: '100%', boxSizing: 'border-box' }} />
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'תאריך' : 'Date'}
                     </label>
-                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} />
+                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', direction: 'ltr', minWidth: 0 }} />
                   </div>
                 </div>
 

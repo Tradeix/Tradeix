@@ -107,22 +107,28 @@ export default function DashboardPage() {
     else { return new Date(now.getFullYear(), 0, 1).toISOString() }
   }
 
-  useEffect(() => { if (activePortfolio) loadData() }, [activePortfolio, timeFilter])
+  // Recent trades — only depend on the active portfolio, NOT the time filter.
+  useEffect(() => { if (activePortfolio) loadRecentTrades() }, [activePortfolio])
+  // Performance stats — re-load when the time filter changes.
+  useEffect(() => { if (activePortfolio) loadStats() }, [activePortfolio, timeFilter])
 
   useEffect(() => {
     if (!activePortfolio) return
     const channel = supabase
       .channel('dashboard-trades')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => { loadData() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => { loadRecentTrades(); loadStats() })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [activePortfolio])
 
-  async function loadData() {
+  async function loadRecentTrades() {
+    const { data: tradeData } = await supabase.from('trades').select('*').eq('portfolio_id', activePortfolio!.id).order('created_at', { ascending: false }).limit(10)
+    if (tradeData) setTrades(tradeData)
+  }
+
+  async function loadStats() {
     try {
       const startDate = getStartDate(timeFilter)
-      const { data: tradeData } = await supabase.from('trades').select('*').eq('portfolio_id', activePortfolio!.id).order('created_at', { ascending: false }).limit(10)
-      if (tradeData) setTrades(tradeData)
       const { data: all } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', activePortfolio!.id).gte('traded_at', startDate)
       if (all && all.length > 0) {
         const wins = all.filter((x: any) => x.outcome === 'win')
@@ -460,7 +466,7 @@ export default function DashboardPage() {
           ) : (
             <>
               {/* Column header row */}
-              <div className="recent-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
+              <div className="recent-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
                 <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
                 <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
                 <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
@@ -470,15 +476,15 @@ export default function DashboardPage() {
 
               {trades.map((trade, idx) => (
                 <div key={trade.id} onClick={() => setSelectedTrade(trade)} className="recent-trade-row trade-row-anim"
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px', animationDelay: `${0.4 + idx * 0.06}s` }}
+                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '14px 10px', cursor: 'pointer', transition: 'background 0.12s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', borderRadius: '8px', animationDelay: `${0.4 + idx * 0.06}s` }}
                   onMouseOver={e => { e.currentTarget.style.background = 'var(--bg3)' }}
                   onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0, background: trade.direction === 'long' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={16} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', lineHeight: 1 }}>{trade.symbol}</div>
+                    <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{trade.symbol}</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <span style={{ padding: '4px 12px', borderRadius: '8px', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: trade.outcome === 'win' ? '#22c55e' : '#ef4444', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
@@ -496,7 +502,7 @@ export default function DashboardPage() {
 
       </div>
 
-      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadData(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
+      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadRecentTrades(); loadStats(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -507,7 +513,7 @@ export default function DashboardPage() {
           .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
           .data-by-label { display: none !important; }
-          .recent-trade-row { grid-template-columns: 1fr 100px 90px 110px !important; }
+          .recent-trade-row { grid-template-columns: minmax(0, 1fr) 100px 90px 110px !important; }
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {

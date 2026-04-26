@@ -195,7 +195,7 @@ export default function TradesPage() {
         ) : (
           <div style={{ padding: '8px 12px' }}>
             {/* Column header row */}
-            <div className="trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px', borderBottom: '1px solid var(--border)', marginBottom: '4px' }}>
+            <div className="trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px', borderBottom: '1px solid var(--border)', marginBottom: '4px' }}>
               <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
               <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
               <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
@@ -207,17 +207,17 @@ export default function TradesPage() {
               <div
                 key={trade.id}
                 onClick={() => setSelectedTrade(trade)}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', animationDelay: `${idx * 0.05}s` }}
+                style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '14px 8px', borderRadius: '14px', marginBottom: idx < trades.length - 1 ? '2px' : '0', cursor: 'pointer', transition: 'background 0.15s, transform 0.2s', borderBottom: idx < trades.length - 1 ? '1px solid var(--border)' : 'none', animationDelay: `${idx * 0.05}s` }}
                 onMouseOver={e => (e.currentTarget.style.background = 'var(--bg3)')}
                 onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                 className="trade-row trade-row-anim"
               >
                 {/* Symbol + direction */}
-                <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className="trade-col-symbol" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0, background: isLong(trade.direction) ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${isLong(trade.direction) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name={isLong(trade.direction) ? 'trending_up' : 'trending_down'} size={20} color={isLong(trade.direction) ? '#22c55e' : '#ef4444'} />
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em' }}>{trade.symbol}</div>
+                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{trade.symbol}</div>
                 </div>
 
                 {/* Status */}
@@ -266,7 +266,7 @@ export default function TradesPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 1024px) {
-          .trade-row { grid-template-columns: 1fr 100px 100px 110px !important; gap: 8px !important; }
+          .trade-row { grid-template-columns: minmax(0, 1fr) 100px 100px 110px !important; gap: 8px !important; }
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {

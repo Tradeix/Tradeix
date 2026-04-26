@@ -112,7 +112,9 @@ export default function GalleryPage() {
       setShowUpload(false)
       await load()
     } catch (err: any) {
-      toast.error(language === 'he' ? 'שגיאה בהעלאה' : 'Upload failed')
+      console.error('[gallery upload]', err)
+      const msg = err?.message || (language === 'he' ? 'שגיאה בהעלאה' : 'Upload failed')
+      toast.error(msg)
     } finally {
       setUploading(false)
     }
@@ -351,32 +353,23 @@ export default function GalleryPage() {
               })}
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                onClick={handleUpload}
-                disabled={uploading || !pickedFile || !form.title.trim()}
-                style={{
-                  flex: 1, background: '#10b981', color: '#fff', border: 'none',
-                  borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700',
-                  cursor: (uploading || !pickedFile || !form.title.trim()) ? 'not-allowed' : 'pointer',
-                  opacity: (uploading || !pickedFile || !form.title.trim()) ? 0.6 : 1,
-                  fontFamily: 'Heebo, sans-serif',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                }}
-              >
-                {uploading ? (
-                  <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                ) : <Icon name="cloud_upload" size={16} color="#fff" />}
-                {uploading ? (language === 'he' ? 'מעלה...' : 'Uploading...') : (language === 'he' ? 'העלה' : 'Upload')}
-              </button>
-              <button
-                onClick={() => { setShowUpload(false); resetForm() }}
-                disabled={uploading}
-                style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', padding: '12px 18px', borderRadius: '12px', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
-              >
-                {language === 'he' ? 'ביטול' : 'Cancel'}
-              </button>
-            </div>
+            <button
+              onClick={handleUpload}
+              disabled={uploading || !pickedFile || !form.title.trim()}
+              style={{
+                width: '100%', background: '#10b981', color: '#fff', border: 'none',
+                borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700',
+                cursor: (uploading || !pickedFile || !form.title.trim()) ? 'not-allowed' : 'pointer',
+                opacity: (uploading || !pickedFile || !form.title.trim()) ? 0.6 : 1,
+                fontFamily: 'Heebo, sans-serif',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              }}
+            >
+              {uploading ? (
+                <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              ) : <Icon name="cloud_upload" size={16} color="#fff" />}
+              {uploading ? (language === 'he' ? 'מעלה...' : 'Uploading...') : (language === 'he' ? 'העלה' : 'Upload')}
+            </button>
           </div>
         </div>
       )}
