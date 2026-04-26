@@ -100,7 +100,7 @@ export const t = {
     replaceImage: 'החלף',
     editDetails: 'עריכת פרטים',
     notesPlaceholder: 'מה למדת מהעסקה הזו?',
-    submitTrade: '✓ העלאת עסקה',
+    submitTrade: 'העלאת עסקה',
     submitting: '⏳ מעלה...',
 
     // Trades
@@ -148,7 +148,7 @@ export const t = {
     initialCapital: 'הון התחלתי ($)',
     portfolioColor: 'צבע התיק',
     selectedColor: 'נבחר',
-    save: '✓ שמור',
+    save: 'שמור',
     saving: 'שומר...',
     cancel: 'ביטול',
     noPortfoliosYet: 'אין תיקים עדיין',
@@ -274,7 +274,7 @@ export const t = {
     replaceImage: 'Replace',
     editDetails: 'Edit Details',
     notesPlaceholder: 'What did you learn from this trade?',
-    submitTrade: '✓ Submit Trade',
+    submitTrade: 'Submit Trade',
     submitting: '⏳ Submitting...',
 
     // Trades
@@ -322,7 +322,7 @@ export const t = {
     initialCapital: 'Initial Capital ($)',
     portfolioColor: 'Portfolio Color',
     selectedColor: 'Selected',
-    save: '✓ Save',
+    save: 'Save',
     saving: 'Saving...',
     cancel: 'Cancel',
     noPortfoliosYet: 'No portfolios yet',

@@ -72,9 +72,10 @@ export default function SettingsPage() {
 
   const glass = {
     background: 'var(--bg2)',
-    border: '1px solid var(--border)',
+    border: '1px solid var(--border2)',
     borderRadius: 'var(--radius)',
     padding: '24px',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
   }
 
   const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
@@ -95,7 +96,7 @@ export default function SettingsPage() {
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif' }}>
       <PageHeader
-        title={language === 'he' ? 'הגדרות אישיות' : 'Personal Settings'}
+        title={language === 'he' ? 'הגדרות' : 'Settings'}
         subtitle={language === 'he' ? 'ניהול חשבון והעדפות' : 'Account management & preferences'}
         icon="settings"
       />

@@ -219,7 +219,7 @@ export default function StrategiesPage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)' }}>{tr.loading}</div>
         </div>
       ) : strategies.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', textAlign: 'center', padding: '64px 24px' }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '24px',
             background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.12))',
