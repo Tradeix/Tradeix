@@ -160,8 +160,10 @@ export default function SettingsPage() {
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
             fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           }}>
-            {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
+            <Icon name="save" size={15} color="#fff" />
+            {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
         </div>
 
@@ -226,8 +228,10 @@ export default function SettingsPage() {
             cursor: savingPrefs ? 'wait' : 'pointer',
             opacity: savingPrefs ? 0.7 : 1,
             fontFamily: 'Heebo, sans-serif',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           }}>
-            {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? '✓ שמור שינויים' : '✓ Save changes')}
+            <Icon name="save" size={15} color="#fff" />
+            {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
         </div>
 
