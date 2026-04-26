@@ -120,13 +120,24 @@ export default function PortfoliosPage() {
   async function handleArchive(id: string) {
     const { error } = await supabase.from('portfolios').update({ archived: true }).eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
-    else { toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived'); loadPortfolios(); router.refresh() }
+    else {
+      toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived')
+      // Optimistic: drop from local list immediately so the empty state
+      // shows without waiting for the loadPortfolios refetch.
+      setPortfolios(prev => prev.filter(p => p.id !== id))
+      router.refresh()
+    }
   }
 
   async function handleDelete(id: string) {
     const { error } = await supabase.from('portfolios').delete().eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
-    else { toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted'); setConfirmDelete(null); loadPortfolios(); router.refresh() }
+    else {
+      toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted')
+      setConfirmDelete(null)
+      setPortfolios(prev => prev.filter(p => p.id !== id))
+      router.refresh()
+    }
   }
 
   function startEdit(p: Portfolio) {

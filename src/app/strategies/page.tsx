@@ -167,7 +167,14 @@ export default function StrategiesPage() {
   async function handleDelete(id: string) {
     const { error } = await supabase.from('strategies').delete().eq('id', id)
     if (error) toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Delete error')
-    else { toast.success(language === 'he' ? 'האסטרטגיה נמחקה' : 'Strategy deleted'); setConfirmDelete(null); loadStrategies(); router.refresh() }
+    else {
+      toast.success(language === 'he' ? 'האסטרטגיה נמחקה' : 'Strategy deleted')
+      setConfirmDelete(null)
+      // Optimistic update: drop from local state immediately so the empty
+      // state appears without waiting for the loadStrategies refetch.
+      setStrategies(prev => prev.filter(s => s.id !== id))
+      router.refresh()
+    }
   }
 
   if (portfoliosLoaded && !activePortfolio) {
