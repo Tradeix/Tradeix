@@ -101,21 +101,28 @@ export default function GalleryPage() {
       const { error: upErr } = await supabase.storage.from('trade-images').upload(path, pickedFile)
       if (upErr) throw upErr
       const { data: pub } = supabase.storage.from('trade-images').getPublicUrl(path)
-      // Schema requires portfolio_id NOT NULL, but the gallery is global —
-      // pin to the active portfolio (or any owned portfolio) just to satisfy
-      // the constraint; queries don't filter by portfolio_id.
-      const portfolioId = activePortfolio?.id || portfolios[0]?.id
+      // The gallery is portfolio-agnostic by design. The legacy schema may
+      // still have a NOT NULL on portfolio_id — if so, pin to the active
+      // portfolio, then to the first non-archived one, then to any owned
+      // portfolio (including archived) as a last resort. If the user owns
+      // none, fall through with null (the DB drops the constraint after
+      // running: ALTER TABLE gallery_items ALTER COLUMN portfolio_id DROP NOT NULL;).
+      let portfolioId: string | null = activePortfolio?.id || portfolios[0]?.id || null
       if (!portfolioId) {
-        throw new Error(language === 'he' ? 'צור תיק לפני העלאה' : 'Create a portfolio before uploading')
+        const { data: anyPortfolio } = await supabase
+          .from('portfolios').select('id').eq('user_id', user.id)
+          .order('created_at', { ascending: true }).limit(1).maybeSingle()
+        portfolioId = anyPortfolio?.id || null
       }
-      const { error: insErr } = await supabase.from('gallery_items').insert({
+      const insertPayload: any = {
         user_id: user.id,
-        portfolio_id: portfolioId,
         title: form.title.trim(),
         description: form.description.trim() || null,
         category: form.category,
         image_url: pub.publicUrl,
-      })
+      }
+      if (portfolioId) insertPayload.portfolio_id = portfolioId
+      const { error: insErr } = await supabase.from('gallery_items').insert(insertPayload)
       if (insErr) throw insErr
       toast.success(language === 'he' ? 'התמונה נוספה' : 'Image added')
       resetForm()
