@@ -8,7 +8,7 @@ import {
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
   RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
   Check, Brain, Images, Image as ImageIcon, UploadCloud, Banknote, Key, Monitor,
-  Save,
+  Save, CalendarCheck,
   type LucideProps,
 } from 'lucide-react'
 
@@ -88,6 +88,7 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   key: Key,
   screenshot_monitor: Monitor,
   save: Save,
+  event_available: CalendarCheck,
 }
 
 interface IconProps extends Omit<LucideProps, 'ref'> {
