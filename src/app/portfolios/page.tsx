@@ -335,7 +335,6 @@ export default function PortfoliosPage() {
                 style={{
                   background: 'var(--bg2)',
                   border: `1px solid ${color}30`,
-                  borderTop: `3px solid ${color}`,
                   borderRadius: '14px',
                   padding: '20px',
                   display: 'flex',

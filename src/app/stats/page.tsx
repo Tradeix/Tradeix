@@ -24,6 +24,7 @@ export default function StatsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const [capturing, setCapturing] = useState(false)
+  const [selectedDow, setSelectedDow] = useState<number>(new Date().getDay())
   const calendarRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
 
@@ -85,6 +86,37 @@ export default function StatsPage() {
   const DAY_NAMES = language === 'he'
     ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
     : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  const DAY_NAMES_LONG = language === 'he'
+    ? ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
+    : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+  // Aggregate by day of week (0 = Sun … 6 = Sat)
+  const byDow = Array.from({ length: 7 }, () => ({ count: 0, wins: 0, losses: 0, pnl: 0 }))
+  trades.forEach(t => {
+    const d = new Date(t.traded_at).getDay()
+    byDow[d].count++
+    byDow[d].pnl += (t.pnl || 0)
+    if (t.outcome === 'win') byDow[d].wins++
+    else byDow[d].losses++
+  })
+  const dowWinRate = (i: number) => {
+    const total = byDow[i].wins + byDow[i].losses
+    return total > 0 ? (byDow[i].wins / total) * 100 : 0
+  }
+  // Best / worst day across days that have at least one trade
+  const dowsWithData = byDow.map((_, i) => i).filter(i => byDow[i].count > 0)
+  let bestDow = -1, worstDow = -1
+  if (dowsWithData.length > 0) {
+    bestDow = dowsWithData.reduce((a, b) => dowWinRate(a) >= dowWinRate(b) ? a : b)
+    worstDow = dowsWithData.reduce((a, b) => dowWinRate(a) <= dowWinRate(b) ? a : b)
+    if (bestDow === worstDow) worstDow = -1 // only one day with data — no comparison
+  }
+  const sel = byDow[selectedDow]
+  const selWinRate = dowWinRate(selectedDow)
+  const selPnlPos = sel.pnl >= 0
+  const overallWinRate = winRate
+  const diffFromOverall = selWinRate - overallWinRate
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
@@ -246,6 +278,156 @@ export default function StatsPage() {
         </div>
       </div>
 
+      {/* ── Win rate by day of week ── */}
+      <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', marginBottom: '16px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '15%', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon name="event_available" size={22} color="#10b981" />
+          </div>
+          <div>
+            <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+              {language === 'he' ? 'אחוזי הצלחה לפי יום' : 'Win rate by day'}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '3px', fontWeight: '500' }}>
+              {language === 'he' ? 'לחץ על יום כדי לראות פירוט' : 'Tap a day for details'}
+            </div>
+          </div>
+        </div>
+
+        {/* Day chips row */}
+        <div className="dow-chips" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+          {DAY_NAMES.map((label, i) => {
+            const isSelected = selectedDow === i
+            const isBest = bestDow === i
+            const isWorst = worstDow === i
+            const has = byDow[i].count > 0
+            const wr = dowWinRate(i)
+            // Color: selected wins; otherwise best=green, worst=red, neutral
+            const accent = isSelected ? '#10b981' : isBest ? '#22c55e' : isWorst ? '#ef4444' : null
+            const border = accent
+              ? `1px solid ${isSelected ? 'rgba(16,185,129,0.45)' : isBest ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`
+              : `1px solid var(--border)`
+            const bg = isSelected
+              ? 'rgba(16,185,129,0.12)'
+              : isBest ? 'rgba(34,197,94,0.06)'
+              : isWorst ? 'rgba(239,68,68,0.06)'
+              : 'var(--bg3)'
+            return (
+              <button
+                key={i}
+                onClick={() => setSelectedDow(i)}
+                disabled={!has}
+                style={{
+                  background: bg, border, borderRadius: '12px',
+                  padding: '12px 4px',
+                  cursor: has ? 'pointer' : 'not-allowed',
+                  opacity: has ? 1 : 0.45,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                  fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
+                  position: 'relative',
+                }}
+              >
+                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {label}
+                </span>
+                <span style={{ fontSize: '15px', fontWeight: '900', color: has ? (accent || 'var(--text)') : 'var(--text3)', lineHeight: 1 }}>
+                  {has ? `${wr.toFixed(0)}%` : '—'}
+                </span>
+                {isBest && has && (
+                  <span style={{ position: 'absolute', top: '-7px', insetInlineEnd: '-4px', fontSize: '9px', fontWeight: '900', background: '#22c55e', color: '#fff', padding: '2px 5px', borderRadius: '6px', letterSpacing: '0.05em' }}>
+                    {language === 'he' ? 'הכי חזק' : 'BEST'}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Selected day detail card */}
+        <div style={{
+          background: sel.count === 0 ? 'var(--bg3)' : selPnlPos ? 'rgba(34,197,94,0.04)' : 'rgba(239,68,68,0.04)',
+          border: `1px solid ${sel.count === 0 ? 'var(--border)' : selPnlPos ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
+          borderRadius: '14px',
+          padding: '18px 20px',
+          position: 'relative', zIndex: 1,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sel.count === 0 ? 0 : '14px', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)' }}>
+              {language === 'he' ? `יום ${DAY_NAMES_LONG[selectedDow]}` : DAY_NAMES_LONG[selectedDow]}
+            </div>
+            {sel.count > 0 && (
+              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700' }}>
+                {sel.count} {language === 'he' ? (sel.count === 1 ? 'עסקה' : 'עסקאות') : (sel.count === 1 ? 'trade' : 'trades')}
+              </div>
+            )}
+          </div>
+
+          {sel.count === 0 ? (
+            <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>
+              {language === 'he' ? 'לא ביצעת עסקאות ביום זה' : 'No trades on this day yet'}
+            </div>
+          ) : (
+            <>
+              {/* Stat row */}
+              <div className="dow-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '14px' }}>
+                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    {language === 'he' ? 'אחוז זכייה' : 'Win rate'}
+                  </div>
+                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#10b981' }}>{selWinRate.toFixed(0)}%</div>
+                </div>
+                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    {language === 'he' ? 'ניצחונות' : 'Wins'}
+                  </div>
+                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#22c55e' }}>{sel.wins}</div>
+                </div>
+                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    {language === 'he' ? 'הפסדים' : 'Losses'}
+                  </div>
+                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#ef4444' }}>{sel.losses}</div>
+                </div>
+                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>P&L</div>
+                  <div dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: selPnlPos ? '#22c55e' : '#ef4444' }}>
+                    {selPnlPos ? '+' : '-'}${Math.abs(sel.pnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Comparison bar — selected day vs overall */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {language === 'he' ? 'בהשוואה לממוצע הכללי' : 'Vs overall average'}
+                  </span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: diffFromOverall >= 0 ? '#22c55e' : '#ef4444' }}>
+                    {diffFromOverall >= 0 ? '+' : ''}{diffFromOverall.toFixed(1)}%
+                  </span>
+                </div>
+                <div style={{ position: 'relative', height: '10px', background: 'var(--bg2)', borderRadius: '999px', overflow: 'hidden' }}>
+                  {/* Overall average marker */}
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${overallWinRate}%`, width: '2px', background: 'var(--text3)', zIndex: 2 }} />
+                  {/* Selected-day fill */}
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, insetInlineStart: 0, width: `${Math.min(100, selWinRate)}%`, background: diffFromOverall >= 0 ? 'linear-gradient(90deg, rgba(34,197,94,0.5), rgba(34,197,94,0.9))' : 'linear-gradient(90deg, rgba(239,68,68,0.5), rgba(239,68,68,0.9))', borderRadius: '999px' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <span style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>0%</span>
+                  <span style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>
+                    {language === 'he' ? 'ממוצע כללי' : 'Overall'}: {overallWinRate.toFixed(0)}%
+                  </span>
+                  <span style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>100%</span>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Calendar */}
       <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
         {/* Header */}
@@ -310,7 +492,15 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 1024px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 640px) { .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 21px !important; } }
+        @media (max-width: 640px) {
+          .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 21px !important; }
+          .dow-wrap { padding: 16px !important; }
+          .dow-chips { gap: 5px !important; }
+          .dow-chips button { padding: 10px 2px !important; }
+          .dow-chips button > span:first-child { font-size: 10px !important; }
+          .dow-chips button > span:nth-child(2) { font-size: 13px !important; }
+          .dow-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
+        }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .cal-dayname { font-size: 11px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
         .cal-cell { border-radius: 12px; min-height: 84px; padding: 8px 6px 6px; display: flex; flex-direction: column; cursor: default; }
