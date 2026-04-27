@@ -323,50 +323,99 @@ export default function PortfoliosPage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="portfolios-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px' }}>
           {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
             const s = portfolioStats[p.id]
             const pnlPos = (s?.totalPnl || 0) >= 0
             return (
-              <div key={p.id} className="card-hover trade-row-anim portfolio-card" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderBottom: `3px solid ${color}`, borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', animationDelay: `${idx * 0.08}s` }}>
+              <div
+                key={p.id}
+                className="card-hover trade-row-anim portfolio-card"
+                style={{
+                  background: 'var(--bg2)',
+                  border: `1px solid ${color}30`,
+                  borderTop: `3px solid ${color}`,
+                  borderRadius: '14px',
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  animationDelay: `${idx * 0.08}s`,
+                }}
+              >
+                {/* Subtle color glow */}
+                <div style={{ position: 'absolute', top: '-30px', insetInlineEnd: '-30px', width: '120px', height: '120px', background: `radial-gradient(circle, ${color}14 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
-                {/* Info */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                {/* Header: color tile + name + market */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+                  <div style={{
+                    width: '42px', height: '42px', borderRadius: '12px',
+                    background: `${color}1f`, border: `1px solid ${color}50`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Icon name="cases" size={19} color={color} />
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div
                       onClick={() => { setActivePortfolio(p); router.push('/dashboard') }}
-                      style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s' }}
-                      onMouseOver={e => e.currentTarget.style.color = '#10b981'}
-                      onMouseOut={e => e.currentTarget.style.color = 'var(--text)'}
+                      title={p.name}
+                      style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color 0.15s', lineHeight: 1.2 }}
+                      onMouseOver={e => (e.currentTarget.style.color = color)}
+                      onMouseOut={e => (e.currentTarget.style.color = 'var(--text)')}
                     >{p.name}</div>
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {MARKET_LABELS[language][p.market_type]}
-                    {s && ` • ${s.totalTrades} ${language === 'he' ? 'עסקאות' : 'trades'} • ${s.winRate.toFixed(0)}% WIN`}
+                    <div style={{ fontSize: '11px', color, fontWeight: '700', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      {MARKET_LABELS[language][p.market_type]}
+                    </div>
                   </div>
                 </div>
 
-                {/* Stats summary */}
+                {/* Trades + Win-rate strip */}
                 {s && (
-                  <div className="portfolio-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
-                    <div style={{ fontSize: '17px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
-                      {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr', alignItems: 'center', background: 'var(--bg3)', borderRadius: '10px', padding: '10px 12px', position: 'relative' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{language === 'he' ? 'עסקאות' : 'Trades'}</div>
+                      <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', marginTop: '2px' }}>{s.totalTrades}</div>
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                    <div style={{ width: '1px', height: '28px', background: 'var(--border)' }} />
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{language === 'he' ? 'אחוז זכייה' : 'Win rate'}</div>
+                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#10b981', marginTop: '2px' }}>{s.winRate.toFixed(0)}%</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* P&L block */}
+                {s && (
+                  <div style={{
+                    background: pnlPos ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                    border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)'}`,
+                    borderRadius: '12px', padding: '10px 14px',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    position: 'relative',
+                  }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</span>
+                    <span dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
+                      {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
+                    </span>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
-                  <button onClick={() => startEdit(p)} title={tr.edit} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                    <Icon name="edit" size={17} />
+                <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', marginTop: 'auto', position: 'relative' }}>
+                  <button onClick={() => startEdit(p)} title={tr.edit} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <Icon name="edit" size={16} />
                   </button>
-                  {isPro && <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                    <Icon name="inventory_2" size={17} />
-                  </button>}
-                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                    <Icon name="delete" size={17} />
+                  {isPro && (
+                    <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                      <Icon name="inventory_2" size={16} />
+                    </button>
+                  )}
+                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <Icon name="delete" size={16} />
                   </button>
                 </div>
               </div>
@@ -376,13 +425,15 @@ export default function PortfoliosPage() {
       )}
 
       <style>{`
-        @media (max-width: 1024px) { .form-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 1024px) {
+          .form-grid { grid-template-columns: 1fr !important; }
+          .portfolios-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+        }
         @media (max-width: 640px) {
-          .portfolio-card { gap: 8px !important; padding: 14px 16px !important; flex-wrap: nowrap !important; }
-          .portfolio-card .portfolio-actions { gap: 6px !important; flex-shrink: 0 !important; }
-          .portfolio-card .portfolio-actions button { width: 40px !important; height: 40px !important; padding: 0 !important; }
-          .portfolio-card .portfolio-actions button svg { width: 19px !important; height: 19px !important; }
-          .portfolio-pnl { display: none !important; }
+          .portfolios-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .portfolio-card { padding: 16px !important; }
+          .portfolio-card .portfolio-actions button { height: 40px !important; }
+          .portfolio-card .portfolio-actions button svg { width: 18px !important; height: 18px !important; }
         }
       `}</style>
     </div>
