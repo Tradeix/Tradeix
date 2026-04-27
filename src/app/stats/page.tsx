@@ -144,7 +144,7 @@ export default function StatsPage() {
   const StatCard = ({ label, value, color, icon, idx = 0 }: any) => (
     <div className="card-hover stat-anim" style={{ ...card, padding: '20px', animationDelay: `${idx * 0.05}s` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-        <div style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
+        <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
         <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name={icon} size={16} color={color} />
         </div>
