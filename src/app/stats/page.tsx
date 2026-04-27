@@ -11,7 +11,7 @@ import { t } from '@/lib/translations'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns'
+import { format, getDaysInMonth } from 'date-fns'
 
 const ACCENT = '#10b981'
 
@@ -24,7 +24,11 @@ export default function StatsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const [capturing, setCapturing] = useState(false)
-  const [selectedDow, setSelectedDow] = useState<number>(new Date().getDay())
+  const [selectedDow, setSelectedDow] = useState<number>(() => {
+    // Market is closed on Sat (6) and Sun (0) — default to Monday on weekends.
+    const today = new Date().getDay()
+    return today === 0 || today === 6 ? 1 : today
+  })
   const calendarRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
 
@@ -71,7 +75,20 @@ export default function StatsPage() {
   }, [])
 
   const daysInMonth = getDaysInMonth(currentMonth)
-  const firstDay = getDay(startOfMonth(currentMonth))
+  // Calendar shows weekdays only (Mon–Fri). Find the dow of the first
+  // weekday in the month — its column index (dow-1) is our leading offset.
+  let firstWeekdayDow = 1
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dow = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).getDay()
+    if (dow >= 1 && dow <= 5) { firstWeekdayDow = dow; break }
+  }
+  const leadingEmpty = firstWeekdayDow - 1 // 0..4
+  // Build the list of weekday day-numbers we'll render
+  const weekdayDays: number[] = []
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dow = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).getDay()
+    if (dow >= 1 && dow <= 5) weekdayDays.push(i)
+  }
   const monthlyPnl: Record<number, number> = {}
   const monthlyCount: Record<number, number> = {}
   trades.forEach(t => {
@@ -91,7 +108,11 @@ export default function StatsPage() {
     ? ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
     : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-  // Aggregate by day of week (0 = Sun … 6 = Sat)
+  // Trading days only (Mon–Fri). Sat/Sun are excluded — markets are closed.
+  const TRADING_DOWS = [1, 2, 3, 4, 5]
+
+  // Aggregate by day of week. Indexed 0–6 internally so any stray weekend
+  // trades still bucket correctly, but the UI only renders Mon–Fri.
   const byDow = Array.from({ length: 7 }, () => ({ count: 0, wins: 0, losses: 0, pnl: 0 }))
   trades.forEach(t => {
     const d = new Date(t.traded_at).getDay()
@@ -104,8 +125,8 @@ export default function StatsPage() {
     const total = byDow[i].wins + byDow[i].losses
     return total > 0 ? (byDow[i].wins / total) * 100 : 0
   }
-  // Best / worst day across days that have at least one trade
-  const dowsWithData = byDow.map((_, i) => i).filter(i => byDow[i].count > 0)
+  // Best / worst day across trading days that have at least one trade
+  const dowsWithData = TRADING_DOWS.filter(i => byDow[i].count > 0)
   let bestDow = -1, worstDow = -1
   if (dowsWithData.length > 0) {
     bestDow = dowsWithData.reduce((a, b) => dowWinRate(a) >= dowWinRate(b) ? a : b)
@@ -297,9 +318,10 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Day chips row */}
-        <div className="dow-chips" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-          {DAY_NAMES.map((label, i) => {
+        {/* Day chips row — Mon–Fri only (markets closed on weekends) */}
+        <div className="dow-chips" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+          {TRADING_DOWS.map((i) => {
+            const label = DAY_NAMES[i]
             const isSelected = selectedDow === i
             const isBest = bestDow === i
             const isWorst = worstDow === i
@@ -458,12 +480,12 @@ export default function StatsPage() {
         </div>
 
         <div className="cal-grid" style={{ marginBottom: '4px' }}>
-          {DAY_NAMES.map(d => <div key={d} className="cal-dayname">{d}</div>)}
+          {[1, 2, 3, 4, 5].map(i => <div key={i} className="cal-dayname">{DAY_NAMES[i]}</div>)}
         </div>
 
         <div className="cal-grid">
-          {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
-          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+          {Array.from({ length: leadingEmpty }).map((_, i) => <div key={`e-${i}`} />)}
+          {weekdayDays.map(day => {
             const pnl = monthlyPnl[day]
             const count = monthlyCount[day]
             const hasData = pnl !== undefined
@@ -501,7 +523,7 @@ export default function StatsPage() {
           .dow-chips button > span:nth-child(2) { font-size: 13px !important; }
           .dow-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .cal-dayname { font-size: 11px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
         .cal-cell { border-radius: 12px; min-height: 84px; padding: 8px 6px 6px; display: flex; flex-direction: column; cursor: default; }
         .cal-day { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; align-self: flex-start; padding-inline-start: 2px; }
