@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
 const STRATEGY_COLORS = [
-  { name: 'green', hex: '#10b981' },
+  { name: 'green', hex: '#0f8d63' },
   { name: 'blue', hex: '#4b5563' },
   { name: 'purple', hex: '#9ca3af' },
   { name: 'gray', hex: '#6b7280' },
@@ -23,7 +23,7 @@ const STRATEGY_COLORS = [
 ]
 
 function getColorHex(name: string) {
-  return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#10b981'
+  return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#0f8d63'
 }
 
 type StrategyStats = {
@@ -191,7 +191,7 @@ export default function StrategiesPage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -208,7 +208,7 @@ export default function StrategiesPage() {
         action={strategies.length > 0 ? (
           <button onClick={openNew} style={{
             display: 'flex', alignItems: 'center', gap: '6px',
-            background: '#10b981', color: '#fff', border: 'none',
+            background: '#0f8d63', color: '#fff', border: 'none',
             borderRadius: '10px', padding: '10px 18px',
             fontSize: '14px', fontWeight: '700', cursor: 'pointer',
             fontFamily: 'Heebo, sans-serif', transition: 'opacity 0.15s',
@@ -222,18 +222,18 @@ export default function StrategiesPage() {
       {/* ── STRATEGIES LIST ── */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           <div style={{ fontSize: '14px', color: 'var(--text3)' }}>{tr.loading}</div>
         </div>
       ) : strategies.length === 0 ? (
         <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', textAlign: 'center', padding: '64px 24px' }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '24px',
-            background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.12))',
-            border: '1px solid rgba(16,185,129,0.15)',
+            background: 'linear-gradient(135deg, rgba(15,141,99,0.12), rgba(15,141,99,0.12))',
+            border: '1px solid rgba(15,141,99,0.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
           }}>
-            <Icon name="psychology" size={36} color="#10b981" />
+            <Icon name="psychology" size={36} color="#0f8d63" />
           </div>
           <div style={{ fontSize: '19px', fontWeight: '700', marginBottom: '8px', color: 'var(--text)' }}>
             {tr.noStrategiesYet}
@@ -242,11 +242,11 @@ export default function StrategiesPage() {
             {tr.noStrategiesDesc}
           </div>
           <button onClick={openNew} style={{
-            background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', padding: '12px 28px',
+            background: 'linear-gradient(135deg, #0f8d63, #0a6448)', color: '#fff', padding: '12px 28px',
             borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700',
             cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
-            boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
+            boxShadow: '0 4px 16px rgba(15,141,99,0.3)',
           }}>
             <Icon name="add" size={16} color="#fff" />
             {tr.newStrategy}
@@ -572,10 +572,10 @@ export default function StrategiesPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
                   width: '36px', height: '36px', borderRadius: '10px',
-                  background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+                  background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Icon name="psychology" size={18} color="#10b981" />
+                  <Icon name="psychology" size={18} color="#0f8d63" />
                 </div>
                 <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)' }}>
                   {editingId ? tr.editStrategy : tr.newStrategy}
@@ -624,12 +624,12 @@ export default function StrategiesPage() {
               {/* Save button */}
               <button onClick={handleSave} disabled={saving} style={{
                 width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
+                background: 'linear-gradient(135deg, #0f8d63, #0a6448)', color: '#fff', border: 'none',
                 borderRadius: '12px', padding: '12px',
                 fontSize: '15px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
                 fontFamily: 'Heebo, sans-serif', opacity: saving ? 0.7 : 1,
                 transition: 'opacity 0.15s',
-                boxShadow: '0 4px 16px rgba(16,185,129,0.25)',
+                boxShadow: '0 4px 16px rgba(15,141,99,0.25)',
               }}>
                 <Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}
               </button>

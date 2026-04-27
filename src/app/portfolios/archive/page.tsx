@@ -12,7 +12,7 @@ import TradeModal from '@/components/TradeModal'
 
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 const PORTFOLIO_COLORS = [
-  { id: 'green',  primary: '#10b981' },
+  { id: 'green',  primary: '#0f8d63' },
   { id: 'blue',   primary: '#3b82f6' },
   { id: 'purple', primary: '#8b5cf6' },
   { id: 'red',    primary: '#ef4444' },
@@ -134,7 +134,7 @@ export default function ArchivePage() {
     else { toast.success(language === 'he' ? 'התיק נמחק לצמיתות' : 'Portfolio deleted forever'); setConfirmDelete(null); loadArchived() }
   }
 
-  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#10b981'
+  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#0f8d63'
 
   // Free tier paywall
   if (!subscriptionLoading && !isPro) {
@@ -198,7 +198,7 @@ export default function ArchivePage() {
 
       {loading ? (
         <div style={{ padding: '60px', textAlign: 'center' }}>
-          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
         </div>
       ) : portfolios.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
@@ -256,14 +256,14 @@ export default function ArchivePage() {
                   {/* Actions */}
                   <div className="archive-actions" style={{ display: 'flex', gap: '8px', marginInlineStart: 'auto' }}>
                     {/* Stats toggle */}
-                    <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(16,185,129,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`, color: isExpanded ? '#10b981' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                    <button onClick={() => toggleExpand(p.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: isExpanded ? 'rgba(15,141,99,0.15)' : 'var(--bg3)', border: `1px solid ${isExpanded ? 'rgba(15,141,99,0.3)' : 'var(--border)'}`, color: isExpanded ? '#0f8d63' : 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                       <Icon name={isExpanded ? 'expand_less' : 'bar_chart'} size={16} />
                     </button>
 
                     {/* Restore */}
-                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} className="archive-restore-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', fontSize: '13px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
-                      onMouseOver={e => e.currentTarget.style.background = 'rgba(16,185,129,0.15)'}
-                      onMouseOut={e => e.currentTarget.style.background = 'rgba(16,185,129,0.08)'}
+                    <button onClick={() => handleRestore(p.id)} title={language === 'he' ? 'שחזר תיק' : 'Restore'} className="archive-restore-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '10px', background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', color: '#0f8d63', cursor: 'pointer', fontSize: '13px', fontWeight: '700', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s' }}
+                      onMouseOver={e => e.currentTarget.style.background = 'rgba(15,141,99,0.15)'}
+                      onMouseOut={e => e.currentTarget.style.background = 'rgba(15,141,99,0.08)'}
                     >
                       <Icon name="restore" size={14} />
                       <span className="restore-label">{language === 'he' ? 'שחזר' : 'Restore'}</span>
@@ -288,7 +288,7 @@ export default function ArchivePage() {
                       {[
                         { label: language === 'he' ? 'עסקאות' : 'Trades', value: s.totalTrades, color: 'var(--text2)' },
                         { label: language === 'he' ? 'ניצחונות' : 'Wins', value: s.wins, color: '#22c55e' },
-                        { label: language === 'he' ? 'אחוז הצלחה' : 'Win Rate', value: `${s.winRate.toFixed(1)}%`, color: '#10b981' },
+                        { label: language === 'he' ? 'אחוז הצלחה' : 'Win Rate', value: `${s.winRate.toFixed(1)}%`, color: '#0f8d63' },
                         { label: 'P&L', value: `${s.totalPnl >= 0 ? '+' : ''}$${s.totalPnl.toLocaleString()}`, color: s.totalPnl >= 0 ? '#22c55e' : '#ef4444' },
                       ].map(({ label, value, color: c }) => (
                         <div key={label} style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
@@ -334,7 +334,7 @@ export default function ArchivePage() {
                     <div style={{ background: 'var(--bg3)', borderRadius: '12px', overflow: 'hidden' }}>
                       {tradesLoading ? (
                         <div style={{ padding: '32px', textAlign: 'center' }}>
-                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
                         </div>
                       ) : trades.length === 0 ? (
                         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px', fontWeight: '600' }}>
@@ -377,7 +377,7 @@ export default function ArchivePage() {
                               </div>
 
                               {/* RR */}
-                              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '800', color: '#0f8d63' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
 
                               {/* P&L */}
                               <div style={{ textAlign: 'center', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>

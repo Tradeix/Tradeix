@@ -265,7 +265,7 @@ export default function AddTradePage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -286,7 +286,7 @@ export default function AddTradePage() {
         {/* STEP 1 — PRO only */}
         {isPro && step === 1 && (
           <div className="fade-up">
-            <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
+            <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#0f8d630a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
               <input {...getInputProps()} />
               <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}><Icon name="zoom_in" size={44} color="var(--blue)" strokeWidth={1.2} /></div>
               <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
@@ -371,7 +371,7 @@ export default function AddTradePage() {
                       </button>
                     </div>
                   ) : (
-                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#10b9810a' : 'var(--bg3)', transition: 'all 0.2s' }}>
+                    <div {...getManualRootProps()} style={{ border: `2px dashed ${isManualDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', padding: '20px', textAlign: 'center', cursor: 'pointer', background: isManualDragActive ? '#0f8d630a' : 'var(--bg3)', transition: 'all 0.2s' }}>
                       <input {...getManualInputProps()} />
                       <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'center' }}><Icon name="photo_camera" size={24} color="var(--text3)" /></div>
                       <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '2px', color: 'var(--text)' }}>{language === 'he' ? 'העלה תמונת גרף' : 'Upload Chart Image'}</div>
@@ -596,8 +596,8 @@ export default function AddTradePage() {
             style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '36px 28px 28px', maxWidth: '400px', width: '100%', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}
           >
             {/* Success icon */}
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(16,185,129,0.12)', border: '2px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-              <Icon name="check_circle" size={32} color="#10b981" />
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(15,141,99,0.12)', border: '2px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+              <Icon name="check_circle" size={32} color="#0f8d63" />
             </div>
 
             {/* Title */}
@@ -607,8 +607,8 @@ export default function AddTradePage() {
 
             {/* Confidence */}
             {aiConfidence > 0 && (
-              <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#10b981' }}>
+              <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#0f8d63' }}>
                   {language === 'he' ? 'ביטחון לפי קריאת הנתונים' : 'Data reading confidence'}: {aiConfidence}%
                 </div>
               </div>

@@ -14,11 +14,11 @@
   --text: #eef0f6;
   --text2: #9a9eb2;
   --text3: #585d72;
-  --blue: #10b981;
-  --blue2: #0ea772;
-  --blue3: rgba(16, 185, 129, 0.12);
-  --blueglow: rgba(16, 185, 129, 0.18);
-  --purple: #10b981;
+  --blue: #0f8d63;
+  --blue2: #0d7755;
+  --blue3: rgba(15, 141, 99, 0.12);
+  --blueglow: rgba(15, 141, 99, 0.18);
+  --purple: #0f8d63;
   --green: #22c55e;
   --red: #ef4444;
   --amber: #f59e0b;
@@ -104,8 +104,8 @@ input, select, textarea {
   width: 100%; transition: border .2s, background .2s; outline: none;
 }
 input:focus, select:focus, textarea:focus {
-  border-color: rgba(16,185,129,.5);
-  box-shadow: 0 0 0 3px rgba(16,185,129,.08);
+  border-color: rgba(15,141,99,.5);
+  box-shadow: 0 0 0 3px rgba(15,141,99,.08);
 }
 input::placeholder, textarea::placeholder { color: var(--text3); }
 select { appearance: none; -webkit-appearance: none; padding-inline-end: 36px; cursor: pointer; }
@@ -146,7 +146,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
-@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 12px 4px rgba(16,185,129,0.1); } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(15,141,99,0.2); } 50% { box-shadow: 0 0 12px 4px rgba(15,141,99,0.1); } }
 @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -245,8 +245,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: var(--text2) !important;
   background: rgba(0,0,0,0.04) !important;
 }
-[data-theme="light"] .sidebar-el nav a[style*="#10b981"] {
-  color: #10b981 !important;
+[data-theme="light"] .sidebar-el nav a[style*="#0f8d63"] {
+  color: #0f8d63 !important;
 }
 [data-theme="light"] .sidebar-el button {
   color: rgba(239,68,68,0.7) !important;

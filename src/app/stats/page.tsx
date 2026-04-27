@@ -13,7 +13,7 @@ import Icon from '@/components/Icon'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, getDaysInMonth } from 'date-fns'
 
-const ACCENT = '#10b981'
+const ACCENT = '#0f8d63'
 
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -191,7 +191,7 @@ export default function StatsPage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -207,7 +207,7 @@ export default function StatsPage() {
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
         <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="monitoring" />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 20px' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       </div>
     )
@@ -240,7 +240,7 @@ export default function StatsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }} className="stats-grid-4">
         <StatCard idx={0} label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
         <StatCard idx={1} label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
-        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#10b981" icon="insights" />
+        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#0f8d63" icon="insights" />
         <StatCard idx={3} label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
         <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
         <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
@@ -251,13 +251,13 @@ export default function StatsPage() {
       {/* Equity chart */}
       <div className="section-anim anim-delay-5" style={{ ...card, marginBottom: '16px', overflow: 'hidden', position: 'relative' }}>
         {/* Subtle glow */}
-        <div style={{ position: 'absolute', top: '-60px', right: '20%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-60px', right: '20%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(15,141,99,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Header */}
         <div style={{ padding: '22px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon name="show_chart" size={22} color="#10b981" />
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="show_chart" size={22} color="#0f8d63" />
             </div>
             <div>
               <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.cumulativeEquity}</div>
@@ -265,7 +265,7 @@ export default function StatsPage() {
           </div>
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
-            <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', color: totalPnl >= 0 ? '#10b981' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
+            <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', color: totalPnl >= 0 ? '#0f8d63' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
               {totalPnl >= 0 ? '+' : '-'}${Math.abs(totalPnl).toLocaleString()}
             </div>
           </div>
@@ -278,33 +278,33 @@ export default function StatsPage() {
               <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 16 }}>
                 <defs>
                   <linearGradient id="eqGradGreenStats" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
-                    <stop offset="50%" stopColor="#10b981" stopOpacity={0.08} />
-                    <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0f8d63" stopOpacity={0.25} />
+                    <stop offset="50%" stopColor="#0f8d63" stopOpacity={0.08} />
+                    <stop offset="100%" stopColor="#0f8d63" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
                 <Tooltip
-                  cursor={{ stroke: 'rgba(16,185,129,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  cursor={{ stroke: 'rgba(15,141,99,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
                   content={({ active, payload, label }: any) => {
                     if (!active || !payload?.length) return null
                     const val = payload[0].value
                     return (
-                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
+                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginBottom: '4px' }}>{label}</div>
-                        <div style={{ color: val < 0 ? '#ef4444' : '#10b981', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
+                        <div style={{ color: val < 0 ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
                       </div>
                     )
                   }}
                 />
-                <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
+                <Area type="monotone" dataKey="value" stroke="#0f8d63" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#0f8d63', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
             <div style={{ height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(16,185,129,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(15,141,99,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="show_chart" size={26} color="var(--text3)" />
               </div>
               <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>{tr.noData}</p>
@@ -315,12 +315,12 @@ export default function StatsPage() {
 
       {/* ── Win rate by day of week ── */}
       <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', marginBottom: '16px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '15%', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '15%', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(15,141,99,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Icon name="event_available" size={22} color="#10b981" />
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon name="event_available" size={22} color="#0f8d63" />
           </div>
           <div>
             <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
@@ -429,7 +429,7 @@ export default function StatsPage() {
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
                     {language === 'he' ? 'אחוז זכייה' : 'Win rate'}
                   </div>
-                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#10b981' }}>{selWinRate.toFixed(0)}%</div>
+                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#0f8d63' }}>{selWinRate.toFixed(0)}%</div>
                 </div>
                 <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
@@ -485,8 +485,8 @@ export default function StatsPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon name="calendar_today" size={22} color="#10b981" />
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="calendar_today" size={22} color="#0f8d63" />
             </div>
             <div>
               <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
@@ -505,15 +505,15 @@ export default function StatsPage() {
             <button onClick={captureCalendar} disabled={capturing} title={language === 'he' ? 'שמור תמונה' : 'Save image'}
               style={{
                 width: '36px', height: '32px', borderRadius: '10px',
-                background: '#10b981', border: 'none', color: '#fff',
+                background: '#0f8d63', border: 'none', color: '#fff',
                 cursor: capturing ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 marginInlineStart: '8px',
-                boxShadow: '0 4px 14px rgba(16,185,129,0.4)',
+                boxShadow: '0 4px 14px rgba(15,141,99,0.4)',
                 transition: 'all 0.15s',
               }}
-              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(16,185,129,0.55)' }}
-              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(16,185,129,0.4)' }}
+              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(15,141,99,0.55)' }}
+              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(15,141,99,0.4)' }}
             >
               <Icon name={capturing ? 'hourglass_empty' : 'photo_camera'} size={16} color="#fff" />
             </button>

@@ -24,7 +24,7 @@ export default function PageHeader({ title, subtitle, icon, action }: PageHeader
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <Icon name={icon} size={20} color="#10b981" />
+            <Icon name={icon} size={20} color="#0f8d63" />
           </div>
         )}
         <div style={{ minWidth: 0 }}>

@@ -187,12 +187,12 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
               position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 2, borderRadius: '24px 24px 0 0',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="edit" size={15} color="#10b981" />
+                <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="edit" size={15} color="#0f8d63" />
                 </div>
                 <div>
                   <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{trade.symbol}</div>
-                  <div style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.editDetails}</div>
+                  <div style={{ fontSize: '11px', color: '#0f8d63', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.editDetails}</div>
                 </div>
               </div>
               <button onClick={() => setEditing(false)} style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>✕</button>
@@ -212,11 +212,11 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     </div>
                   </div>
                 ) : (
-                  <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'rgba(16,185,129,0.5)' : 'var(--border2)'}`, borderRadius: '14px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(16,185,129,0.05)' : 'var(--bg3)', transition: 'all 0.2s' }}>
+                  <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'rgba(15,141,99,0.5)' : 'var(--border2)'}`, borderRadius: '14px', padding: '24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.05)' : 'var(--bg3)', transition: 'all 0.2s' }}>
                     <input {...getInputProps()} />
                     {uploadingImage ? (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                        <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                         <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
                       </div>
                     ) : (
@@ -320,7 +320,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ resize: 'vertical' }} placeholder={language === 'he' ? 'מה למדת מהעסקה?' : 'What did you learn?'} />
               </div>
 
-              <button onClick={handleSave} disabled={saving} style={{ width: '100%', background: 'linear-gradient(135deg, #10b981, #0ea772)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
+              <button onClick={handleSave} disabled={saving} style={{ width: '100%', background: 'linear-gradient(135deg, #0f8d63, #0d7755)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
                 <Icon name="save" size={15} color="#fff" /> {saving ? tr.saving : tr.save}
               </button>
             </div>
@@ -360,7 +360,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     <button
                       onClick={() => setEditing(true)}
                       title={tr.editBtn}
-                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', color: '#0f8d63', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                     >
                       <Icon name="edit" size={15} />
                     </button>
@@ -402,11 +402,11 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 </div>
               </div>
             ) : (
-              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(16,185,129,0.06)' : 'transparent', borderBottom: '1px solid var(--border)', transition: 'all 0.2s' }}>
+              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.06)' : 'transparent', borderBottom: '1px solid var(--border)', transition: 'all 0.2s' }}>
                 <input {...getInputProps()} />
                 {uploadingImage ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <div style={{ width: '18px', height: '18px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <div style={{ width: '18px', height: '18px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                     <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>{language === 'he' ? 'מעלה...' : 'Uploading...'}</span>
                   </div>
                 ) : (
@@ -467,10 +467,10 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 {/* Entry price */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="login" size={14} color="#10b981" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
+                    <Icon name="login" size={14} color="#0f8d63" />
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.entry_price != null ? '#10b981' : 'var(--text3)' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.entry_price != null ? '#0f8d63' : 'var(--text3)' }}>
                     {trade.entry_price ?? '—'}
                   </span>
                 </div>
@@ -497,10 +497,10 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 {/* RR ratio — always shown */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="analytics" size={14} color="#10b981" />
+                    <Icon name="analytics" size={14} color="#0f8d63" />
                     <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio != null ? '#10b981' : 'var(--text3)' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio != null ? '#0f8d63' : 'var(--text3)' }}>
                     {trade.rr_ratio != null ? `1:${trade.rr_ratio.toFixed(2)}` : '—'}
                   </span>
                 </div>

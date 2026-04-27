@@ -213,7 +213,7 @@ export default function UpgradePage() {
         {[
           { icon: 'shield', label: language === 'he' ? 'מאובטח ובטוח' : 'Secure & Safe', color: '#22c55e' },
           { icon: 'bolt', label: language === 'he' ? 'הפעלה מיידית' : 'Instant Activation', color: '#f59e0b' },
-          { icon: 'cancel', label: language === 'he' ? 'ביטול בכל עת' : 'Cancel Anytime', color: '#10b981' },
+          { icon: 'cancel', label: language === 'he' ? 'ביטול בכל עת' : 'Cancel Anytime', color: '#0f8d63' },
         ].map((badge, i) => (
           <div key={i} style={{
             textAlign: 'center', padding: '16px 12px',

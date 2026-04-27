@@ -11,7 +11,7 @@ import TradeModal from '@/components/TradeModal'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 
-const ACCENT = '#10b981'
+const ACCENT = '#0f8d63'
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -165,7 +165,7 @@ export default function DashboardPage() {
         <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '28px' }}>
           {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
         </div>
-        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+        <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
           {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
         </button>
       </div>
@@ -193,31 +193,31 @@ export default function DashboardPage() {
           marginBottom: '28px',
           padding: '28px 32px',
           borderRadius: 'var(--radius)',
-          background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(16,185,129,0.04) 100%)',
+          background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(15,141,99,0.04) 100%)',
           border: '1px solid var(--border)',
           position: 'relative',
           overflow: 'hidden',
         }}>
           {/* Decorative glow */}
-          <div style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '260px', height: '260px', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-40px', insetInlineStart: '-40px', width: '160px', height: '160px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '260px', height: '260px', background: 'radial-gradient(circle, rgba(15,141,99,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-40px', insetInlineStart: '-40px', width: '160px', height: '160px', background: 'radial-gradient(circle, rgba(15,141,99,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
           <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '22px' }}>
             {/* Avatar tile — user photo if available, else initial */}
             <div className="welcome-tile" style={{
               width: '60px', height: '60px', borderRadius: '16px',
-              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06))',
-              border: '1px solid rgba(16,185,129,0.25)',
+              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(135deg, rgba(15,141,99,0.18), rgba(15,141,99,0.06))',
+              border: '1px solid rgba(15,141,99,0.25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 0 24px rgba(16,185,129,0.08) inset',
+              boxShadow: '0 0 24px rgba(15,141,99,0.08) inset',
             }}>
               {userAvatar ? (
                 <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{
-                  fontSize: '27px', fontWeight: '800', color: '#10b981',
+                  fontSize: '27px', fontWeight: '800', color: '#0f8d63',
                   letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
                   textTransform: 'uppercase',
                 }}>
@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 background: 'var(--bg)', border: '2px solid var(--bg2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Icon name="waving_hand" size={13} color="#10b981" />
+                <Icon name="waving_hand" size={13} color="#0f8d63" />
               </div>
             </div>
 
@@ -256,7 +256,7 @@ export default function DashboardPage() {
               <div className="welcome-quote-wrap" style={{
                 marginTop: '14px',
                 paddingInlineStart: '14px',
-                borderInlineStart: '2px solid rgba(16,185,129,0.35)',
+                borderInlineStart: '2px solid rgba(15,141,99,0.35)',
               }}>
                 <p className="welcome-quote" key={quoteIndex} style={{
                   fontSize: '15px', fontWeight: '500', color: 'var(--text2)',
@@ -283,7 +283,7 @@ export default function DashboardPage() {
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Icon name="space_dashboard" size={20} color="#10b981" />
+          <Icon name="space_dashboard" size={20} color="#0f8d63" />
         </div>
         <div>
           <h2 className="section-title" style={{ fontSize: '23px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{tr.overview}</h2>
@@ -310,13 +310,13 @@ export default function DashboardPage() {
           {/* Portfolio name header */}
           <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon name="cases" size={22} color="#10b981" />
+              <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon name="cases" size={22} color="#0f8d63" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="bal-name" style={{ fontSize: '21px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#0f8d63', background: 'rgba(15,141,99,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
                   {initialCapital > 0 && (
                     <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
                       {language === 'he' ? 'קרן' : 'Capital'}: <span style={{ color: 'var(--text)' }}>${initialCapital.toLocaleString()}</span>
@@ -371,7 +371,7 @@ export default function DashboardPage() {
       <div className="section-anim anim-delay-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Icon name="monitoring" size={20} color="#10b981" />
+            <Icon name="monitoring" size={20} color="#0f8d63" />
           </div>
           <div>
             <h2 className="section-title" style={{ fontSize: '23px', fontWeight: '600', margin: 0, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'Heebo, sans-serif' }}>{language === 'he' ? 'נתוני ביצועים' : 'Performance'}</h2>
@@ -387,7 +387,7 @@ export default function DashboardPage() {
               <button key={i} onClick={() => setTimeFilter(i)} style={{
                 padding: '5px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '500',
                 cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-                background: timeFilter === i ? '#10b981' : 'transparent',
+                background: timeFilter === i ? '#0f8d63' : 'transparent',
                 color: timeFilter === i ? '#fff' : 'var(--text3)',
                 transition: 'all 0.15s',
               }}>{label}</button>
@@ -412,7 +412,7 @@ export default function DashboardPage() {
             </div> },
           { label: tr.winRate, value: `${stats.winRate.toFixed(0)}%`, icon: 'emoji_events', color: '#22c55e' },
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
-          { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#10b981' },
+          { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#0f8d63' },
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
@@ -444,8 +444,8 @@ export default function DashboardPage() {
           <Link href="/trades" style={{
             display: 'flex', alignItems: 'center', gap: '5px',
             padding: '7px 16px', borderRadius: '8px',
-            background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
-            color: '#10b981',
+            background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)',
+            color: '#0f8d63',
             fontSize: '13px', fontWeight: '600', textDecoration: 'none',
             transition: 'all 0.15s',
           }}>

@@ -110,7 +110,7 @@ export default function TradesPage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#10b981', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
@@ -135,9 +135,9 @@ export default function TradesPage() {
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '7px 14px', borderRadius: '10px', fontSize: '12px',
               cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
-              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)' : 'var(--bg3)',
-              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#10b981' : 'var(--text3)',
+              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(15,141,99,0.4)' : 'var(--border)'}`,
+              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(15,141,99,0.1)' : 'var(--bg3)',
+              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#0f8d63' : 'var(--text3)',
               transition: 'all 0.2s',
             }}>
               <Icon name={icon} size={13} />
@@ -160,7 +160,7 @@ export default function TradesPage() {
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
               padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700',
               cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-              background: timeFilter === i ? '#10b981' : 'transparent',
+              background: timeFilter === i ? '#0f8d63' : 'transparent',
               color: timeFilter === i ? '#fff' : 'var(--text3)',
               transition: 'all 0.15s', whiteSpace: 'nowrap',
             }}>{label}</button>
@@ -173,11 +173,11 @@ export default function TradesPage() {
       <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
           </div>
         ) : trades.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
+            <Icon name={filter === 'win' ? 'trending_up' : filter === 'loss' ? 'trending_down' : 'receipt_long'} size={48} color={filter === 'win' ? 'rgba(34,197,94,0.15)' : filter === 'loss' ? 'rgba(239,68,68,0.15)' : 'rgba(15,141,99,0.15)'} style={{ display: 'block', margin: '0 auto 16px' }} />
             <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>
               {filter === 'win' ? (language === 'he' ? 'אין עסקאות מרוויחות' : 'No winning trades')
                 : filter === 'loss' ? (language === 'he' ? 'אין עסקאות מפסידות' : 'No losing trades')
@@ -233,7 +233,7 @@ export default function TradesPage() {
                 </div>
 
                 {/* RR */}
-                <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: '#10b981' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: '#0f8d63' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
 
                 {/* P&L */}
                 <div dir="ltr" style={{ textAlign: 'center', fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>

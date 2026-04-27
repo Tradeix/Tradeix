@@ -38,15 +38,15 @@ export default function AppToaster() {
           icon: (
             <div style={{
               width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0,
-              background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)',
+              background: 'rgba(15,141,99,0.12)', border: '1px solid rgba(15,141,99,0.25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Icon name="check" size={16} color="#10b981" />
+              <Icon name="check" size={16} color="#0f8d63" />
             </div>
           ),
           style: {
             background: isLight ? 'rgba(255,255,255,0.97)' : 'rgba(15,17,24,0.97)',
-            border: '1px solid rgba(16,185,129,0.2)',
+            border: '1px solid rgba(15,141,99,0.2)',
             color: isLight ? '#111827' : '#e5e2e1',
           },
         },

@@ -15,7 +15,7 @@ import Icon from '@/components/Icon'
 const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
 
 const PORTFOLIO_COLORS = [
-  { id: 'green',  primary: '#10b981' },
+  { id: 'green',  primary: '#0f8d63' },
   { id: 'blue',   primary: '#3b82f6' },
   { id: 'purple', primary: '#8b5cf6' },
   { id: 'red',    primary: '#ef4444' },
@@ -161,7 +161,7 @@ export default function PortfoliosPage() {
     setEditingId(null); setShowForm(true)
   }
 
-  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#10b981'
+  const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#0f8d63'
 
   const maxPortfolios = isPro ? 3 : 1
   const atMaxPortfolios = portfolios.length >= maxPortfolios
@@ -178,7 +178,7 @@ export default function PortfoliosPage() {
             onClick={openNewForm}
             className="btn-press"
             style={{
-              flexShrink: 0, background: '#10b981', color: '#fff', border: 'none',
+              flexShrink: 0, background: '#0f8d63', color: '#fff', border: 'none',
               borderRadius: '12px', padding: '10px 20px', fontSize: '13px', fontWeight: '600',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
@@ -382,7 +382,7 @@ export default function PortfoliosPage() {
                     <div style={{ width: '1px', height: '28px', background: 'var(--border)' }} />
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{language === 'he' ? 'אחוז זכייה' : 'Win rate'}</div>
-                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#10b981', marginTop: '2px' }}>{s.winRate.toFixed(0)}%</div>
+                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#0f8d63', marginTop: '2px' }}>{s.winRate.toFixed(0)}%</div>
                     </div>
                   </div>
                 )}

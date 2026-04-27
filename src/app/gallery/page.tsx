@@ -168,7 +168,7 @@ export default function GalleryPage() {
             onClick={() => setShowUpload(true)}
             className="btn-press"
             style={{
-              flexShrink: 0, background: '#10b981', color: '#fff', border: 'none',
+              flexShrink: 0, background: '#0f8d63', color: '#fff', border: 'none',
               borderRadius: '12px', padding: '10px 20px', fontSize: '14px', fontWeight: '600',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               fontFamily: 'Heebo, sans-serif',
@@ -183,7 +183,7 @@ export default function GalleryPage() {
       {/* Body */}
       {loading ? (
         <div style={{ padding: '64px', textAlign: 'center' }}>
-          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
         </div>
       ) : items.length === 0 ? (
         <div style={{ ...card, padding: '64px 24px', textAlign: 'center' }}>
@@ -198,7 +198,7 @@ export default function GalleryPage() {
           </div>
           <button
             onClick={() => setShowUpload(true)}
-            style={{ background: '#10b981', color: '#fff', padding: '11px 24px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+            style={{ background: '#0f8d63', color: '#fff', padding: '11px 24px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
           >
             <Icon name="add_a_photo" size={16} />
             {language === 'he' ? 'העלה תמונה' : 'Upload image'}
@@ -308,7 +308,7 @@ export default function GalleryPage() {
                 >✕</button>
               </div>
             ) : (
-              <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? '#10b981' : 'var(--border2)'}`, borderRadius: '14px', padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(16,185,129,0.06)' : 'var(--bg3)', transition: 'all 0.2s', marginBottom: '14px' }}>
+              <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? '#0f8d63' : 'var(--border2)'}`, borderRadius: '14px', padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.06)' : 'var(--bg3)', transition: 'all 0.2s', marginBottom: '14px' }}>
                 <input {...getInputProps()} />
                 <Icon name="add_photo_alternate" size={32} color="var(--text3)" />
                 <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text2)', marginTop: '8px' }}>
@@ -356,9 +356,9 @@ export default function GalleryPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: '8px',
                       padding: '10px 12px', borderRadius: '10px',
-                      background: active ? 'rgba(16,185,129,0.12)' : 'var(--bg3)',
-                      border: `1px solid ${active ? 'rgba(16,185,129,0.35)' : 'var(--border)'}`,
-                      color: active ? '#10b981' : 'var(--text2)',
+                      background: active ? 'rgba(15,141,99,0.12)' : 'var(--bg3)',
+                      border: `1px solid ${active ? 'rgba(15,141,99,0.35)' : 'var(--border)'}`,
+                      color: active ? '#0f8d63' : 'var(--text2)',
                       cursor: 'pointer', fontSize: '13px', fontWeight: '700',
                       fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
                     }}
@@ -374,7 +374,7 @@ export default function GalleryPage() {
               onClick={handleUpload}
               disabled={uploading || !pickedFile || !form.title.trim()}
               style={{
-                width: '100%', background: '#10b981', color: '#fff', border: 'none',
+                width: '100%', background: '#0f8d63', color: '#fff', border: 'none',
                 borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700',
                 cursor: (uploading || !pickedFile || !form.title.trim()) ? 'not-allowed' : 'pointer',
                 opacity: (uploading || !pickedFile || !form.title.trim()) ? 0.6 : 1,

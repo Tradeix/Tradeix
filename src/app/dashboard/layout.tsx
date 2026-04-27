@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
-  green:  '#10b981',
+  green:  '#0f8d63',
   blue:   '#3b82f6',
   purple: '#8b5cf6',
   red:    '#ef4444',
@@ -24,7 +24,7 @@ const PORTFOLIO_COLOR_MAP: Record<string, string> = {
   gray:   '#6b7280',
 }
 function getPortfolioColor(portfolio: any) {
-  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'green'] || '#10b981'
+  return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'green'] || '#0f8d63'
 }
 
 const PORTFOLIO_AGNOSTIC_PATHS = ['/portfolios', '/portfolios/archive', '/gallery', '/settings']
@@ -46,7 +46,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
   }, [])
 
-  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#10b981'
+  const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#0f8d63'
 
   return (
     <header style={{
@@ -195,7 +195,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <div style={{ position: 'relative' }}>
             <div style={{
               width: '38px', height: '38px', borderRadius: '50%',
-              background: isPro ? '#f59e0b' : '#10b981',
+              background: isPro ? '#f59e0b' : '#0f8d63',
               border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '15px', fontWeight: '700', color: '#fff', overflow: 'hidden',
@@ -205,7 +205,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
               }
             </div>
-            <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#10b981', border: '2px solid var(--bg)', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#0f8d63', border: '2px solid var(--bg)', borderRadius: '50%' }} />
           </div>
           <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
             <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
@@ -219,8 +219,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 </>
               ) : (
                 <>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
-                  <span style={{ fontSize: '10px', color: '#10b981', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0f8d63' }} />
+                  <span style={{ fontSize: '10px', color: '#0f8d63', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {tr.freeAccount}
                   </span>
                 </>
@@ -303,7 +303,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       <Link href={href} onClick={() => setSidebarOpen(false)} title={label} className="nav-link-anim sidebar-link" data-active={active ? '1' : '0'} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
-        color: active ? '#10b981' : 'var(--text3)',
+        color: active ? '#0f8d63' : 'var(--text3)',
         fontWeight: active ? '700' : '500',
         fontSize: '14px', textDecoration: 'none',
         background: active ? 'var(--bg3)' : 'transparent',
@@ -313,13 +313,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         borderRadius: '8px',
       }}
         onMouseOver={e => { if (!active) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'var(--bg3)' } }}
-        onMouseOut={e => { e.currentTarget.style.color = active ? '#10b981' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
+        onMouseOut={e => { e.currentTarget.style.color = active ? '#0f8d63' : 'var(--text3)'; if (!active) e.currentTarget.style.background = 'transparent' }}
       >
         {active && (
           <div className="sidebar-link-stripe" style={{
             position: 'absolute', [isRTL ? 'right' : 'left']: 0,
             top: 0, bottom: 0, width: '3px',
-            background: '#10b981',
+            background: '#0f8d63',
             borderRadius: isRTL ? '2px 0 0 2px' : '0 2px 2px 0',
             animation: 'pulseGlow 2s ease-in-out infinite',
           }} />
@@ -336,7 +336,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       <div className="sidebar-top" style={{ padding: '24px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
           <svg width="36" height="36" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="38" height="38" rx="8" fill="#10b981"/>
+            <rect width="38" height="38" rx="8" fill="#0f8d63"/>
             <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
             <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
             <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
@@ -345,7 +345,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
           </svg>
           <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '21px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
-            Trade<span style={{ color: '#10b981' }}>IX</span>
+            Trade<span style={{ color: '#0f8d63' }}>IX</span>
           </span>
         </Link>
       </div>
@@ -456,7 +456,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)', alignItems: 'center', justifyContent: 'center' }}>
         <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
-          <div style={{ width: '44px', height: '44px', border: '3px solid rgba(16,185,129,0.15)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '44px', height: '44px', border: '3px solid rgba(15,141,99,0.15)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -499,7 +499,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           transition: 'all 0.2s ease',
           boxShadow: '4px 0 14px rgba(0,0,0,0.12)',
         }}
-        onMouseOver={e => { e.currentTarget.style.background = '#10b981'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(16,185,129,0.35)' }}
+        onMouseOver={e => { e.currentTarget.style.background = '#0f8d63'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0f8d63'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,141,99,0.35)' }}
         onMouseOut={e => { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.18)' }}
       >
         <Icon
@@ -534,9 +534,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             >
               <Icon name="close" size={18} color="currentColor" />
             </button>
-            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(16,185,129,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
-            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <Icon name="sentiment_satisfied" size={32} color="#10b981" />
+            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '200px', background: 'rgba(15,141,99,0.08)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(15,141,99,0.12)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Icon name="sentiment_satisfied" size={32} color="#0f8d63" />
             </div>
             <div style={{ fontSize: '23px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.01em' }}>
               {language === 'he' ? 'חזרת לתכנית החינמית' : 'Back to Free Plan'}
@@ -556,7 +556,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 { icon: 'lock', text: language === 'he' ? 'ללא עמוד סטטיסטיקות' : 'No statistics page', ok: false },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                  <Icon name={item.icon} size={15} color={item.ok ? '#10b981' : 'rgba(255,255,255,0.2)'} />
+                  <Icon name={item.icon} size={15} color={item.ok ? '#0f8d63' : 'rgba(255,255,255,0.2)'} />
                   <span style={{ fontSize: '14px', color: item.ok ? 'rgba(229,226,225,0.6)' : 'rgba(229,226,225,0.3)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
@@ -644,7 +644,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         .sidebar-link .material-symbols-outlined { transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-link:hover .material-symbols-outlined { transform: scale(1.15); }
         .sidebar-link[data-active="1"] {
-          box-shadow: inset 0 0 0 1px rgba(16,185,129,0.18), 0 0 18px rgba(16,185,129,0.08);
+          box-shadow: inset 0 0 0 1px rgba(15,141,99,0.18), 0 0 18px rgba(15,141,99,0.08);
         }
 
         /* Collapsed rail mode is desktop-only. Mobile keeps the original drawer. */
@@ -656,10 +656,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             padding: 11px 12px !important;
           }
           .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] {
-            background: rgba(16,185,129,0.12) !important;
+            background: rgba(15,141,99,0.12) !important;
           }
           .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] .material-symbols-outlined {
-            filter: drop-shadow(0 0 8px rgba(16,185,129,0.45));
+            filter: drop-shadow(0 0 8px rgba(15,141,99,0.45));
           }
         }
 
