@@ -199,6 +199,20 @@ export default function StatsPage() {
     )
   }
 
+  // Loading state — render a spinner instead of falling through to the
+  // empty-state branch. Fixes the brief 'no trades' flash that was showing
+  // on every page entry while the trades query was in flight.
+  if (loading) {
+    return (
+      <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="monitoring" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 20px' }}>
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        </div>
+      </div>
+    )
+  }
+
   if (trades.length === 0) {
     return (
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
@@ -327,16 +341,31 @@ export default function StatsPage() {
             const isWorst = worstDow === i
             const has = byDow[i].count > 0
             const wr = dowWinRate(i)
-            // Color: selected wins; otherwise best=green, worst=red, neutral
-            const accent = isSelected ? '#10b981' : isBest ? '#22c55e' : isWorst ? '#ef4444' : null
-            const border = accent
-              ? `1px solid ${isSelected ? 'rgba(16,185,129,0.45)' : isBest ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`
-              : `1px solid var(--border)`
-            const bg = isSelected
-              ? 'rgba(16,185,129,0.12)'
-              : isBest ? 'rgba(34,197,94,0.06)'
-              : isWorst ? 'rgba(239,68,68,0.06)'
-              : 'var(--bg3)'
+            // Selected always wins the styling — neutral dark "pressed" look
+            // so the selection state is unmistakable and doesn't get
+            // confused with the green/red performance signal of best/worst.
+            let bg: string, border: string, valueColor: string, labelColor: string
+            if (isSelected) {
+              bg = 'var(--bg4)'
+              border = '1.5px solid rgba(255,255,255,0.45)'
+              valueColor = '#fff'
+              labelColor = 'rgba(255,255,255,0.65)'
+            } else if (isBest && has) {
+              bg = 'rgba(34,197,94,0.06)'
+              border = '1px solid rgba(34,197,94,0.35)'
+              valueColor = '#22c55e'
+              labelColor = 'var(--text3)'
+            } else if (isWorst && has) {
+              bg = 'rgba(239,68,68,0.06)'
+              border = '1px solid rgba(239,68,68,0.35)'
+              valueColor = '#ef4444'
+              labelColor = 'var(--text3)'
+            } else {
+              bg = 'var(--bg3)'
+              border = '1px solid var(--border)'
+              valueColor = has ? 'var(--text)' : 'var(--text3)'
+              labelColor = 'var(--text3)'
+            }
             return (
               <button
                 key={i}
@@ -350,12 +379,13 @@ export default function StatsPage() {
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
                   fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
                   position: 'relative',
+                  boxShadow: isSelected ? '0 6px 18px rgba(0,0,0,0.35)' : 'none',
                 }}
               >
-                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <span style={{ fontSize: '11px', fontWeight: '700', color: labelColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {label}
                 </span>
-                <span style={{ fontSize: '15px', fontWeight: '900', color: has ? (accent || 'var(--text)') : 'var(--text3)', lineHeight: 1 }}>
+                <span style={{ fontSize: '15px', fontWeight: '900', color: valueColor, lineHeight: 1 }}>
                   {has ? `${wr.toFixed(0)}%` : '—'}
                 </span>
                 {isBest && has && (
@@ -473,8 +503,19 @@ export default function StatsPage() {
               <Icon name="chevron_left" size={18} />
             </button>
             <button onClick={captureCalendar} disabled={capturing} title={language === 'he' ? 'שמור תמונה' : 'Save image'}
-              style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: capturing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginInlineStart: '4px' }}>
-              <Icon name={capturing ? 'hourglass_empty' : 'photo_camera'} size={16} />
+              style={{
+                width: '36px', height: '32px', borderRadius: '10px',
+                background: '#10b981', border: 'none', color: '#fff',
+                cursor: capturing ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginInlineStart: '8px',
+                boxShadow: '0 4px 14px rgba(16,185,129,0.4)',
+                transition: 'all 0.15s',
+              }}
+              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(16,185,129,0.55)' }}
+              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(16,185,129,0.4)' }}
+            >
+              <Icon name={capturing ? 'hourglass_empty' : 'photo_camera'} size={16} color="#fff" />
             </button>
           </div>
         </div>
