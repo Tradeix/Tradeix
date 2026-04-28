@@ -152,9 +152,6 @@ export default function TradesPage() {
 
         {/* Time filter */}
         <div className="trades-time-filter" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span className="trades-data-by-label" style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
-            {language === 'he' ? 'נתונים לפי:' : 'Data by:'}
-          </span>
         <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '2px', borderRadius: '10px', border: '1px solid var(--border)' }}>
           {TIME_LABELS.map((label, i) => (
             <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
@@ -196,11 +193,11 @@ export default function TradesPage() {
           <div style={{ padding: '8px 12px' }}>
             {/* Column header row */}
             <div className="trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px', borderBottom: '1px solid var(--border)', marginBottom: '4px' }}>
-              <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
-              <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
-              <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
-              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
-              <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+              <div className="trade-col-symbol" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
+              <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
+              <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
+              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
+              <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
             </div>
 
             {trades.map((trade, idx) => (

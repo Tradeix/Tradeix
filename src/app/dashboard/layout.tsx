@@ -53,9 +53,16 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       height: '72px',
       background: 'var(--bg2)',
       borderBottom: '1px solid var(--border)',
-      display: 'flex', alignItems: 'center',
-      padding: '0 24px', gap: '12px',
       position: 'sticky', top: 0, zIndex: 50,
+    }}>
+    <div className="header-inner" style={{
+      height: '100%',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '0 40px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
     }}>
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hamburger-btn" style={{
         display: 'none', width: '40px', height: '40px', flexShrink: 0,
@@ -272,6 +279,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           </>
         )}
       </div>
+    </div>
     </header>
   )
 }
@@ -377,7 +385,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  // Desktop: starts collapsed, expands on hover. Mobile (≤1024px) is forced
+  // to 210px via CSS regardless of this state.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
@@ -435,14 +445,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       localStorage.removeItem('tradeix-show-upgrade')
       setShowUpgradePopup(true)
     }
-    if (localStorage.getItem('tradeix-sidebar-collapsed') === '1') {
-      setSidebarCollapsed(true)
-    }
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('tradeix-sidebar-collapsed', sidebarCollapsed ? '1' : '0')
-  }, [sidebarCollapsed])
 
   const sidebarWidth = sidebarCollapsed ? '72px' : '210px'
 
@@ -469,51 +472,26 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 99, backdropFilter: 'blur(4px)' }} />}
 
-      <div style={{
-        width: sidebarWidth, height: '100vh',
-        borderInlineEnd: '1px solid var(--border)',
-        position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
-        transition: 'transform 0.3s ease, width 0.25s ease', overflow: 'hidden',
-      }} className="sidebar-el" data-open={sidebarOpen ? '1' : '0'} data-collapsed={sidebarCollapsed ? '1' : '0'}>
+      <div
+        style={{
+          width: sidebarWidth, height: '100vh',
+          borderInlineEnd: '1px solid var(--border)',
+          position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
+          transition: 'transform 0.3s ease, width 0.25s ease', overflow: 'hidden',
+        }}
+        className="sidebar-el"
+        data-open={sidebarOpen ? '1' : '0'}
+        data-collapsed={sidebarCollapsed ? '1' : '0'}
+        // Desktop hover-to-expand. The CSS @media block forces width:210px on
+        // mobile/tablet so these handlers don't matter there (and touch
+        // devices won't fire them in the way that breaks UX).
+        onMouseEnter={() => { if (typeof window !== 'undefined' && window.innerWidth > 1024) setSidebarCollapsed(false) }}
+        onMouseLeave={() => { if (typeof window !== 'undefined' && window.innerWidth > 1024) setSidebarCollapsed(true) }}
+      >
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
-      {/* Floating collapse/expand handle pinned to the sidebar boundary. Desktop only. */}
-      <button
-        className="sidebar-rail-handle"
-        onClick={() => setSidebarCollapsed(v => !v)}
-        title={sidebarCollapsed ? (language === 'he' ? 'הרחב תפריט' : 'Expand menu') : (language === 'he' ? 'כווץ תפריט' : 'Collapse menu')}
-        style={{
-          position: 'fixed', top: '50%',
-          [isRTL ? 'right' : 'left']: sidebarWidth,
-          [isRTL ? 'marginRight' : 'marginLeft']: '-1px',
-          transform: 'translateY(-50%)',
-          width: '20px', height: '64px',
-          borderRadius: isRTL ? '999px 0 0 999px' : '0 999px 999px 0',
-          background: 'var(--bg2)',
-          border: '1px solid var(--border)',
-          borderInlineStart: 'none',
-          color: 'var(--text3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', zIndex: 101,
-          transition: 'all 0.2s ease',
-          boxShadow: '4px 0 14px rgba(0,0,0,0.12)',
-        }}
-        onMouseOver={e => { e.currentTarget.style.background = '#0f8d63'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0f8d63'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,141,99,0.35)' }}
-        onMouseOut={e => { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.18)' }}
-      >
-        <Icon
-          name={
-            sidebarCollapsed
-              ? (isRTL ? 'chevron_left' : 'chevron_right')
-              : (isRTL ? 'chevron_right' : 'chevron_left')
-          }
-          size={16}
-          color="currentColor"
-        />
-      </button>
-
-      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: sidebarWidth, flex: 1, minWidth: 0, transition: 'margin 0.25s ease' }} className="main-content">
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '72px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
@@ -669,17 +647,18 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
           .hamburger-btn { display: flex !important; }
           .page-content { padding: 24px 20px !important; }
+          .header-inner { padding: 0 20px !important; }
           .upgrade-btn span:last-child { display: none; }
         }
         @media (max-width: 640px) {
           .page-content { padding: 16px 14px !important; }
+          .header-inner { padding: 0 14px !important; gap: 8px !important; }
           .user-name-block { display: none !important; }
           .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 10px !important; }
           .active-portfolio-badge > div:nth-child(1) { width: 32px !important; height: 32px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:first-child { font-size: 9px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 200px !important; font-size: 14px !important; }
           .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 10px !important; margin-inline-start: 0 !important; }
-          header { padding: 0 12px !important; gap: 8px !important; }
           .upgrade-btn { padding: 6px 10px !important; font-size: 11px !important; }
         }
         .sidebar-logout { display: block; }

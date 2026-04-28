@@ -22,8 +22,10 @@ const STRATEGY_COLORS = [
   { name: 'red', hex: '#ef4444' },
 ]
 
-function getColorHex(name: string) {
-  return STRATEGY_COLORS.find(c => c.name === name)?.hex || '#0f8d63'
+function getColorHex(_name: string) {
+  // Strategies all render in a neutral light gray now — no per-strategy
+  // accent color. Kept the function signature so call sites don't change.
+  return '#9ca3af'
 }
 
 type StrategyStats = {
@@ -75,7 +77,39 @@ export default function StrategiesPage() {
       .select('*')
       .eq('portfolio_id', activePortfolio!.id)
       .order('created_at', { ascending: false })
-    if (data) setStrategies(data)
+    if (data) {
+      setStrategies(data)
+      // Eager-load every strategy's stats so the collapsed view can show
+      // PNL and WIN-rate without waiting for the user to expand a card.
+      const statsMap: Record<string, StrategyStats> = {}
+      for (const s of data) {
+        const { data: trades } = await supabase
+          .from('trades').select('pnl, outcome')
+          .eq('portfolio_id', activePortfolio!.id)
+          .eq('strategy_id', s.id)
+        if (trades && trades.length > 0) {
+          const wins = trades.filter((x: any) => x.outcome === 'win')
+          const losses = trades.filter((x: any) => x.outcome === 'loss')
+          const totalPnl = trades.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0)
+          const grossProfit = wins.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0)
+          const grossLoss = Math.abs(losses.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0))
+          statsMap[s.id] = {
+            totalTrades: trades.length,
+            wins: wins.length,
+            losses: losses.length,
+            winRate: (wins.length / trades.length) * 100,
+            totalPnl,
+            profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
+            bestTrade: Math.max(...trades.map((x: any) => x.pnl || 0)),
+            worstTrade: Math.min(...trades.map((x: any) => x.pnl || 0)),
+            avgPnl: totalPnl / trades.length,
+          }
+        } else {
+          statsMap[s.id] = EMPTY_STATS
+        }
+      }
+      setStrategyStats(statsMap)
+    }
     setLoading(false)
   }
 
@@ -270,14 +304,6 @@ export default function StrategiesPage() {
                 transition: 'all 0.25s ease',
                 position: 'relative',
               }}>
-                {/* Colored accent line at top */}
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-                  background: `linear-gradient(90deg, ${color}, ${color}80)`,
-                  opacity: isExpanded ? 1 : 0,
-                  transition: 'opacity 0.25s ease',
-                }} />
-
                 {/* Header */}
                 <div
                   className="strat-header"
@@ -317,15 +343,8 @@ export default function StrategiesPage() {
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
+                    <div style={{ marginBottom: '3px' }}>
                       <span className="strat-name" style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
-                      <span className="strat-badge" style={{
-                        fontSize: '11px', fontWeight: '700', color, letterSpacing: '0.05em',
-                        background: `${color}12`, padding: '2px 8px', borderRadius: '6px',
-                        textTransform: 'uppercase',
-                      }}>
-                        {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
-                      </span>
                     </div>
                     {s.plan && (
                       <div className="strat-plan-preview" style={{ fontSize: '13px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
@@ -334,17 +353,19 @@ export default function StrategiesPage() {
                     )}
                   </div>
 
-                  {/* Stats preview when collapsed */}
-                  {!isExpanded && strategyStats[s.id] && stats.totalTrades > 0 && (
+                  {/* Stats preview — always visible (shows '—' until stats load) */}
+                  {!isExpanded && (
                     <div className="strat-preview-stats" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '700', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
-                          {pnlPositive ? '+' : ''}${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        <div style={{ fontSize: '15px', fontWeight: '700', color: !strategyStats[s.id] || stats.totalTrades === 0 ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444' }}>
+                          {!strategyStats[s.id] || stats.totalTrades === 0 ? '—' : `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                         </div>
                         <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>P&L</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text)' }}>{stats.winRate.toFixed(0)}%</div>
+                        <div style={{ fontSize: '15px', fontWeight: '700', color: !strategyStats[s.id] || stats.totalTrades === 0 ? 'var(--text3)' : 'var(--text)' }}>
+                          {!strategyStats[s.id] || stats.totalTrades === 0 ? '—' : `${stats.winRate.toFixed(0)}%`}
+                        </div>
                         <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>WIN</div>
                       </div>
                     </div>

@@ -178,6 +178,14 @@ export default function DashboardPage() {
   const marketTypeLabels: Record<string, string> = { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' }
   const mktLabel = marketTypeLabels[activePortfolio?.market_type || 'other'] || 'Other'
 
+  // Portfolio color (chosen swatch) — drives the Total Balance card border
+  const PORTFOLIO_COLOR_MAP: Record<string, string> = {
+    green: '#0f8d63', blue: '#3b82f6', purple: '#8b5cf6', red: '#ef4444',
+    amber: '#f59e0b', cyan: '#06b6d4', pink: '#ec4899', teal: '#14b8a6',
+    indigo: '#6366f1', rose: '#f43f5e',
+  }
+  const portfolioColor = PORTFOLIO_COLOR_MAP[(activePortfolio as any)?.color || 'green'] || '#0f8d63'
+
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
@@ -299,16 +307,12 @@ export default function DashboardPage() {
       <div className="top-row section-anim anim-delay-1" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Total Balance Card ──
-            Card border + glow + main amount + every mini-stat follow the
-            portfolio's profit/loss direction so the user can read the
-            state at a glance: green = in profit, red = at a loss. */}
-        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, position: 'relative' }}>
-          {/* Direction-tinted glow */}
-          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', background: `radial-gradient(circle, ${portfolioPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)'} 0%, transparent 70%)`, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '120px', height: '120px', background: `radial-gradient(circle, ${portfolioPositive ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)'} 0%, transparent 70%)`, pointerEvents: 'none' }} />
+            Border simply uses the portfolio's chosen color; no glow.
+            Big amount still flips green/red with P&L direction. */}
+        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: `1px solid ${portfolioColor}`, position: 'relative' }}>
 
           {/* Portfolio name header */}
-          <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, position: 'relative' }}>
+          <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${portfolioColor}30`, position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Icon name="cases" size={22} color="#0f8d63" />
@@ -329,7 +333,7 @@ export default function DashboardPage() {
 
           {/* Balance section */}
           <div className="bal-section" style={{ padding: '20px 28px', position: 'relative' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
             </div>
             <div dir="ltr" className="bal-amount" style={{ fontSize: '41px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
@@ -337,23 +341,23 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Mini stats row — labels + values share the direction color so the
-              card's tone is unmistakable (all green = profit, all red = loss). */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: portfolioPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)', marginTop: 'auto' }}>
+          {/* Mini stats row — labels are neutral light gray (14px); values
+              still flip green/red based on direction. */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'var(--border)', marginTop: 'auto' }}>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: portfolioPositive ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
+              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
               <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: portfolioPositive ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
+              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
               <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
               </div>
             </div>
             <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: portfolioPositive ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
+              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
               <div className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
                 -{portfolioValue.maxDrawdown.toFixed(1)}%
               </div>
@@ -381,7 +385,6 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="time-filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineStart: 'auto' }}>
-          <span className="data-by-label" style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text3)' }}>{language === 'he' ? 'נתונים לפי:' : 'Data by:'}</span>
           <div style={{ display: 'flex', background: 'var(--bg3)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border)', gap: '2px' }}>
             {TIME_FILTERS.map((label, i) => (
               <button key={i} onClick={() => setTimeFilter(i)} style={{
@@ -471,11 +474,11 @@ export default function DashboardPage() {
             <>
               {/* Column header row */}
               <div className="recent-trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 90px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
-                <div className="trade-col-symbol" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
-                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
-                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
-                <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
-                <div style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                <div className="trade-col-symbol" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
+                <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תוצאה' : 'WIN/LOSS'}</div>
+                <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</div>
+                <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</div>
+                <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
               </div>
 
               {trades.map((trade, idx) => (

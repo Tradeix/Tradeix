@@ -206,9 +206,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* Trim chunky inner spacing so the modal fits without scrolling */
   .app-modal-card[data-tight="1"] { padding: 18px !important; }
 }
-/* Modals always render on top of the sticky page header (overlay z-index
-   9000 vs header z-index 50). The previous rule hid the header on
-   tablet/mobile; we no longer need that — modals layer over it instead. */
+/* While any modal is open, hide the sticky page header on every screen
+   size. The header overlap was causing visual clipping in some flows;
+   removing it entirely while a modal is open keeps the modal clean. */
+body:has(.app-modal-overlay) header[style*="sticky"] { display: none !important; }
 
 /* ══════════════════════════════════════
    RESPONSIVE — mobile fixes
