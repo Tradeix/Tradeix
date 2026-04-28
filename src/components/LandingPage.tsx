@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
 const NAV_SECTIONS = [
@@ -73,10 +73,9 @@ const PRICING = {
 }
 
 export default function LandingPage() {
-  const [loading, setLoading] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
-  const supabase = createClient()
+  const router = useRouter()
 
   // Sticky-nav background appears once user scrolls past the hero band
   useEffect(() => {
@@ -110,13 +109,9 @@ export default function LandingPage() {
     }
   }
 
-  const handleGoogleLogin = async () => {
-    setLoading(true)
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    })
-  }
+  // All login CTAs send the user to the dedicated /auth/login page,
+  // which handles the Google OAuth handshake.
+  const goLogin = () => router.push('/auth/login')
 
   return (
     <div dir="rtl" style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
@@ -186,13 +181,13 @@ export default function LandingPage() {
 
           {/* CTA */}
           <button
-            onClick={handleGoogleLogin}
-            disabled={loading}
+            onClick={goLogin}
+            
             className="lp-nav-cta"
             style={{
               background: '#0f8d63', color: '#fff', border: 'none',
               borderRadius: '10px', padding: '9px 22px',
-              fontSize: '14px', fontWeight: '700', cursor: loading ? 'wait' : 'pointer',
+              fontSize: '14px', fontWeight: '700', cursor: 'pointer',
               fontFamily: 'Heebo, sans-serif',
               boxShadow: '0 4px 16px rgba(15,141,99,0.35)',
               transition: 'transform 0.15s ease, box-shadow 0.15s ease',
@@ -200,7 +195,7 @@ export default function LandingPage() {
             onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,141,99,0.5)' }}
             onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,141,99,0.35)' }}
           >
-            {loading ? 'מתחבר...' : 'התחבר'}
+            התחבר
           </button>
         </div>
       </nav>
@@ -248,12 +243,12 @@ export default function LandingPage() {
 
             <div data-animate style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '40px' }}>
               <button
-                onClick={handleGoogleLogin}
-                disabled={loading}
+                onClick={goLogin}
+                
                 style={{
                   background: '#0f8d63', color: '#fff', border: 'none',
                   borderRadius: '12px', padding: '15px 32px',
-                  fontSize: '16px', fontWeight: '800', cursor: loading ? 'wait' : 'pointer',
+                  fontSize: '16px', fontWeight: '800', cursor: 'pointer',
                   fontFamily: 'Heebo, sans-serif',
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
                   boxShadow: '0 8px 32px rgba(15,141,99,0.45)',
@@ -262,12 +257,8 @@ export default function LandingPage() {
                 onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(15,141,99,0.6)' }}
                 onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(15,141,99,0.45)' }}
               >
-                {loading ? (
-                  <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" opacity="0.85"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" opacity="0.7"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" opacity="0.55"/></svg>
-                )}
-                {loading ? 'מתחבר...' : 'התחל בחינם עם Google'}
+                <Icon name="rocket_launch" size={18} color="#fff" />
+                התחל בחינם
               </button>
               <button
                 onClick={() => scrollTo('how')}
@@ -370,38 +361,177 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── HOW IT WORKS ── */}
+        {/* ── AI ENGINE / HOW IT WORKS ── */}
         <section id="how" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <div data-animate style={{ textAlign: 'center', marginBottom: '60px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>איך זה עובד</div>
-              <h2 className="lp-h2" style={{ fontSize: '44px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 14px', lineHeight: 1.1 }}>
-                שלוש דקות מהרישום לעסקה הראשונה
+          <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
+            <div data-animate style={{ textAlign: 'center', marginBottom: '50px' }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: '9px',
+                padding: '6px 14px', borderRadius: '999px',
+                background: 'rgba(15,141,99,0.10)',
+                border: '1px solid rgba(15,141,99,0.32)',
+                fontSize: '11px', fontWeight: '900', color: '#0f8d63',
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                marginBottom: '18px',
+              }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#0f8d63', boxShadow: '0 0 10px #0f8d63', animation: 'lpPulseDot 1.8s ease-in-out infinite' }} />
+                AI Engine
+              </div>
+              <h2 className="lp-h2" style={{ fontSize: '46px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 16px', lineHeight: 1.05 }}>
+                AI ש<span style={{ background: 'linear-gradient(90deg, #0f8d63 0%, #14b886 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>קורא גרפים</span> — לא עוד יומן ידני.
               </h2>
+              <p style={{ fontSize: '17px', color: 'var(--text2)', maxWidth: '620px', margin: '0 auto', lineHeight: 1.65 }}>
+                מבוסס על מודל הראייה של Anthropic Claude. מצילום בודד — שש נקודות נתונים, פחות משלוש שניות, אפס הקלדה.
+              </p>
             </div>
 
-            <div className="lp-steps" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px', position: 'relative' }}>
-              {STEPS.map((s, i) => (
-                <div key={i} data-animate style={{
-                  background: 'linear-gradient(180deg, var(--bg2) 0%, rgba(11,13,19,0.6) 100%)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '20px',
-                  padding: '32px 24px 28px',
-                  textAlign: 'center',
+            {/* Showcase card */}
+            <div data-animate className="ai-showcase" style={{
+              background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(15,141,99,0.05) 100%)',
+              border: '1px solid rgba(15,141,99,0.32)',
+              borderRadius: '24px',
+              padding: '32px',
+              position: 'relative',
+              overflow: 'hidden',
+              boxShadow: '0 28px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}>
+              <div style={{ position: 'absolute', top: '-120px', insetInlineEnd: '-90px', width: '420px', height: '420px', background: 'radial-gradient(circle, rgba(15,141,99,0.16) 0%, transparent 65%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: '-100px', insetInlineStart: '-60px', width: '320px', height: '320px', background: 'radial-gradient(circle, rgba(15,141,99,0.10) 0%, transparent 65%)', pointerEvents: 'none' }} />
+
+              <div className="ai-showcase-grid" style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '28px', alignItems: 'stretch', position: 'relative' }}>
+                {/* Chart mock — forced LTR so the chart axes/labels stay normal */}
+                <div dir="ltr" className="ai-chart-mock" style={{
+                  background: '#0a0c12',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '16px',
+                  height: '340px',
                   position: 'relative',
+                  overflow: 'hidden',
+                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+                  backgroundSize: '28px 28px',
                 }}>
-                  <div style={{ position: 'absolute', top: '-18px', insetInlineStart: '50%', transform: 'translateX(-50%)', width: '36px', height: '36px', borderRadius: '50%', background: '#0f8d63', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900', color: '#fff', boxShadow: '0 6px 18px rgba(15,141,99,0.45)' }}>{i + 1}</div>
-                  <div style={{
-                    width: '64px', height: '64px', borderRadius: '18px',
-                    background: 'rgba(15,141,99,0.12)',
-                    border: '1px solid rgba(15,141,99,0.28)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '14px auto 18px',
-                  }}>
-                    <Icon name={s.icon} size={28} color="#0f8d63" />
+                  {/* Symbol header */}
+                  <div style={{ position: 'absolute', top: '14px', left: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--text)', letterSpacing: '0.04em' }}>EUR/USD</div>
+                    <div style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', padding: '2px 7px', borderRadius: '6px', letterSpacing: '0.06em' }}>LONG</div>
+                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)' }}>1H</div>
                   </div>
-                  <div style={{ fontSize: '21px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{s.title}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.6 }}>{s.desc}</div>
+
+                  {/* Price line */}
+                  <svg viewBox="0 0 400 240" style={{ position: 'absolute', inset: '44px 16px 16px', width: 'calc(100% - 32px)', height: 'calc(100% - 60px)' }} preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="lpPriceGlow" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(34,197,94,0.32)" />
+                        <stop offset="100%" stopColor="rgba(34,197,94,0)" />
+                      </linearGradient>
+                    </defs>
+                    {/* Reference lines */}
+                    <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(34,197,94,0.45)" strokeWidth="1" strokeDasharray="4 4" />
+                    <line x1="0" y1="140" x2="400" y2="140" stroke="rgba(255,255,255,0.32)" strokeWidth="1" strokeDasharray="4 4" />
+                    <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(239,68,68,0.45)" strokeWidth="1" strokeDasharray="4 4" />
+                    {/* Glow under path */}
+                    <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60 L 400 240 L 0 240 Z" fill="url(#lpPriceGlow)" />
+                    {/* Price path */}
+                    <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60" fill="none" stroke="#22c55e" strokeWidth="2" />
+                    {/* Entry & exit dots */}
+                    <circle cx="6" cy="140" r="5" fill="var(--text)" stroke="#0a0c12" strokeWidth="2" />
+                    <circle cx="394" cy="60" r="5" fill="#22c55e" stroke="#0a0c12" strokeWidth="2" />
+                  </svg>
+
+                  {/* Floating price labels (right side of chart) */}
+                  <div style={{ position: 'absolute', top: '78px', right: '18px', fontSize: '10px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', padding: '3px 8px', borderRadius: '6px' }}>EXIT 1.0867</div>
+                  <div style={{ position: 'absolute', top: '160px', right: '18px', fontSize: '10px', fontWeight: '800', color: 'var(--text)', background: 'var(--bg3)', border: '1px solid var(--border2)', padding: '3px 8px', borderRadius: '6px' }}>ENTRY 1.0823</div>
+                  <div style={{ position: 'absolute', top: '218px', right: '18px', fontSize: '10px', fontWeight: '800', color: '#ef4444', background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.35)', padding: '3px 8px', borderRadius: '6px' }}>SL 1.0795</div>
+
+                  {/* AI scan overlay */}
+                  <div style={{ position: 'absolute', insetInlineStart: '16px', insetInlineEnd: '16px', top: '44px', height: 'calc(100% - 60px)', overflow: 'hidden', pointerEvents: 'none' }}>
+                    <div className="ai-scan-line" style={{
+                      position: 'absolute', insetInlineStart: 0, insetInlineEnd: 0,
+                      height: '50px',
+                      background: 'linear-gradient(180deg, transparent 0%, rgba(15,141,99,0.22) 50%, transparent 100%)',
+                      borderTop: '1px solid rgba(15,141,99,0.55)',
+                      borderBottom: '1px solid rgba(15,141,99,0.55)',
+                    }} />
+                  </div>
+
+                  {/* Bottom-left analysing tag */}
+                  <div style={{ position: 'absolute', bottom: '14px', left: '16px', display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '999px', background: 'rgba(15,141,99,0.14)', border: '1px solid rgba(15,141,99,0.35)' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0f8d63', boxShadow: '0 0 8px #0f8d63', animation: 'lpPulseDot 1.4s ease-in-out infinite' }} />
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Analyzing</span>
+                  </div>
+                </div>
+
+                {/* Extracted fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                      <Icon name="auto_awesome" size={15} color="#0f8d63" />
+                      <span style={{ fontSize: '11px', fontWeight: '900', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase' }}>זוהה אוטומטית</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {[
+                        { label: 'שם הצמד',     value: 'EUR/USD' },
+                        { label: 'מחיר כניסה',  value: '1.0823' },
+                        { label: 'מחיר יציאה',  value: '1.0867' },
+                        { label: 'Stop Loss',  value: '1.0795' },
+                        { label: 'כיוון',       value: 'LONG'    },
+                        { label: 'יחס R / R',  value: '1 : 1.6' },
+                      ].map((f, i) => (
+                        <div key={i} className="ai-field-row" style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(15,141,99,0.18)',
+                          borderRadius: '10px', padding: '10px 14px',
+                          animationDelay: `${0.15 + i * 0.07}s`,
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(15,141,99,0.20)', border: '1px solid rgba(15,141,99,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Icon name="check" size={12} color="#0f8d63" />
+                            </div>
+                            <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text2)' }}>{f.label}</span>
+                          </div>
+                          <span dir="ltr" style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', fontFamily: 'Manrope, Heebo, sans-serif', letterSpacing: '0.01em' }}>{f.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom stats row */}
+              <div className="ai-stats-row" style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px',
+                marginTop: '28px', paddingTop: '24px',
+                borderTop: '1px solid rgba(15,141,99,0.18)',
+                position: 'relative',
+              }}>
+                {[
+                  { value: '< 3s',   label: 'זמן ניתוח' },
+                  { value: '6+',     label: 'נקודות נתונים' },
+                  { value: '100%',   label: 'ניתן לעריכה' },
+                ].map((s, i) => (
+                  <div key={i} style={{ textAlign: 'center' }}>
+                    <div dir="ltr" style={{ fontSize: '28px', fontWeight: '900', color: '#0f8d63', letterSpacing: '-0.02em', marginBottom: '4px', lineHeight: 1, fontFamily: 'Manrope, Heebo, sans-serif' }}>{s.value}</div>
+                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tiny step ribbon — keeps the original 3-step idea but ribbon-ed */}
+            <div data-animate className="ai-ribbon" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              marginTop: '32px', flexWrap: 'wrap',
+            }}>
+              {STEPS.map((s, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '9px',
+                  padding: '9px 16px', borderRadius: '999px',
+                  background: 'var(--bg2)',
+                  border: '1px solid var(--border)',
+                }}>
+                  <span style={{ fontSize: '10px', fontWeight: '900', color: '#0f8d63', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.35)', padding: '1px 7px', borderRadius: '999px' }}>0{i + 1}</span>
+                  <Icon name={s.icon} size={14} color="var(--text2)" />
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>{s.title}</span>
                 </div>
               ))}
             </div>
@@ -432,10 +562,10 @@ export default function LandingPage() {
                   <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600' }}>{PRICING.free.period}</div>
                 </div>
                 <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>בשביל להתחיל לבנות שיגרה</div>
-                <button onClick={handleGoogleLogin} disabled={loading} style={{
+                <button onClick={goLogin}  style={{
                   width: '100%', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text)',
                   borderRadius: '12px', padding: '13px',
-                  fontSize: '14px', fontWeight: '800', cursor: loading ? 'wait' : 'pointer',
+                  fontSize: '14px', fontWeight: '800', cursor: 'pointer',
                   fontFamily: 'Heebo, sans-serif',
                   marginBottom: '24px',
                   transition: 'background 0.15s ease',
@@ -479,10 +609,10 @@ export default function LandingPage() {
                   <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600' }}>{PRICING.pro.period}</div>
                 </div>
                 <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>הכל פתוח. בלי הגבלות.</div>
-                <button onClick={handleGoogleLogin} disabled={loading} style={{
+                <button onClick={goLogin}  style={{
                   width: '100%', background: '#0f8d63', border: 'none', color: '#fff',
                   borderRadius: '12px', padding: '13px',
-                  fontSize: '14px', fontWeight: '800', cursor: loading ? 'wait' : 'pointer',
+                  fontSize: '14px', fontWeight: '800', cursor: 'pointer',
                   fontFamily: 'Heebo, sans-serif',
                   marginBottom: '24px',
                   boxShadow: '0 8px 24px rgba(15,141,99,0.4)',
@@ -602,6 +732,26 @@ export default function LandingPage() {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
         }
+        @keyframes lpPulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%      { opacity: 0.55; transform: scale(1.5); }
+        }
+        @keyframes lpAiScan {
+          0%   { transform: translateY(-50px); }
+          50%  { transform: translateY(calc(100% - 10px)); }
+          100% { transform: translateY(-50px); }
+        }
+        .ai-scan-line { animation: lpAiScan 3.6s ease-in-out infinite; }
+        @keyframes lpFieldFadeIn {
+          from { opacity: 0; transform: translateX(10px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        [dir="rtl"] .ai-field-row { animation: lpFieldFadeInRtl 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        [dir="ltr"] .ai-field-row { animation: lpFieldFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        @keyframes lpFieldFadeInRtl {
+          from { opacity: 0; transform: translateX(-10px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
         @media (max-width: 900px) {
           .lp-nav-links { display: none !important; }
           .lp-nav-inner { padding: 0 18px !important; }
@@ -611,10 +761,15 @@ export default function LandingPage() {
           .lp-hero-title { font-size: 44px !important; }
           .lp-hero-sub { font-size: 16px !important; }
           .lp-h2 { font-size: 32px !important; }
+          .ai-showcase-grid { grid-template-columns: 1fr !important; gap: 22px !important; }
+          .ai-chart-mock { height: 240px !important; }
+          .ai-stats-row { grid-template-columns: 1fr !important; gap: 14px !important; padding-top: 20px !important; }
+          .ai-ribbon { gap: 6px !important; }
         }
         @media (max-width: 560px) {
           .lp-feature-grid { grid-template-columns: 1fr !important; }
           .lp-hero-title { font-size: 36px !important; }
+          .ai-showcase { padding: 22px !important; }
         }
       `}</style>
     </div>
