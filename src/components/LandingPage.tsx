@@ -564,52 +564,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── FINAL CTA ── */}
-        <section style={{ padding: '60px 24px 100px' }}>
-          <div data-animate style={{
-            maxWidth: '900px', margin: '0 auto',
-            background: 'linear-gradient(135deg, rgba(15,141,99,0.16) 0%, var(--bg2) 60%, rgba(15,141,99,0.08) 100%)',
-            border: '1px solid rgba(15,141,99,0.35)',
-            borderRadius: '24px',
-            padding: '60px 32px',
-            textAlign: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            <div style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(15,141,99,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: '-80px', insetInlineStart: '-60px', width: '260px', height: '260px', background: 'radial-gradient(circle, rgba(15,141,99,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <h2 className="lp-h2" style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 14px', lineHeight: 1.15, position: 'relative' }}>
-              מוכן להתחיל לסחור עם נתונים?
-            </h2>
-            <p style={{ fontSize: '17px', color: 'var(--text2)', maxWidth: '520px', margin: '0 auto 28px', lineHeight: 1.6, position: 'relative' }}>
-              חיבור עם Google, ללא כרטיס אשראי. שדרוג ל-PRO רק אם תרצה.
-            </p>
-            <button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              style={{
-                background: '#0f8d63', color: '#fff', border: 'none',
-                borderRadius: '14px', padding: '16px 36px',
-                fontSize: '16px', fontWeight: '800', cursor: loading ? 'wait' : 'pointer',
-                fontFamily: 'Heebo, sans-serif',
-                display: 'inline-flex', alignItems: 'center', gap: '10px',
-                boxShadow: '0 12px 40px rgba(15,141,99,0.5)',
-                position: 'relative',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-              }}
-              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 18px 50px rgba(15,141,99,0.6)' }}
-              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(15,141,99,0.5)' }}
-            >
-              {loading ? (
-                <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-              ) : (
-                <Icon name="rocket_launch" size={18} color="#fff" />
-              )}
-              {loading ? 'מתחבר...' : 'התחבר עם Google והתחל'}
-            </button>
-          </div>
-        </section>
-
         {/* ── FOOTER ── */}
         <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 24px', position: 'relative' }}>
           <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
