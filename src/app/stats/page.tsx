@@ -455,50 +455,66 @@ export default function StatsPage() {
                   Smooth red→neutral→green spectrum. A subtle vertical line
                   with an 'AVG' label marks where the overall average sits;
                   a colored dot marks the selected day's win rate. */}
-              <div dir="ltr">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }} dir={language === 'he' ? 'rtl' : 'ltr'}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {language === 'he' ? 'בהשוואה לממוצע הכללי' : 'Vs overall average'}
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: diffFromOverall >= 0 ? '#22c55e' : '#ef4444' }} dir="ltr">
-                    {diffFromOverall >= 0 ? '+' : ''}{diffFromOverall.toFixed(1)}%
-                  </span>
-                </div>
+              {/* In Hebrew (RTL) the spectrum is mirrored — green on the
+                  visual left, red on the visual right — so the high-win-rate
+                  side aligns with the start-of-reading direction. The
+                  gradient stops are reversed and 'right' is used in place of
+                  'left' for marker positions. */}
+              {(() => {
+                const rtl = language === 'he'
+                const startSide = rtl ? 'right' : 'left'
+                const gradient = rtl
+                  ? 'linear-gradient(90deg, rgba(34,197,94,0.75) 0%, rgba(34,197,94,0.18) 32%, rgba(255,255,255,0.02) 50%, rgba(239,68,68,0.18) 68%, rgba(239,68,68,0.75) 100%)'
+                  : 'linear-gradient(90deg, rgba(239,68,68,0.75) 0%, rgba(239,68,68,0.18) 32%, rgba(255,255,255,0.02) 50%, rgba(34,197,94,0.18) 68%, rgba(34,197,94,0.75) 100%)'
+                const dotTransform = rtl ? 'translate(50%, -50%)' : 'translate(-50%, -50%)'
+                const labelTransform = rtl ? 'translateX(50%)' : 'translateX(-50%)'
+                return (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }} dir={rtl ? 'rtl' : 'ltr'}>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      {rtl ? 'בהשוואה לממוצע הכללי' : 'Vs overall average'}
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: diffFromOverall >= 0 ? '#22c55e' : '#ef4444' }} dir="ltr">
+                      {diffFromOverall >= 0 ? '+' : ''}{diffFromOverall.toFixed(1)}%
+                    </span>
+                  </div>
 
-                <div style={{ position: 'relative', height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.03)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.45)' }}>
-                  {/* Spectrum gradient: red 0% → fade → green 100% */}
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '999px',
-                    background: 'linear-gradient(90deg, rgba(239,68,68,0.75) 0%, rgba(239,68,68,0.18) 32%, rgba(255,255,255,0.02) 50%, rgba(34,197,94,0.18) 68%, rgba(34,197,94,0.75) 100%)',
-                  }} />
-                  {/* Overall-average marker — thin vertical line */}
-                  <div style={{
-                    position: 'absolute', top: '-5px', bottom: '-5px',
-                    left: `${overallWinRate}%`, width: '1.5px',
-                    background: 'rgba(255,255,255,0.55)', borderRadius: '1px',
-                  }} />
-                  {/* Selected-day dot */}
-                  <div style={{
-                    position: 'absolute', top: '50%',
-                    left: `${Math.min(100, Math.max(0, selWinRate))}%`,
-                    transform: 'translate(-50%, -50%)',
-                    width: '14px', height: '14px', borderRadius: '50%',
-                    background: diffFromOverall >= 0 ? '#22c55e' : '#ef4444',
-                    border: '2.5px solid var(--bg2)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.55)',
-                    zIndex: 2,
-                  }} />
-                </div>
+                  <div style={{ position: 'relative', height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.03)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.45)' }}>
+                    {/* Spectrum gradient — direction-aware */}
+                    <div style={{
+                      position: 'absolute', inset: 0, borderRadius: '999px',
+                      background: gradient,
+                    }} />
+                    {/* Overall-average marker — thin vertical line */}
+                    <div style={{
+                      position: 'absolute', top: '-5px', bottom: '-5px',
+                      [startSide]: `${overallWinRate}%`, width: '1.5px',
+                      background: 'rgba(255,255,255,0.55)', borderRadius: '1px',
+                    }} />
+                    {/* Selected-day dot */}
+                    <div style={{
+                      position: 'absolute', top: '50%',
+                      [startSide]: `${Math.min(100, Math.max(0, selWinRate))}%`,
+                      transform: dotTransform,
+                      width: '14px', height: '14px', borderRadius: '50%',
+                      background: diffFromOverall >= 0 ? '#22c55e' : '#ef4444',
+                      border: '2.5px solid var(--bg2)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.55)',
+                      zIndex: 2,
+                    }} />
+                  </div>
 
-                {/* AVG label centered under the marker */}
-                <div style={{ position: 'relative', height: '14px', marginTop: '8px' }}>
-                  <div style={{ position: 'absolute', left: `${overallWinRate}%`, transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                    <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text2)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                      {language === 'he' ? `ממוצע ${overallWinRate.toFixed(0)}%` : `AVG ${overallWinRate.toFixed(0)}%`}
+                  {/* AVG label centered under the marker */}
+                  <div style={{ position: 'relative', height: '14px', marginTop: '8px' }}>
+                    <div style={{ position: 'absolute', [startSide]: `${overallWinRate}%`, transform: labelTransform, whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text2)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                        {rtl ? `ממוצע ${overallWinRate.toFixed(0)}%` : `AVG ${overallWinRate.toFixed(0)}%`}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                )
+              })()}
             </>
           )}
         </div>
