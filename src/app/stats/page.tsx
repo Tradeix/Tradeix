@@ -456,7 +456,7 @@ export default function StatsPage() {
                   with an 'AVG' label marks where the overall average sits;
                   a colored dot marks the selected day's win rate. */}
               <div dir="ltr">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }} dir={isRTL ? 'rtl' : 'ltr'}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }} dir={language === 'he' ? 'rtl' : 'ltr'}>
                   <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     {language === 'he' ? 'בהשוואה לממוצע הכללי' : 'Vs overall average'}
                   </span>
