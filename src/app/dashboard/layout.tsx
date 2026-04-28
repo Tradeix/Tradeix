@@ -474,24 +474,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
       <div
         style={{
-          width: sidebarWidth, height: '100vh',
+          width: '72px', height: '100vh',
           borderInlineEnd: '1px solid var(--border)',
           position: 'fixed', [isRTL ? 'right' : 'left']: 0, top: 0, zIndex: 100,
-          transition: 'transform 0.3s ease, width 0.25s ease', overflow: 'hidden',
+          transition: 'transform 0.3s ease, width 0.25s ease, box-shadow 0.25s ease',
+          overflow: 'hidden',
         }}
         className="sidebar-el"
         data-open={sidebarOpen ? '1' : '0'}
-        data-collapsed={sidebarCollapsed ? '1' : '0'}
-        // Desktop hover-to-expand. The CSS @media block forces width:210px on
-        // mobile/tablet so these handlers don't matter there (and touch
-        // devices won't fire them in the way that breaks UX).
-        onMouseEnter={() => { if (typeof window !== 'undefined' && window.innerWidth > 1024) setSidebarCollapsed(false) }}
-        onMouseLeave={() => { if (typeof window !== 'undefined' && window.innerWidth > 1024) setSidebarCollapsed(true) }}
+        data-collapsed="1"
       >
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
-      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: sidebarWidth, flex: 1, minWidth: 0, transition: 'margin 0.25s ease' }} className="main-content">
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '72px', flex: 1, minWidth: 0 }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
@@ -625,19 +621,40 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           box-shadow: inset 0 0 0 1px rgba(15,141,99,0.18), 0 0 18px rgba(15,141,99,0.08);
         }
 
-        /* Collapsed rail mode is desktop-only. Mobile keeps the original drawer. */
+        /* Desktop sidebar is collapsed-rail by default and expands on hover.
+           Pure CSS — no JS state, so it can't trigger React re-renders that
+           previously caused content jitter on Settings/Archive pages. The
+           main-content margin is pinned to 72px so the expanded sidebar
+           overlays content rather than pushing it. */
         @media (min-width: 1025px) {
-          .sidebar-el[data-collapsed="1"] .sidebar-label,
-          .sidebar-el[data-collapsed="1"] .sidebar-wordmark { display: none !important; }
-          .sidebar-el[data-collapsed="1"] .sidebar-link {
+          .sidebar-el { width: 72px !important; }
+          .sidebar-el .sidebar-label,
+          .sidebar-el .sidebar-wordmark { display: none !important; }
+          .sidebar-el .sidebar-link {
             justify-content: center !important;
             padding: 11px 12px !important;
           }
-          .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] {
+          .sidebar-el .sidebar-link[data-active="1"] {
             background: rgba(15,141,99,0.12) !important;
           }
-          .sidebar-el[data-collapsed="1"] .sidebar-link[data-active="1"] .material-symbols-outlined {
+          .sidebar-el .sidebar-link[data-active="1"] .material-symbols-outlined {
             filter: drop-shadow(0 0 8px rgba(15,141,99,0.45));
+          }
+
+          /* Hover: expand to 210px and show labels */
+          .sidebar-el:hover { width: 210px !important; box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+          [dir="rtl"] .sidebar-el:hover { box-shadow: -4px 0 24px rgba(0,0,0,0.5); }
+          .sidebar-el:hover .sidebar-label,
+          .sidebar-el:hover .sidebar-wordmark { display: inline !important; }
+          .sidebar-el:hover .sidebar-link {
+            justify-content: flex-start !important;
+            padding: 11px 20px !important;
+          }
+          .sidebar-el:hover .sidebar-link[data-active="1"] {
+            background: var(--bg3) !important;
+          }
+          .sidebar-el:hover .sidebar-link[data-active="1"] .material-symbols-outlined {
+            filter: none;
           }
         }
 
