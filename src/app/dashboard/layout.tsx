@@ -641,11 +641,28 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             filter: drop-shadow(0 0 8px rgba(15,141,99,0.45));
           }
 
-          /* Hover: expand to 210px and show labels */
+          /* Hover: expand to 210px and show labels with a slide-in animation */
           .sidebar-el:hover { width: 210px !important; box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
           [dir="rtl"] .sidebar-el:hover { box-shadow: -4px 0 24px rgba(0,0,0,0.5); }
           .sidebar-el:hover .sidebar-label,
-          .sidebar-el:hover .sidebar-wordmark { display: inline !important; }
+          .sidebar-el:hover .sidebar-wordmark {
+            display: inline !important;
+            animation: sidebarLabelIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+          }
+          [dir="rtl"] .sidebar-el:hover .sidebar-label,
+          [dir="rtl"] .sidebar-el:hover .sidebar-wordmark {
+            animation-name: sidebarLabelInRtl;
+          }
+        }
+        @keyframes sidebarLabelIn {
+          from { opacity: 0; transform: translateX(-14px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes sidebarLabelInRtl {
+          from { opacity: 0; transform: translateX(14px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @media (min-width: 1025px) {
           .sidebar-el:hover .sidebar-link {
             justify-content: flex-start !important;
             padding: 11px 20px !important;
