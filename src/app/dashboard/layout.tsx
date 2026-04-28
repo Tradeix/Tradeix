@@ -491,7 +491,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
       </div>
 
-      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: '72px', flex: 1, minWidth: 0 }} className="main-content">
+      <div style={{ [isRTL ? 'marginRight' : 'marginLeft']: sidebarWidth, flex: 1, minWidth: 0, transition: 'margin 0.25s ease' }} className="main-content">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
