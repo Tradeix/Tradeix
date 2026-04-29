@@ -48,21 +48,35 @@ TAKE_PROFIT (TP):
 ────────────────────────────────────────
 STEP 3 — Determine direction (long / short)
 ────────────────────────────────────────
-Use multiple signals; they should all agree:
+**TRADINGVIEW LONG/SHORT POSITION TOOL** (the most reliable signal — usually present):
 
+LONG POSITION TOOL: a stack of TWO horizontal zones around the entry line.
+  - GREEN zone is ABOVE the entry line (this is the take-profit area)
+  - RED zone is BELOW the entry line (this is the stop-loss area)
+  - There is usually a small "Long" badge or text near the tool
+  → direction = "long"
+
+SHORT POSITION TOOL: a stack of TWO horizontal zones around the entry line.
+  - RED zone is ABOVE the entry line (this is the stop-loss area)
+  - GREEN zone is BELOW the entry line (this is the take-profit area)
+  - There is usually a small "Short" badge or text near the tool
+  → direction = "short"
+
+Memorize: **the GREEN zone always points to where the trader expects price to go.** Above = long, below = short. The RED zone is always on the opposite side.
+
+Other signals (use when the position tool is not present, or to confirm):
 LONG if any of:
   - Entry < Take Profit (TP above entry)
   - Entry > Stop Loss (SL below entry)
-  - Box / box-fill colored green / blue
   - Label says "Buy", "Long", "BUY"
-
 SHORT if any of:
   - Entry > Take Profit (TP below entry)
   - Entry < Stop Loss (SL above entry)
-  - Box colored red / pink
   - Label says "Sell", "Short", "SELL"
 
-Cross-check: if SL is ABOVE entry → "short"; if SL is BELOW entry → "long". Trust this rule when other signals conflict.
+**Cross-check rule (overrides everything else when other signals conflict):**
+  - If SL is ABOVE entry → "short"
+  - If SL is BELOW entry → "long"
 
 ────────────────────────────────────────
 STEP 4 — Read prices precisely
@@ -160,6 +174,40 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
   },
 }
 
+async function fetchTradingViewSnapshot(rawUrl: string): Promise<{ base64: string; mediaType: string; sourceUrl: string }> {
+  let u: URL
+  try { u = new URL(rawUrl) } catch { throw new Error('Invalid URL') }
+  const host = u.hostname.replace(/^www\./, '')
+  if (!/(^|\.)tradingview\.com$/.test(host)) {
+    throw new Error('Only tradingview.com URLs are supported')
+  }
+
+  const xMatch = u.pathname.match(/\/x\/([A-Za-z0-9]+)/)
+  if (xMatch) {
+    const id = xMatch[1]
+    const directUrl = `https://s3.tradingview.com/snapshots/${id[0].toLowerCase()}/${id}.png`
+    const direct = await fetch(directUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } })
+    if (direct.ok) {
+      const buf = await direct.arrayBuffer()
+      return { base64: Buffer.from(buf).toString('base64'), mediaType: 'image/png', sourceUrl: directUrl }
+    }
+  }
+
+  const html = await fetch(u.toString(), {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36', 'Accept-Language': 'en-US,en;q=0.9' },
+  }).then(r => r.text())
+
+  const og = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i)
+    ?? html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i)
+  if (!og) throw new Error('לא נמצאה תמונת snapshot בקישור — ודא שזה קישור tradingview.com/x/... ציבורי')
+  const imgUrl = og[1].replace(/&amp;/g, '&')
+  const imgRes = await fetch(imgUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } })
+  if (!imgRes.ok) throw new Error(`Failed to download chart image (${imgRes.status})`)
+  const buf = await imgRes.arrayBuffer()
+  const ct = (imgRes.headers.get('content-type') || 'image/png').split(';')[0].trim()
+  return { base64: Buffer.from(buf).toString('base64'), mediaType: ct, sourceUrl: imgUrl }
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey || apiKey.startsWith('your_') || !apiKey.startsWith('sk-ant-')) {
@@ -167,10 +215,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { image, mediaType } = await req.json()
+    const body = await req.json()
+    let { image, mediaType } = body as { image?: string; mediaType?: string }
+    const tradingViewUrl: string | undefined = body.tradingViewUrl
+
+    let resolvedSourceUrl: string | undefined
+
+    if (tradingViewUrl && !image) {
+      try {
+        const fetched = await fetchTradingViewSnapshot(tradingViewUrl)
+        image = fetched.base64
+        mediaType = fetched.mediaType
+        resolvedSourceUrl = fetched.sourceUrl
+      } catch (e: any) {
+        return NextResponse.json({ error: e?.message || 'Failed to fetch TradingView image' }, { status: 400 })
+      }
+    }
 
     if (!image) {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 })
+      return NextResponse.json({ error: 'No image or TradingView URL provided' }, { status: 400 })
     }
 
     const response = await client.messages.create({
@@ -194,7 +257,7 @@ export async function POST(req: NextRequest) {
               type: 'image',
               source: {
                 type: 'base64',
-                media_type: mediaType || 'image/jpeg',
+                media_type: ((mediaType || 'image/jpeg') as 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp'),
                 data: image,
               },
             },
@@ -240,7 +303,7 @@ export async function POST(req: NextRequest) {
       analysis: raw.analysis || '',
     }
 
-    return NextResponse.json(normalized)
+    return NextResponse.json({ ...normalized, sourceUrl: resolvedSourceUrl, fetchedImage: resolvedSourceUrl ? image : undefined, fetchedMediaType: resolvedSourceUrl ? (mediaType || 'image/png') : undefined })
   } catch (error: any) {
     console.error('[analyze-trade] Error:', error?.message || error, error?.status, error?.response?.data || '')
 

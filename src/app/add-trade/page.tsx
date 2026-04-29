@@ -34,6 +34,8 @@ export default function AddTradePage() {
   const [isManual, setIsManual] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [tvUrl, setTvUrl] = useState('')
+  const [tvSubmitting, setTvSubmitting] = useState(false)
   const [aiConfidence, setAiConfidence] = useState(0)
   const [aiRaw, setAiRaw] = useState('')
   const [pnlError, setPnlError] = useState(false)
@@ -98,6 +100,63 @@ export default function AddTradePage() {
     onDrop: onDropManual, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1, maxSize: 10 * 1024 * 1024,
   })
+
+  async function runAiAnalysisFromUrl() {
+    const url = tvUrl.trim()
+    if (!url) return
+    if (!/tradingview\.com\//i.test(url)) {
+      toast.error(language === 'he' ? 'הדבק קישור tradingview.com תקין' : 'Enter a valid tradingview.com URL')
+      return
+    }
+    setTvSubmitting(true)
+    setStep(2)
+    try {
+      const res = await fetch('/api/analyze-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tradingViewUrl: url }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Analysis failed')
+      if (data.fetchedImage && data.fetchedMediaType) {
+        setImagePreview(`data:${data.fetchedMediaType};base64,${data.fetchedImage}`)
+      }
+      applyAiResult(data)
+    } catch (err: any) {
+      toast.error(language === 'he' ? `שגיאה: ${err.message}` : `Error: ${err.message}`)
+      setStep(1)
+    } finally {
+      setTvSubmitting(false)
+    }
+  }
+
+  function applyAiResult(data: any) {
+    const missing: string[] = []
+    if (!data.symbol) missing.push(language === 'he' ? 'שם הצמד' : 'Symbol')
+    if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
+    setAiMissingFields(missing)
+
+    let detectedOutcome: 'win' | 'loss' | undefined
+    if (data.direction && data.entry_price != null && data.exit_price != null) {
+      const isLong = data.direction === 'long'
+      const priceWentUp = data.exit_price > data.entry_price
+      detectedOutcome = (isLong ? priceWentUp : !priceWentUp) ? 'win' : 'loss'
+    }
+
+    setTradeData(prev => ({
+      ...prev,
+      symbol: data.symbol || '',
+      direction: data.direction === 'short' ? 'short' : 'long',
+      entry_price: data.entry_price?.toString() || '',
+      exit_price: data.exit_price?.toString() || '',
+      stop_loss: data.stop_loss?.toString() || '',
+      ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
+    }))
+    setAiConfidence(data.confidence || 85)
+    setAiRaw(data.analysis || '')
+    setShowAiSuccessPopup(true)
+    setStep(3)
+  }
 
   async function runAiAnalysis(file: File) {
     setStep(2)
@@ -300,6 +359,53 @@ export default function AddTradePage() {
               </span>
               <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP {language === 'he' ? 'עד' : 'up to'} 10MB</div>
             </div>
+
+            {/* TradingView URL — alternative input */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <span style={{ fontSize: '13px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            </div>
+            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '18px 20px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <Icon name="show_chart" size={18} color="#0f8d63" />
+                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)' }}>
+                  {language === 'he' ? 'או הדבק קישור TradingView' : 'Or paste a TradingView link'}
+                </div>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '12px', lineHeight: 1.6 }}>
+                {language === 'he'
+                  ? 'ב־TradingView לחץ Alt+S (או Cmd+S במק) כדי ליצור snapshot, ואז העתק את הקישור (tradingview.com/x/...). הניתוח יוצא חד יותר מ־TV מאשר תמונת מסך.'
+                  : 'In TradingView press Alt+S (or Cmd+S on mac) to create a snapshot, then paste the link (tradingview.com/x/...). Analysis is sharper from TV than from a screenshot.'}
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="url"
+                  dir="ltr"
+                  value={tvUrl}
+                  onChange={e => setTvUrl(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !tvSubmitting) { e.preventDefault(); runAiAnalysisFromUrl() } }}
+                  placeholder="https://www.tradingview.com/x/..."
+                  style={{ flex: 1, padding: '10px 12px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--text)', fontSize: '13px', fontFamily: 'monospace', outline: 'none' }}
+                />
+                <button
+                  onClick={runAiAnalysisFromUrl}
+                  disabled={!tvUrl.trim() || tvSubmitting}
+                  style={{
+                    background: tvUrl.trim() ? '#0f8d63' : 'var(--bg2)',
+                    color: tvUrl.trim() ? '#fff' : 'var(--text3)',
+                    border: 'none', borderRadius: '10px',
+                    padding: '0 18px', fontSize: '13px', fontWeight: '700',
+                    cursor: tvUrl.trim() && !tvSubmitting ? 'pointer' : 'not-allowed',
+                    fontFamily: 'Heebo, sans-serif', whiteSpace: 'nowrap',
+                    opacity: tvSubmitting ? 0.6 : 1,
+                  }}
+                >
+                  {tvSubmitting ? (language === 'he' ? 'מנתח...' : 'Analyzing...') : (language === 'he' ? 'נתח' : 'Analyze')}
+                </button>
+              </div>
+            </div>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
               <span style={{ fontSize: '13px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
