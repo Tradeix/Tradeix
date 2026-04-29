@@ -362,7 +362,7 @@ export default function StatsPage() {
 
               {/* Bars */}
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', gap: '14px', paddingInline: '12px', paddingBottom: '0' }}>
-                {[0, 1, 2, 3, 4, 5, 6].map(i => {
+                {TRADING_DOWS.map(i => {
                   const b = byDow[i]
                   const wr = dowWinRate(i)
                   const has = b.count > 0
@@ -432,7 +432,7 @@ export default function StatsPage() {
           {/* X axis labels */}
           <div style={{ display: 'flex', paddingInlineStart: '40px', marginTop: '10px' }}>
             <div style={{ flex: 1, display: 'flex', gap: '14px', paddingInline: '12px' }}>
-              {[0, 1, 2, 3, 4, 5, 6].map(i => (
+              {TRADING_DOWS.map(i => (
                 <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '12px', fontWeight: '700', color: hoverDow === i ? 'var(--text)' : 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'color 0.15s' }}>
                   {DAY_NAMES_LONG[i]}
                 </div>
