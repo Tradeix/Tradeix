@@ -615,6 +615,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         /* Sidebar link interactions (desktop & mobile both benefit from the
            hover/active polish — they don't change layout). */
         .sidebar-link { will-change: transform; }
+        .sidebar-link svg { flex-shrink: 0; }
+        .sidebar-link .sidebar-label { min-width: 0; }
         .sidebar-link .material-symbols-outlined { transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-link:hover .material-symbols-outlined { transform: scale(1.15); }
         .sidebar-link[data-active="1"] {
