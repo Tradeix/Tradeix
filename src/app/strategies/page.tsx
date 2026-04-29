@@ -289,21 +289,24 @@ export default function StrategiesPage() {
       ) : (
         <div className="strat-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '16px',
           alignItems: 'start',
         }}>
           {strategies.map((s, sIdx) => {
             const color = getColorHex(s.color)
-            const isExpanded = expandedId === s.id
             const stats = strategyStats[s.id] || EMPTY_STATS
-            const isStatsLoading = loadingStats === s.id
             const pnlPositive = stats.totalPnl >= 0
             const hasData = stats.totalTrades > 0
             const wr = stats.winRate
-            const wrColor = !hasData ? 'var(--text3)' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
-            const totalSegments = 12
-            const filledSegments = hasData ? Math.round((wr / 100) * totalSegments) : 0
+            const wrColor = !hasData ? '#6b7280' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
+
+            // Donut chart geometry
+            const donutSize = 88
+            const donutStroke = 7
+            const donutRadius = (donutSize - donutStroke) / 2
+            const donutCircum = 2 * Math.PI * donutRadius
+            const donutOffset = donutCircum * (1 - (hasData ? wr : 0) / 100)
 
             return (
               <div
@@ -314,338 +317,369 @@ export default function StrategiesPage() {
                   background: 'var(--bg2)',
                   borderRadius: '18px',
                   overflow: 'hidden',
-                  border: isExpanded ? '1px solid var(--border2)' : '1px solid var(--border)',
+                  border: '1px solid var(--border)',
                   transition: 'border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
                   position: 'relative',
                   cursor: 'pointer',
-                  gridColumn: isExpanded ? '1 / -1' : 'auto',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = `0 8px 28px ${wrColor}1a`
+                  e.currentTarget.style.borderColor = `${wrColor}55`
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'none'
+                  e.currentTarget.style.boxShadow = 'none'
+                  e.currentTarget.style.borderColor = 'var(--border)'
                 }}
               >
-                {/* Color stripe — start side */}
+                {/* Subtle corner glow keyed to performance */}
                 <div style={{
-                  position: 'absolute', insetInlineStart: 0, top: 0, bottom: 0, width: '3px',
-                  background: `linear-gradient(180deg, ${color}, ${color}55)`,
-                  opacity: hasData ? 0.85 : 0.35,
+                  position: 'absolute', top: 0, insetInlineEnd: 0,
+                  width: '160px', height: '160px',
+                  background: `radial-gradient(circle at top right, ${wrColor}14, transparent 65%)`,
+                  pointerEvents: 'none',
                 }} />
 
-                {/* Soft glow when expanded */}
-                {isExpanded && (
-                  <div style={{
-                    position: 'absolute', top: '-40px', insetInlineStart: '-30px',
-                    width: '180px', height: '180px',
-                    background: `radial-gradient(circle, ${wrColor}22, transparent 70%)`,
-                    pointerEvents: 'none',
-                  }} />
-                )}
-
                 {/* Body */}
-                <div className="strat-body" style={{ padding: '22px 24px 18px', position: 'relative' }}>
+                <div className="strat-body" style={{ padding: '20px 22px 18px', position: 'relative' }}>
 
-                  {/* Top row — name + index badge */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '22px' }}>
+                  {/* Top — strategy label + name + index */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' }}>
+                        {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
+                      </div>
                       <div className="strat-name" style={{
-                        fontSize: '17px', fontWeight: '700', color: 'var(--text)',
-                        letterSpacing: '-0.01em', lineHeight: 1.3,
+                        fontSize: '18px', fontWeight: '800', color: 'var(--text)',
+                        letterSpacing: '-0.015em', lineHeight: 1.25,
                         overflow: 'hidden', display: '-webkit-box',
                         WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       }}>{s.name}</div>
-                      {s.plan && !isExpanded && (
-                        <div className="strat-plan-preview" style={{
-                          fontSize: '12px', color: 'var(--text3)', marginTop: '4px',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>{s.plan}</div>
-                      )}
                     </div>
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
-                    }}>
-                      <span style={{
-                        fontSize: '11px', fontWeight: '800', color: 'var(--text3)',
-                        background: 'var(--bg3)', border: '1px solid var(--border)',
-                        padding: '5px 9px', borderRadius: '8px',
-                        letterSpacing: '0.04em', fontFamily: 'Heebo, sans-serif',
-                      }}>{String(sIdx + 1).padStart(2, '0')}</span>
-                    </div>
+                    <span style={{
+                      fontSize: '11px', fontWeight: '900',
+                      color: hasData ? wrColor : 'var(--text3)',
+                      background: hasData ? `${wrColor}14` : 'var(--bg3)',
+                      border: `1px solid ${hasData ? `${wrColor}33` : 'var(--border)'}`,
+                      padding: '5px 10px', borderRadius: '8px',
+                      letterSpacing: '0.04em', fontFamily: 'Heebo, sans-serif',
+                      flexShrink: 0,
+                    }}>{String(sIdx + 1).padStart(2, '0')}</span>
                   </div>
 
-                  {/* Hero — win rate label + big number */}
-                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
-                    <div>
-                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '6px' }}>
-                        {language === 'he' ? 'אחוז הצלחה' : 'Win rate'}
-                      </div>
+                  {/* Hero — donut + stats stack */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '18px' }}>
+                    {/* Donut chart */}
+                    <div style={{ position: 'relative', flexShrink: 0, filter: hasData ? `drop-shadow(0 0 12px ${wrColor}33)` : 'none' }}>
+                      <svg width={donutSize} height={donutSize} viewBox={`0 0 ${donutSize} ${donutSize}`}>
+                        <defs>
+                          <linearGradient id={`gr-${s.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor={wrColor} stopOpacity="1" />
+                            <stop offset="100%" stopColor={wrColor} stopOpacity="0.6" />
+                          </linearGradient>
+                        </defs>
+                        {/* Track */}
+                        <circle
+                          cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
+                          fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={donutStroke}
+                        />
+                        {/* Progress */}
+                        <circle
+                          cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
+                          fill="none" stroke={`url(#gr-${s.id})`} strokeWidth={donutStroke}
+                          strokeLinecap="round"
+                          strokeDasharray={donutCircum}
+                          strokeDashoffset={donutOffset}
+                          transform={`rotate(-90 ${donutSize / 2} ${donutSize / 2})`}
+                          style={{ transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                        />
+                      </svg>
+                      {/* Centered % text — HTML so it scales with browser font */}
                       <div dir="ltr" style={{
-                        fontSize: '38px', fontWeight: '800', letterSpacing: '-0.03em',
-                        color: wrColor, lineHeight: 1,
-                        fontFamily: 'Heebo, sans-serif',
+                        position: 'absolute', inset: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexDirection: 'column', lineHeight: 1,
+                        pointerEvents: 'none',
                       }}>
-                        {hasData ? `${wr.toFixed(1)}%` : '—'}
+                        <div style={{ fontSize: '20px', fontWeight: '900', color: wrColor, fontFamily: 'Heebo, sans-serif', letterSpacing: '-0.03em' }}>
+                          {hasData ? `${Math.round(wr)}%` : '—'}
+                        </div>
+                        <div style={{ fontSize: '8px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>
+                          {language === 'he' ? 'הצלחה' : 'Win'}
+                        </div>
                       </div>
                     </div>
-                    <div style={{ textAlign: 'end' }}>
-                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '6px' }}>
-                        {language === 'he' ? 'טריידים' : 'Trades'}
+
+                    {/* Stats column */}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'Heebo, sans-serif' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e99', flexShrink: 0 }} />
+                        <span style={{ fontSize: '15px', fontWeight: '800', color: '#22c55e', minWidth: '24px' }}>{stats.wins}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                          {language === 'he' ? 'ניצחונות' : 'wins'}
+                        </span>
                       </div>
-                      <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text)', lineHeight: 1, fontFamily: 'Heebo, sans-serif' }}>
-                        {stats.totalTrades}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef444499', flexShrink: 0 }} />
+                        <span style={{ fontSize: '15px', fontWeight: '800', color: '#ef4444', minWidth: '24px' }}>{stats.losses}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                          {language === 'he' ? 'הפסדים' : 'losses'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '2px', background: 'var(--text3)', flexShrink: 0 }} />
+                        <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', minWidth: '24px' }}>{stats.totalTrades}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                          {language === 'he' ? 'טריידים' : 'trades'}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Segmented progress */}
-                  <div style={{ display: 'flex', gap: '3px', height: '7px', marginBottom: '14px' }}>
-                    {Array.from({ length: totalSegments }).map((_, i) => {
-                      const filled = i < filledSegments
-                      return (
-                        <div key={i} style={{
-                          flex: 1,
-                          borderRadius: '2px',
-                          background: filled
-                            ? `linear-gradient(180deg, ${wrColor}, ${wrColor}b0)`
-                            : 'rgba(255,255,255,0.04)',
-                          boxShadow: filled ? `0 0 6px ${wrColor}55` : 'none',
-                          transition: 'background 0.4s ease',
-                        }} />
-                      )
-                    })}
-                  </div>
-
-                  {/* W / L row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', fontWeight: '700', marginBottom: '18px', fontFamily: 'Heebo, sans-serif' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#22c55e' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e88' }} />
-                      {stats.wins} W
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#ef4444' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef444488' }} />
-                      {stats.losses} L
-                    </span>
-                  </div>
-
-                  {/* Footer — avg / total / chevron */}
+                  {/* Footer — avg / total */}
                   <div style={{
                     borderTop: '1px solid var(--border)',
                     paddingTop: '14px',
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr auto',
-                    alignItems: 'center', gap: '12px',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '12px',
                   }}>
                     <div>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '4px' }}>
                         {language === 'he' ? 'ממוצע' : 'Avg'}
                       </div>
                       <div dir="ltr" style={{
-                        fontSize: '15px', fontWeight: '800',
+                        fontSize: '16px', fontWeight: '800',
                         color: !hasData ? 'var(--text3)' : stats.avgPnl >= 0 ? '#22c55e' : '#ef4444',
-                        lineHeight: 1,
+                        lineHeight: 1, letterSpacing: '-0.01em',
                       }}>
                         {!hasData ? '—' : `${stats.avgPnl >= 0 ? '+' : '-'}$${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                       </div>
                     </div>
-                    <div>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+                    <div style={{ textAlign: 'end' }}>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '4px' }}>
                         {language === 'he' ? 'סה״כ' : 'Total'}
                       </div>
                       <div dir="ltr" style={{
-                        fontSize: '15px', fontWeight: '800',
+                        fontSize: '16px', fontWeight: '800',
                         color: !hasData ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444',
-                        lineHeight: 1,
+                        lineHeight: 1, letterSpacing: '-0.01em',
                       }}>
                         {!hasData ? '—' : `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                       </div>
                     </div>
-                    <div style={{
-                      width: '30px', height: '30px', borderRadius: '9px',
-                      background: isExpanded ? `${wrColor}1a` : 'var(--bg3)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'background 0.2s ease, transform 0.25s ease',
-                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }}>
-                      <Icon name="expand_more" size={17} color={isExpanded ? wrColor : 'var(--text3)'} />
-                    </div>
                   </div>
                 </div>
 
-                {/* ── Expanded content ── */}
-                {isExpanded && (
-                  <div className="strat-expanded" style={{ padding: '0 24px 24px' }}>
-
-                    {/* ── STRATEGY STATS ── */}
-                    <div className="strat-stats-wrap" style={{
-                      background: `linear-gradient(135deg, ${color}06, ${color}03)`,
-                      border: `1px solid ${color}18`,
-                      borderRadius: '14px',
-                      padding: '20px',
-                      marginBottom: '20px',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                        <Icon name="monitoring" size={16} color={color} />
-                        <span style={{ fontSize: '13px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          {language === 'he' ? 'סטטיסטיקות אסטרטגיה' : 'Strategy Statistics'}
-                        </span>
-                      </div>
-
-                      {isStatsLoading ? (
-                        <div style={{ textAlign: 'center', padding: '20px' }}>
-                          <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: color, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
-                        </div>
-                      ) : stats.totalTrades === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '24px 12px' }}>
-                          <Icon name="show_chart" size={28} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
-                          <div style={{ fontSize: '14px', color: 'var(--text3)' }}>
-                            {language === 'he' ? 'אין עסקאות עם אסטרטגיה זו עדיין' : 'No trades with this strategy yet'}
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Big P&L + Win Rate row */}
-                          <div className="strat-pnl-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                            <div style={{
-                              background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
-                              border: '1px solid var(--border)',
-                            }}>
-                              <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-                                {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
-                              </div>
-                              <div dir="ltr" className="strat-pnl-big" style={{
-                                fontSize: '27px', fontWeight: '800', letterSpacing: '-0.02em',
-                                color: pnlPositive ? '#22c55e' : '#ef4444',
-                              }}>
-                                {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                              </div>
-                            </div>
-                            <div style={{
-                              background: 'var(--bg2)', borderRadius: '12px', padding: '16px',
-                              border: '1px solid var(--border)',
-                            }}>
-                              <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-                                Win Rate
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span className="strat-pnl-big" style={{
-                                  fontSize: '27px', fontWeight: '800', letterSpacing: '-0.02em',
-                                  color: stats.winRate >= 50 ? '#22c55e' : '#ef4444',
-                                }}>
-                                  {stats.winRate.toFixed(0)}%
-                                </span>
-                              </div>
-                              {/* Mini win/loss bar */}
-                              <div style={{ display: 'flex', gap: '2px', marginTop: '8px', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
-                                <div style={{ flex: stats.wins, background: '#22c55e', borderRadius: '2px' }} />
-                                <div style={{ flex: stats.losses || 0.01, background: '#ef4444', borderRadius: '2px' }} />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Detailed stats grid */}
-                          <div className="strat-detail-grid" style={{
-                            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px',
-                            background: 'var(--border)', borderRadius: '12px', overflow: 'hidden',
-                          }}>
-                            {[
-                              { label: language === 'he' ? 'עסקאות' : 'Trades', value: stats.totalTrades.toString(), icon: 'receipt_long' },
-                              { label: language === 'he' ? 'ניצחונות' : 'Wins', value: `${stats.wins}`, icon: 'trending_up', valueColor: '#22c55e' },
-                              { label: language === 'he' ? 'הפסדים' : 'Losses', value: `${stats.losses}`, icon: 'trending_down', valueColor: '#ef4444' },
-                              { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics' },
-                            ].map((item, i) => (
-                              <div key={i} style={{ background: 'var(--bg2)', padding: '14px 12px', textAlign: 'center' }}>
-                                <Icon name={item.icon} size={15} color={color} style={{ marginBottom: '6px', opacity: 0.7 }} />
-                                <div style={{ fontSize: '17px', fontWeight: '700', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
-                                <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
-                              </div>
-                            ))}
-                          </div>
-
-                        </>
-                      )}
-                    </div>
-
-                    {/* ── PLAN & DETAILS ── */}
-                    {(s.plan || s.details) && (
-                      <div className="strat-plan-details" style={{ display: 'grid', gridTemplateColumns: s.plan && s.details ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
-                        {s.plan && (
-                          <div style={{
-                            background: 'var(--bg3)', borderRadius: '12px', padding: '16px',
-                            border: '1px solid var(--border)',
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                              <Icon name="notes" size={14} color={color} />
-                              <span style={{ fontSize: '12px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                {tr.strategyPlan}
-                              </span>
-                            </div>
-                            <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
-                          </div>
-                        )}
-                        {s.details && (
-                          <div style={{
-                            background: 'var(--bg3)', borderRadius: '12px', padding: '16px',
-                            border: '1px solid var(--border)',
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                              <Icon name="info" size={14} color={color} />
-                              <span style={{ fontSize: '12px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                {tr.strategyDetails}
-                              </span>
-                            </div>
-                            <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{s.details}</div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* ── Actions ── */}
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => startEdit(s)} style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        padding: '9px 18px', borderRadius: '10px',
-                        background: 'var(--bg3)', border: '1px solid var(--border)',
-                        color: 'var(--text2)', fontSize: '13px', fontWeight: '600',
-                        cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
-                      }}>
-                        <Icon name="edit" size={14} color="var(--text3)" />
-                        {tr.edit}
-                      </button>
-                      {confirmDelete === s.id ? (
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => handleDelete(s.id)} style={{
-                            padding: '9px 18px', borderRadius: '10px',
-                            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-                            color: '#ef4444', fontSize: '13px', fontWeight: '700',
-                            cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                          }}>
-                            {language === 'he' ? 'כן, מחק' : 'Yes, delete'}
-                          </button>
-                          <button onClick={() => setConfirmDelete(null)} style={{
-                            padding: '9px 16px', borderRadius: '10px',
-                            background: 'var(--bg3)', border: '1px solid var(--border)',
-                            color: 'var(--text3)', fontSize: '13px', fontWeight: '600',
-                            cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
-                          }}>
-                            {tr.cancel}
-                          </button>
-                        </div>
-                      ) : (
-                        <button onClick={() => setConfirmDelete(s.id)} style={{
-                          display: 'flex', alignItems: 'center', gap: '6px',
-                          padding: '9px 18px', borderRadius: '10px',
-                          background: 'transparent', border: '1px solid var(--border)',
-                          color: 'rgba(239,68,68,0.6)', fontSize: '13px', fontWeight: '600',
-                          cursor: 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
-                        }}>
-                          <Icon name="delete" size={14} color="currentColor" />
-                          {language === 'he' ? 'מחק' : 'Delete'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             )
           })}
         </div>
       )}
+
+      {/* ── Strategy detail modal ── opens when a card is clicked */}
+      {expandedId && (() => {
+        const s = strategies.find(x => x.id === expandedId)
+        if (!s) return null
+        const color = getColorHex(s.color)
+        const stats = strategyStats[s.id] || EMPTY_STATS
+        const isStatsLoading = loadingStats === s.id
+        const pnlPositive = stats.totalPnl >= 0
+        const hasData = stats.totalTrades > 0
+        const wr = stats.winRate
+        const wrColor = !hasData ? '#6b7280' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
+        const sIdx = strategies.findIndex(x => x.id === s.id)
+
+        return (
+          <div
+            onClick={() => setExpandedId(null)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 9998,
+              background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '20px', animation: 'fadeIn 0.2s ease',
+            }}
+          >
+            <div
+              dir={isRTL ? 'rtl' : 'ltr'}
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: 'var(--bg2)',
+                border: '1px solid var(--border)',
+                borderRadius: '20px',
+                width: '100%', maxWidth: '560px',
+                maxHeight: '88vh', overflow: 'auto',
+                animation: 'modalIn 0.25s ease',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.55)',
+                position: 'relative',
+              }}
+            >
+              {/* Header */}
+              <div style={{
+                padding: '18px 22px', borderBottom: '1px solid var(--border)',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1,
+                borderRadius: '20px 20px 0 0',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                  <span style={{
+                    fontSize: '11px', fontWeight: '900',
+                    color: hasData ? wrColor : 'var(--text3)',
+                    background: hasData ? `${wrColor}14` : 'var(--bg3)',
+                    border: `1px solid ${hasData ? `${wrColor}33` : 'var(--border)'}`,
+                    padding: '5px 10px', borderRadius: '8px',
+                    letterSpacing: '0.04em', flexShrink: 0,
+                  }}>{String(sIdx + 1).padStart(2, '0')}</span>
+                  <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {s.name}
+                  </div>
+                </div>
+                <button onClick={() => setExpandedId(null)} style={{
+                  width: '32px', height: '32px', borderRadius: '10px',
+                  background: 'var(--bg3)', border: '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', flexShrink: 0,
+                }}>
+                  <Icon name="close" size={16} color="var(--text2)" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding: '20px 22px' }}>
+                {/* Stats panel */}
+                <div style={{
+                  background: `linear-gradient(135deg, ${wrColor}08, ${wrColor}02)`,
+                  border: `1px solid ${wrColor}1f`,
+                  borderRadius: '14px',
+                  padding: '18px',
+                  marginBottom: s.plan || s.details ? '16px' : '0',
+                }}>
+                  {isStatsLoading ? (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                      <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: wrColor, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                    </div>
+                  ) : stats.totalTrades === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '24px 12px' }}>
+                      <Icon name="show_chart" size={28} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
+                      <div style={{ fontSize: '14px', color: 'var(--text3)' }}>
+                        {language === 'he' ? 'אין עסקאות עם אסטרטגיה זו עדיין' : 'No trades with this strategy yet'}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                        <div style={{ background: 'var(--bg2)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
+                          <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
+                            {language === 'he' ? 'רווח כולל' : 'Total P&L'}
+                          </div>
+                          <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', letterSpacing: '-0.02em', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
+                            {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          </div>
+                        </div>
+                        <div style={{ background: 'var(--bg2)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
+                          <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Win Rate</div>
+                          <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', letterSpacing: '-0.02em', color: wrColor }}>
+                            {stats.winRate.toFixed(0)}%
+                          </div>
+                          <div style={{ display: 'flex', gap: '2px', marginTop: '8px', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
+                            <div style={{ flex: stats.wins, background: '#22c55e', borderRadius: '2px' }} />
+                            <div style={{ flex: stats.losses || 0.01, background: '#ef4444', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+                        {[
+                          { label: language === 'he' ? 'עסקאות' : 'Trades', value: stats.totalTrades.toString(), icon: 'receipt_long' },
+                          { label: language === 'he' ? 'ניצחונות' : 'Wins', value: `${stats.wins}`, icon: 'trending_up', valueColor: '#22c55e' },
+                          { label: language === 'he' ? 'הפסדים' : 'Losses', value: `${stats.losses}`, icon: 'trending_down', valueColor: '#ef4444' },
+                          { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ background: 'var(--bg2)', padding: '12px 8px', textAlign: 'center' }}>
+                            <Icon name={item.icon} size={14} color={wrColor} style={{ marginBottom: '5px', opacity: 0.75 }} />
+                            <div style={{ fontSize: '15px', fontWeight: '800', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
+                            <div style={{ fontSize: '9px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Plan & Details */}
+                {(s.plan || s.details) && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', marginBottom: '16px' }}>
+                    {s.plan && (
+                      <div style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                          <Icon name="notes" size={13} color={wrColor} />
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: wrColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            {tr.strategyPlan}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{s.plan}</div>
+                      </div>
+                    )}
+                    {s.details && (
+                      <div style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                          <Icon name="info" size={13} color={wrColor} />
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: wrColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            {tr.strategyDetails}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{s.details}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => { setExpandedId(null); startEdit(s) }} style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '9px 16px', borderRadius: '10px',
+                    background: 'var(--bg3)', border: '1px solid var(--border)',
+                    color: 'var(--text2)', fontSize: '13px', fontWeight: '600',
+                    cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
+                  }}>
+                    <Icon name="edit" size={13} color="var(--text3)" />
+                    {tr.edit}
+                  </button>
+                  {confirmDelete === s.id ? (
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button onClick={() => { handleDelete(s.id); setExpandedId(null) }} style={{
+                        padding: '9px 16px', borderRadius: '10px',
+                        background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+                        color: '#ef4444', fontSize: '13px', fontWeight: '700',
+                        cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
+                      }}>{language === 'he' ? 'כן, מחק' : 'Yes, delete'}</button>
+                      <button onClick={() => setConfirmDelete(null)} style={{
+                        padding: '9px 14px', borderRadius: '10px',
+                        background: 'var(--bg3)', border: '1px solid var(--border)',
+                        color: 'var(--text3)', fontSize: '13px', fontWeight: '600',
+                        cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
+                      }}>{tr.cancel}</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setConfirmDelete(s.id)} style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      padding: '9px 16px', borderRadius: '10px',
+                      background: 'transparent', border: '1px solid var(--border)',
+                      color: 'rgba(239,68,68,0.7)', fontSize: '13px', fontWeight: '600',
+                      cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
+                    }}>
+                      <Icon name="delete" size={13} color="currentColor" />
+                      {language === 'he' ? 'מחק' : 'Delete'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── POPUP MODAL ── */}
       {showForm && (
