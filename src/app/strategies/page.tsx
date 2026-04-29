@@ -287,97 +287,183 @@ export default function StrategiesPage() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="strat-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '16px',
+          alignItems: 'start',
+        }}>
           {strategies.map((s, sIdx) => {
             const color = getColorHex(s.color)
             const isExpanded = expandedId === s.id
             const stats = strategyStats[s.id] || EMPTY_STATS
             const isStatsLoading = loadingStats === s.id
             const pnlPositive = stats.totalPnl >= 0
+            const hasData = stats.totalTrades > 0
+            const wr = stats.winRate
+            const wrColor = !hasData ? 'var(--text3)' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
+            const totalSegments = 12
+            const filledSegments = hasData ? Math.round((wr / 100) * totalSegments) : 0
 
             return (
-              <div key={s.id} style={{
-                background: 'var(--bg2)',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                border: isExpanded ? `1px solid ${color}40` : '1px solid var(--border)',
-                transition: 'all 0.25s ease',
-                position: 'relative',
-              }}>
-                {/* Header */}
-                <div
-                  className="strat-header"
-                  onClick={e => { e.currentTarget.style.background = 'transparent'; handleExpand(s.id) }}
-                  style={{
-                    padding: '20px 24px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '16px',
-                    transition: 'background 0.15s',
-                  }}
-                  onMouseOver={e => { if (!isExpanded) e.currentTarget.style.background = 'var(--bg3)' }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
-                >
-                  {/* Strategy icon with glow */}
-                  <div style={{ position: 'relative' }}>
-                    {isExpanded && (
-                      <div style={{
-                        position: 'absolute', inset: '-6px',
-                        background: `radial-gradient(circle, ${color}20, transparent 70%)`,
-                        borderRadius: '50%',
-                      }} />
-                    )}
-                    <div className="strat-icon" style={{
-                      width: '46px', height: '46px', borderRadius: '14px',
-                      background: `linear-gradient(135deg, ${color}18, ${color}08)`,
-                      border: `1.5px solid ${color}30`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, position: 'relative',
-                      transition: 'all 0.25s ease',
-                      boxShadow: isExpanded ? `0 4px 20px ${color}20` : 'none',
+              <div
+                key={s.id}
+                className="strat-card"
+                onClick={() => handleExpand(s.id)}
+                style={{
+                  background: 'var(--bg2)',
+                  borderRadius: '18px',
+                  overflow: 'hidden',
+                  border: isExpanded ? '1px solid var(--border2)' : '1px solid var(--border)',
+                  transition: 'border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  gridColumn: isExpanded ? '1 / -1' : 'auto',
+                }}
+              >
+                {/* Color stripe — start side */}
+                <div style={{
+                  position: 'absolute', insetInlineStart: 0, top: 0, bottom: 0, width: '3px',
+                  background: `linear-gradient(180deg, ${color}, ${color}55)`,
+                  opacity: hasData ? 0.85 : 0.35,
+                }} />
+
+                {/* Soft glow when expanded */}
+                {isExpanded && (
+                  <div style={{
+                    position: 'absolute', top: '-40px', insetInlineStart: '-30px',
+                    width: '180px', height: '180px',
+                    background: `radial-gradient(circle, ${wrColor}22, transparent 70%)`,
+                    pointerEvents: 'none',
+                  }} />
+                )}
+
+                {/* Body */}
+                <div className="strat-body" style={{ padding: '22px 24px 18px', position: 'relative' }}>
+
+                  {/* Top row — name + index badge */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '22px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="strat-name" style={{
+                        fontSize: '17px', fontWeight: '700', color: 'var(--text)',
+                        letterSpacing: '-0.01em', lineHeight: 1.3,
+                        overflow: 'hidden', display: '-webkit-box',
+                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                      }}>{s.name}</div>
+                      {s.plan && !isExpanded && (
+                        <div className="strat-plan-preview" style={{
+                          fontSize: '12px', color: 'var(--text3)', marginTop: '4px',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>{s.plan}</div>
+                      )}
+                    </div>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
                     }}>
                       <span style={{
-                        fontSize: '17px', fontWeight: '800', color,
-                        fontFamily: "'Heebo', sans-serif", letterSpacing: '-0.03em',
-                        lineHeight: 1,
-                      }}>#{sIdx + 1}</span>
+                        fontSize: '11px', fontWeight: '800', color: 'var(--text3)',
+                        background: 'var(--bg3)', border: '1px solid var(--border)',
+                        padding: '5px 9px', borderRadius: '8px',
+                        letterSpacing: '0.04em', fontFamily: 'Heebo, sans-serif',
+                      }}>{String(sIdx + 1).padStart(2, '0')}</span>
                     </div>
                   </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ marginBottom: '3px' }}>
-                      <span className="strat-name" style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)' }}>{s.name}</span>
-                    </div>
-                    {s.plan && (
-                      <div className="strat-plan-preview" style={{ fontSize: '13px', color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
-                        {s.plan}
+                  {/* Hero — win rate label + big number */}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '6px' }}>
+                        {language === 'he' ? 'אחוז הצלחה' : 'Win rate'}
                       </div>
-                    )}
+                      <div dir="ltr" style={{
+                        fontSize: '38px', fontWeight: '800', letterSpacing: '-0.03em',
+                        color: wrColor, lineHeight: 1,
+                        fontFamily: 'Heebo, sans-serif',
+                      }}>
+                        {hasData ? `${wr.toFixed(1)}%` : '—'}
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'end' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '6px' }}>
+                        {language === 'he' ? 'טריידים' : 'Trades'}
+                      </div>
+                      <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text)', lineHeight: 1, fontFamily: 'Heebo, sans-serif' }}>
+                        {stats.totalTrades}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Stats preview — always visible (shows '—' until stats load) */}
-                  {!isExpanded && (
-                    <div className="strat-preview-stats" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '700', color: !strategyStats[s.id] || stats.totalTrades === 0 ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444' }}>
-                          {!strategyStats[s.id] || stats.totalTrades === 0 ? '—' : `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                        </div>
-                        <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>P&L</div>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '700', color: !strategyStats[s.id] || stats.totalTrades === 0 ? 'var(--text3)' : 'var(--text)' }}>
-                          {!strategyStats[s.id] || stats.totalTrades === 0 ? '—' : `${stats.winRate.toFixed(0)}%`}
-                        </div>
-                        <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600' }}>WIN</div>
-                      </div>
-                    </div>
-                  )}
+                  {/* Segmented progress */}
+                  <div style={{ display: 'flex', gap: '3px', height: '7px', marginBottom: '14px' }}>
+                    {Array.from({ length: totalSegments }).map((_, i) => {
+                      const filled = i < filledSegments
+                      return (
+                        <div key={i} style={{
+                          flex: 1,
+                          borderRadius: '2px',
+                          background: filled
+                            ? `linear-gradient(180deg, ${wrColor}, ${wrColor}b0)`
+                            : 'rgba(255,255,255,0.04)',
+                          boxShadow: filled ? `0 0 6px ${wrColor}55` : 'none',
+                          transition: 'background 0.4s ease',
+                        }} />
+                      )
+                    })}
+                  </div>
 
+                  {/* W / L row */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', fontWeight: '700', marginBottom: '18px', fontFamily: 'Heebo, sans-serif' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#22c55e' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e88' }} />
+                      {stats.wins} W
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#ef4444' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef444488' }} />
+                      {stats.losses} L
+                    </span>
+                  </div>
+
+                  {/* Footer — avg / total / chevron */}
                   <div style={{
-                    width: '32px', height: '32px', borderRadius: '10px',
-                    background: isExpanded ? `${color}12` : 'var(--bg3)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.2s ease', flexShrink: 0,
+                    borderTop: '1px solid var(--border)',
+                    paddingTop: '14px',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr auto',
+                    alignItems: 'center', gap: '12px',
                   }}>
-                    <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={18} color={isExpanded ? color : 'var(--text3)'} />
+                    <div>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+                        {language === 'he' ? 'ממוצע' : 'Avg'}
+                      </div>
+                      <div dir="ltr" style={{
+                        fontSize: '15px', fontWeight: '800',
+                        color: !hasData ? 'var(--text3)' : stats.avgPnl >= 0 ? '#22c55e' : '#ef4444',
+                        lineHeight: 1,
+                      }}>
+                        {!hasData ? '—' : `${stats.avgPnl >= 0 ? '+' : '-'}$${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+                        {language === 'he' ? 'סה״כ' : 'Total'}
+                      </div>
+                      <div dir="ltr" style={{
+                        fontSize: '15px', fontWeight: '800',
+                        color: !hasData ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444',
+                        lineHeight: 1,
+                      }}>
+                        {!hasData ? '—' : `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                      </div>
+                    </div>
+                    <div style={{
+                      width: '30px', height: '30px', borderRadius: '9px',
+                      background: isExpanded ? `${wrColor}1a` : 'var(--bg3)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'background 0.2s ease, transform 0.25s ease',
+                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }}>
+                      <Icon name="expand_more" size={17} color={isExpanded ? wrColor : 'var(--text3)'} />
+                    </div>
                   </div>
                 </div>
 

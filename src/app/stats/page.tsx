@@ -10,7 +10,7 @@ import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
 import { format, getDaysInMonth } from 'date-fns'
 
 const ACCENT = '#0f8d63'
@@ -272,26 +272,39 @@ export default function StatsPage() {
         {/* Chart */}
         <div style={{ minHeight: '180px', padding: '12px 0 0 0' }}>
           {equityCurve.length > 0 ? (
-            <ResponsiveContainer width="100%" height={210}>
-              <AreaChart data={equityCurve} margin={{ top: 10, right: 24, left: 8, bottom: 16 }}>
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={equityCurve} margin={{ top: 16, right: 24, left: 8, bottom: 16 }}>
                 <defs>
                   <linearGradient id="eqGradGreenStats" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0f8d63" stopOpacity={0.25} />
-                    <stop offset="50%" stopColor="#0f8d63" stopOpacity={0.08} />
+                    <stop offset="0%" stopColor="#0f8d63" stopOpacity={0.45} />
+                    <stop offset="55%" stopColor="#0f8d63" stopOpacity={0.14} />
                     <stop offset="100%" stopColor="#0f8d63" stopOpacity={0} />
                   </linearGradient>
                 </defs>
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `$${v}`} dx={-4} padding={{ top: 10, bottom: 10 }} />
+                <YAxis
+                  tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }}
+                  axisLine={false} tickLine={false}
+                  width={56}
+                  dx={-4}
+                  padding={{ top: 14, bottom: 10 }}
+                  tickFormatter={(v: number) => {
+                    const a = Math.abs(v)
+                    if (a >= 1000) return `${v < 0 ? '-' : ''}$${(a / 1000).toFixed(a >= 10000 ? 0 : 1).replace(/\.0$/, '')}k`
+                    return `${v < 0 ? '-' : ''}$${a}`
+                  }}
+                />
+                <ReferenceLine y={0} stroke="rgba(255,255,255,0.18)" strokeDasharray="4 4" />
                 <Tooltip
-                  cursor={{ stroke: 'rgba(15,141,99,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  cursor={{ stroke: 'rgba(15,141,99,0.35)', strokeWidth: 1, strokeDasharray: '4 4' }}
                   content={({ active, payload, label }: any) => {
                     if (!active || !payload?.length) return null
                     const val = payload[0].value
                     return (
-                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', padding: '10px 14px' }}>
+                      <div style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.25)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', padding: '10px 14px' }}>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginBottom: '4px' }}>{label}</div>
-                        <div style={{ color: val < 0 ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
+                        <div dir="ltr" style={{ color: val < 0 ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
                       </div>
                     )
@@ -382,7 +395,7 @@ export default function StatsPage() {
                       {isHover && (
                         <div style={{
                           position: 'absolute', bottom: has ? `calc(${Math.max(wr, 1.5)}% + 12px)` : '20px',
-                          insetInlineStart: '50%', transform: 'translateX(-50%)',
+                          left: '50%', transform: 'translateX(-50%)',
                           background: '#0f1117', border: `1px solid ${has ? color : 'var(--border)'}`,
                           borderRadius: '12px', padding: '12px 16px', minWidth: '170px',
                           boxShadow: '0 12px 36px rgba(0,0,0,0.55)', zIndex: 10,
