@@ -24,11 +24,7 @@ export default function StatsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const [capturing, setCapturing] = useState(false)
-  const [selectedDow, setSelectedDow] = useState<number>(() => {
-    // Market is closed on Sat (6) and Sun (0) — default to Monday on weekends.
-    const today = new Date().getDay()
-    return today === 0 || today === 6 ? 1 : today
-  })
+  const [hoverDow, setHoverDow] = useState<number | null>(null)
   const calendarRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
 
@@ -131,13 +127,8 @@ export default function StatsPage() {
   if (dowsWithData.length > 0) {
     bestDow = dowsWithData.reduce((a, b) => dowWinRate(a) >= dowWinRate(b) ? a : b)
     worstDow = dowsWithData.reduce((a, b) => dowWinRate(a) <= dowWinRate(b) ? a : b)
-    if (bestDow === worstDow) worstDow = -1 // only one day with data — no comparison
+    if (bestDow === worstDow) worstDow = -1
   }
-  const sel = byDow[selectedDow]
-  const selWinRate = dowWinRate(selectedDow)
-  const selPnlPos = sel.pnl >= 0
-  const overallWinRate = winRate
-  const diffFromOverall = selWinRate - overallWinRate
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
@@ -150,6 +141,13 @@ export default function StatsPage() {
         </div>
       </div>
       <div style={{ fontSize: '25px', fontWeight: '700', color, letterSpacing: '-0.02em' }}>{value}</div>
+    </div>
+  )
+
+  const TooltipRow = ({ label, value, color }: { label: string; value: string; color: string }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', padding: '3px 0' }}>
+      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)' }}>{label}</span>
+      <span dir="ltr" style={{ fontSize: '13px', fontWeight: '800', color }}>{value}</span>
     </div>
   )
 
@@ -313,12 +311,12 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* ── Win rate by day of week ── */}
-      <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', marginBottom: '16px', position: 'relative', overflow: 'hidden' }}>
+      {/* ── Win rate by day of week — bar chart ── */}
+      <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', marginBottom: '16px', position: 'relative', overflow: 'visible' }}>
         <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '15%', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(15,141,99,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', position: 'relative', zIndex: 1 }}>
           <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Icon name="event_available" size={22} color="#0f8d63" />
           </div>
@@ -327,196 +325,107 @@ export default function StatsPage() {
               {language === 'he' ? 'אחוזי הצלחה לפי יום' : 'Win rate by day'}
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '3px', fontWeight: '500' }}>
-              {language === 'he' ? 'לחץ על יום כדי לראות פירוט' : 'Tap a day for details'}
+              {language === 'he' ? 'העבר עכבר על עמודה לפירוט' : 'Hover a bar for details'}
             </div>
           </div>
         </div>
 
-        {/* Day chips row — Mon–Fri only (markets closed on weekends) */}
-        <div className="dow-chips" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-          {TRADING_DOWS.map((i) => {
-            const label = DAY_NAMES[i]
-            const isSelected = selectedDow === i
-            const isBest = bestDow === i
-            const isWorst = worstDow === i
-            const has = byDow[i].count > 0
-            const wr = dowWinRate(i)
-            // Selected always wins the styling — neutral dark "pressed" look
-            // so the selection state is unmistakable and doesn't get
-            // confused with the green/red performance signal of best/worst.
-            let bg: string, border: string, valueColor: string, labelColor: string
-            if (isSelected) {
-              bg = 'var(--bg4)'
-              border = '1.5px solid rgba(255,255,255,0.45)'
-              valueColor = '#fff'
-              labelColor = 'rgba(255,255,255,0.65)'
-            } else if (isBest && has) {
-              bg = 'rgba(34,197,94,0.06)'
-              border = '1px solid rgba(34,197,94,0.35)'
-              valueColor = '#22c55e'
-              labelColor = 'var(--text3)'
-            } else if (isWorst && has) {
-              bg = 'rgba(239,68,68,0.06)'
-              border = '1px solid rgba(239,68,68,0.35)'
-              valueColor = '#ef4444'
-              labelColor = 'var(--text3)'
-            } else {
-              bg = 'var(--bg3)'
-              border = '1px solid var(--border)'
-              valueColor = has ? 'var(--text)' : 'var(--text3)'
-              labelColor = 'var(--text3)'
-            }
-            return (
-              <button
-                key={i}
-                onClick={() => setSelectedDow(i)}
-                disabled={!has}
-                style={{
-                  background: bg, border, borderRadius: '12px',
-                  padding: '12px 4px',
-                  cursor: has ? 'pointer' : 'not-allowed',
-                  opacity: has ? 1 : 0.45,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                  fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
-                  position: 'relative',
-                  boxShadow: isSelected ? '0 6px 18px rgba(0,0,0,0.35)' : 'none',
-                }}
-              >
-                <span style={{ fontSize: '11px', fontWeight: '700', color: labelColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {label}
-                </span>
-                <span style={{ fontSize: '15px', fontWeight: '900', color: valueColor, lineHeight: 1 }}>
-                  {has ? `${wr.toFixed(0)}%` : '—'}
-                </span>
-                {isBest && has && (
-                  <span style={{ position: 'absolute', top: '-7px', insetInlineEnd: '-4px', fontSize: '9px', fontWeight: '900', background: '#22c55e', color: '#fff', padding: '2px 5px', borderRadius: '6px', letterSpacing: '0.05em' }}>
-                    {language === 'he' ? 'הכי חזק' : 'BEST'}
-                  </span>
-                )}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Selected day detail card */}
-        <div style={{
-          background: sel.count === 0 ? 'var(--bg3)' : selPnlPos ? 'rgba(34,197,94,0.04)' : 'rgba(239,68,68,0.04)',
-          border: `1px solid ${sel.count === 0 ? 'var(--border)' : selPnlPos ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
-          borderRadius: '14px',
-          padding: '18px 20px',
-          position: 'relative', zIndex: 1,
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sel.count === 0 ? 0 : '14px', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)' }}>
-              {language === 'he' ? `יום ${DAY_NAMES_LONG[selectedDow]}` : DAY_NAMES_LONG[selectedDow]}
+        {/* Chart */}
+        <div style={{ position: 'relative', zIndex: 1 }} dir={language === 'he' ? 'rtl' : 'ltr'}>
+          <div style={{ position: 'relative', height: '260px', display: 'flex' }}>
+            {/* Y axis labels */}
+            <div style={{ width: '40px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: '4px', fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+              {[100, 75, 50, 25, 0].map(v => (
+                <div key={v} style={{ textAlign: 'end', paddingInlineEnd: '8px' }}>{v}%</div>
+              ))}
             </div>
-            {sel.count > 0 && (
-              <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '700' }}>
-                {sel.count} {language === 'he' ? (sel.count === 1 ? 'עסקה' : 'עסקאות') : (sel.count === 1 ? 'trade' : 'trades')}
-              </div>
-            )}
-          </div>
 
-          {sel.count === 0 ? (
-            <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>
-              {language === 'he' ? 'לא ביצעת עסקאות ביום זה' : 'No trades on this day yet'}
-            </div>
-          ) : (
-            <>
-              {/* Stat row */}
-              <div className="dow-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '14px' }}>
-                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                    {language === 'he' ? 'אחוז זכייה' : 'Win rate'}
-                  </div>
-                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#0f8d63' }}>{selWinRate.toFixed(0)}%</div>
-                </div>
-                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                    {language === 'he' ? 'ניצחונות' : 'Wins'}
-                  </div>
-                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#22c55e' }}>{sel.wins}</div>
-                </div>
-                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                    {language === 'he' ? 'הפסדים' : 'Losses'}
-                  </div>
-                  <div style={{ fontSize: '19px', fontWeight: '900', color: '#ef4444' }}>{sel.losses}</div>
-                </div>
-                <div style={{ background: 'var(--bg2)', borderRadius: '10px', padding: '10px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>P&L</div>
-                  <div dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: selPnlPos ? '#22c55e' : '#ef4444' }}>
-                    {selPnlPos ? '+' : '-'}${Math.abs(sel.pnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </div>
-                </div>
-              </div>
+            {/* Plot area */}
+            <div style={{ flex: 1, position: 'relative', borderInlineStart: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+              {/* Grid lines */}
+              {[25, 50, 75, 100].map(p => (
+                <div key={p} style={{ position: 'absolute', insetInlineStart: 0, insetInlineEnd: 0, bottom: `${p}%`, height: '1px', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+              ))}
 
-              {/* Comparison bar — selected day vs overall avg
-                  Smooth red→neutral→green spectrum. A subtle vertical line
-                  with an 'AVG' label marks where the overall average sits;
-                  a colored dot marks the selected day's win rate. */}
-              {/* In Hebrew (RTL) the spectrum is mirrored — green on the
-                  visual left, red on the visual right — so the high-win-rate
-                  side aligns with the start-of-reading direction. The
-                  gradient stops are reversed and 'right' is used in place of
-                  'left' for marker positions. */}
-              {(() => {
-                const rtl = language === 'he'
-                const startSide = rtl ? 'right' : 'left'
-                const gradient = rtl
-                  ? 'linear-gradient(90deg, rgba(34,197,94,0.75) 0%, rgba(34,197,94,0.18) 32%, rgba(255,255,255,0.02) 50%, rgba(239,68,68,0.18) 68%, rgba(239,68,68,0.75) 100%)'
-                  : 'linear-gradient(90deg, rgba(239,68,68,0.75) 0%, rgba(239,68,68,0.18) 32%, rgba(255,255,255,0.02) 50%, rgba(34,197,94,0.18) 68%, rgba(34,197,94,0.75) 100%)'
-                const dotTransform = rtl ? 'translate(50%, -50%)' : 'translate(-50%, -50%)'
-                const labelTransform = rtl ? 'translateX(50%)' : 'translateX(-50%)'
-                return (
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }} dir={rtl ? 'rtl' : 'ltr'}>
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      {rtl ? 'בהשוואה לממוצע הכללי' : 'Vs overall average'}
-                    </span>
-                    <span style={{ fontSize: '13px', fontWeight: '800', color: diffFromOverall >= 0 ? '#22c55e' : '#ef4444' }} dir="ltr">
-                      {diffFromOverall >= 0 ? '+' : ''}{diffFromOverall.toFixed(1)}%
-                    </span>
-                  </div>
+              {/* Bars */}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', gap: '14px', paddingInline: '12px', paddingBottom: '0' }}>
+                {[0, 1, 2, 3, 4, 5, 6].map(i => {
+                  const b = byDow[i]
+                  const wr = dowWinRate(i)
+                  const has = b.count > 0
+                  const isHover = hoverDow === i
+                  let color = '#3f3f46'
+                  if (has) {
+                    if (i === bestDow) color = '#22c55e'
+                    else if (i === worstDow) color = '#ef4444'
+                    else color = ACCENT
+                  }
+                  return (
+                    <div
+                      key={i}
+                      onMouseEnter={() => setHoverDow(i)}
+                      onMouseLeave={() => setHoverDow(null)}
+                      style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', position: 'relative', cursor: has ? 'pointer' : 'default' }}
+                    >
+                      <div style={{
+                        width: '100%', maxWidth: '52px',
+                        height: has ? `${Math.max(wr, 1.5)}%` : '3px',
+                        background: has ? `linear-gradient(180deg, ${color} 0%, ${color}b8 100%)` : 'var(--bg3)',
+                        borderRadius: '8px 8px 0 0',
+                        border: has ? `1px solid ${color}` : '1px solid var(--border)',
+                        boxShadow: isHover && has ? `0 0 0 2px ${color}33, 0 10px 30px ${color}55` : 'none',
+                        transition: 'box-shadow 0.18s ease, transform 0.18s ease',
+                        transform: isHover && has ? 'translateY(-2px)' : 'none',
+                      }} />
 
-                  <div style={{ position: 'relative', height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.03)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.45)' }}>
-                    {/* Spectrum gradient — direction-aware */}
-                    <div style={{
-                      position: 'absolute', inset: 0, borderRadius: '999px',
-                      background: gradient,
-                    }} />
-                    {/* Overall-average marker — thin vertical line */}
-                    <div style={{
-                      position: 'absolute', top: '-5px', bottom: '-5px',
-                      [startSide]: `${overallWinRate}%`, width: '1.5px',
-                      background: 'rgba(255,255,255,0.55)', borderRadius: '1px',
-                    }} />
-                    {/* Selected-day dot */}
-                    <div style={{
-                      position: 'absolute', top: '50%',
-                      [startSide]: `${Math.min(100, Math.max(0, selWinRate))}%`,
-                      transform: dotTransform,
-                      width: '14px', height: '14px', borderRadius: '50%',
-                      background: diffFromOverall >= 0 ? '#22c55e' : '#ef4444',
-                      border: '2.5px solid var(--bg2)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.55)',
-                      zIndex: 2,
-                    }} />
-                  </div>
-
-                  {/* AVG label centered under the marker */}
-                  <div style={{ position: 'relative', height: '14px', marginTop: '8px' }}>
-                    <div style={{ position: 'absolute', [startSide]: `${overallWinRate}%`, transform: labelTransform, whiteSpace: 'nowrap' }}>
-                      <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text2)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                        {rtl ? `ממוצע ${overallWinRate.toFixed(0)}%` : `AVG ${overallWinRate.toFixed(0)}%`}
-                      </div>
+                      {/* Tooltip */}
+                      {isHover && (
+                        <div style={{
+                          position: 'absolute', bottom: has ? `calc(${Math.max(wr, 1.5)}% + 12px)` : '20px',
+                          insetInlineStart: '50%', transform: 'translateX(-50%)',
+                          background: '#0f1117', border: `1px solid ${has ? color : 'var(--border)'}`,
+                          borderRadius: '12px', padding: '12px 16px', minWidth: '170px',
+                          boxShadow: '0 12px 36px rgba(0,0,0,0.55)', zIndex: 10,
+                          pointerEvents: 'none',
+                          fontFamily: 'Heebo, sans-serif',
+                        }}
+                          dir={language === 'he' ? 'rtl' : 'ltr'}
+                        >
+                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px', textAlign: 'start' }}>
+                            {DAY_NAMES_LONG[i]}
+                          </div>
+                          {!has ? (
+                            <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
+                              {language === 'he' ? 'אין עסקאות ביום זה' : 'No trades'}
+                            </div>
+                          ) : (
+                            <>
+                              <TooltipRow label={language === 'he' ? 'עסקאות' : 'Trades'} value={String(b.count)} color="var(--text)" />
+                              <TooltipRow label={language === 'he' ? 'ניצחונות' : 'Wins'} value={String(b.wins)} color="#22c55e" />
+                              <TooltipRow label={language === 'he' ? 'הפסדים' : 'Losses'} value={String(b.losses)} color="#ef4444" />
+                              <div style={{ height: '1px', background: 'var(--border)', margin: '6px 0' }} />
+                              <TooltipRow label={language === 'he' ? 'אחוז זכייה' : 'Win rate'} value={`${wr.toFixed(0)}%`} color={color} />
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* X axis labels */}
+          <div style={{ display: 'flex', paddingInlineStart: '40px', marginTop: '10px' }}>
+            <div style={{ flex: 1, display: 'flex', gap: '14px', paddingInline: '12px' }}>
+              {[0, 1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '12px', fontWeight: '700', color: hoverDow === i ? 'var(--text)' : 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'color 0.15s' }}>
+                  {DAY_NAMES_LONG[i]}
                 </div>
-                )
-              })()}
-            </>
-          )}
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
