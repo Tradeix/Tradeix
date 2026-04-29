@@ -297,6 +297,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     { href: '/trades', icon: 'swap_horiz', label: tr.allTrades },
     ...(isPro ? [{ href: '/strategies', icon: 'psychology', label: tr.strategies }] : []),
     ...(isPro ? [{ href: '/stats', icon: 'monitoring', label: tr.statistics }] : []),
+    { href: '/trader-locker', icon: 'lock', label: language === 'he' ? 'TraderLocker' : 'TraderLocker' },
   ]
   const BOTTOM_NAV = [
     { href: '/gallery', icon: 'photo_library', label: language === 'he' ? 'גלריה' : 'Gallery' },
