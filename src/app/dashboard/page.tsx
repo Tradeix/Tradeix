@@ -399,7 +399,7 @@ export default function DashboardPage() {
         </div>
       </div>
       {stats.totalTrades === 0 ? (
-        <div style={{ ...card, padding: '48px 24px', textAlign: 'center', minHeight: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ ...card, padding: '48px 24px', textAlign: 'center', flex: 1, minHeight: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="receipt_long" size={32} color="var(--bg4)" style={{ display: 'block', margin: '0 auto 8px' }} />
           <p style={{ fontSize: '14px', color: 'var(--text3)', margin: 0 }}>
             {language === 'he' ? 'אין עסקאות קיימות במערכת לקריאת נתונים' : 'No trades to read data from'}

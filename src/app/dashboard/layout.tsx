@@ -625,14 +625,34 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
            Pure CSS — no JS state, so it can't trigger React re-renders that
            previously caused content jitter on Settings/Archive pages. The
            main-content margin is pinned to 72px so the expanded sidebar
-           overlays content rather than pushing it. */
+           overlays content rather than pushing it.
+
+           The icon/logo positions stay pinned across collapsed↔expanded
+           states (same padding, same justify-content), and labels stay
+           mounted in the DOM. The slide-in is produced by the sidebar's
+           own width transition revealing the labels through overflow:hidden,
+           combined with an opacity fade — no display:none↔inline pop. */
         @media (min-width: 1025px) {
           .sidebar-el { width: 72px !important; }
-          .sidebar-el .sidebar-label,
-          .sidebar-el .sidebar-wordmark { display: none !important; }
           .sidebar-el .sidebar-link {
-            justify-content: center !important;
-            padding: 11px 12px !important;
+            justify-content: flex-start !important;
+            padding: 11px 18px !important;
+          }
+          .sidebar-el .sidebar-top {
+            justify-content: flex-start !important;
+            padding-inline-start: 18px !important;
+            padding-inline-end: 18px !important;
+          }
+          .sidebar-el .sidebar-label,
+          .sidebar-el .sidebar-wordmark {
+            opacity: 0;
+            white-space: nowrap;
+            transform: translateX(-8px);
+            transition: opacity 0.14s ease, transform 0.14s ease;
+          }
+          [dir="rtl"] .sidebar-el .sidebar-label,
+          [dir="rtl"] .sidebar-el .sidebar-wordmark {
+            transform: translateX(8px);
           }
           .sidebar-el .sidebar-link[data-active="1"] {
             background: rgba(15,141,99,0.12) !important;
@@ -641,31 +661,21 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             filter: drop-shadow(0 0 8px rgba(15,141,99,0.45));
           }
 
-          /* Hover: expand to 210px and show labels with a slide-in animation */
+          /* Hover: expand to 210px, then once the rail is essentially open
+             reveal the labels as a single unit with a small slide. The
+             opacity delay (0.22s) is set so the typewriter sweep of the
+             expanding right edge has already passed the labels — they
+             appear over a stationary, fully-uncovered position rather
+             than being painted letter-by-letter. */
           .sidebar-el:hover { width: 210px !important; box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
           [dir="rtl"] .sidebar-el:hover { box-shadow: -4px 0 24px rgba(0,0,0,0.5); }
           .sidebar-el:hover .sidebar-label,
           .sidebar-el:hover .sidebar-wordmark {
-            display: inline !important;
-            animation: sidebarLabelIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-          }
-          [dir="rtl"] .sidebar-el:hover .sidebar-label,
-          [dir="rtl"] .sidebar-el:hover .sidebar-wordmark {
-            animation-name: sidebarLabelInRtl;
-          }
-        }
-        @keyframes sidebarLabelIn {
-          from { opacity: 0; transform: translateX(-14px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes sidebarLabelInRtl {
-          from { opacity: 0; transform: translateX(14px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @media (min-width: 1025px) {
-          .sidebar-el:hover .sidebar-link {
-            justify-content: flex-start !important;
-            padding: 11px 20px !important;
+            opacity: 1;
+            transform: translateX(0);
+            transition:
+              opacity 0.22s ease 0.22s,
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.20s;
           }
           .sidebar-el:hover .sidebar-link[data-active="1"] {
             background: var(--bg3) !important;
