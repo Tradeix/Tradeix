@@ -173,6 +173,24 @@ export default function TraderLockerPage() {
 
       {showForm && (
         <form onSubmit={submit} style={{ ...card, padding: '24px', marginBottom: '24px' }}>
+          {form.broker === 'tradovate' && (
+            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '20px', fontSize: '13px', color: 'var(--text2)', lineHeight: 1.7 }}>
+              <div style={{ fontWeight: '700', color: 'var(--text)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Icon name="info" size={14} color="#0f8d63" />
+                {isHe ? 'איפה משיגים את הפרטים?' : 'Where to get these'}
+              </div>
+              {isHe ? (
+                <>
+                  היכנס ל־<a href="https://trader.tradovate.com" target="_blank" rel="noopener" style={{ color: '#0f8d63', textDecoration: 'underline' }}>trader.tradovate.com</a> →
+                  Settings → <b>API Access</b> → Create New Application. תקבל מספר <b>CID</b> ומחרוזת <b>Secret</b>. בשדה <b>App ID</b> תכתוב סתם שם (כמו TradeIX). <b>שם משתמש וסיסמה</b> = אלה שמתחברים איתם לפלטפורמה.
+                </>
+              ) : (
+                <>
+                  Log in at <a href="https://trader.tradovate.com" target="_blank" rel="noopener" style={{ color: '#0f8d63', textDecoration: 'underline' }}>trader.tradovate.com</a> → Settings → <b>API Access</b> → Create New Application. You'll get a <b>CID</b> and <b>Secret</b>. <b>App ID</b> is just a label (e.g. "TradeIX"). <b>Username/password</b> are the same as your Tradovate login.
+                </>
+              )}
+            </div>
+          )}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
             <Field label={isHe ? 'ברוקר' : 'Broker'}>
               <select value={form.broker} onChange={e => setForm(f => ({ ...f, broker: e.target.value as BrokerType }))} style={inputStyle}>
@@ -183,21 +201,27 @@ export default function TraderLockerPage() {
                 ))}
               </select>
             </Field>
-            <Field label={isHe ? 'תווית חשבון' : 'Account label'}>
+            <Field label={isHe ? 'תווית חשבון' : 'Account label'} help={isHe ? 'סתם תווית פנימית כדי שתזהה את החשבון בקלות. לדוגמה: "Live 50K" או "FTMO Challenge".' : 'Just an internal label so you can recognize this account, e.g. "Live 50K" or "FTMO Challenge".'}>
               <input value={form.account_label} onChange={e => setForm(f => ({ ...f, account_label: e.target.value }))} placeholder={isHe ? 'לדוגמה: Live 50K' : 'e.g. Live 50K'} style={inputStyle} />
             </Field>
-            <Field label={isHe ? 'שם משתמש' : 'Username'}>
+            <Field label={isHe ? 'שם משתמש' : 'Username'} help={isHe ? 'שם המשתמש שאיתו אתה מתחבר לפלטפורמת הברוקר (לא האימייל בהכרח).' : 'The username you use to log into the broker platform (not necessarily your email).'}>
               <input required value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))} style={inputStyle} autoComplete="off" />
             </Field>
-            <Field label={isHe ? 'סיסמה' : 'Password'}>
+            <Field label={isHe ? 'סיסמה' : 'Password'} help={isHe ? 'הסיסמה לחשבון הברוקר. נשמרת מוצפנת AES-256-GCM צד־שרת ואף פעם לא חוזרת לדפדפן.' : 'Your broker account password. Stored AES-256-GCM encrypted server-side, never returned to the browser.'}>
               <input required type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} style={inputStyle} autoComplete="new-password" />
             </Field>
             {form.broker === 'tradovate' && (
               <>
-                <Field label="App ID"><input value={form.appId} onChange={e => setForm(f => ({ ...f, appId: e.target.value }))} placeholder="TradeIX" style={inputStyle} /></Field>
-                <Field label="CID"><input value={form.cid} onChange={e => setForm(f => ({ ...f, cid: e.target.value }))} style={inputStyle} /></Field>
-                <Field label="Secret"><input type="password" value={form.secret} onChange={e => setForm(f => ({ ...f, secret: e.target.value }))} style={inputStyle} autoComplete="new-password" /></Field>
-                <Field label={isHe ? 'סביבה' : 'Environment'}>
+                <Field label="App ID" help={isHe ? 'תווית של האפליקציה שמתחברת ל־API. אפשר פשוט לכתוב TradeIX.' : 'A label for the app connecting to the API. Just enter "TradeIX".'}>
+                  <input value={form.appId} onChange={e => setForm(f => ({ ...f, appId: e.target.value }))} placeholder="TradeIX" style={inputStyle} />
+                </Field>
+                <Field label="CID" help={isHe ? 'Client ID — מזהה מספרי שמקבלים מ־Tradovate. בכניסה ל־trader.tradovate.com → Settings → API Access → צור אפליקציה חדשה.' : 'Client ID — a numeric ID from Tradovate. Get it at trader.tradovate.com → Settings → API Access → create application.'}>
+                  <input value={form.cid} onChange={e => setForm(f => ({ ...f, cid: e.target.value }))} style={inputStyle} />
+                </Field>
+                <Field label="Secret" help={isHe ? 'סוד הצפנה שמתקבל יחד עם ה־CID. Tradovate מציג אותו פעם אחת בלבד — אם איבדת אותו תצטרך ליצור אפליקציה חדשה.' : 'A secret string issued alongside the CID. Tradovate shows it only once — if lost, create a new application.'}>
+                  <input type="password" value={form.secret} onChange={e => setForm(f => ({ ...f, secret: e.target.value }))} style={inputStyle} autoComplete="new-password" />
+                </Field>
+                <Field label={isHe ? 'סביבה' : 'Environment'} help={isHe ? 'Demo = חשבון התנסות (חינמי). Live = חשבון אמיתי. תתחיל מ־Demo.' : 'Demo = paper account. Live = real money. Start with Demo.'}>
                   <select value={form.environment} onChange={e => setForm(f => ({ ...f, environment: e.target.value as any }))} style={inputStyle}>
                     <option value="demo">Demo</option>
                     <option value="live">Live</option>
@@ -206,15 +230,19 @@ export default function TraderLockerPage() {
               </>
             )}
             {(form.broker === 'mt5' || form.broker === 'ftmo') && (
-              <Field label="Server"><input value={form.server} onChange={e => setForm(f => ({ ...f, server: e.target.value }))} style={inputStyle} /></Field>
+              <Field label="Server" help={isHe ? 'שם שרת ה־MT5 שהברוקר נתן לך (לדוגמה: "FTMO-Demo2" או "ICMarkets-Live04").' : 'The MT5 server name your broker assigned (e.g. "FTMO-Demo2" or "ICMarkets-Live04").'}>
+                <input value={form.server} onChange={e => setForm(f => ({ ...f, server: e.target.value }))} style={inputStyle} />
+              </Field>
             )}
             {form.broker === 'rithmic' && (
-              <Field label="System"><input value={form.system} onChange={e => setForm(f => ({ ...f, system: e.target.value }))} style={inputStyle} /></Field>
+              <Field label="System" help={isHe ? 'שם המערכת ב־Rithmic (לדוגמה: "Rithmic 01" או "Rithmic Paper Trading").' : 'Rithmic system name (e.g. "Rithmic 01" or "Rithmic Paper Trading").'}>
+                <input value={form.system} onChange={e => setForm(f => ({ ...f, system: e.target.value }))} style={inputStyle} />
+              </Field>
             )}
-            <Field label={isHe ? 'לימיט הפסד יומי ($)' : 'Daily loss limit ($)'}>
+            <Field label={isHe ? 'לימיט הפסד יומי ($)' : 'Daily loss limit ($)'} help={isHe ? 'אם ה־P&L היומי שלך בחשבון הברוקר ירד מתחת לסכום הזה, המערכת תנעל את החשבון ותבטל פקודות פתוחות. השאר 0 כדי לכבות.' : 'If your daily realized P&L drops below this, the system locks the account and cancels open orders. Leave 0 to disable.'}>
               <input type="number" min="0" value={form.daily_loss_limit} onChange={e => setForm(f => ({ ...f, daily_loss_limit: e.target.value }))} placeholder="500" style={inputStyle} />
             </Field>
-            <Field label={isHe ? 'לימיט הפסד לעסקה ($)' : 'Per-trade loss limit ($)'}>
+            <Field label={isHe ? 'לימיט הפסד לעסקה ($)' : 'Per-trade loss limit ($)'} help={isHe ? 'הפסד מקסימלי שאתה מוכן לקחת בעסקה בודדת. מוצג כתזכורת — לא נאכף אוטומטית בברוקר.' : 'Max loss you’re willing to take on a single trade. Used as a reminder; not enforced at broker level yet.'}>
               <input type="number" min="0" value={form.per_trade_loss_limit} onChange={e => setForm(f => ({ ...f, per_trade_loss_limit: e.target.value }))} placeholder="200" style={inputStyle} />
             </Field>
           </div>
@@ -324,11 +352,43 @@ const btnSecondary: React.CSSProperties = {
   cursor: 'pointer', fontFamily: 'Heebo, sans-serif',
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '600', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {label}
+        {help && (
+          <span className="tl-help" tabIndex={0} aria-label={help} style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '15px', height: '15px', borderRadius: '50%',
+            background: 'var(--bg3)', border: '1px solid var(--border)',
+            color: 'var(--text3)', fontSize: '10px', fontWeight: '700',
+            cursor: 'help', userSelect: 'none', position: 'relative',
+            textTransform: 'none', letterSpacing: 0,
+          }}>
+            ?
+            <span className="tl-tip" role="tooltip" style={{
+              position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#0f1117', color: 'var(--text)',
+              border: '1px solid var(--border)', borderRadius: '8px',
+              padding: '8px 12px', fontSize: '12px', fontWeight: '500',
+              lineHeight: 1.5, letterSpacing: 'normal', textTransform: 'none',
+              width: 'max-content', maxWidth: '260px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.4)', zIndex: 30,
+              opacity: 0, pointerEvents: 'none',
+              transition: 'opacity 0.15s ease',
+              whiteSpace: 'normal', textAlign: 'start',
+            }}>{help}</span>
+          </span>
+        )}
+      </span>
       {children}
+      <style>{`
+        .tl-help:hover .tl-tip,
+        .tl-help:focus .tl-tip { opacity: 1 !important; }
+        .tl-help:hover { color: var(--text); border-color: #0f8d63; }
+      `}</style>
     </label>
   )
 }
