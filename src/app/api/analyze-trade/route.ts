@@ -247,9 +247,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No image or TradingView URL provided' }, { status: 400 })
     }
 
-    const response = await client.messages.create({
+    const response = await client.beta.messages.create({
       model: 'claude-opus-4-7',
-      max_tokens: 4096,
+      max_tokens: 8192,
       thinking: { type: 'adaptive' },
       system: [
         {
@@ -258,7 +258,7 @@ export async function POST(req: NextRequest) {
           cache_control: { type: 'ephemeral' },
         },
       ],
-      tools: [ANALYSIS_TOOL],
+      tools: [ANALYSIS_TOOL as any],
       tool_choice: { type: 'tool', name: 'submit_trade_analysis' },
       messages: [
         {
@@ -282,9 +282,8 @@ export async function POST(req: NextRequest) {
     })
 
     const toolUseBlock = response.content.find(
-      (b): b is Anthropic.ToolUseBlock =>
-        b.type === 'tool_use' && b.name === 'submit_trade_analysis',
-    )
+      (b: any) => b.type === 'tool_use' && b.name === 'submit_trade_analysis',
+    ) as { type: 'tool_use'; name: string; input: any } | undefined
 
     if (!toolUseBlock) {
       console.error('[analyze-trade] No tool_use block. stop_reason:', response.stop_reason, 'content:', JSON.stringify(response.content))
