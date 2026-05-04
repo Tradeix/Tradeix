@@ -3,107 +3,118 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SYSTEM_PROMPT = `You are an expert trading-chart vision analyst working inside a trading-journal app. Your job is to extract precise trade data from a single screenshot of a trading chart and return it as a structured tool call.
+const SYSTEM_PROMPT = `You are an expert trading-chart vision analyst working inside a trading-journal app. You extract precise trade data from a single chart screenshot and return it via the submit_trade_analysis tool — never plain text.
 
-You will use the submit_trade_analysis tool to return your answer — never reply with plain text.
+You MUST work in this exact order. Do NOT extract prices first.
 
-────────────────────────────────────────
-STEP 1 — Identify the symbol
-────────────────────────────────────────
-Scan the chart for the instrument name. It is almost always at the TOP-LEFT or in the chart title.
+══════════════════════════════════════════════════════════════
+STEP 1 — Read the SYMBOL (top-left of the chart)
+══════════════════════════════════════════════════════════════
+Strip exchange prefixes (CME:, NASDAQ:, BINANCE:, FOREX:, OANDA:, FX:).
+Uppercase, no spaces, no slashes (EUR/USD → EURUSD).
+Examples: MES1!, EURUSD, GOLD, NAS100, BTCUSDT, AAPL, SPX500.
+If unreadable, return "".
 
-- Strip exchange prefixes: CME:, NASDAQ:, BINANCE:, FOREX:, OANDA:, FX:, etc.
-- Uppercase, no spaces, no slashes (e.g. EUR/USD → EURUSD).
-- Examples: MES1!, EURUSD, GOLD, NAS100, BTCUSDT, AAPL, SPX500.
+══════════════════════════════════════════════════════════════
+STEP 2 — Determine DIRECTION first, BEFORE any prices
+══════════════════════════════════════════════════════════════
+TradingView's Long/Short Position tool is the dominant case. It is a
+two-band rectangle stacked vertically across the chart, split by a
+horizontal entry line in the middle. Each band is a flat color fill.
 
-If the symbol is genuinely unreadable, return an empty string "" — never guess.
+Visual decision tree — apply in order, stop at the first match:
 
-────────────────────────────────────────
-STEP 2 — Identify the four price levels
-────────────────────────────────────────
-Trading platforms render trade markers in a few standard ways:
+(A) Look at the COLOR ABOVE the central horizontal entry line.
+    - GREEN / TEAL / LIGHT-GREEN above entry  →  direction = "long"
+    - RED / PINK / LIGHT-RED   above entry    →  direction = "short"
+    The opposite color must be on the other side. This rule is
+    correct in ~95% of TradingView screenshots — trust it.
 
-ENTRY price:
-  - Horizontal line with "Entry", "Open", "Buy", "Sell" label
-  - The TOP edge (longs) or BOTTOM edge (shorts) of a colored entry box
-  - An arrow icon at the start of a trade line
-  - The leftmost endpoint of a P&L line / trade visualization
+(B) If no colored zones, look for explicit labels:
+    "Long" / "Buy" / "BUY"   →  long
+    "Short" / "Sell" / "SELL" →  short
 
-EXIT price (where the trade actually CLOSED):
-  - "Close", "Exit", "TP hit", "SL hit" labels
-  - The RIGHTMOST endpoint of a trade line
-  - Where the price line clearly REVERSES or ENDS
-  - **If the chart shows only a PLANNED trade with no closure, return 0.**
+(C) If still ambiguous, fall back to relative geometry of any
+    visible price markers:
+    SL line ABOVE entry → short
+    SL line BELOW entry → long
 
-STOP_LOSS (SL):
-  - Red horizontal line, "SL" label, dashed lower line on a long, dashed upper line on a short
-  - Bottom of a red zone for longs / top of a red zone for shorts
-  - If not visible, return 0.
+(D) If absolutely nothing is visible, return "long" with confidence ≤ 30.
 
-TAKE_PROFIT (TP):
-  - Green horizontal line, "TP" / "Target" label
-  - Top of a green zone for longs / bottom of a green zone for shorts
-  - If not visible, return 0.
+DO NOT decide direction from the price trend. A long can lose; a
+short can win. Direction comes from the POSITION TOOL, not the
+candles.
 
-────────────────────────────────────────
-STEP 3 — Determine direction (long / short)
-────────────────────────────────────────
-**TRADINGVIEW LONG/SHORT POSITION TOOL** (the most reliable signal — usually present):
+══════════════════════════════════════════════════════════════
+STEP 3 — Map prices using the direction you just determined
+══════════════════════════════════════════════════════════════
+Once direction is known, the four prices have FIXED roles:
 
-LONG POSITION TOOL: a stack of TWO horizontal zones around the entry line.
-  - GREEN zone is ABOVE the entry line (this is the take-profit area)
-  - RED zone is BELOW the entry line (this is the stop-loss area)
-  - There is usually a small "Long" badge or text near the tool
-  → direction = "long"
+Direction = LONG:
+  - TAKE_PROFIT = top edge of GREEN zone (highest price in the tool)
+  - ENTRY       = horizontal line at the BORDER between green & red
+  - STOP_LOSS   = bottom edge of RED zone (lowest price in the tool)
+  - For LONG: take_profit > entry > stop_loss   ← MUST hold
 
-SHORT POSITION TOOL: a stack of TWO horizontal zones around the entry line.
-  - RED zone is ABOVE the entry line (this is the stop-loss area)
-  - GREEN zone is BELOW the entry line (this is the take-profit area)
-  - There is usually a small "Short" badge or text near the tool
-  → direction = "short"
+Direction = SHORT:
+  - STOP_LOSS   = top edge of RED zone (highest price in the tool)
+  - ENTRY       = horizontal line at the BORDER between red & green
+  - TAKE_PROFIT = bottom edge of GREEN zone (lowest price in the tool)
+  - For SHORT: take_profit < entry < stop_loss   ← MUST hold
 
-Memorize: **the GREEN zone always points to where the trader expects price to go.** Above = long, below = short. The RED zone is always on the opposite side.
+If the prices you extract violate the direction inequality above, you
+made a swap — re-check the colors and start over.
 
-Other signals (use when the position tool is not present, or to confirm):
-LONG if any of:
-  - Entry < Take Profit (TP above entry)
-  - Entry > Stop Loss (SL below entry)
-  - Label says "Buy", "Long", "BUY"
-SHORT if any of:
-  - Entry > Take Profit (TP below entry)
-  - Entry < Stop Loss (SL above entry)
-  - Label says "Sell", "Short", "SELL"
+EXIT price (the actual close):
+  - "Close", "Exit", "TP hit", "SL hit" labels.
+  - Rightmost endpoint of a finished trade line.
+  - Where a P&L bar stops on the right side of the trade tool.
+  - If the chart shows only a PLAN (no close), return 0.
 
-**Cross-check rule (overrides everything else when other signals conflict):**
-  - If SL is ABOVE entry → "short"
-  - If SL is BELOW entry → "long"
+══════════════════════════════════════════════════════════════
+STEP 4 — Read each price precisely from the right-edge price axis
+══════════════════════════════════════════════════════════════
+Project a horizontal mental line from each marker to the price axis
+on the RIGHT side. The axis numbers are the ground truth, not the
+labels printed inside the tool box (those can be cropped or partial).
 
-────────────────────────────────────────
-STEP 4 — Read prices precisely
-────────────────────────────────────────
-- Use the PRICE AXIS on the right edge of the chart as ground truth.
-- Numbers only — no currency symbols, no thousand separators.
-- Match decimal precision per instrument:
-   * Forex majors: 4-5 decimals (1.08234)
-   * Indices: 0-2 decimals (6869, 18450.25)
-   * Crypto: variable (67234.5, 0.0245)
-   * Stocks: 2-4 decimals (142.55)
-- If a number is partially obscured, return 0 instead of guessing.
+Decimal precision by instrument:
+  Forex majors: 4–5 decimals (1.08234)
+  Indices:      0–2 decimals (6869, 18450.25)
+  Crypto:       variable     (67234.5, 0.0245)
+  Stocks:       2–4 decimals (142.55)
+  Futures:      typically 2 decimals (5045.25)
 
-────────────────────────────────────────
-STEP 5 — Calibrate confidence (0-100)
-────────────────────────────────────────
-  90-100: All values clearly labeled, high resolution, no ambiguity.
-  70-89:  Most values clear, one or two read carefully from the price axis.
-  50-69:  Lower-quality chart, some values inferred from box edges.
-  Below 50: Chart is ambiguous, partial, or low-contrast.
+Numbers only — no $, no thousand separators. Return 0 for any value
+you cannot read with confidence. NEVER guess to fill a slot.
 
-────────────────────────────────────────
-STEP 6 — Reasoning note
-────────────────────────────────────────
-1-2 sentences in the analysis field explaining what you found and how. Examples:
-  - "Entry from green box top edge at 1.0823, exit at TP-hit marker at 1.0867; SL at red dashed line below."
-  - "SL above entry → short. Exit not shown on chart, returned 0."
+══════════════════════════════════════════════════════════════
+STEP 5 — Self-check before returning
+══════════════════════════════════════════════════════════════
+Before calling the tool, verify ALL of these:
+  1. If direction = "long":  stop_loss < entry < take_profit  (when both set)
+  2. If direction = "short": stop_loss > entry > take_profit  (when both set)
+  3. If exit_price is set, it sits between stop_loss and take_profit
+     (or just outside if the trade ran past target).
+  4. The price decimal places match the instrument type.
+
+If any check fails, REVISIT step 2 — direction was probably wrong.
+
+══════════════════════════════════════════════════════════════
+STEP 6 — Confidence (0–100)
+══════════════════════════════════════════════════════════════
+  90–100: Position tool clearly visible, all numbers crisp, axis values match.
+  70–89:  Tool visible but a value or two read off the axis with care.
+  50–69:  Partial visibility, some inference required.
+  <50:    Chart is ambiguous or low-contrast.
+
+══════════════════════════════════════════════════════════════
+STEP 7 — Reasoning note (analysis field, 1–2 sentences)
+══════════════════════════════════════════════════════════════
+Explicitly state which color was above the entry line and what that
+forced for the direction. Examples:
+  - "Green band above entry → long. Entry 1.0823 from middle border, TP 1.0867 from top edge, SL 1.0780 from bottom; trade ran to close at 1.0867 (TP hit)."
+  - "Red band above entry → short. SL 5050 (top of red), entry 5040, TP 5020; chart shows planned trade only, exit returned 0."
 
 ────────────────────────────────────────
 RULES
@@ -301,6 +312,57 @@ export async function POST(req: NextRequest) {
       take_profit: raw.take_profit && raw.take_profit > 0 ? raw.take_profit : null,
       confidence: typeof raw.confidence === 'number' ? raw.confidence : 0,
       analysis: raw.analysis || '',
+    }
+
+    // ── Sanity-correction layer ─────────────────────────────────────────
+    // Direction is the most error-prone field. If the relative order of
+    // the prices contradicts the declared direction, infer the truth from
+    // the geometry — which the model cannot fake even when its color
+    // perception failed. SL position relative to entry is the gold
+    // standard rule.
+    const corrections: string[] = []
+    const e = normalized.entry_price
+    const sl = normalized.stop_loss
+    const tp = normalized.take_profit
+    const x = normalized.exit_price
+
+    // Geometric direction from prices, when available
+    let geoDirection: 'long' | 'short' | null = null
+    if (e != null && sl != null) {
+      if (sl < e) geoDirection = 'long'
+      else if (sl > e) geoDirection = 'short'
+    } else if (e != null && tp != null) {
+      if (tp > e) geoDirection = 'long'
+      else if (tp < e) geoDirection = 'short'
+    }
+
+    if (geoDirection && normalized.direction !== geoDirection) {
+      corrections.push(`direction: ${normalized.direction} → ${geoDirection} (geometry)`)
+      normalized.direction = geoDirection
+    }
+
+    // Fix swapped TP/SL when the values themselves contradict the
+    // (now correct) direction. This handles the case where the model
+    // identified direction correctly but mis-labeled which line is which.
+    if (e != null && sl != null && tp != null) {
+      const isLong = normalized.direction === 'long'
+      const validLong  = sl < e && tp > e
+      const validShort = sl > e && tp < e
+      if ((isLong && !validLong) || (!isLong && !validShort)) {
+        const newSl = tp, newTp = sl
+        const swapValid = isLong ? (newSl < e && newTp > e) : (newSl > e && newTp < e)
+        if (swapValid) {
+          normalized.stop_loss = newSl
+          normalized.take_profit = newTp
+          corrections.push('swapped sl/tp')
+        }
+      }
+    }
+
+    // Penalize confidence when we had to correct
+    if (corrections.length > 0) {
+      normalized.confidence = Math.min(normalized.confidence, 70)
+      normalized.analysis = `${normalized.analysis} [auto-corrected: ${corrections.join('; ')}]`.trim()
     }
 
     return NextResponse.json({ ...normalized, sourceUrl: resolvedSourceUrl, fetchedImage: resolvedSourceUrl ? image : undefined, fetchedMediaType: resolvedSourceUrl ? (mediaType || 'image/png') : undefined })

@@ -77,8 +77,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
       const entryNum = form.entry_price ? parseFloat(form.entry_price) : null
       const exitNum = form.exit_price ? parseFloat(form.exit_price) : null
       const slNum = form.stop_loss ? parseFloat(form.stop_loss) : null
+      // RR only on winning trades.
       let rrRatio: number | null = null
-      if (entryNum && exitNum && slNum) {
+      if (form.outcome === 'win' && entryNum && exitNum && slNum) {
         const reward = form.direction === 'long' ? exitNum - entryNum : entryNum - exitNum
         const risk = form.direction === 'long' ? entryNum - slNum : slNum - entryNum
         if (risk > 0) rrRatio = parseFloat((reward / risk).toFixed(2))
@@ -493,16 +494,18 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     {trade.exit_price ?? '—'}
                   </span>
                 </div>
-                {/* RR ratio — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="analytics" size={14} color="#0f8d63" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
+                {/* RR ratio — only meaningful on a winning trade */}
+                {trade.outcome === 'win' && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                      <Icon name="analytics" size={14} color="#0f8d63" />
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
+                    </div>
+                    <span dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>
+                      {trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(2)}` : '—'}
+                    </span>
                   </div>
-                  <span dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio == null ? 'var(--text3)' : trade.rr_ratio >= 0 ? '#22c55e' : '#ef4444' }}>
-                    {trade.rr_ratio == null ? '—' : `1 : ${trade.rr_ratio >= 0 ? '+' : '-'}${Math.abs(trade.rr_ratio).toFixed(2)}`}
-                  </span>
-                </div>
+                )}
                 {/* Notes — always shown */}
                 <div style={{ padding: '12px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: trade.notes ? '8px' : '0' }}>

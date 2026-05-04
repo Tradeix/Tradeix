@@ -230,7 +230,7 @@ export default function TradesPage() {
                 </div>
 
                 {/* RR */}
-                <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: trade.rr_ratio == null ? 'var(--text3)' : trade.rr_ratio >= 0 ? '#22c55e' : '#ef4444' }}>{trade.rr_ratio == null ? '—' : `1 : ${trade.rr_ratio >= 0 ? '+' : '-'}${Math.abs(trade.rr_ratio).toFixed(1)}`}</div>
+                <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: trade.outcome === 'win' && trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>{trade.outcome === 'win' && trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(1)}` : '—'}</div>
 
                 {/* P&L */}
                 <div dir="ltr" style={{ textAlign: 'center', fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>

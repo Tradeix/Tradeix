@@ -244,9 +244,12 @@ export default function StatsPage() {
         <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
         <StatCard idx={6} label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="arrow_circle_down" />
         <StatCard idx={7} label={tr.avgRR} value={(() => {
-          if (!trades.length) return '—'
-          const avg = trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length
-          return <span dir="ltr">{`1 : ${avg >= 0 ? '+' : '-'}${Math.abs(avg).toFixed(1)}`}</span>
+          // RR is meaningful on winners only — average over them so a streak
+          // of stop-outs doesn't drag the figure down with null contributions.
+          const winsWithRR = trades.filter(t => t.outcome === 'win' && t.rr_ratio != null)
+          if (!winsWithRR.length) return '—'
+          const avg = winsWithRR.reduce((s, t) => s + (t.rr_ratio || 0), 0) / winsWithRR.length
+          return <span dir="ltr">{`1 : ${avg.toFixed(1)}`}</span>
         })()} color="#f59e0b" icon="balance" />
       </div>
 

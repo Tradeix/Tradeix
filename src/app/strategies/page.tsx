@@ -439,41 +439,6 @@ export default function StrategiesPage() {
                     ))}
                   </div>
 
-                  {/* Footer — avg / total in a single divided strip */}
-                  <div style={{
-                    borderTop: '1px solid var(--border)',
-                    paddingTop: '12px',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1px 1fr',
-                    gap: '10px',
-                    alignItems: 'center',
-                  }}>
-                    <div>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '4px' }}>
-                        {language === 'he' ? 'ממוצע' : 'Avg'}
-                      </div>
-                      <div dir="ltr" style={{
-                        fontSize: '15px', fontWeight: '800',
-                        color: !hasData ? 'var(--text3)' : stats.avgPnl >= 0 ? '#22c55e' : '#ef4444',
-                        lineHeight: 1, letterSpacing: '-0.01em',
-                      }}>
-                        {!hasData ? '—' : `${stats.avgPnl >= 0 ? '+' : '-'}$${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                      </div>
-                    </div>
-                    <div style={{ width: '1px', height: '28px', background: 'var(--border)' }} />
-                    <div style={{ textAlign: 'end' }}>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '4px' }}>
-                        {language === 'he' ? 'סה״כ' : 'Total'}
-                      </div>
-                      <div dir="ltr" style={{
-                        fontSize: '15px', fontWeight: '800',
-                        color: !hasData ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444',
-                        lineHeight: 1, letterSpacing: '-0.01em',
-                      }}>
-                        {!hasData ? '—' : `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             )

@@ -273,11 +273,14 @@ export default function AddTradePage() {
       const entryNum = tradeData.entry_price ? parseFloat(tradeData.entry_price) : null
       const exitNum = tradeData.exit_price ? parseFloat(tradeData.exit_price) : null
       const slNum = tradeData.stop_loss ? parseFloat(tradeData.stop_loss) : null
-      // R-multiple = pnl / (1% of portfolio capital). Negative for losses.
-      const capital = activePortfolio?.initial_capital || 0
-      const rrRatio: number | null = capital > 0
-        ? parseFloat((pnl / (capital * 0.01)).toFixed(2))
-        : null
+      // RR = reward / risk (traditional). Only meaningful for winners; for
+      // losing trades we leave rr_ratio null so the field is hidden everywhere.
+      let rrRatio: number | null = null
+      if (tradeData.outcome === 'win' && entryNum != null && exitNum != null && slNum != null) {
+        const reward = tradeData.direction === 'long' ? exitNum - entryNum : entryNum - exitNum
+        const risk   = tradeData.direction === 'long' ? entryNum - slNum  : slNum - entryNum
+        if (risk > 0) rrRatio = parseFloat((reward / risk).toFixed(2))
+      }
       const { error } = await supabase.from('trades').insert({
         portfolio_id: portfolioId, user_id: user.id,
         symbol: tradeData.symbol.toUpperCase(),
@@ -663,38 +666,36 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* R-Multiple — always shown. R = PnL / (1% of portfolio capital).
-                    A $1,000 win on a $100K book = +1R. A $1,000 loss = -1R. */}
-                {(() => {
-                  const pnlNum = parseFloat(tradeData.pnl)
-                  const capital = activePortfolio?.initial_capital || 0
-                  const onePercent = capital * 0.01
-                  const isLoss = tradeData.outcome === 'loss'
-                  const hasInput = !isNaN(pnlNum) && pnlNum > 0 && capital > 0
-                  const signedPnl = isLoss ? -Math.abs(pnlNum) : Math.abs(pnlNum)
-                  const rValue = onePercent > 0 ? signedPnl / onePercent : 0
-                  const rrColor = !hasInput ? 'var(--text3)' : rValue >= 2 ? '#22c55e' : rValue > 0 ? '#f59e0b' : rValue === 0 ? 'var(--text3)' : rValue >= -1 ? '#f59e0b' : '#ef4444'
-                  const badge = !hasInput
-                    ? (language === 'he' ? 'מלא נתונים' : 'Fill data')
-                    : rValue >= 2 ? (language === 'he' ? 'מצוין' : 'Great')
-                    : rValue >= 1 ? (language === 'he' ? 'טוב' : 'Good')
-                    : rValue > 0 ? (language === 'he' ? 'רווח קטן' : 'Small win')
-                    : rValue >= -1 ? (language === 'he' ? 'הפסד מבוקר' : 'Controlled loss')
-                    : (language === 'he' ? 'הפסד גדול' : 'Large loss')
+                {/* RR — only meaningful on a winning trade. RR = reward / risk
+                    based on entry / exit / SL. Hidden entirely for losses. */}
+                {tradeData.outcome === 'win' && (() => {
+                  const entry = parseFloat(tradeData.entry_price)
+                  const exit = parseFloat(tradeData.exit_price)
+                  const sl = parseFloat(tradeData.stop_loss)
+                  const havePrices = !isNaN(entry) && !isNaN(exit) && !isNaN(sl)
+                  let rr: number | null = null
+                  if (havePrices) {
+                    const reward = tradeData.direction === 'long' ? exit - entry : entry - exit
+                    const risk   = tradeData.direction === 'long' ? entry - sl  : sl - entry
+                    if (risk > 0) rr = parseFloat((reward / risk).toFixed(2))
+                  }
+                  const rrColor = rr == null ? 'var(--text3)' : rr >= 2 ? '#22c55e' : rr >= 1 ? '#f59e0b' : '#ef4444'
+                  const badge = rr == null
+                    ? (language === 'he' ? 'מלא כניסה / יציאה / SL' : 'Need entry / exit / SL')
+                    : rr >= 2 ? (language === 'he' ? 'מצוין' : 'Great')
+                    : rr >= 1 ? (language === 'he' ? 'סביר' : 'Fair')
+                    : (language === 'he' ? 'נמוך' : 'Low')
                   return (
                     <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Icon name="analytics" size={16} color={rrColor} />
-                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
-                          {language === 'he' ? 'R לפי תיק' : 'R / Capital'}
-                        </span>
-                        <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                          {language === 'he' ? '(1R = 1% מהקרן)' : '(1R = 1% of capital)'}
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          Risk / Reward
                         </span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                         <span dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>
-                          {!hasInput ? '—' : `1 : ${rValue >= 0 ? '+' : '-'}${Math.abs(rValue).toFixed(2)}`}
+                          {rr == null ? '—' : `1 : ${rr.toFixed(2)}`}
                         </span>
                         <span style={{ fontSize: '11px', fontWeight: '700', color: rrColor, background: `${rrColor === 'var(--text3)' ? 'rgba(255,255,255,0.04)' : rrColor + '15'}`, padding: '2px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                           {badge}
