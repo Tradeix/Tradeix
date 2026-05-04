@@ -243,7 +243,11 @@ export default function StatsPage() {
         <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
         <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
         <StatCard idx={6} label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="arrow_circle_down" />
-        <StatCard idx={7} label={tr.avgRR} value={trades.length ? `1:${(trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length).toFixed(1)}` : '—'} color="#f59e0b" icon="balance" />
+        <StatCard idx={7} label={tr.avgRR} value={(() => {
+          if (!trades.length) return '—'
+          const avg = trades.reduce((s, t) => s + (t.rr_ratio || 0), 0) / trades.length
+          return <span dir="ltr">{`1 : ${avg >= 0 ? '+' : '-'}${Math.abs(avg).toFixed(1)}`}</span>
+        })()} color="#f59e0b" icon="balance" />
       </div>
 
       {/* Equity chart */}

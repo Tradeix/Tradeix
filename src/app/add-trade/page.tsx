@@ -695,7 +695,7 @@ export default function AddTradePage() {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                         <span dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>
-                          {!hasInput ? '—' : `${rValue >= 0 ? '+' : ''}${rValue.toFixed(2)}R`}
+                          {!hasInput ? '—' : `1 : ${rValue >= 0 ? '+' : '-'}${Math.abs(rValue).toFixed(2)}`}
                         </span>
                         <span style={{ fontSize: '11px', fontWeight: '700', color: rrColor, background: `${rrColor === 'var(--text3)' ? 'rgba(255,255,255,0.04)' : rrColor + '15'}`, padding: '2px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                           {badge}

@@ -500,8 +500,8 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     <Icon name="analytics" size={14} color="#0f8d63" />
                     <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio != null ? '#0f8d63' : 'var(--text3)' }}>
-                    {trade.rr_ratio != null ? `1:${trade.rr_ratio.toFixed(2)}` : '—'}
+                  <span dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio == null ? 'var(--text3)' : trade.rr_ratio >= 0 ? '#22c55e' : '#ef4444' }}>
+                    {trade.rr_ratio == null ? '—' : `1 : ${trade.rr_ratio >= 0 ? '+' : '-'}${Math.abs(trade.rr_ratio).toFixed(2)}`}
                   </span>
                 </div>
                 {/* Notes — always shown */}

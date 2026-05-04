@@ -377,7 +377,7 @@ export default function ArchivePage() {
                               </div>
 
                               {/* RR */}
-                              <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '800', color: '#0f8d63' }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                              <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '13px', fontWeight: '800', color: trade.rr_ratio == null ? 'var(--text3)' : trade.rr_ratio >= 0 ? '#22c55e' : '#ef4444' }}>{trade.rr_ratio == null ? '—' : `1 : ${trade.rr_ratio >= 0 ? '+' : '-'}${Math.abs(trade.rr_ratio).toFixed(1)}`}</div>
 
                               {/* P&L */}
                               <div style={{ textAlign: 'center', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>

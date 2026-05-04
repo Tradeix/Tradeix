@@ -499,7 +499,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
-                  <div className="trade-col-rr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '600', color: ACCENT }}>1:{trade.rr_ratio?.toFixed(1) || '—'}</div>
+                  <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '600', color: trade.rr_ratio == null ? 'var(--text3)' : trade.rr_ratio >= 0 ? '#22c55e' : '#ef4444' }}>{trade.rr_ratio == null ? '—' : `1 : ${trade.rr_ratio >= 0 ? '+' : '-'}${Math.abs(trade.rr_ratio).toFixed(1)}`}</div>
                   <div dir="ltr" style={{ textAlign: 'center', fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
                 </div>
               ))}
