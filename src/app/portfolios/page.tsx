@@ -122,11 +122,8 @@ export default function PortfoliosPage() {
     if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
     else {
       toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived')
-      setPortfolios(prev => prev.filter(p => p.id !== id))
-      setPortfolioStats(prev => { const next = { ...prev }; delete next[id]; return next })
-      setLoading(false)
       reloadPortfolioContext()
-      router.refresh()
+      loadPortfolios()
     }
   }
 
@@ -136,11 +133,8 @@ export default function PortfoliosPage() {
     else {
       toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted')
       setConfirmDelete(null)
-      setPortfolios(prev => prev.filter(p => p.id !== id))
-      setPortfolioStats(prev => { const next = { ...prev }; delete next[id]; return next })
-      setLoading(false)
       reloadPortfolioContext()
-      router.refresh()
+      loadPortfolios()
     }
   }
 

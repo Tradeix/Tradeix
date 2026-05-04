@@ -288,10 +288,10 @@ export default function StrategiesPage() {
         </div>
       ) : (
         <div className="strat-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
           gap: '16px',
-          alignItems: 'start',
+          alignItems: 'flex-start',
         }}>
           {strategies.map((s, sIdx) => {
             const color = getColorHex(s.color)
@@ -301,9 +301,9 @@ export default function StrategiesPage() {
             const wr = stats.winRate
             const wrColor = !hasData ? '#6b7280' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
 
-            // Donut chart geometry
-            const donutSize = 88
-            const donutStroke = 7
+            // Donut geometry — bigger, hero-style
+            const donutSize = 116
+            const donutStroke = 8
             const donutRadius = (donutSize - donutStroke) / 2
             const donutCircum = 2 * Math.PI * donutRadius
             const donutOffset = donutCircum * (1 - (hasData ? wr : 0) / 100)
@@ -314,6 +314,8 @@ export default function StrategiesPage() {
                 className="strat-card"
                 onClick={() => handleExpand(s.id)}
                 style={{
+                  flex: '1 1 280px',
+                  maxWidth: '340px',
                   background: 'var(--bg2)',
                   borderRadius: '18px',
                   overflow: 'hidden',
@@ -324,7 +326,7 @@ export default function StrategiesPage() {
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = `0 8px 28px ${wrColor}1a`
+                  e.currentTarget.style.boxShadow = `0 10px 30px ${wrColor}1f`
                   e.currentTarget.style.borderColor = `${wrColor}55`
                 }}
                 onMouseLeave={e => {
@@ -333,26 +335,31 @@ export default function StrategiesPage() {
                   e.currentTarget.style.borderColor = 'var(--border)'
                 }}
               >
-                {/* Subtle corner glow keyed to performance */}
+                {/* Top accent — gradient strip */}
                 <div style={{
-                  position: 'absolute', top: 0, insetInlineEnd: 0,
-                  width: '160px', height: '160px',
-                  background: `radial-gradient(circle at top right, ${wrColor}14, transparent 65%)`,
+                  height: '3px',
+                  background: `linear-gradient(90deg, transparent, ${wrColor}88, transparent)`,
+                  opacity: hasData ? 0.9 : 0.3,
+                }} />
+
+                {/* Soft radial glow at top */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: '180px',
+                  background: `radial-gradient(ellipse at center top, ${wrColor}10, transparent 65%)`,
                   pointerEvents: 'none',
                 }} />
 
-                {/* Body */}
-                <div className="strat-body" style={{ padding: '20px 22px 18px', position: 'relative' }}>
+                <div style={{ padding: '20px 22px 18px', position: 'relative' }}>
 
-                  {/* Top — strategy label + name + index */}
+                  {/* Top row — strategy name + index pill */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' }}>
+                      <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: '5px' }}>
                         {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
                       </div>
                       <div className="strat-name" style={{
-                        fontSize: '18px', fontWeight: '800', color: 'var(--text)',
-                        letterSpacing: '-0.015em', lineHeight: 1.25,
+                        fontSize: '20px', fontWeight: '800', color: 'var(--text)',
+                        letterSpacing: '-0.02em', lineHeight: 1.2,
                         overflow: 'hidden', display: '-webkit-box',
                         WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       }}>{s.name}</div>
@@ -360,31 +367,28 @@ export default function StrategiesPage() {
                     <span style={{
                       fontSize: '11px', fontWeight: '900',
                       color: hasData ? wrColor : 'var(--text3)',
-                      background: hasData ? `${wrColor}14` : 'var(--bg3)',
-                      border: `1px solid ${hasData ? `${wrColor}33` : 'var(--border)'}`,
+                      background: hasData ? `${wrColor}16` : 'var(--bg3)',
+                      border: `1px solid ${hasData ? `${wrColor}40` : 'var(--border)'}`,
                       padding: '5px 10px', borderRadius: '8px',
-                      letterSpacing: '0.04em', fontFamily: 'Heebo, sans-serif',
+                      letterSpacing: '0.05em', fontFamily: 'Heebo, sans-serif',
                       flexShrink: 0,
                     }}>{String(sIdx + 1).padStart(2, '0')}</span>
                   </div>
 
-                  {/* Hero — donut + stats stack */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '18px' }}>
-                    {/* Donut chart */}
-                    <div style={{ position: 'relative', flexShrink: 0, filter: hasData ? `drop-shadow(0 0 12px ${wrColor}33)` : 'none' }}>
+                  {/* Centered hero donut */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '18px' }}>
+                    <div style={{ position: 'relative', filter: hasData ? `drop-shadow(0 0 16px ${wrColor}40)` : 'none' }}>
                       <svg width={donutSize} height={donutSize} viewBox={`0 0 ${donutSize} ${donutSize}`}>
                         <defs>
                           <linearGradient id={`gr-${s.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor={wrColor} stopOpacity="1" />
-                            <stop offset="100%" stopColor={wrColor} stopOpacity="0.6" />
+                            <stop offset="100%" stopColor={wrColor} stopOpacity="0.55" />
                           </linearGradient>
                         </defs>
-                        {/* Track */}
                         <circle
                           cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
                           fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={donutStroke}
                         />
-                        {/* Progress */}
                         <circle
                           cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
                           fill="none" stroke={`url(#gr-${s.id})`} strokeWidth={donutStroke}
@@ -395,74 +399,74 @@ export default function StrategiesPage() {
                           style={{ transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)' }}
                         />
                       </svg>
-                      {/* Centered % text — HTML so it scales with browser font */}
                       <div dir="ltr" style={{
                         position: 'absolute', inset: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         flexDirection: 'column', lineHeight: 1,
                         pointerEvents: 'none',
                       }}>
-                        <div style={{ fontSize: '20px', fontWeight: '900', color: wrColor, fontFamily: 'Heebo, sans-serif', letterSpacing: '-0.03em' }}>
+                        <div style={{ fontSize: '28px', fontWeight: '900', color: wrColor, fontFamily: 'Heebo, sans-serif', letterSpacing: '-0.03em' }}>
                           {hasData ? `${Math.round(wr)}%` : '—'}
                         </div>
-                        <div style={{ fontSize: '8px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>
+                        <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.16em', marginTop: '4px' }}>
                           {language === 'he' ? 'הצלחה' : 'Win'}
                         </div>
                       </div>
                     </div>
-
-                    {/* Stats column */}
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'Heebo, sans-serif' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e99', flexShrink: 0 }} />
-                        <span style={{ fontSize: '15px', fontWeight: '800', color: '#22c55e', minWidth: '24px' }}>{stats.wins}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
-                          {language === 'he' ? 'ניצחונות' : 'wins'}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef444499', flexShrink: 0 }} />
-                        <span style={{ fontSize: '15px', fontWeight: '800', color: '#ef4444', minWidth: '24px' }}>{stats.losses}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
-                          {language === 'he' ? 'הפסדים' : 'losses'}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: '7px', height: '7px', borderRadius: '2px', background: 'var(--text3)', flexShrink: 0 }} />
-                        <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', minWidth: '24px' }}>{stats.totalTrades}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
-                          {language === 'he' ? 'טריידים' : 'trades'}
-                        </span>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Footer — avg / total */}
+                  {/* Stats row — W / L / T side by side */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '14px' }}>
+                    {[
+                      { value: stats.wins, label: language === 'he' ? 'נצחונות' : 'wins', color: '#22c55e' },
+                      { value: stats.losses, label: language === 'he' ? 'הפסדים' : 'losses', color: '#ef4444' },
+                      { value: stats.totalTrades, label: language === 'he' ? 'טריידים' : 'trades', color: 'var(--text)' },
+                    ].map((s, i) => (
+                      <div key={i} style={{
+                        background: 'rgba(255,255,255,0.025)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '10px',
+                        padding: '10px 8px',
+                        textAlign: 'center',
+                      }}>
+                        <div dir="ltr" style={{ fontSize: '18px', fontWeight: '900', color: s.color, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                          {s.value}
+                        </div>
+                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '5px' }}>
+                          {s.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer — avg / total in a single divided strip */}
                   <div style={{
                     borderTop: '1px solid var(--border)',
-                    paddingTop: '14px',
+                    paddingTop: '12px',
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '12px',
+                    gridTemplateColumns: '1fr 1px 1fr',
+                    gap: '10px',
+                    alignItems: 'center',
                   }}>
                     <div>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '4px' }}>
                         {language === 'he' ? 'ממוצע' : 'Avg'}
                       </div>
                       <div dir="ltr" style={{
-                        fontSize: '16px', fontWeight: '800',
+                        fontSize: '15px', fontWeight: '800',
                         color: !hasData ? 'var(--text3)' : stats.avgPnl >= 0 ? '#22c55e' : '#ef4444',
                         lineHeight: 1, letterSpacing: '-0.01em',
                       }}>
                         {!hasData ? '—' : `${stats.avgPnl >= 0 ? '+' : '-'}$${Math.abs(stats.avgPnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                       </div>
                     </div>
+                    <div style={{ width: '1px', height: '28px', background: 'var(--border)' }} />
                     <div style={{ textAlign: 'end' }}>
-                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '4px' }}>
                         {language === 'he' ? 'סה״כ' : 'Total'}
                       </div>
                       <div dir="ltr" style={{
-                        fontSize: '16px', fontWeight: '800',
+                        fontSize: '15px', fontWeight: '800',
                         color: !hasData ? 'var(--text3)' : pnlPositive ? '#22c55e' : '#ef4444',
                         lineHeight: 1, letterSpacing: '-0.01em',
                       }}>
@@ -471,7 +475,6 @@ export default function StrategiesPage() {
                     </div>
                   </div>
                 </div>
-
               </div>
             )
           })}
