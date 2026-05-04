@@ -588,23 +588,48 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* Strategy selector — PRO only */}
-                {isPro && strategies.length > 0 && (
+                {/* Strategy selector — PRO only. Always shown; disabled when no strategies exist. */}
+                {isPro && (
                   <div style={{ marginBottom: '16px' }}>
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {tr.selectStrategy}
                     </label>
-                    <div className="select-wrap">
-                      <select
-                        value={tradeData.strategy_id}
-                        onChange={e => setTradeData(p => ({ ...p, strategy_id: e.target.value }))}
-                      >
-                        <option value="">{tr.noStrategy}</option>
-                        {strategies.map(s => (
-                          <option key={s.id} value={s.id}>{s.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                    {strategies.length > 0 ? (
+                      <div className="select-wrap">
+                        <select
+                          value={tradeData.strategy_id}
+                          onChange={e => setTradeData(p => ({ ...p, strategy_id: e.target.value }))}
+                        >
+                          <option value="">{tr.noStrategy}</option>
+                          {strategies.map(s => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px',
+                        background: 'var(--bg3)', border: '1px dashed var(--border)',
+                        borderRadius: '10px', padding: '10px 14px',
+                        color: 'var(--text3)', fontSize: '13px', fontWeight: '500',
+                        cursor: 'not-allowed', userSelect: 'none',
+                        fontFamily: 'Heebo, sans-serif',
+                      }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <Icon name="info" size={14} color="var(--text3)" />
+                          {language === 'he' ? 'אין כרגע אסטרטגיות פעילות' : 'No active strategies yet'}
+                        </span>
+                        <span style={{
+                          fontSize: '11px', fontWeight: '700',
+                          color: 'var(--text3)', background: 'var(--bg2)',
+                          border: '1px solid var(--border)',
+                          padding: '4px 8px', borderRadius: '6px',
+                          opacity: 0.6,
+                        }}>
+                          {language === 'he' ? 'לא זמין' : 'Disabled'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
 
