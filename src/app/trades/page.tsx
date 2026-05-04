@@ -220,7 +220,7 @@ export default function TradesPage() {
                 {/* Status */}
                 <div style={{ textAlign: 'center' }}>
                   <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '700', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
-                    {trade.outcome === 'win' ? '✓ WIN' : '✕ LOSS'}
+                    {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
                   </span>
                 </div>
 

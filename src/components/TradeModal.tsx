@@ -151,10 +151,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
               fontSize: '15px', fontWeight: '900', cursor: 'pointer',
               fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
               transition: 'all 0.18s',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <span style={{ fontSize: '16px' }}>{val === 'win' ? '✓' : '✕'}</span>
             {val === 'win' ? 'WIN' : 'LOSS'}
           </button>
         )
@@ -430,7 +429,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                   border: `1px solid ${isWin ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
                 }}>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
-                    {isWin ? '✓ WIN' : '✕ LOSS'}
+                    {isWin ? 'WIN' : 'LOSS'}
                   </span>
                 </div>
               </div>
