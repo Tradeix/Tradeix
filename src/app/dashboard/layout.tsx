@@ -209,14 +209,14 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             }}>
               {user?.user_metadata?.avatar_url
                 ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : (user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()
+                : user ? ((user.user_metadata?.full_name || user.email || '?')[0] || '?').toUpperCase() : ''
               }
             </div>
             <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#0f8d63', border: '2px solid var(--bg)', borderRadius: '50%' }} />
           </div>
           <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
-            <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)', lineHeight: 1 }}>
-              {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}
+            <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)', lineHeight: 1, minHeight: '14px' }}>
+              {user ? (user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '') : ''}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
               {isPro ? (
@@ -391,13 +391,33 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
+  const [authChecked, setAuthChecked] = useState(false)
+  const [authedUser, setAuthedUser] = useState<any>(null)
   const { language, subscriptionLoading } = useApp()
   const { portfoliosLoaded } = usePortfolio()
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
   const isRTL = language === 'he'
-  const ready = portfoliosLoaded && !subscriptionLoading
+  const ready = authChecked && !!authedUser && portfoliosLoaded && !subscriptionLoading
+
+  // Client-side auth guard — defense in depth on top of middleware. If the
+  // user is somehow unauthenticated when reaching a protected page, we force
+  // them to /auth/login instead of rendering the layout with a "User" / "U"
+  // placeholder.
+  useEffect(() => {
+    let alive = true
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!alive) return
+      if (!user) {
+        router.replace('/auth/login')
+        return
+      }
+      setAuthedUser(user)
+      setAuthChecked(true)
+    })
+    return () => { alive = false }
+  }, [])
 
   // On every route change, briefly hide content so the new page renders invisibly
   // then fades in — eliminates the flash of stale/empty state
