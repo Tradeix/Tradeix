@@ -247,10 +247,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No image or TradingView URL provided' }, { status: 400 })
     }
 
-    const response = await client.beta.messages.create({
+    const response = await client.messages.create({
       model: 'claude-opus-4-7',
-      max_tokens: 8192,
-      thinking: { type: 'adaptive' },
+      max_tokens: 4096,
+      // Note: thinking can't be combined with a forced tool_choice
+      // (API rejects with "Thinking may not be enabled when tool_choice
+      // forces tool use"). Forced tool gives us a deterministic structured
+      // response which is what the journal needs; the post-processing layer
+      // below corrects any geometric inconsistencies the model produces.
       system: [
         {
           type: 'text',
@@ -258,7 +262,7 @@ export async function POST(req: NextRequest) {
           cache_control: { type: 'ephemeral' },
         },
       ],
-      tools: [ANALYSIS_TOOL as any],
+      tools: [ANALYSIS_TOOL],
       tool_choice: { type: 'tool', name: 'submit_trade_analysis' },
       messages: [
         {
