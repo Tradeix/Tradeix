@@ -43,7 +43,7 @@ export default function PortfoliosPage() {
   const { language, isPro } = useApp()
   const tr = t[language]
   const router = useRouter()
-  const { setActivePortfolio } = usePortfolio()
+  const { setActivePortfolio, reload: reloadPortfolioContext } = usePortfolio()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [portfolioStats, setPortfolioStats] = useState<Record<string, PortfolioStats>>({})
   const [loading, setLoading] = useState(true)
@@ -122,9 +122,10 @@ export default function PortfoliosPage() {
     if (error) toast.error(language === 'he' ? 'שגיאה בארכיון' : 'Archive error')
     else {
       toast.success(language === 'he' ? 'התיק הועבר לארכיון' : 'Portfolio archived')
-      // Optimistic: drop from local list immediately so the empty state
-      // shows without waiting for the loadPortfolios refetch.
       setPortfolios(prev => prev.filter(p => p.id !== id))
+      setPortfolioStats(prev => { const next = { ...prev }; delete next[id]; return next })
+      setLoading(false)
+      reloadPortfolioContext()
       router.refresh()
     }
   }
@@ -136,6 +137,9 @@ export default function PortfoliosPage() {
       toast.success(language === 'he' ? 'התיק נמחק' : 'Portfolio deleted')
       setConfirmDelete(null)
       setPortfolios(prev => prev.filter(p => p.id !== id))
+      setPortfolioStats(prev => { const next = { ...prev }; delete next[id]; return next })
+      setLoading(false)
+      reloadPortfolioContext()
       router.refresh()
     }
   }

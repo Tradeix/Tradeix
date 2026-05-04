@@ -493,15 +493,15 @@ export default function StrategiesPage() {
 
         return (
           <div
+            className="app-modal-overlay"
             onClick={() => setExpandedId(null)}
             style={{
-              position: 'fixed', inset: 0, zIndex: 9998,
               background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: '20px', animation: 'fadeIn 0.2s ease',
+              animation: 'fadeIn 0.2s ease',
             }}
           >
             <div
+              className="app-modal-card"
               dir={isRTL ? 'rtl' : 'ltr'}
               onClick={e => e.stopPropagation()}
               style={{
@@ -509,7 +509,6 @@ export default function StrategiesPage() {
                 border: '1px solid var(--border)',
                 borderRadius: '20px',
                 width: '100%', maxWidth: '560px',
-                maxHeight: '88vh', overflow: 'auto',
                 animation: 'modalIn 0.25s ease',
                 boxShadow: '0 32px 80px rgba(0,0,0,0.55)',
                 position: 'relative',

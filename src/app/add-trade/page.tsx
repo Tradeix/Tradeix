@@ -340,80 +340,121 @@ export default function AddTradePage() {
         icon="post_add"
       />
 
-      <div style={{ maxWidth: '620px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-        {/* STEP 1 — PRO only */}
+        {/* STEP 1 — PRO only — three options side by side */}
         {isPro && step === 1 && (
           <div className="fade-up">
-            <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`, borderRadius: 'var(--radius)', padding: '52px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? '#0f8d630a' : 'var(--bg3)', transition: 'all 0.3s', marginBottom: '16px' }}>
-              <input {...getInputProps()} />
-              <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}><Icon name="zoom_in" size={44} color="var(--blue)" strokeWidth={1.2} /></div>
-              <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
-                {isDragActive ? (language === 'he' ? 'שחרר כאן...' : 'Drop here...') : tr.uploadChart}
-              </div>
-              <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.7, marginBottom: '16px' }}>
-                {language === 'he' ? 'גרור תמונת גרף לכאן, או לחץ לבחירת קובץ' : 'Drag a chart image here, or click to choose'}
-              </div>
-              <span className="btn-primary" style={{ padding: '10px 24px', fontSize: '14px' }}>
-                {language === 'he' ? 'בחר קובץ' : 'Choose File'}
-              </span>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '12px' }}>PNG, JPG, WEBP {language === 'he' ? 'עד' : 'up to'} 10MB</div>
-            </div>
+            <div className="step1-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
 
-            {/* TradingView URL — alternative input */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '13px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            </div>
-            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '18px 20px', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                <Icon name="show_chart" size={18} color="#0f8d63" />
-                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)' }}>
-                  {language === 'he' ? 'או הדבק קישור TradingView' : 'Or paste a TradingView link'}
+              {/* OPTION 1 — Image upload */}
+              <div {...getRootProps()} style={{
+                border: `2px dashed ${isDragActive ? 'var(--blue)' : 'var(--border)'}`,
+                borderRadius: 'var(--radius)',
+                padding: '24px 18px',
+                textAlign: 'center',
+                cursor: 'pointer',
+                background: isDragActive ? '#0f8d630a' : 'var(--bg3)',
+                transition: 'all 0.3s',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start',
+                minHeight: '260px',
+              }}>
+                <input {...getInputProps()} />
+                <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(15,141,99,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+                  <Icon name="zoom_in" size={26} color="var(--blue)" strokeWidth={1.5} />
                 </div>
+                <div style={{ fontSize: '15px', fontWeight: '700', marginBottom: '6px', color: 'var(--text)' }}>
+                  {isDragActive ? (language === 'he' ? 'שחרר כאן...' : 'Drop here...') : (language === 'he' ? 'תמונת גרף' : 'Chart Image')}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '14px', flex: 1 }}>
+                  {language === 'he' ? 'גרור או לחץ לבחירת קובץ' : 'Drag or click to choose'}
+                </div>
+                <span className="btn-primary" style={{ padding: '8px 18px', fontSize: '13px' }}>
+                  {language === 'he' ? 'בחר קובץ' : 'Choose File'}
+                </span>
+                <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '10px' }}>PNG · JPG · WEBP · 10MB</div>
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '12px', lineHeight: 1.6 }}>
-                {language === 'he'
-                  ? 'ב־TradingView לחץ Alt+S (או Cmd+S במק) כדי ליצור snapshot, ואז העתק את הקישור (tradingview.com/x/...). הניתוח יוצא חד יותר מ־TV מאשר תמונת מסך.'
-                  : 'In TradingView press Alt+S (or Cmd+S on mac) to create a snapshot, then paste the link (tradingview.com/x/...). Analysis is sharper from TV than from a screenshot.'}
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+
+              {/* OPTION 2 — TradingView URL */}
+              <div style={{
+                background: 'var(--bg3)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                padding: '22px 18px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                minHeight: '260px',
+              }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(15,141,99,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+                  <Icon name="show_chart" size={26} color="#0f8d63" strokeWidth={1.5} />
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: '700', marginBottom: '6px', color: 'var(--text)' }}>
+                  {language === 'he' ? 'קישור TradingView' : 'TradingView Link'}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)', lineHeight: 1.55, marginBottom: '12px', textAlign: 'center', flex: 1 }}>
+                  {language === 'he' ? 'ב־TV לחץ Alt+S ליצירת snapshot, אז הדבק את הקישור' : 'In TV press Alt+S to snapshot, then paste the link'}
+                </div>
                 <input
                   type="url"
                   dir="ltr"
                   value={tvUrl}
                   onChange={e => setTvUrl(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && !tvSubmitting) { e.preventDefault(); runAiAnalysisFromUrl() } }}
-                  placeholder="https://www.tradingview.com/x/..."
-                  style={{ flex: 1, padding: '10px 12px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--text)', fontSize: '13px', fontFamily: 'monospace', outline: 'none' }}
+                  placeholder="tradingview.com/x/..."
+                  style={{ width: '100%', padding: '9px 11px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--text)', fontSize: '12px', fontFamily: 'monospace', outline: 'none', marginBottom: '8px', textAlign: 'center' }}
                 />
                 <button
                   onClick={runAiAnalysisFromUrl}
                   disabled={!tvUrl.trim() || tvSubmitting}
                   style={{
+                    width: '100%',
                     background: tvUrl.trim() ? '#0f8d63' : 'var(--bg2)',
                     color: tvUrl.trim() ? '#fff' : 'var(--text3)',
                     border: 'none', borderRadius: '10px',
-                    padding: '0 18px', fontSize: '13px', fontWeight: '700',
+                    padding: '8px', fontSize: '13px', fontWeight: '700',
                     cursor: tvUrl.trim() && !tvSubmitting ? 'pointer' : 'not-allowed',
-                    fontFamily: 'Heebo, sans-serif', whiteSpace: 'nowrap',
+                    fontFamily: 'Heebo, sans-serif',
                     opacity: tvSubmitting ? 0.6 : 1,
                   }}
                 >
-                  {tvSubmitting ? (language === 'he' ? 'מנתח...' : 'Analyzing...') : (language === 'he' ? 'נתח' : 'Analyze')}
+                  {tvSubmitting ? (language === 'he' ? 'מנתח...' : 'Analyzing...') : (language === 'he' ? 'נתח עם AI' : 'Analyze with AI')}
                 </button>
               </div>
-            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '13px', color: 'var(--text3)' }}>{language === 'he' ? 'או' : 'or'}</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              {/* OPTION 3 — Manual entry */}
+              <button onClick={skipToManual} style={{
+                background: 'var(--bg3)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                padding: '24px 18px',
+                cursor: 'pointer',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start',
+                minHeight: '260px',
+                fontFamily: 'Heebo, sans-serif',
+                transition: 'all 0.18s',
+              }}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--border2)'; e.currentTarget.style.background = 'var(--bg4)' }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg3)' }}
+              >
+                <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+                  <Icon name="edit" size={26} color="var(--text2)" strokeWidth={1.5} />
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: '700', marginBottom: '6px', color: 'var(--text)' }}>
+                  {language === 'he' ? 'הוספה ידנית' : 'Manual Entry'}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '14px', textAlign: 'center', flex: 1 }}>
+                  {language === 'he' ? 'מלא את פרטי העסקה ידנית — בלי AI' : 'Fill trade details by hand — no AI'}
+                </div>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: '8px 18px', fontSize: '13px', fontWeight: '700',
+                  background: 'var(--bg2)', border: '1px solid var(--border)',
+                  borderRadius: '10px', color: 'var(--text2)',
+                }}>
+                  {language === 'he' ? 'התחל ידנית' : 'Start Manual'}
+                  <Icon name={language === 'he' ? 'arrow_back' : 'chevron_right'} size={14} color="currentColor" />
+                </span>
+              </button>
             </div>
-            <button onClick={skipToManual} className="btn-ghost" style={{ width: '100%' }}>
-              {language === 'he' ? 'הוספה ידנית ←' : 'Manual Entry →'}
-            </button>
           </div>
         )}
 
