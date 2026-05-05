@@ -102,6 +102,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const supabase = createClient()
 
+  // Global ESC-to-close handler for every modal in the app. Modals already
+  // attach their close action to the overlay's onClick, so we just synthesize
+  // a click on the topmost overlay when the user presses Escape. Layered
+  // overlays (--top, --top2) close from the top down.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      const top2 = document.querySelector('.app-modal-overlay.app-modal-overlay--top2') as HTMLElement | null
+      const top1 = document.querySelector('.app-modal-overlay.app-modal-overlay--top') as HTMLElement | null
+      const all = document.querySelectorAll('.app-modal-overlay')
+      const target = top2 || top1 || (all.length ? (all[all.length - 1] as HTMLElement) : null)
+      if (target) {
+        e.preventDefault()
+        target.click()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   useEffect(() => {
     const savedTheme = (localStorage.getItem('tradeix-theme') as Theme) || 'dark'
     setThemeState(savedTheme)
