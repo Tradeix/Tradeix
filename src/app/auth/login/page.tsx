@@ -1,6 +1,6 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 import { useState } from 'react'
 
 export default function LoginPage() {
@@ -8,6 +8,7 @@ export default function LoginPage() {
   const supabase = createClient()
 
   const handleGoogleLogin = async () => {
+    if (!isSupabaseConfigured) return
     setLoading(true)
     await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -83,7 +84,7 @@ export default function LoginPage() {
 
           <button
             onClick={handleGoogleLogin}
-            disabled={loading}
+            disabled={loading || !isSupabaseConfigured}
             style={{
               width: '100%',
               background: 'var(--bg3)',
@@ -93,14 +94,14 @@ export default function LoginPage() {
               color: 'var(--text)',
               fontSize: '16px',
               fontWeight: '500',
-              cursor: loading ? 'not-allowed' : 'pointer',
+              cursor: loading || !isSupabaseConfigured ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '12px',
               transition: 'all 0.2s',
               fontFamily: 'Rubik, sans-serif',
-              opacity: loading ? 0.7 : 1,
+              opacity: loading || !isSupabaseConfigured ? 0.7 : 1,
             }}
             onMouseOver={e => !loading && ((e.target as HTMLElement).style.borderColor = 'var(--border2)')}
             onMouseOut={e => ((e.target as HTMLElement).style.borderColor = 'var(--border)')}

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
@@ -131,6 +131,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLanguageState(savedLang)
     applyLanguage(savedLang)
 
+    if (!isSupabaseConfigured) {
+      setSubscriptionLoading(false)
+      return
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { setSubscriptionLoading(false); return }
       supabase.from('profiles')
@@ -152,6 +157,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   async function setTheme(t: Theme) {
     setThemeState(t); applyTheme(t)
     localStorage.setItem('tradeix-theme', t)
+    if (!isSupabaseConfigured) return
     const { data: { user } } = await supabase.auth.getUser()
     if (user) await supabase.from('profiles').upsert({ id: user.id, theme: t }, { onConflict: 'id' })
   }
@@ -159,11 +165,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   async function setLanguage(l: Language) {
     setLanguageState(l); applyLanguage(l)
     localStorage.setItem('tradeix-lang', l)
+    if (!isSupabaseConfigured) return
     const { data: { user } } = await supabase.auth.getUser()
     if (user) await supabase.from('profiles').upsert({ id: user.id, language: l }, { onConflict: 'id' })
   }
 
   async function upgradeToPro() {
+    if (!isSupabaseConfigured) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     await supabase.from('profiles').upsert(
@@ -175,6 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   async function cancelSubscription() {
+    if (!isSupabaseConfigured) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
