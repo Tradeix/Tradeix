@@ -212,7 +212,6 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 : user ? ((user.user_metadata?.full_name || user.email || '?')[0] || '?').toUpperCase() : ''
               }
             </div>
-            <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '9px', height: '9px', background: '#0f8d63', border: '2px solid var(--bg)', borderRadius: '50%' }} />
           </div>
           <div style={{ textAlign: isRTL ? 'right' : 'left' }} className="user-name-block">
             <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)', lineHeight: 1, minHeight: '14px' }}>

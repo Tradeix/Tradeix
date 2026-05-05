@@ -232,15 +232,6 @@ export default function DashboardPage() {
                   {userName.charAt(0) || 'U'}
                 </span>
               )}
-              {/* Wave badge — signals the greeting context */}
-              <div className="welcome-wave-badge" style={{
-                position: 'absolute', bottom: '-4px', insetInlineEnd: '-4px',
-                width: '24px', height: '24px', borderRadius: '50%',
-                background: 'var(--bg)', border: '2px solid var(--bg2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon name="waving_hand" size={13} color="#0f8d63" />
-              </div>
             </div>
 
             {/* Greeting + meta + quote */}
@@ -348,28 +339,43 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Value row — return pill on one side, big value on the other */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '12px', flexWrap: 'wrap-reverse' }}>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                fontSize: '17px', fontWeight: '900',
-                color: portfolioPositive ? '#22c55e' : '#ef4444',
-                background: portfolioPositive ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)',
-                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`,
-                padding: '8px 14px', borderRadius: '999px',
-                whiteSpace: 'nowrap',
-                boxShadow: `0 0 18px ${portfolioPositive ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
-                letterSpacing: '-0.01em',
+            {/* Value + Return — symmetric 2-column layout. In RTL the first
+                cell sits on the right, so "Current value" is first and the
+                return cell is second (visually appears on the left). */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'stretch' }} className="bal-value-grid">
+              {/* Current value (right side in RTL) */}
+              <div style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid var(--border)',
+                borderRadius: '14px',
+                padding: '16px 18px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                minHeight: '110px',
               }}>
-                <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={16} color="currentColor" />
-                {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
-              </span>
-              <div style={{ textAlign: 'end' }}>
-                <div style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '8px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <div style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
                 </div>
-                <div dir="ltr" className="bal-amount" style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
                   ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </div>
+              </div>
+
+              {/* Return (left side in RTL) */}
+              <div style={{
+                background: portfolioPositive ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.32)' : 'rgba(239,68,68,0.32)'}`,
+                borderRadius: '14px',
+                padding: '16px 18px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                minHeight: '110px',
+                boxShadow: `0 0 22px ${portfolioPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)'} inset`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
+                  {language === 'he' ? 'תשואה' : 'Return'}
+                </div>
+                <div dir="ltr" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                  {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
                 </div>
               </div>
             </div>
