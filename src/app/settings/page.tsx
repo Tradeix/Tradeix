@@ -75,6 +75,9 @@ export default function SettingsPage() {
     borderRadius: 'var(--radius)',
     padding: '24px',
     boxShadow: '0 6px 22px rgba(0,0,0,0.25)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    height: '100%',
   }
 
   const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
@@ -160,6 +163,7 @@ export default function SettingsPage() {
             fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            marginTop: 'auto',
           }}>
             <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
@@ -227,6 +231,7 @@ export default function SettingsPage() {
             opacity: savingPrefs ? 0.7 : 1,
             fontFamily: 'Heebo, sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            marginTop: 'auto',
           }}>
             <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
@@ -277,12 +282,12 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* CTA */}
+          {/* CTA — pinned to bottom for symmetric card heights */}
           {isPro ? (
             <button
               onClick={() => setShowCancelConfirm(true)}
               disabled={cancelingPro}
-              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1 }}
+              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1, marginTop: 'auto' }}
               onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
               onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
             >
@@ -296,6 +301,7 @@ export default function SettingsPage() {
               color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
               fontSize: '14px', fontWeight: '800', textDecoration: 'none',
               transition: 'all 0.15s',
+              marginTop: 'auto',
             }}
               onMouseOver={(e: any) => { e.currentTarget.style.opacity = '0.9' }}
               onMouseOut={(e: any) => { e.currentTarget.style.opacity = '1' }}
