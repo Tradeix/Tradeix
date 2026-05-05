@@ -277,30 +277,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Features list */}
-          <div style={{ marginBottom: '24px' }}>
-            {(isPro ? [
-              { feature: language === 'he' ? 'עד 3 תיקים' : 'Up to 3 portfolios', ok: true },
-              { feature: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades', ok: true },
-              { feature: language === 'he' ? 'עמוד סטטיסטיקות' : 'Statistics page', ok: true },
-              { feature: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive', ok: true },
-              { feature: language === 'he' ? 'עדכונים ותכונות חדשות' : 'New features & updates', ok: true },
-            ] : [
-              { feature: language === 'he' ? 'תיק מסחר אחד' : 'One portfolio', ok: true },
-              { feature: language === 'he' ? 'עד 20 עסקאות' : 'Up to 20 trades', ok: true },
-              { feature: language === 'he' ? 'עמוד סטטיסטיקות' : 'Statistics page', ok: false },
-              { feature: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive', ok: false },
-              { feature: language === 'he' ? 'עסקאות ללא הגבלה' : 'Unlimited trades', ok: false },
-            ]).map((item, i, arr) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                <Icon name={item.ok ? 'check_circle' : 'cancel'} size={14} color={item.ok ? (isPro ? '#f59e0b' : '#22c55e') : 'var(--text3)'} />
-                <span style={{ fontSize: '13px', color: item.ok ? 'var(--text2)' : 'var(--text3)', fontWeight: '600', textDecoration: item.ok ? 'none' : 'line-through' }}>
-                  {item.feature}
-                </span>
-              </div>
-            ))}
-          </div>
-
           {/* CTA */}
           {isPro ? (
             <button
