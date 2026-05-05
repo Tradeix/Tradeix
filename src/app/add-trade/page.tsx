@@ -120,6 +120,19 @@ export default function AddTradePage() {
       if (!res.ok) throw new Error(data.error || 'Analysis failed')
       if (data.fetchedImage && data.fetchedMediaType) {
         setImagePreview(`data:${data.fetchedMediaType};base64,${data.fetchedImage}`)
+        // Convert the fetched base64 to a File so the existing upload logic
+        // in handleSubmit will store the chart image alongside the trade.
+        try {
+          const bin = atob(data.fetchedImage)
+          const arr = new Uint8Array(bin.length)
+          for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i)
+          const ext = (data.fetchedMediaType.split('/')[1] || 'png').replace('jpeg', 'jpg')
+          const fname = `tv-snapshot-${Date.now()}.${ext}`
+          const file = new File([arr], fname, { type: data.fetchedMediaType })
+          setImageFile(file)
+        } catch (e) {
+          console.warn('Could not materialize TV snapshot as File', e)
+        }
       }
       applyAiResult(data)
     } catch (err: any) {
@@ -666,27 +679,44 @@ export default function AddTradePage() {
                   </div>
                 </div>
 
-                {/* RR — only meaningful on a winning trade. RR = reward / risk
-                    based on entry / exit / SL. Hidden entirely for losses. */}
+                {/* RR — only meaningful on a winning trade. RR = |reward|/|risk|
+                    with sanity checks on the SL and exit positions vs direction. */}
                 {tradeData.outcome === 'win' && (() => {
                   const entry = parseFloat(tradeData.entry_price)
                   const exit = parseFloat(tradeData.exit_price)
                   const sl = parseFloat(tradeData.stop_loss)
                   const havePrices = !isNaN(entry) && !isNaN(exit) && !isNaN(sl)
+                  const isLong = tradeData.direction === 'long'
                   let rr: number | null = null
-                  if (havePrices) {
-                    const reward = tradeData.direction === 'long' ? exit - entry : entry - exit
-                    const risk   = tradeData.direction === 'long' ? entry - sl  : sl - entry
+                  let warning: string | null = null
+
+                  if (!havePrices) {
+                    warning = language === 'he' ? 'מלא כניסה / יציאה / SL' : 'Need entry / exit / SL'
+                  } else if (entry === sl) {
+                    warning = language === 'he' ? 'הכניסה זהה ל־SL — לא ניתן לחשב' : 'Entry equals SL — cannot calculate'
+                  } else if (isLong ? sl >= entry : sl <= entry) {
+                    warning = language === 'he'
+                      ? (isLong ? 'ב־LONG ה־SL צריך להיות מתחת לכניסה' : 'ב־SHORT ה־SL צריך להיות מעל הכניסה')
+                      : (isLong ? 'For LONG, SL must be below entry' : 'For SHORT, SL must be above entry')
+                  } else if (isLong ? exit <= entry : exit >= entry) {
+                    warning = language === 'he'
+                      ? (isLong ? 'ב־WIN של LONG היציאה צריכה מעל הכניסה' : 'ב־WIN של SHORT היציאה צריכה מתחת הכניסה')
+                      : (isLong ? 'A winning LONG must close above entry' : 'A winning SHORT must close below entry')
+                  } else {
+                    const risk = Math.abs(entry - sl)
+                    const reward = Math.abs(exit - entry)
                     if (risk > 0) rr = parseFloat((reward / risk).toFixed(2))
                   }
+
                   const rrColor = rr == null ? 'var(--text3)' : rr >= 2 ? '#22c55e' : rr >= 1 ? '#f59e0b' : '#ef4444'
-                  const badge = rr == null
-                    ? (language === 'he' ? 'מלא כניסה / יציאה / SL' : 'Need entry / exit / SL')
+                  const badge = warning ?? (
+                    rr == null ? '—'
                     : rr >= 2 ? (language === 'he' ? 'מצוין' : 'Great')
                     : rr >= 1 ? (language === 'he' ? 'סביר' : 'Fair')
                     : (language === 'he' ? 'נמוך' : 'Low')
+                  )
                   return (
-                    <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div style={{ background: 'var(--bg3)', border: warning ? '1px solid rgba(245,158,11,0.35)' : '1px solid var(--border)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Icon name="analytics" size={16} color={rrColor} />
                         <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -697,7 +727,7 @@ export default function AddTradePage() {
                         <span dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: rrColor, letterSpacing: '-0.02em' }}>
                           {rr == null ? '—' : `1 : ${rr.toFixed(2)}`}
                         </span>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: rrColor, background: `${rrColor === 'var(--text3)' ? 'rgba(255,255,255,0.04)' : rrColor + '15'}`, padding: '2px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: warning ? '#f59e0b' : rrColor, background: warning ? 'rgba(245,158,11,0.1)' : `${rrColor === 'var(--text3)' ? 'rgba(255,255,255,0.04)' : rrColor + '15'}`, padding: '3px 9px', borderRadius: '6px', whiteSpace: 'nowrap', maxWidth: '100%' }}>
                           {badge}
                         </span>
                       </div>

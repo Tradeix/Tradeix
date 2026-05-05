@@ -414,7 +414,7 @@ export default function DashboardPage() {
               <span style={{ fontSize: '12px', fontWeight: '600', color: '#ef4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.losses}L</span>
             </div> },
           { label: tr.winRate, value: `${stats.winRate.toFixed(0)}%`, icon: 'emoji_events', color: '#22c55e' },
-          { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : ''}$${stats.totalPnl.toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
+          { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
           { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#0f8d63' },
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>

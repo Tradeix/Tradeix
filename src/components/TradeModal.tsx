@@ -421,36 +421,52 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
             {/* ── ALL TRADE DATA ── */}
             <div style={{ padding: '18px 20px 24px' }}>
 
-              {/* WIN/LOSS badge */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              {/* Hero — outcome + P&L unified, fully centered */}
+              <div style={{
+                background: isWin ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                border: `1px solid ${isWin ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)'}`,
+                borderRadius: '16px',
+                padding: '20px 20px 22px',
+                marginBottom: '16px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
+                position: 'relative', overflow: 'hidden',
+              }}>
+                {/* Soft radial glow behind the value */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: `radial-gradient(circle at center, ${isWin ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)'} 0%, transparent 65%)`,
+                  pointerEvents: 'none',
+                }} />
+
+                {/* Outcome pill */}
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '8px 16px', borderRadius: '999px',
-                  background: isWin ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-                  border: `1px solid ${isWin ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                  padding: '5px 14px', borderRadius: '999px',
+                  background: isWin ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)',
+                  border: `1px solid ${isWin ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`,
+                  position: 'relative', zIndex: 1,
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.06em' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '900', color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.1em' }}>
                     {isWin ? 'WIN' : 'LOSS'}
                   </span>
                 </div>
-              </div>
 
-              {/* P&L card */}
-              <div style={{
-                background: isWin ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
-                border: `1px solid ${isWin ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
-                borderRadius: '14px', padding: '16px 20px', marginBottom: '16px',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Icon name={isWin ? 'trending_up' : 'trending_down'} size={18} color={isWin ? '#22c55e' : '#ef4444'} />
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>P&L</span>
-                </div>
+                {/* P&L hero number */}
                 <div dir="ltr" style={{
-                  fontSize: '25px', fontWeight: '900', letterSpacing: '-0.02em',
+                  fontSize: '34px', fontWeight: '900', letterSpacing: '-0.03em',
                   color: isWin ? '#22c55e' : '#ef4444',
+                  lineHeight: 1, position: 'relative', zIndex: 1,
+                  fontFamily: 'Heebo, sans-serif',
                 }}>
-                  {isWin ? '+' : '-'}${Math.abs(trade.pnl ?? 0)}
+                  {isWin ? '+' : '-'}${Math.abs(trade.pnl ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </div>
+
+                {/* P&L label */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', position: 'relative', zIndex: 1 }}>
+                  <Icon name={isWin ? 'trending_up' : 'trending_down'} size={13} color="var(--text3)" />
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
+                    P&L
+                  </span>
                 </div>
               </div>
 
