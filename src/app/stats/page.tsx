@@ -145,9 +145,9 @@ export default function StatsPage() {
   )
 
   const TooltipRow = ({ label, value, color }: { label: string; value: string; color: string }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', padding: '3px 0' }}>
-      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text3)' }}>{label}</span>
-      <span dir="ltr" style={{ fontSize: '13px', fontWeight: '800', color }}>{value}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', padding: '2px 0' }}>
+      <span style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text3)' }}>{label}</span>
+      <span dir="ltr" style={{ fontSize: '11px', fontWeight: '800', color }}>{value}</span>
     </div>
   )
 
@@ -398,32 +398,34 @@ export default function StatsPage() {
                         transform: isHover && has ? 'translateY(-2px)' : 'none',
                       }} />
 
-                      {/* Tooltip */}
+                      {/* Tooltip — anchored to the bottom of the bar slot
+                          (right above the X axis labels) so it doesn't float
+                          over the chart header. Compact for mobile. */}
                       {isHover && (
                         <div style={{
-                          position: 'absolute', bottom: has ? `calc(${Math.max(wr, 1.5)}% + 12px)` : '20px',
+                          position: 'absolute', bottom: '6px',
                           left: '50%', transform: 'translateX(-50%)',
                           background: '#0f1117', border: `1px solid ${has ? color : 'var(--border)'}`,
-                          borderRadius: '12px', padding: '12px 16px', minWidth: '170px',
-                          boxShadow: '0 12px 36px rgba(0,0,0,0.55)', zIndex: 10,
+                          borderRadius: '10px', padding: '8px 11px', minWidth: '130px',
+                          boxShadow: '0 8px 22px rgba(0,0,0,0.55)', zIndex: 10,
                           pointerEvents: 'none',
                           fontFamily: 'Heebo, sans-serif',
                         }}
                           dir={language === 'he' ? 'rtl' : 'ltr'}
                         >
-                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px', textAlign: 'start' }}>
+                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text)', marginBottom: '5px', textAlign: 'start', letterSpacing: '0.02em' }}>
                             {DAY_NAMES_LONG[i]}
                           </div>
                           {!has ? (
-                            <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600' }}>
-                              {language === 'he' ? 'אין עסקאות ביום זה' : 'No trades'}
+                            <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
+                              {language === 'he' ? 'אין עסקאות' : 'No trades'}
                             </div>
                           ) : (
                             <>
                               <TooltipRow label={language === 'he' ? 'עסקאות' : 'Trades'} value={String(b.count)} color="var(--text)" />
-                              <TooltipRow label={language === 'he' ? 'ניצחונות' : 'Wins'} value={String(b.wins)} color="#22c55e" />
+                              <TooltipRow label={language === 'he' ? 'נצחונות' : 'Wins'} value={String(b.wins)} color="#22c55e" />
                               <TooltipRow label={language === 'he' ? 'הפסדים' : 'Losses'} value={String(b.losses)} color="#ef4444" />
-                              <div style={{ height: '1px', background: 'var(--border)', margin: '6px 0' }} />
+                              <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
                               <TooltipRow label={language === 'he' ? 'אחוז זכייה' : 'Win rate'} value={`${wr.toFixed(0)}%`} color={color} />
                             </>
                           )}
