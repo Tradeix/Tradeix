@@ -276,7 +276,7 @@ export default function PortfoliosPage() {
               </div>
             </div>
 
-            <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ width: '100%', opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}</button>
+            <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ width: '100%', opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Icon name="check" size={17} color="#fff" strokeWidth={2.5} /> {saving ? tr.saving : tr.save}</button>
           </div>
         </div>
       )}

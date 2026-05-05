@@ -321,7 +321,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
               </div>
 
               <button onClick={handleSave} disabled={saving} style={{ width: '100%', background: 'linear-gradient(135deg, #0f8d63, #0d7755)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: '700', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
-                <Icon name="save" size={15} color="#fff" /> {saving ? tr.saving : tr.save}
+                <Icon name="check" size={16} color="#fff" strokeWidth={2.5} /> {saving ? tr.saving : tr.save}
               </button>
             </div>
           </>

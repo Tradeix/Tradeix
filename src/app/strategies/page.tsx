@@ -738,7 +738,7 @@ export default function StrategiesPage() {
                 transition: 'opacity 0.15s',
                 boxShadow: '0 4px 16px rgba(15,141,99,0.25)',
               }}>
-                <Icon name="save" size={16} color="#fff" /> {saving ? tr.saving : tr.save}
+                <Icon name="check" size={17} color="#fff" strokeWidth={2.5} /> {saving ? tr.saving : tr.save}
               </button>
             </div>
           </div>

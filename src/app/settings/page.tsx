@@ -161,7 +161,7 @@ export default function SettingsPage() {
             opacity: saving ? 0.7 : 1, fontFamily: 'Heebo, sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           }}>
-            <Icon name="save" size={15} color="#fff" />
+            <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
         </div>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
             fontFamily: 'Heebo, sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           }}>
-            <Icon name="save" size={15} color="#fff" />
+            <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
         </div>
