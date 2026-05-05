@@ -406,12 +406,23 @@ body:has(.app-modal-overlay) header[style*="sticky"] { display: none !important;
   border-color: rgba(0,0,0,0.06) !important;
 }
 
-/* ── Grid background (light) ── */
+/* ── Grid background (light) ──
+   Sits over the gray canvas (--bg) to add the same subtle texture the
+   dark theme shows. Slightly stronger than 0.04 so the lines are
+   readable against the gray background, but still soft. */
 [data-theme="light"] .grid-bg {
-  background: #ffffff !important;
+  background: #eef0f4 !important;
   background-image:
-    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px) !important;
+    linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px) !important;
+}
+
+/* ── Card lift in light mode ──
+   Cards live on a gray canvas now; give them a soft shadow so the white
+   blocks read as elevated, not flat patches. Only fires on elements that
+   actually use --bg2 as their background. */
+[data-theme="light"] [style*="var(--bg2)"]:not(input):not(select):not(textarea):not(.app-modal-overlay):not(.grid-bg):not(.sidebar-el) {
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.05);
 }
 
 /* ── Date picker icon (light) ── */

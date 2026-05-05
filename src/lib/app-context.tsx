@@ -30,18 +30,21 @@ function applyTheme(t: Theme) {
   const root = document.documentElement
   if (t === 'light') {
     root.setAttribute('data-theme', 'light')
-    root.style.setProperty('--bg', '#ffffff')
-    root.style.setProperty('--bg2', '#f5f6f8')
-    root.style.setProperty('--bg3', '#ebedf2')
-    root.style.setProperty('--bg4', '#e2e4ea')
-    root.style.setProperty('--border', 'rgba(0,0,0,0.08)')
-    root.style.setProperty('--border2', 'rgba(0,0,0,0.12)')
-    root.style.setProperty('--text', '#111827')
+    // Page is a soft gray, cards sit ABOVE it in white. This gives the
+    // dashboard a clear card-on-canvas hierarchy in light mode instead of
+    // the previous "everything is off-white" flatness.
+    root.style.setProperty('--bg', '#eef0f4')
+    root.style.setProperty('--bg2', '#ffffff')
+    root.style.setProperty('--bg3', '#f4f5f8')
+    root.style.setProperty('--bg4', '#e8eaef')
+    root.style.setProperty('--border', 'rgba(15,23,42,0.08)')
+    root.style.setProperty('--border2', 'rgba(15,23,42,0.14)')
+    root.style.setProperty('--text', '#0f1117')
     root.style.setProperty('--text2', '#374151')
     root.style.setProperty('--text3', '#6b7280')
-    root.style.setProperty('--glass-bg', 'rgba(255,255,255,0.75)')
-    root.style.setProperty('--glass-border', 'rgba(0,0,0,0.06)')
-    document.body.style.cssText = 'background: #ffffff !important; color: #111827 !important;'
+    root.style.setProperty('--glass-bg', 'rgba(255,255,255,0.85)')
+    root.style.setProperty('--glass-border', 'rgba(15,23,42,0.08)')
+    document.body.style.cssText = 'background: #eef0f4 !important; color: #0f1117 !important;'
     const style = document.getElementById('tradeix-theme-style') || document.createElement('style')
     style.id = 'tradeix-theme-style'
     style.textContent = `
