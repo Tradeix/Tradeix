@@ -204,7 +204,7 @@ export default function DashboardPage() {
           background: `
             linear-gradient(135deg, rgba(255,255,255,0.028) 0%, rgba(255,255,255,0.008) 44%, rgba(15,141,99,0.055) 100%),
             radial-gradient(circle at 8% 12%, rgba(15,141,99,0.11), transparent 31%),
-            #0a0d12
+            var(--bg2)
           `,
           border: '1px solid rgba(255,255,255,0.065)',
           position: 'relative',

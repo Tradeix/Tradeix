@@ -5,15 +5,15 @@
 
 :root {
   /* Dark premium — deep blue-black canvas, layered card surfaces */
-  --bg: #0b0d13;
-  --bg2: #161924;
-  --bg3: #1f2230;
-  --bg4: #2a2e3e;
-  --border: rgba(255, 255, 255, 0.12);
-  --border2: rgba(255, 255, 255, 0.18);
-  --text: #eef0f6;
-  --text2: #9a9eb2;
-  --text3: #585d72;
+  --bg: #0a0f18;
+  --bg2: #111827;
+  --bg3: #1a2433;
+  --bg4: #243247;
+  --border: rgba(180, 204, 235, 0.11);
+  --border2: rgba(180, 204, 235, 0.18);
+  --text: #f1f5fb;
+  --text2: #a7b3c6;
+  --text3: #657287;
   --blue: #0f8d63;
   --blue2: #0d7755;
   --blue3: rgba(15, 141, 99, 0.12);
@@ -24,8 +24,8 @@
   --amber: #f59e0b;
   --radius: 16px;
   --radius-sm: 12px;
-  --glass-bg: #12141c;
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-bg: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(15,141,99,0.025));
+  --glass-border: rgba(180, 204, 235, 0.08);
 }
 
 [data-theme="light"] {
