@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+  const isLight = theme === 'light'
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -32,6 +33,11 @@ export default function SettingsPage() {
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
     })
   }, [])
+
+  useEffect(() => {
+    setPendingLang(language)
+    setPendingTheme(theme)
+  }, [language, theme])
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -67,17 +73,38 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleSavePreferences() {
+    const nextLang = pendingLang
+    const nextTheme = pendingTheme
+    setSavingPrefs(true)
+    try {
+      if (nextTheme !== theme) await setTheme(nextTheme)
+      if (nextLang !== language) await setLanguage(nextLang)
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+      toast.success(nextLang === 'he' ? '׳”׳”׳¢׳“׳₪׳•׳× ׳ ׳©׳׳¨׳• ׳‘׳”׳¦׳׳—׳”' : 'Preferences saved successfully')
+    } catch {
+      toast.error(nextLang === 'he' ? '׳©׳’׳™׳׳” ׳‘׳©׳׳™׳¨׳”' : 'Save failed')
+    } finally {
+      setSavingPrefs(false)
+    }
+  }
+
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
 
   const glass = {
-    background: 'var(--bg2)',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius)',
+    background: isLight ? '#ffffff' : 'linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012))',
+    border: `1px solid ${isLight ? 'rgba(15,23,42,0.08)' : 'rgba(255,255,255,0.07)'}`,
+    borderRadius: '16px',
     padding: '24px',
-    boxShadow: '0 6px 22px rgba(0,0,0,0.25)',
+    boxShadow: isLight
+      ? '0 10px 28px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.85)'
+      : '0 16px 38px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04)',
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
+    minHeight: '420px',
+    position: 'relative' as const,
+    zIndex: 1,
   }
 
   const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
@@ -96,7 +123,7 @@ export default function SettingsPage() {
   )
 
   return (
-    <div style={{ fontFamily: 'Heebo, sans-serif' }}>
+    <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)', minHeight: 'calc(100vh - 140px)', position: 'relative', zIndex: 1 }}>
       <PageHeader
         title={language === 'he' ? 'הגדרות' : 'Settings'}
         subtitle={language === 'he' ? 'ניהול חשבון והעדפות' : 'Account management & preferences'}
@@ -104,7 +131,7 @@ export default function SettingsPage() {
       />
 
       {/* 3 cards side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }} className="settings-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '20px', marginBottom: '20px', alignItems: 'stretch' }} className="settings-grid">
 
         {/* ── CARD 1: Profile ── */}
         <div style={{ ...glass }}>
@@ -214,16 +241,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <button onClick={async () => {
-            setSavingPrefs(true)
-            try {
-              if (pendingLang !== language) await setLanguage(pendingLang)
-              if (pendingTheme !== theme) await setTheme(pendingTheme)
-              toast.success(language === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
-                    } catch {
-              toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
-            } finally { setSavingPrefs(false) }
-          }} disabled={savingPrefs} style={{
+          <button onClick={handleSavePreferences} disabled={savingPrefs} style={{
             width: '100%', background: '#0f8d63',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
             fontSize: '14px', fontWeight: '700',
@@ -243,8 +261,8 @@ export default function SettingsPage() {
           ...glass, position: 'relative', overflow: 'hidden',
           border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(15,141,99,0.15)',
           background: isPro
-            ? 'rgba(245,158,11,0.04)'
-            : 'var(--glass-bg)',
+            ? (isLight ? '#fffbeb' : 'rgba(245,158,11,0.04)')
+            : glass.background,
         }}>
           <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(15,141,99,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
@@ -347,6 +365,7 @@ export default function SettingsPage() {
       )}
 
       <style>{`
+        .settings-grid > div { min-width: 0; }
         @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
