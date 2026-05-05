@@ -202,38 +202,38 @@ export default function DashboardPage() {
           padding: '24px',
           borderRadius: '22px',
           background: `
-            linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.018) 42%, rgba(15,141,99,0.08) 100%),
-            radial-gradient(circle at 8% 12%, rgba(15,141,99,0.16), transparent 30%),
-            var(--bg2)
+            linear-gradient(135deg, rgba(255,255,255,0.028) 0%, rgba(255,255,255,0.008) 44%, rgba(15,141,99,0.055) 100%),
+            radial-gradient(circle at 8% 12%, rgba(15,141,99,0.11), transparent 31%),
+            #0a0d12
           `,
-          border: '1px solid rgba(255,255,255,0.09)',
+          border: '1px solid rgba(255,255,255,0.065)',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 18px 55px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.08)',
+          boxShadow: '0 18px 55px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.045)',
           minHeight: '148px',
         }}>
           {/* Decorative glow */}
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '34px 34px', maskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', top: '-90px', insetInlineEnd: '-70px', width: '290px', height: '290px', background: 'radial-gradient(circle, rgba(15,141,99,0.2) 0%, rgba(15,141,99,0.07) 34%, transparent 68%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '8%', width: '300px', height: '220px', background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 62%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px)', backgroundSize: '34px 34px', maskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-90px', insetInlineEnd: '-70px', width: '290px', height: '290px', background: 'radial-gradient(circle, rgba(15,141,99,0.14) 0%, rgba(15,141,99,0.045) 34%, transparent 68%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '8%', width: '300px', height: '220px', background: 'radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 62%)', pointerEvents: 'none' }} />
 
           <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
             <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', gap: '18px', minWidth: 0 }}>
             {/* Avatar tile — user photo if available, else initial */}
             <div className="welcome-tile" style={{
               width: '74px', height: '74px', borderRadius: '22px',
-              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(145deg, #ffffff 0%, #e9fff6 100%)',
-              border: '1px solid rgba(255,255,255,0.28)',
+              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(145deg, #171c24 0%, #0d1414 100%)',
+              border: '1px solid rgba(15,141,99,0.24)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 18px 34px rgba(0,0,0,0.24), 0 0 0 6px rgba(255,255,255,0.035)',
+              boxShadow: '0 18px 34px rgba(0,0,0,0.36), 0 0 0 6px rgba(15,141,99,0.035), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
               {userAvatar ? (
                 <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{
-                  fontSize: '34px', fontWeight: '900', color: '#23282f',
+                  fontSize: '34px', fontWeight: '900', color: '#0f8d63',
                   letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
                   textTransform: 'uppercase',
                 }}>
@@ -248,8 +248,8 @@ export default function DashboardPage() {
                   display: 'inline-flex', alignItems: 'center', gap: '7px',
                   fontSize: '12px', fontWeight: '800',
                   color: 'rgba(229,226,225,0.72)',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.09)',
+                  background: 'rgba(15,141,99,0.07)',
+                  border: '1px solid rgba(15,141,99,0.16)',
                   borderRadius: '999px',
                   padding: '5px 10px',
                   lineHeight: 1,
@@ -280,9 +280,9 @@ export default function DashboardPage() {
                 minWidth: '320px',
                 padding: '18px 20px',
                 borderRadius: '18px',
-                background: 'rgba(5,7,10,0.28)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                background: 'rgba(2,4,7,0.48)',
+                border: '1px solid rgba(255,255,255,0.055)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035), 0 10px 28px rgba(0,0,0,0.16)',
                 backdropFilter: 'blur(10px)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
