@@ -470,68 +470,69 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 </div>
               </div>
 
-              {/* Data grid */}
-              <div style={{ ...glass, overflow: 'hidden' }}>
-                {/* Date */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '4px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0 }}>
-                    <Icon name="calendar_today" size={14} color="var(--text3)" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
-                  </div>
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text2)', whiteSpace: 'nowrap' }}>{numericDate}</span>
-                </div>
-                {/* Entry price */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+              {/* Data grid — 2 columns × 3 rows. Notes spans full width. */}
+              <div style={{ ...glass, overflow: 'hidden', padding: '6px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--border)' }}>
+                {/* Row 1 — Date | Entry */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="login" size={14} color="#0f8d63" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
+                    <Icon name="calendar_today" size={13} color="var(--text3)" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.entry_price != null ? '#0f8d63' : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', whiteSpace: 'nowrap' }}>{numericDate}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <Icon name="login" size={13} color="#0f8d63" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
+                  </div>
+                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.entry_price != null ? '#0f8d63' : 'var(--text3)' }}>
                     {trade.entry_price ?? '—'}
                   </span>
                 </div>
-                {/* SL — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+
+                {/* Row 2 — SL | Exit */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="dangerous" size={14} color="#ef4444" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
+                    <Icon name="dangerous" size={13} color="#ef4444" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'var(--text3)' }}>
                     {trade.stop_loss ?? '—'}
                   </span>
                 </div>
-                {/* Exit price — always shown */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="logout" size={14} color={isWin ? '#22c55e' : '#ef4444'} />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: isWin ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
+                    <Icon name="logout" size={13} color={isWin ? '#22c55e' : '#ef4444'} />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'var(--text3)' }}>
                     {trade.exit_price ?? '—'}
                   </span>
                 </div>
-                {/* RR ratio — only meaningful on a winning trade */}
+
+                {/* Row 3 — RR (only if win, else skip the row) */}
                 {trade.outcome === 'win' && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                      <Icon name="analytics" size={14} color="#0f8d63" />
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
+                      <Icon name="analytics" size={13} color="#0f8d63" />
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                     </div>
-                    <span dir="ltr" style={{ fontSize: '15px', fontWeight: '900', color: trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>
+                    <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>
                       {trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(2)}` : '—'}
                     </span>
                   </div>
                 )}
-                {/* Notes — always shown */}
-                <div style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: trade.notes ? '8px' : '0' }}>
-                    <Icon name="notes" size={14} color="var(--text3)" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
+
+                {/* Row 4 — Notes (full width) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <Icon name="notes" size={13} color="var(--text3)" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
                   </div>
                   {trade.notes ? (
-                    <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.65, fontWeight: '500', paddingInlineStart: '21px' }}>{trade.notes}</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.65, fontWeight: '500' }}>{trade.notes}</div>
                   ) : (
-                    <div style={{ fontSize: '13px', color: 'var(--text3)', fontStyle: 'italic', paddingInlineStart: '21px' }}>—</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text3)', fontStyle: 'italic' }}>—</div>
                   )}
                 </div>
               </div>
