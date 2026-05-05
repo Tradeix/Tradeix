@@ -316,25 +316,34 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ padding: '22px 26px 18px', position: 'relative' }}>
-            {/* Name row with glowing dot */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+          <div className="bal-header" style={{ padding: '24px 26px 22px', position: 'relative' }}>
+            {/* Name row — glowing dot + portfolio name + market pill */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
               <span style={{
-                width: '11px', height: '11px', borderRadius: '50%',
+                width: '12px', height: '12px', borderRadius: '50%',
                 background: portfolioColor,
-                boxShadow: `0 0 12px ${portfolioColor}, 0 0 22px ${portfolioColor}66`,
+                boxShadow: `0 0 14px ${portfolioColor}, 0 0 26px ${portfolioColor}77`,
                 flexShrink: 0,
                 animation: 'pulseGlow 2.4s ease-in-out infinite',
               }} />
-              <span className="bal-name" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
+              <span className="bal-name" style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.015em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {activePortfolio?.name}
               </span>
-              <span style={{ fontSize: '11px', fontWeight: '700', color: '#0f8d63', background: 'rgba(15,141,99,0.1)', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', background: 'rgba(15,141,99,0.12)', border: '1px solid rgba(15,141,99,0.25)', padding: '3px 10px', borderRadius: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 {mktLabel}
               </span>
               {initialCapital > 0 && (
-                <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginInlineStart: 'auto' }}>
-                  {language === 'he' ? 'קרן' : 'Capital'}: <span dir="ltr" style={{ color: 'var(--text2)' }}>${initialCapital.toLocaleString()}</span>
+                <span style={{
+                  marginInlineStart: 'auto',
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  fontSize: '13px', fontWeight: '700',
+                  color: 'var(--text2)',
+                  background: 'var(--bg3)', border: '1px solid var(--border)',
+                  padding: '5px 12px', borderRadius: '999px',
+                }}>
+                  <Icon name="payments" size={13} color="var(--text3)" />
+                  {language === 'he' ? 'קרן' : 'Capital'}
+                  <span dir="ltr" style={{ color: 'var(--text)', fontWeight: '900' }}>${initialCapital.toLocaleString()}</span>
                 </span>
               )}
             </div>
@@ -342,20 +351,24 @@ export default function DashboardPage() {
             {/* Value row — return pill on one side, big value on the other */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '12px', flexWrap: 'wrap-reverse' }}>
               <span style={{
-                fontSize: '14px', fontWeight: '800',
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                fontSize: '17px', fontWeight: '900',
                 color: portfolioPositive ? '#22c55e' : '#ef4444',
-                background: portfolioPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.32)' : 'rgba(239,68,68,0.32)'}`,
-                padding: '5px 11px', borderRadius: '999px',
+                background: portfolioPositive ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)',
+                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`,
+                padding: '8px 14px', borderRadius: '999px',
                 whiteSpace: 'nowrap',
+                boxShadow: `0 0 18px ${portfolioPositive ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
+                letterSpacing: '-0.01em',
               }}>
+                <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={16} color="currentColor" />
                 {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
               </span>
               <div style={{ textAlign: 'end' }}>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <div style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '8px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
                 </div>
-                <div dir="ltr" className="bal-amount" style={{ fontSize: '38px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                <div dir="ltr" className="bal-amount" style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
                   ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </div>
               </div>
