@@ -306,62 +306,84 @@ export default function DashboardPage() {
           ══════════════════════════════════════════════ */}
       <div className="top-row section-anim anim-delay-1" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-        {/* ── Total Balance Card ──
-            Border simply uses the portfolio's chosen color; no glow.
-            Big amount still flips green/red with P&L direction. */}
-        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', border: `1px solid ${portfolioColor}`, position: 'relative' }}>
+        {/* ── Total Balance Card — redesigned ──
+            Glowing portfolio-color dot next to the name (no full border),
+            big "current value" headline with a +X.X% return pill,
+            small "principal" hint under the headline, and a 3-tile row
+            (Trades / Profit Factor / Win Rate) at the bottom. */}
+        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+          {/* Soft glow keyed to portfolio color in the top corner */}
+          <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
-          {/* Portfolio name header */}
-          <div className="bal-header" style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${portfolioColor}30`, position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div className="bal-icon" style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon name="cases" size={22} color="#0f8d63" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="bal-name" style={{ fontSize: '21px', fontWeight: '800', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activePortfolio?.name}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#0f8d63', background: 'rgba(15,141,99,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{mktLabel}</span>
-                  {initialCapital > 0 && (
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
-                      {language === 'he' ? 'קרן' : 'Capital'}: <span style={{ color: 'var(--text)' }}>${initialCapital.toLocaleString()}</span>
-                    </span>
-                  )}
+          {/* Top — name + capital + value + return badge */}
+          <div className="bal-header" style={{ padding: '22px 26px 18px', position: 'relative' }}>
+            {/* Name row with glowing dot */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              <span style={{
+                width: '11px', height: '11px', borderRadius: '50%',
+                background: portfolioColor,
+                boxShadow: `0 0 12px ${portfolioColor}, 0 0 22px ${portfolioColor}66`,
+                flexShrink: 0,
+                animation: 'pulseGlow 2.4s ease-in-out infinite',
+              }} />
+              <span className="bal-name" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
+                {activePortfolio?.name}
+              </span>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: '#0f8d63', background: 'rgba(15,141,99,0.1)', padding: '2px 8px', borderRadius: '6px' }}>
+                {mktLabel}
+              </span>
+              {initialCapital > 0 && (
+                <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginInlineStart: 'auto' }}>
+                  {language === 'he' ? 'קרן' : 'Capital'}: <span dir="ltr" style={{ color: 'var(--text2)' }}>${initialCapital.toLocaleString()}</span>
+                </span>
+              )}
+            </div>
+
+            {/* Value row — return pill on one side, big value on the other */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '12px', flexWrap: 'wrap-reverse' }}>
+              <span style={{
+                fontSize: '14px', fontWeight: '800',
+                color: portfolioPositive ? '#22c55e' : '#ef4444',
+                background: portfolioPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.32)' : 'rgba(239,68,68,0.32)'}`,
+                padding: '5px 11px', borderRadius: '999px',
+                whiteSpace: 'nowrap',
+              }}>
+                {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
+              </span>
+              <div style={{ textAlign: 'end' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                  {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
+                </div>
+                <div dir="ltr" className="bal-amount" style={{ fontSize: '38px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                  ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Balance section */}
-          <div className="bal-section" style={{ padding: '20px 28px', position: 'relative' }}>
-            <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '8px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              {language === 'he' ? 'שווי תיק נוכחי' : 'Total Balance'}
-            </div>
-            <div dir="ltr" className="bal-amount" style={{ fontSize: '41px', fontWeight: '800', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-              ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-          </div>
-
-          {/* Mini stats row — labels are neutral light gray (14px); values
-              still flip green/red based on direction. */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'var(--border)', marginTop: 'auto' }}>
-            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>P&L</div>
-              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-                {portfolioValue.allTimePnl >= 0 ? '+' : '-'}${Math.abs(portfolioValue.allTimePnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          {/* Bottom — 3 stat tiles */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', padding: '0 16px 16px', marginTop: 'auto' }}>
+            {[
+              { label: language === 'he' ? 'עסקאות' : 'Trades', value: stats.totalTrades, color: 'var(--text)' },
+              { label: 'Profit Factor', value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
+              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: stats.totalTrades > 0 ? `${stats.winRate.toFixed(0)}%` : '—', color: stats.winRate >= 50 ? '#22c55e' : '#ef4444' },
+            ].map((t, i) => (
+              <div key={i} style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid var(--border)',
+                borderRadius: '12px',
+                padding: '14px 10px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '6px' }}>
+                  {t.label}
+                </div>
+                <div dir="ltr" style={{ fontSize: '20px', fontWeight: '900', color: t.color, letterSpacing: '-0.02em', lineHeight: 1 }}>
+                  {t.value}
+                </div>
               </div>
-            </div>
-            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
-              <div dir="ltr" className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-                {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
-              </div>
-            </div>
-            <div style={{ background: 'var(--bg2)', padding: '14px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '6px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drawdown</div>
-              <div className="bal-mini-val" style={{ fontSize: '17px', fontWeight: '700', color: portfolioPositive ? '#22c55e' : '#ef4444' }}>
-                -{portfolioValue.maxDrawdown.toFixed(1)}%
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
