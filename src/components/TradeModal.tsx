@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Trade } from '@/types'
+import { Trade, Strategy } from '@/types'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
@@ -35,12 +35,27 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
     pnl: Math.abs(trade.pnl ?? 0).toString(),
     notes: trade.notes || '',
     traded_at: trade.traded_at ? new Date(trade.traded_at).toISOString().split('T')[0] : '',
+    strategy_id: trade.strategy_id || '',
   })
+  const [strategies, setStrategies] = useState<Strategy[]>([])
+  const [strategiesLoaded, setStrategiesLoaded] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
   const [lightbox, setLightbox] = useState(false)
   const { language } = useApp()
   const tr = t[language]
   const supabase = createClient()
+
+  // Load the strategies for this trade's portfolio so the user can switch
+  // strategy from the edit form. Runs once when the modal mounts.
+  useEffect(() => {
+    if (!trade.portfolio_id) { setStrategiesLoaded(true); return }
+    supabase.from('strategies').select('*').eq('portfolio_id', trade.portfolio_id).order('name').then(({ data }) => {
+      if (data) setStrategies(data as Strategy[])
+      setStrategiesLoaded(true)
+    })
+  }, [trade.portfolio_id])
+
+  const currentStrategy = strategies.find(s => s.id === (editing ? form.strategy_id : trade.strategy_id))
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -95,6 +110,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
         notes: form.notes,
         traded_at: form.traded_at,
         outcome: form.outcome,
+        strategy_id: form.strategy_id || null,
       }).eq('id', trade.id)
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
@@ -312,6 +328,51 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 )}
               </div>
 
+              {/* Strategy — selectable when strategies exist, info-only otherwise */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
+                </label>
+                {strategies.length > 0 ? (
+                  <div className="select-wrap">
+                    <select
+                      value={form.strategy_id}
+                      onChange={e => setForm(p => ({ ...p, strategy_id: e.target.value }))}
+                    >
+                      <option value="">{language === 'he' ? 'ללא אסטרטגיה' : 'No strategy'}</option>
+                      {strategies.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px',
+                    background: 'var(--bg3)', border: '1px dashed var(--border)',
+                    borderRadius: '10px', padding: '10px 14px',
+                    color: 'var(--text3)', fontSize: '13px', fontWeight: '500',
+                    cursor: 'not-allowed', userSelect: 'none',
+                    fontFamily: 'Heebo, sans-serif',
+                  }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Icon name="info" size={14} color="var(--text3)" />
+                      {strategiesLoaded
+                        ? (language === 'he' ? 'אין כרגע אסטרטגיות פעילות' : 'No active strategies yet')
+                        : (language === 'he' ? 'טוען...' : 'Loading...')}
+                    </span>
+                    <span style={{
+                      fontSize: '11px', fontWeight: '700',
+                      color: 'var(--text3)', background: 'var(--bg2)',
+                      border: '1px solid var(--border)',
+                      padding: '4px 8px', borderRadius: '6px',
+                      opacity: 0.6,
+                    }}>
+                      {language === 'he' ? 'לא זמין' : 'Disabled'}
+                    </span>
+                  </div>
+                )}
+              </div>
+
               {/* Notes */}
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -522,6 +583,19 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     </span>
                   </div>
                 )}
+
+                {/* Strategy (full width row) — always shown */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <Icon name="psychology" size={13} color="var(--text3)" />
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: currentStrategy ? 'var(--text)' : 'var(--text3)' }}>
+                    {currentStrategy?.name || (language === 'he' ? 'ללא אסטרטגיה' : 'No strategy')}
+                  </span>
+                </div>
 
                 {/* Row 4 — Notes (full width) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
