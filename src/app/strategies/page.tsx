@@ -651,21 +651,20 @@ export default function StrategiesPage() {
       {/* ── POPUP MODAL ── */}
       {showForm && (
         <div
+          className="app-modal-overlay"
           onClick={() => { setShowForm(false); setEditingId(null) }}
           style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
             background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '20px', animation: 'fadeIn 0.2s ease',
+            animation: 'fadeIn 0.2s ease',
           }}
         >
           <div
+            className="app-modal-card"
             dir={isRTL ? 'rtl' : 'ltr'}
             onClick={e => e.stopPropagation()}
             style={{
               background: 'var(--bg2)', border: '1px solid var(--border)',
               borderRadius: '20px', width: '100%', maxWidth: '480px',
-              maxHeight: '90vh', overflow: 'auto',
               animation: 'modalIn 0.25s ease',
               boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
             }}
