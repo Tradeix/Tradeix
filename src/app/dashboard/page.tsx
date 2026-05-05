@@ -199,33 +199,41 @@ export default function DashboardPage() {
         return (
         <div className="welcome-section section-anim" style={{
           marginBottom: '28px',
-          padding: '28px 32px',
-          borderRadius: 'var(--radius)',
-          background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(15,141,99,0.04) 100%)',
-          border: '1px solid var(--border)',
+          padding: '24px',
+          borderRadius: '22px',
+          background: `
+            linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.018) 42%, rgba(15,141,99,0.08) 100%),
+            radial-gradient(circle at 8% 12%, rgba(15,141,99,0.16), transparent 30%),
+            var(--bg2)
+          `,
+          border: '1px solid rgba(255,255,255,0.09)',
           position: 'relative',
           overflow: 'hidden',
+          boxShadow: '0 18px 55px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.08)',
+          minHeight: '148px',
         }}>
           {/* Decorative glow */}
-          <div style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '260px', height: '260px', background: 'radial-gradient(circle, rgba(15,141,99,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-40px', insetInlineStart: '-40px', width: '160px', height: '160px', background: 'radial-gradient(circle, rgba(15,141,99,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '34px 34px', maskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-90px', insetInlineEnd: '-70px', width: '290px', height: '290px', background: 'radial-gradient(circle, rgba(15,141,99,0.2) 0%, rgba(15,141,99,0.07) 34%, transparent 68%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '8%', width: '300px', height: '220px', background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 62%)', pointerEvents: 'none' }} />
 
-          <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '22px' }}>
+          <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
+            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', gap: '18px', minWidth: 0 }}>
             {/* Avatar tile — user photo if available, else initial */}
             <div className="welcome-tile" style={{
-              width: '60px', height: '60px', borderRadius: '16px',
-              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(135deg, rgba(15,141,99,0.18), rgba(15,141,99,0.06))',
-              border: '1px solid rgba(15,141,99,0.25)',
+              width: '74px', height: '74px', borderRadius: '22px',
+              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(145deg, #ffffff 0%, #e9fff6 100%)',
+              border: '1px solid rgba(255,255,255,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 0 24px rgba(15,141,99,0.08) inset',
+              boxShadow: '0 18px 34px rgba(0,0,0,0.24), 0 0 0 6px rgba(255,255,255,0.035)',
             }}>
               {userAvatar ? (
                 <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{
-                  fontSize: '27px', fontWeight: '800', color: '#0f8d63',
+                  fontSize: '34px', fontWeight: '900', color: '#23282f',
                   letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
                   textTransform: 'uppercase',
                 }}>
@@ -234,31 +242,55 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Greeting + meta + quote */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-                <h2 className="welcome-title" style={{
-                  fontSize: '25px', fontWeight: '800', margin: 0,
-                  color: 'var(--text)', letterSpacing: '-0.02em',
-                  fontFamily: 'Heebo, sans-serif', lineHeight: 1.1,
+            <div style={{ minWidth: 0 }}>
+              <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '7px',
+                  fontSize: '12px', fontWeight: '800',
+                  color: 'rgba(229,226,225,0.72)',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.09)',
+                  borderRadius: '999px',
+                  padding: '5px 10px',
+                  lineHeight: 1,
                 }}>
-                  {getGreeting()}, {userName}
-                </h2>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 10px rgba(34,197,94,0.8)' }} />
+                  TRADEIX
+                </span>
                 <span className="welcome-date" style={{
-                  fontSize: '13px', fontWeight: '500', color: 'var(--text3)',
+                  fontSize: '13px', fontWeight: '700', color: 'var(--text3)',
                   letterSpacing: '0.01em',
                 }}>
                   {dateLabel}
                 </span>
               </div>
+                <h2 className="welcome-title" style={{
+                  fontSize: '31px', fontWeight: '900', margin: 0,
+                  color: 'var(--text)', letterSpacing: '-0.02em',
+                  fontFamily: 'Heebo, sans-serif', lineHeight: 1.04,
+                  textShadow: '0 10px 28px rgba(0,0,0,0.22)',
+                }}>
+                  {getGreeting()}, {userName}
+                </h2>
+            </div>
+            </div>
 
               <div className="welcome-quote-wrap" style={{
-                marginTop: '14px',
-                paddingInlineStart: '14px',
-                borderInlineStart: '2px solid rgba(15,141,99,0.35)',
+                width: 'min(42%, 520px)',
+                minWidth: '320px',
+                padding: '18px 20px',
+                borderRadius: '18px',
+                background: 'rgba(5,7,10,0.28)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(10px)',
               }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
+                  <Icon name="auto_awesome" size={15} color="#0f8d63" />
+                  FOCUS
+                </div>
                 <p className="welcome-quote" key={quoteIndex} style={{
-                  fontSize: '15px', fontWeight: '500', color: 'var(--text2)',
+                  fontSize: '15.5px', fontWeight: '700', color: 'rgba(238,240,246,0.82)',
                   margin: 0, lineHeight: 1.55,
                   fontFamily: 'Heebo, sans-serif',
                   animation: 'quoteFade 18s ease-in-out',
@@ -267,7 +299,6 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-          </div>
         </div>
         )
       })()}
@@ -581,11 +612,14 @@ export default function DashboardPage() {
           .balance-card .bal-mini-val { font-size: 14px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
           .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
-          .welcome-inner { gap: 14px !important; }
-          .welcome-tile { width: 46px !important; height: 46px !important; border-radius: 13px !important; }
+          .welcome-inner { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+          .welcome-profile { gap: 12px !important; }
+          .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
           .welcome-tile > span { font-size: 23px !important; }
-          .welcome-title { font-size: 19px !important; }
+          .welcome-title { font-size: 22px !important; }
           .welcome-date { font-size: 12px !important; }
+          .welcome-meta-row { margin-bottom: 7px !important; }
+          .welcome-quote-wrap { width: 100% !important; min-width: 0 !important; padding: 14px 15px !important; border-radius: 14px !important; }
           .welcome-quote { font-size: 13.5px !important; }
           .section-title { font-size: 19px !important; }
           .section-subtitle { display: none !important; }
