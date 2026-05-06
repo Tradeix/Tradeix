@@ -182,9 +182,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
     <>
       <div onClick={onClose} className="app-modal-overlay" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', animation: 'overlayIn 0.2s ease' }}>
 
-      <div onClick={e => e.stopPropagation()} style={{
+      <div onClick={e => e.stopPropagation()} className="app-modal-card" style={{
         width: '90%', maxWidth: '540px', maxHeight: '92vh',
-        background: 'var(--bg2)',
+        background: 'var(--modal-bg)',
         border: '1px solid var(--border2)',
         borderRadius: '24px', zIndex: 301, overflowY: 'auto',
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
