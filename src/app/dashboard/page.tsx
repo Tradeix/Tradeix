@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>(EMPTY_STATS)
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const [userName, setUserName] = useState('')
-  const [userAvatar, setUserAvatar] = useState<string | null>(null)
   const activePortfolioIdRef = useRef<string | null>(null)
   const supabase = createClient()
 
@@ -87,7 +86,6 @@ export default function DashboardPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
-        setUserAvatar(user.user_metadata?.avatar_url || null)
       }
     })
   }, [])
@@ -247,45 +245,9 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '8%', width: '300px', height: '220px', background: 'radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 62%)', pointerEvents: 'none' }} />
 
           <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
-            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', gap: '18px', minWidth: 0 }}>
-            {/* Avatar tile — user photo if available, else initial */}
-            <div className="welcome-tile" style={{
-              width: '74px', height: '74px', borderRadius: '22px',
-              background: userAvatar ? 'var(--bg3)' : 'linear-gradient(145deg, #171c24 0%, #0d1414 100%)',
-              border: '1px solid rgba(15,141,99,0.24)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 18px 34px rgba(0,0,0,0.36), 0 0 0 6px rgba(15,141,99,0.035), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}>
-              {userAvatar ? (
-                <img src={userAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <span style={{
-                  fontSize: '34px', fontWeight: '900', color: '#0f8d63',
-                  letterSpacing: '-0.02em', fontFamily: 'Heebo, sans-serif',
-                  textTransform: 'uppercase',
-                }}>
-                  {userName.charAt(0) || 'U'}
-                </span>
-              )}
-            </div>
-
+            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
             <div style={{ minWidth: 0 }}>
               <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '7px',
-                  fontSize: '12px', fontWeight: '800',
-                  color: 'rgba(229,226,225,0.72)',
-                  background: 'rgba(15,141,99,0.07)',
-                  border: '1px solid rgba(15,141,99,0.16)',
-                  borderRadius: '999px',
-                  padding: '5px 10px',
-                  lineHeight: 1,
-                }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 10px rgba(34,197,94,0.8)' }} />
-                  TRADEIX
-                </span>
                 <span className="welcome-date" style={{
                   fontSize: '13px', fontWeight: '700', color: 'var(--text3)',
                   letterSpacing: '0.01em',
