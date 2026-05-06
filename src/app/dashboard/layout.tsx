@@ -39,12 +39,20 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const [showMenu, setShowMenu] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const [hasScrolled, setHasScrolled] = useState(false)
   const supabase = createClient()
   const isRTL = language === 'he'
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
   }, [])
+
+  useEffect(() => {
+    const updateScrolled = () => setHasScrolled(window.scrollY > 8)
+    updateScrolled()
+    window.addEventListener('scroll', updateScrolled, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrolled)
+  }, [pathname])
 
   const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#0f8d63'
 
@@ -53,10 +61,13 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       height: '72px',
       background: 'var(--chrome-bg)',
       borderBottom: '1px solid var(--border2)',
-      position: 'sticky', top: 0, zIndex: 50,
-      backdropFilter: 'blur(18px)',
-      WebkitBackdropFilter: 'blur(18px)',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.22)',
+      position: hasScrolled ? 'sticky' : 'relative',
+      top: hasScrolled ? 0 : undefined,
+      zIndex: 50,
+      backdropFilter: hasScrolled ? 'blur(18px)' : 'none',
+      WebkitBackdropFilter: hasScrolled ? 'blur(18px)' : 'none',
+      boxShadow: hasScrolled ? '0 10px 30px rgba(0,0,0,0.22)' : 'none',
+      transition: 'box-shadow 0.18s ease, backdrop-filter 0.18s ease',
     }}>
     <div className="header-inner" style={{
       height: '100%',
