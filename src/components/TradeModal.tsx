@@ -136,12 +136,6 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
 
   const isWin = editing ? form.outcome === 'win' : trade.outcome === 'win'
 
-  const glass = {
-    background: 'var(--bg3)',
-    border: '1px solid var(--border)',
-    borderRadius: '14px',
-  }
-
   // Numeric date: d/m/yyyy
   const numericDate = (() => {
     if (!trade.traded_at) return '—'
@@ -531,8 +525,8 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 </div>
               </div>
 
-              {/* Data grid — 2 columns × 3 rows. Notes spans full width. */}
-              <div className="trade-modal-data-grid" style={{ ...glass, overflow: 'hidden', padding: '5px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--border)' }}>
+              {/* Data grid — compact cards with optional notes. */}
+              <div className="trade-modal-data-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {/* Row 1 — Date | Entry */}
                 <div className="trade-modal-data-cell" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
@@ -597,18 +591,18 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                   </span>
                 </div>
 
-                {/* Row 4 — Notes (full width) */}
-                <div className="trade-modal-data-cell trade-modal-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '5px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <Icon name="notes" size={13} color="var(--text3)" />
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
+                {/* Row 4 — Notes (only when there is content) */}
+                {trade.notes && (
+                  <div className="trade-modal-data-cell trade-modal-full-row" style={{ display: 'flex', flexDirection: 'column', gap: '5px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 4' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                      <Icon name="notes" size={13} color="var(--text3)" />
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
+                    </div>
+                    <div className="trade-modal-notes" style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.35, fontWeight: '500' }}>
+                      {trade.notes}
+                    </div>
                   </div>
-                  {trade.notes ? (
-                    <div className="trade-modal-notes" style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.35, fontWeight: '500' }}>{trade.notes}</div>
-                  ) : (
-                    <div style={{ fontSize: '13px', color: 'var(--text3)', fontStyle: 'italic' }}>—</div>
-                  )}
-                </div>
+                )}
               </div>
 
 
@@ -632,8 +626,17 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
         .trade-modal-data-grid {
           grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         }
+        .trade-modal-data-cell {
+          border: 1px solid var(--border) !important;
+          border-radius: 12px !important;
+          min-height: 64px;
+          overflow: hidden;
+        }
         .trade-modal-span-2 {
           grid-column: span 2 !important;
+        }
+        .trade-modal-full-row {
+          grid-column: span 4 !important;
         }
         .trade-modal-notes {
           display: -webkit-box;
@@ -652,8 +655,12 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
           }
           .trade-modal-data-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 6px !important;
           }
           .trade-modal-span-2 {
+            grid-column: span 2 !important;
+          }
+          .trade-modal-full-row {
             grid-column: span 2 !important;
           }
           .trade-modal-pnl-label {
