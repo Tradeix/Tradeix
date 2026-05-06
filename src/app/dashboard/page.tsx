@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
@@ -12,6 +12,11 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 const ACCENT = '#0f8d63'
+const EMPTY_STATS: Stats = {
+  totalTrades: 0, wins: 0, losses: 0, winRate: 0,
+  totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
+}
+const EMPTY_PERFORMANCE_BREAKDOWN = { grossProfit: 0, grossLoss: 0 }
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -21,13 +26,12 @@ export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useState(2)
   const [trades, setTrades] = useState<Trade[]>([])
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
-  const [stats, setStats] = useState<Stats>({
-    totalTrades: 0, wins: 0, losses: 0, winRate: 0,
-    totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
-  })
+  const [stats, setStats] = useState<Stats>(EMPTY_STATS)
+  const [performanceBreakdown, setPerformanceBreakdown] = useState(EMPTY_PERFORMANCE_BREAKDOWN)
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const [userName, setUserName] = useState('')
   const [userAvatar, setUserAvatar] = useState<string | null>(null)
+  const activePortfolioIdRef = useRef<string | null>(null)
   const supabase = createClient()
 
   const QUOTES_HE = [
@@ -107,29 +111,54 @@ export default function DashboardPage() {
     else { return new Date(now.getFullYear(), 0, 1).toISOString() }
   }
 
-  // Recent trades — only depend on the active portfolio, NOT the time filter.
-  useEffect(() => { if (activePortfolio) loadRecentTrades() }, [activePortfolio])
-  // Performance stats — re-load when the time filter changes.
-  useEffect(() => { if (activePortfolio) loadStats() }, [activePortfolio, timeFilter])
+  useEffect(() => {
+    if (!activePortfolio) {
+      activePortfolioIdRef.current = null
+      setTrades([])
+      setStats(EMPTY_STATS)
+      setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
+      setPortfolioValue({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
+      return
+    }
+    activePortfolioIdRef.current = activePortfolio.id
+    setTrades([])
+    setStats(EMPTY_STATS)
+    setPortfolioValue({
+      currentValue: activePortfolio.initial_capital || 0,
+      allTimePnl: 0,
+      totalReturn: 0,
+      maxDrawdown: 0,
+    })
+    loadRecentTrades(activePortfolio.id)
+    setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
+  }, [activePortfolio])
+
+  useEffect(() => {
+    if (!activePortfolio) return
+    loadStats(activePortfolio.id, timeFilter)
+  }, [activePortfolio, timeFilter])
 
   useEffect(() => {
     if (!activePortfolio) return
     const channel = supabase
       .channel('dashboard-trades')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => { loadRecentTrades(); loadStats() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => { loadRecentTrades(activePortfolio.id); loadStats(activePortfolio.id, timeFilter) })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [activePortfolio])
+  }, [activePortfolio, timeFilter])
 
-  async function loadRecentTrades() {
-    const { data: tradeData } = await supabase.from('trades').select('*').eq('portfolio_id', activePortfolio!.id).order('created_at', { ascending: false }).limit(10)
-    if (tradeData) setTrades(tradeData)
+  async function loadRecentTrades(portfolioId = activePortfolio?.id) {
+    if (!portfolioId) return
+    const { data: tradeData } = await supabase.from('trades').select('*').eq('portfolio_id', portfolioId).order('created_at', { ascending: false }).limit(10)
+    if (tradeData && activePortfolioIdRef.current === portfolioId) setTrades(tradeData)
   }
 
-  async function loadStats() {
+  async function loadStats(portfolioId = activePortfolio?.id, filter = timeFilter) {
+    if (!portfolioId) return
     try {
-      const startDate = getStartDate(timeFilter)
-      const { data: all } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', activePortfolio!.id).gte('traded_at', startDate)
+      const startDate = getStartDate(filter)
+      const { data: all } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', portfolioId).gte('traded_at', startDate)
+      if (activePortfolioIdRef.current !== portfolioId) return
       if (all && all.length > 0) {
         const wins = all.filter((x: any) => x.outcome === 'win')
         const losses = all.filter((x: any) => x.outcome === 'loss')
@@ -137,10 +166,13 @@ export default function DashboardPage() {
         const gp = wins.reduce((s: number, x: any) => s + x.pnl, 0)
         const gl = Math.abs(losses.reduce((s: number, x: any) => s + x.pnl, 0))
         setStats({ totalTrades: all.length, wins: wins.length, losses: losses.length, winRate: (wins.length / all.length) * 100, totalPnl, profitFactor: gl > 0 ? gp / gl : 0, avgRR: 0, bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)), worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)) })
+        setPerformanceBreakdown({ grossProfit: gp, grossLoss: gl })
       } else {
-        setStats({ totalTrades: 0, wins: 0, losses: 0, winRate: 0, totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0 })
+        setStats(EMPTY_STATS)
+        setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
       }
-      const { data: allTimeTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', activePortfolio!.id).order('traded_at', { ascending: true })
+      const { data: allTimeTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', portfolioId).order('traded_at', { ascending: true })
+      if (activePortfolioIdRef.current !== portfolioId) return
       if (allTimeTrades) {
         const allTimePnl = allTimeTrades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
         const initialCapital = activePortfolio!.initial_capital || 0
@@ -479,17 +511,49 @@ export default function DashboardPage() {
         </div>
       ) : (
       <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', flex: 1, alignContent: 'stretch' }}>
+        <div className="stat-card card-hover stat-anim anim-delay-4" style={{ ...card, padding: '18px 18px 16px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '-48px', insetInlineEnd: '-42px', width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(34,197,94,0.12), transparent 68%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <span style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text2)' }}>{tr.winRate}</span>
+            <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="emoji_events" size={17} color="#22c55e" />
+            </div>
+          </div>
+          <div className="winrate-meter-wrap" style={{ position: 'relative', height: '98px', margin: '0 auto 6px', maxWidth: '190px' }}>
+            <svg viewBox="0 0 184 108" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} aria-hidden="true">
+              <path d="M 20 92 A 72 72 0 0 1 164 92" pathLength={100} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" strokeLinecap="round" />
+              <path d="M 20 92 A 72 72 0 0 1 164 92" pathLength={100} fill="none" stroke="#22c55e" strokeWidth="8" strokeLinecap="round" strokeDasharray={`${Math.max(0, Math.min(100, stats.winRate))} 100`} />
+            </svg>
+            <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '38px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
+              {stats.winRate.toFixed(0)}%
+            </div>
+          </div>
+          <div style={{ position: 'relative', display: 'grid', gap: '8px' }}>
+            {[
+              { label: language === 'he' ? 'עסקאות מנצחות' : 'Won deals', count: stats.wins, amount: performanceBreakdown.grossProfit, color: '#22c55e' },
+              { label: language === 'he' ? 'עסקאות מפסידות' : 'Lost deals', count: stats.losses, amount: -performanceBreakdown.grossLoss, color: '#ef4444' },
+              { label: language === 'he' ? 'סך עסקאות' : 'Total deals', count: stats.totalTrades, amount: stats.totalPnl, color: 'var(--text)' },
+            ].map(row => (
+              <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', alignItems: 'baseline', gap: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)' }}>{row.label}</span>
+                <span dir="ltr" style={{ minWidth: '30px', textAlign: 'end', fontSize: '14px', fontWeight: '900', color: row.color }}>{row.count}</span>
+                <span dir="ltr" style={{ minWidth: '78px', textAlign: 'end', fontSize: '13px', fontWeight: '800', color: row.amount >= 0 ? '#22c55e' : '#ef4444' }}>
+                  {row.amount >= 0 ? '+' : '-'}${Math.abs(row.amount).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
         {[
           { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
             sub: <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
               <span style={{ fontSize: '12px', fontWeight: '600', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.wins}W</span>
               <span style={{ fontSize: '12px', fontWeight: '600', color: '#ef4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.losses}L</span>
             </div> },
-          { label: tr.winRate, value: `${stats.winRate.toFixed(0)}%`, icon: 'emoji_events', color: '#22c55e' },
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
           { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#0f8d63' },
         ].map((s, i) => (
-          <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 4}`} style={{ ...card, padding: '20px' }}>
+          <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 5}`} style={{ ...card, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
               <span style={{ fontSize: '17px', fontWeight: '600', color: 'var(--text2)' }}>{s.label}</span>
               <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
