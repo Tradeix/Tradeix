@@ -516,13 +516,13 @@ export default function DashboardPage() {
               <Icon name="emoji_events" size={17} color={winRateColor} />
             </div>
           </div>
-          <div className="winrate-meter-wrap" style={{ position: 'relative', height: '92px', margin: '2px auto 10px', maxWidth: '170px' }}>
+          <div className="winrate-meter-wrap" style={{ position: 'relative', height: '98px', margin: '2px auto 6px', maxWidth: '170px' }}>
             <svg viewBox="0 0 184 104" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} aria-hidden="true">
               <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="8" strokeLinecap="round" />
               <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(239,68,68,0.85)" strokeWidth="9" strokeLinecap="round" />
               <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="#22c55e" strokeWidth="9" strokeLinecap="round" strokeDasharray={`${winRateArc} 100`} />
             </svg>
-            <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '36px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '43px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {stats.winRate.toFixed(0)}%
             </div>
           </div>
