@@ -73,18 +73,18 @@ function applyTheme(t: Theme) {
     document.head.appendChild(style)
   } else {
     root.setAttribute('data-theme', 'dark')
-    root.style.setProperty('--bg', '#0a0f18')
-    root.style.setProperty('--bg2', '#111827')
-    root.style.setProperty('--bg3', '#1a2433')
-    root.style.setProperty('--bg4', '#243247')
-    root.style.setProperty('--border', 'rgba(180,204,235,0.11)')
-    root.style.setProperty('--border2', 'rgba(180,204,235,0.18)')
-    root.style.setProperty('--text', '#f1f5fb')
-    root.style.setProperty('--text2', '#a7b3c6')
-    root.style.setProperty('--text3', '#657287')
-    root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(15,141,99,0.025))')
-    root.style.setProperty('--glass-border', 'rgba(180,204,235,0.08)')
-    document.body.style.cssText = 'background: #0a0f18 !important; color: #f1f5fb !important;'
+    root.style.setProperty('--bg', '#05080d')
+    root.style.setProperty('--bg2', 'linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012))')
+    root.style.setProperty('--bg3', 'rgba(255,255,255,0.035)')
+    root.style.setProperty('--bg4', 'rgba(255,255,255,0.06)')
+    root.style.setProperty('--border', 'rgba(255,255,255,0.075)')
+    root.style.setProperty('--border2', 'rgba(255,255,255,0.13)')
+    root.style.setProperty('--text', '#f4f7fb')
+    root.style.setProperty('--text2', '#b1bdcc')
+    root.style.setProperty('--text3', '#768397')
+    root.style.setProperty('--glass-bg', 'linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012))')
+    root.style.setProperty('--glass-border', 'rgba(255,255,255,0.075)')
+    document.body.style.cssText = 'background: #05080d !important; color: #f4f7fb !important;'
     const styleEl = document.getElementById('tradeix-theme-style')
     if (styleEl) styleEl.textContent = '[data-theme="dark"] { color-scheme: dark; }'
   }

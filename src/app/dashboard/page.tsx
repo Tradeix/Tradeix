@@ -16,7 +16,6 @@ const EMPTY_STATS: Stats = {
   totalTrades: 0, wins: 0, losses: 0, winRate: 0,
   totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
 }
-const EMPTY_PERFORMANCE_BREAKDOWN = { grossProfit: 0, grossLoss: 0 }
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
@@ -27,7 +26,6 @@ export default function DashboardPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [stats, setStats] = useState<Stats>(EMPTY_STATS)
-  const [performanceBreakdown, setPerformanceBreakdown] = useState(EMPTY_PERFORMANCE_BREAKDOWN)
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const [userName, setUserName] = useState('')
   const [userAvatar, setUserAvatar] = useState<string | null>(null)
@@ -116,7 +114,6 @@ export default function DashboardPage() {
       activePortfolioIdRef.current = null
       setTrades([])
       setStats(EMPTY_STATS)
-      setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
       setPortfolioValue({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
       return
     }
@@ -130,7 +127,6 @@ export default function DashboardPage() {
       maxDrawdown: 0,
     })
     loadRecentTrades(activePortfolio.id)
-    setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
   }, [activePortfolio])
 
   useEffect(() => {
@@ -166,10 +162,8 @@ export default function DashboardPage() {
         const gp = wins.reduce((s: number, x: any) => s + x.pnl, 0)
         const gl = Math.abs(losses.reduce((s: number, x: any) => s + x.pnl, 0))
         setStats({ totalTrades: all.length, wins: wins.length, losses: losses.length, winRate: (wins.length / all.length) * 100, totalPnl, profitFactor: gl > 0 ? gp / gl : 0, avgRR: 0, bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)), worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)) })
-        setPerformanceBreakdown({ grossProfit: gp, grossLoss: gl })
       } else {
         setStats(EMPTY_STATS)
-        setPerformanceBreakdown(EMPTY_PERFORMANCE_BREAKDOWN)
       }
       const { data: allTimeTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', portfolioId).order('traded_at', { ascending: true })
       if (activePortfolioIdRef.current !== portfolioId) return
@@ -217,6 +211,8 @@ export default function DashboardPage() {
     indigo: '#6366f1', rose: '#f43f5e',
   }
   const portfolioColor = PORTFOLIO_COLOR_MAP[(activePortfolio as any)?.color || 'green'] || '#0f8d63'
+  const winRateColor = stats.winRate >= 60 ? '#22c55e' : stats.winRate >= 40 ? '#f59e0b' : '#ef4444'
+  const winRateGlow = stats.winRate >= 60 ? 'rgba(34,197,94,0.16)' : stats.winRate >= 40 ? 'rgba(245,158,11,0.16)' : 'rgba(239,68,68,0.16)'
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -512,36 +508,32 @@ export default function DashboardPage() {
       ) : (
       <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', flex: 1, alignContent: 'stretch' }}>
         <div className="stat-card card-hover stat-anim anim-delay-4" style={{ ...card, padding: '18px 18px 16px', overflow: 'hidden', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '-48px', insetInlineEnd: '-42px', width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(34,197,94,0.12), transparent 68%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-48px', insetInlineEnd: '-42px', width: '150px', height: '150px', background: `radial-gradient(circle, ${winRateGlow}, transparent 68%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
             <span style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text2)' }}>{tr.winRate}</span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="emoji_events" size={17} color="#22c55e" />
+            <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: winRateGlow, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="emoji_events" size={17} color={winRateColor} />
             </div>
           </div>
-          <div className="winrate-meter-wrap" style={{ position: 'relative', height: '98px', margin: '0 auto 6px', maxWidth: '190px' }}>
-            <svg viewBox="0 0 184 108" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} aria-hidden="true">
-              <path d="M 20 92 A 72 72 0 0 1 164 92" pathLength={100} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" strokeLinecap="round" />
-              <path d="M 20 92 A 72 72 0 0 1 164 92" pathLength={100} fill="none" stroke="#22c55e" strokeWidth="8" strokeLinecap="round" strokeDasharray={`${Math.max(0, Math.min(100, stats.winRate))} 100`} />
+          <div className="winrate-meter-wrap" style={{ position: 'relative', height: '92px', margin: '2px auto 10px', maxWidth: '170px' }}>
+            <svg viewBox="0 0 184 104" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} aria-hidden="true">
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="8" strokeLinecap="round" />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(239,68,68,0.5)" strokeWidth="8" strokeLinecap="round" strokeDasharray="25 75" />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(245,158,11,0.55)" strokeWidth="8" strokeLinecap="butt" strokeDasharray="25 75" strokeDashoffset="-37.5" />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(34,197,94,0.55)" strokeWidth="8" strokeLinecap="round" strokeDasharray="25 75" strokeDashoffset="-75" />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke={winRateColor} strokeWidth="9" strokeLinecap="round" strokeDasharray={`${Math.max(0, Math.min(100, stats.winRate))} 100`} />
             </svg>
-            <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '38px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '36px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {stats.winRate.toFixed(0)}%
             </div>
           </div>
-          <div style={{ position: 'relative', display: 'grid', gap: '8px' }}>
-            {[
-              { label: language === 'he' ? 'עסקאות מנצחות' : 'Won deals', count: stats.wins, amount: performanceBreakdown.grossProfit, color: '#22c55e' },
-              { label: language === 'he' ? 'עסקאות מפסידות' : 'Lost deals', count: stats.losses, amount: -performanceBreakdown.grossLoss, color: '#ef4444' },
-              { label: language === 'he' ? 'סך עסקאות' : 'Total deals', count: stats.totalTrades, amount: stats.totalPnl, color: 'var(--text)' },
-            ].map(row => (
-              <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', alignItems: 'baseline', gap: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)' }}>{row.label}</span>
-                <span dir="ltr" style={{ minWidth: '30px', textAlign: 'end', fontSize: '14px', fontWeight: '900', color: row.color }}>{row.count}</span>
-                <span dir="ltr" style={{ minWidth: '78px', textAlign: 'end', fontSize: '13px', fontWeight: '800', color: row.amount >= 0 ? '#22c55e' : '#ef4444' }}>
-                  {row.amount >= 0 ? '+' : '-'}${Math.abs(row.amount).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </span>
-              </div>
-            ))}
+          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            <div title={language === 'he' ? 'עסקאות מנצחות' : 'Won deals'} dir="ltr" style={{ minWidth: '46px', textAlign: 'center', fontSize: '15px', fontWeight: '900', color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.18)', borderRadius: '9px', padding: '4px 10px', lineHeight: 1 }}>
+              {stats.wins}
+            </div>
+            <div title={language === 'he' ? 'עסקאות מפסידות' : 'Lost deals'} dir="ltr" style={{ minWidth: '46px', textAlign: 'center', fontSize: '15px', fontWeight: '900', color: '#ef4444', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: '9px', padding: '4px 10px', lineHeight: 1 }}>
+              {stats.losses}
+            </div>
           </div>
         </div>
         {[
