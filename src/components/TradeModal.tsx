@@ -182,11 +182,11 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
     <>
       <div onClick={onClose} className="app-modal-overlay" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', animation: 'overlayIn 0.2s ease' }}>
 
-      <div onClick={e => e.stopPropagation()} className="app-modal-card" style={{
-        width: '90%', maxWidth: '540px', maxHeight: '92vh',
+      <div onClick={e => e.stopPropagation()} className="app-modal-card trade-modal-card" style={{
+        width: '94%', maxWidth: '620px', maxHeight: '96vh',
         background: 'var(--modal-bg)',
         border: '1px solid var(--border2)',
-        borderRadius: '24px', zIndex: 301, overflowY: 'auto',
+        borderRadius: '20px', zIndex: 301, overflowY: 'auto',
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
         animation: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         fontFamily: 'Heebo, sans-serif',
@@ -393,22 +393,22 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
             {/* ── STICKY HEADER: Symbol + action buttons ── */}
             <div style={{
               position: 'sticky', top: 0, zIndex: 2,
-              padding: '16px 20px', borderBottom: '1px solid var(--border)',
-              background: 'var(--bg2)', borderRadius: '24px 24px 0 0',
+              padding: '10px 14px', borderBottom: '1px solid var(--border)',
+              background: 'var(--bg2)', borderRadius: '20px 20px 0 0',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
             }}>
               {/* Left: symbol + direction */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                  width: '30px', height: '30px', borderRadius: '9px', flexShrink: 0,
                   background: trade.direction === 'long' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
                   border: `1px solid ${trade.direction === 'long' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={17} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
+                  <Icon name={trade.direction === 'long' ? 'trending_up' : 'trending_down'} size={15} color={trade.direction === 'long' ? '#22c55e' : '#ef4444'} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '19px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.01em', lineHeight: 1 }}>{trade.symbol}</div>
+                  <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.01em', lineHeight: 1 }}>{trade.symbol}</div>
                   <div style={{ fontSize: '11px', fontWeight: '700', color: trade.direction === 'long' ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)', textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>
                     {trade.direction === 'long' ? 'LONG' : 'SHORT'}
                   </div>
@@ -421,21 +421,21 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                     <button
                       onClick={() => setEditing(true)}
                       title={tr.editBtn}
-                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', color: '#0f8d63', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                      style={{ width: '30px', height: '30px', borderRadius: '9px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', color: '#0f8d63', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                     >
-                      <Icon name="edit" size={15} />
+                      <Icon name="edit" size={14} />
                     </button>
                     <button
                       onClick={() => setConfirmDelete(true)}
-                      style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                      style={{ width: '30px', height: '30px', borderRadius: '9px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                     >
-                      <Icon name="delete" size={15} />
+                      <Icon name="delete" size={14} />
                     </button>
                   </>
                 )}
                 <button
                   onClick={onClose}
-                  style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', transition: 'all 0.2s' }}
+                  style={{ width: '30px', height: '30px', borderRadius: '9px', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
                 >✕</button>
               </div>
             </div>
@@ -447,9 +447,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                   src={imageUrl}
                   alt="chart"
                   onClick={() => setLightbox(true)}
-                  style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
+                  style={{ width: '100%', height: 'clamp(118px, 25vh, 170px)', objectFit: 'contain', display: 'block', cursor: 'zoom-in', background: '#050506' }}
                 />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '36px', background: 'linear-gradient(transparent, var(--bg2))', pointerEvents: 'none' }} />
                 <div onClick={() => setLightbox(true)} style={{ position: 'absolute', bottom: '10px', left: '12px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '5px 9px', cursor: 'zoom-in', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Icon name="zoom_in" size={13} color="rgba(255,255,255,0.6)" />
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{language === 'he' ? 'הגדל' : 'Zoom'}</span>
@@ -463,7 +463,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 </div>
               </div>
             ) : (
-              <div {...getRootProps()} style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.06)' : 'transparent', borderBottom: '1px solid var(--border)', transition: 'all 0.2s' }}>
+              <div {...getRootProps()} style={{ padding: '12px 16px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.06)' : 'transparent', borderBottom: '1px solid var(--border)', transition: 'all 0.2s' }}>
                 <input {...getInputProps()} />
                 {uploadingImage ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -480,16 +480,16 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
             )}
 
             {/* ── ALL TRADE DATA ── */}
-            <div style={{ padding: '18px 20px 24px' }}>
+            <div style={{ padding: '12px 14px 14px' }}>
 
               {/* Hero — outcome + P&L unified, fully centered */}
               <div style={{
                 background: isWin ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
                 border: `1px solid ${isWin ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)'}`,
-                borderRadius: '16px',
-                padding: '20px 20px 22px',
-                marginBottom: '16px',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
+                borderRadius: '14px',
+                padding: '10px 14px',
+                marginBottom: '10px',
+                display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
                 position: 'relative', overflow: 'hidden',
               }}>
                 {/* Soft radial glow behind the value */}
@@ -502,7 +502,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 {/* Outcome pill */}
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '5px 14px', borderRadius: '999px',
+                  padding: '4px 12px', borderRadius: '999px',
                   background: isWin ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)',
                   border: `1px solid ${isWin ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`,
                   position: 'relative', zIndex: 1,
@@ -514,7 +514,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
 
                 {/* P&L hero number */}
                 <div dir="ltr" style={{
-                  fontSize: '34px', fontWeight: '900', letterSpacing: '-0.03em',
+                  fontSize: '28px', fontWeight: '900', letterSpacing: '-0.03em',
                   color: isWin ? '#22c55e' : '#ef4444',
                   lineHeight: 1, position: 'relative', zIndex: 1,
                   fontFamily: 'Heebo, sans-serif',
@@ -523,7 +523,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                 </div>
 
                 {/* P&L label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', position: 'relative', zIndex: 1 }}>
+                <div className="trade-modal-pnl-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', position: 'relative', zIndex: 1 }}>
                   <Icon name={isWin ? 'trending_up' : 'trending_down'} size={13} color="var(--text3)" />
                   <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
                     P&L
@@ -532,79 +532,79 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
               </div>
 
               {/* Data grid — 2 columns × 3 rows. Notes spans full width. */}
-              <div style={{ ...glass, overflow: 'hidden', padding: '6px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--border)' }}>
+              <div className="trade-modal-data-grid" style={{ ...glass, overflow: 'hidden', padding: '5px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--border)' }}>
                 {/* Row 1 — Date | Entry */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
+                <div className="trade-modal-data-cell" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="calendar_today" size={13} color="var(--text3)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תאריך' : 'Date'}</span>
                   </div>
-                  <span dir="ltr" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)', whiteSpace: 'nowrap' }}>{numericDate}</span>
+                  <span dir="ltr" style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', whiteSpace: 'nowrap' }}>{numericDate}</span>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
+                <div className="trade-modal-data-cell" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="login" size={13} color="#0f8d63" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'כניסה' : 'Entry'}</span>
                   </div>
-                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.entry_price != null ? '#0f8d63' : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '16px', fontWeight: '900', color: trade.entry_price != null ? '#0f8d63' : 'var(--text3)' }}>
                     {trade.entry_price ?? '—'}
                   </span>
                 </div>
 
                 {/* Row 2 — SL | Exit */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
+                <div className="trade-modal-data-cell" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="dangerous" size={13} color="#ef4444" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SL</span>
                   </div>
-                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '16px', fontWeight: '900', color: trade.stop_loss != null ? '#ef4444' : 'var(--text3)' }}>
                     {trade.stop_loss ?? '—'}
                   </span>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)' }}>
+                <div className="trade-modal-data-cell" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="logout" size={13} color={isWin ? '#22c55e' : '#ef4444'} />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: isWin ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'יציאה' : 'Exit'}</span>
                   </div>
-                  <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'var(--text3)' }}>
+                  <span dir="ltr" style={{ fontSize: '16px', fontWeight: '900', color: trade.exit_price != null ? (isWin ? '#22c55e' : '#ef4444') : 'var(--text3)' }}>
                     {trade.exit_price ?? '—'}
                   </span>
                 </div>
 
                 {/* Row 3 — RR (only if win, else skip the row) */}
                 {trade.outcome === 'win' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
+                  <div className="trade-modal-data-cell trade-modal-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                       <Icon name="analytics" size={13} color="#0f8d63" />
                       <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>RR</span>
                     </div>
-                    <span dir="ltr" style={{ fontSize: '17px', fontWeight: '900', color: trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>
+                    <span dir="ltr" style={{ fontSize: '16px', fontWeight: '900', color: trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>
                       {trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(2)}` : '—'}
                     </span>
                   </div>
                 )}
 
                 {/* Strategy (full width row) — always shown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
+                <div className="trade-modal-data-cell trade-modal-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="psychology" size={13} color="var(--text3)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
                     </span>
                   </div>
-                  <span style={{ fontSize: '15px', fontWeight: '800', color: currentStrategy ? 'var(--text)' : 'var(--text3)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '800', color: currentStrategy ? 'var(--text)' : 'var(--text3)' }}>
                     {currentStrategy?.name || (language === 'he' ? 'ללא אסטרטגיה' : 'No strategy')}
                   </span>
                 </div>
 
                 {/* Row 4 — Notes (full width) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px 14px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
+                <div className="trade-modal-data-cell trade-modal-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '5px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="notes" size={13} color="var(--text3)" />
                     <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.notes}</span>
                   </div>
                   {trade.notes ? (
-                    <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.65, fontWeight: '500' }}>{trade.notes}</div>
+                    <div className="trade-modal-notes" style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.35, fontWeight: '500' }}>{trade.notes}</div>
                   ) : (
                     <div style={{ fontSize: '13px', color: 'var(--text3)', fontStyle: 'italic' }}>—</div>
                   )}
@@ -626,6 +626,40 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .trade-modal-card {
+          scrollbar-width: thin;
+        }
+        .trade-modal-data-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+        .trade-modal-span-2 {
+          grid-column: span 2 !important;
+        }
+        .trade-modal-notes {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        @media (max-width: 640px) {
+          .trade-modal-card {
+            width: calc(100vw - 12px) !important;
+            max-height: calc(100dvh - 12px) !important;
+            border-radius: 16px !important;
+          }
+          .trade-modal-card img[alt="chart"] {
+            height: clamp(82px, 16vh, 128px) !important;
+          }
+          .trade-modal-data-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+          .trade-modal-span-2 {
+            grid-column: span 2 !important;
+          }
+          .trade-modal-pnl-label {
+            display: none !important;
+          }
+        }
       `}</style>
 
       {/* Delete confirmation */}
