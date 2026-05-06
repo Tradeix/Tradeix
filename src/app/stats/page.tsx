@@ -95,6 +95,22 @@ export default function StatsPage() {
       monthlyCount[day] = (monthlyCount[day] || 0) + 1
     }
   })
+  const calendarCells: Array<number | null> = [
+    ...Array.from({ length: leadingEmpty }, () => null),
+    ...weekdayDays,
+  ]
+  const calendarWeeks: Array<Array<number | null>> = []
+  for (let i = 0; i < calendarCells.length; i += 5) {
+    const week = calendarCells.slice(i, i + 5)
+    while (week.length < 5) week.push(null)
+    calendarWeeks.push(week)
+  }
+  const weeklySummary = (week: Array<number | null>) => {
+    const days = week.filter((day): day is number => day !== null)
+    const pnl = days.reduce((sum, day) => sum + (monthlyPnl[day] || 0), 0)
+    const count = days.reduce((sum, day) => sum + (monthlyCount[day] || 0), 0)
+    return { pnl, count }
+  }
 
   const DAY_NAMES = language === 'he'
     ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
@@ -491,33 +507,59 @@ export default function StatsPage() {
           </div>
         </div>
 
-        <div className="cal-grid" style={{ marginBottom: '4px' }}>
-          {[1, 2, 3, 4, 5].map(i => <div key={i} className="cal-dayname">{DAY_NAMES[i]}</div>)}
+        <div className="cal-week-row cal-head-row" style={{ marginBottom: '4px' }}>
+          <div className="cal-grid cal-week-grid" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
+            {[1, 2, 3, 4, 5].map(i => <div key={i} className="cal-dayname">{DAY_NAMES[i]}</div>)}
+          </div>
+          <div className="cal-week-head-spacer" />
         </div>
 
-        <div className="cal-grid">
-          {Array.from({ length: leadingEmpty }).map((_, i) => <div key={`e-${i}`} />)}
-          {weekdayDays.map(day => {
-            const pnl = monthlyPnl[day]
-            const count = monthlyCount[day]
-            const hasData = pnl !== undefined
-            const isGreen = hasData && pnl > 0
-            const isRed = hasData && pnl < 0
-            const isZero = hasData && pnl === 0
+        <div className="cal-weeks">
+          {calendarWeeks.map((week, weekIndex) => {
+            const summary = weeklySummary(week)
+            const hasWeekData = summary.count > 0
+            const weekGreen = hasWeekData && summary.pnl > 0
+            const weekRed = hasWeekData && summary.pnl < 0
+            const weekZero = hasWeekData && summary.pnl === 0
             return (
-              <div key={day} className="cal-cell" style={{
-                background: isGreen ? 'rgba(34,197,94,0.06)' : isRed ? 'rgba(239,68,68,0.06)' : 'var(--bg3)',
-                border: `1px solid ${isGreen ? 'rgba(34,197,94,0.12)' : isRed ? 'rgba(239,68,68,0.12)' : 'var(--border)'}`,
-              }}>
-                <div className="cal-day" style={{ color: isGreen ? 'rgba(34,197,94,0.7)' : isRed ? 'rgba(239,68,68,0.7)' : 'var(--text3)' }}>{day}</div>
-                {hasData && (
-                  <div className="cal-body">
-                    <div className="cal-pnl" style={{ color: isGreen ? '#22c55e' : isRed ? '#ef4444' : 'var(--text3)' }}>
-                      {isZero ? '$0' : `${pnl > 0 ? '+' : ''}$${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}`}
-                    </div>
-                    <div className="cal-wr" style={{ color: 'var(--text3)' }}>{count} TRADE{count !== 1 ? 'S' : ''}</div>
+              <div key={weekIndex} className="cal-week-row">
+                <div className="cal-grid cal-week-grid" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
+                  {week.map((day, dayIndex) => {
+                    if (day === null) return <div key={`e-${weekIndex}-${dayIndex}`} />
+                    const pnl = monthlyPnl[day]
+                    const count = monthlyCount[day]
+                    const hasData = pnl !== undefined
+                    const isGreen = hasData && pnl > 0
+                    const isRed = hasData && pnl < 0
+                    const isZero = hasData && pnl === 0
+                    return (
+                      <div key={day} className="cal-cell" style={{
+                        background: isGreen ? 'rgba(34,197,94,0.06)' : isRed ? 'rgba(239,68,68,0.06)' : 'var(--bg3)',
+                        border: `1px solid ${isGreen ? 'rgba(34,197,94,0.12)' : isRed ? 'rgba(239,68,68,0.12)' : 'var(--border)'}`,
+                      }}>
+                        <div className="cal-day" style={{ color: isGreen ? 'rgba(34,197,94,0.7)' : isRed ? 'rgba(239,68,68,0.7)' : 'var(--text3)' }}>{day}</div>
+                        {hasData && (
+                          <div className="cal-body">
+                            <div className="cal-pnl" style={{ color: isGreen ? '#22c55e' : isRed ? '#ef4444' : 'var(--text3)' }}>
+                              {isZero ? '$0' : `${pnl > 0 ? '+' : ''}$${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}`}
+                            </div>
+                            <div className="cal-wr" style={{ color: 'var(--text3)' }}>{count} TRADE{count !== 1 ? 'S' : ''}</div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="cal-week-summary" style={{
+                  background: weekGreen ? 'rgba(34,197,94,0.08)' : weekRed ? 'rgba(239,68,68,0.08)' : 'var(--bg3)',
+                  borderColor: weekGreen ? 'rgba(34,197,94,0.2)' : weekRed ? 'rgba(239,68,68,0.2)' : 'var(--border)',
+                }}>
+                  <div className="cal-week-label">{language === 'he' ? 'שבועי' : 'Week'}</div>
+                  <div className="cal-week-pnl" style={{ color: weekGreen ? '#22c55e' : weekRed ? '#ef4444' : 'var(--text3)' }}>
+                    {hasWeekData ? (weekZero ? '$0' : `${summary.pnl > 0 ? '+' : ''}$${Math.abs(summary.pnl) >= 1000 ? (Math.abs(summary.pnl) / 1000).toFixed(1) + 'k' : Math.abs(summary.pnl).toFixed(0)}`) : '-'}
                   </div>
-                )}
+                  <div className="cal-week-count">{summary.count} {summary.count === 1 ? 'TRADE' : 'TRADES'}</div>
+                </div>
               </div>
             )
           })}
@@ -536,6 +578,13 @@ export default function StatsPage() {
           .dow-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
         }
         .cal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .cal-weeks { display: flex; flex-direction: column; gap: 6px; }
+        .cal-week-row { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 8px; align-items: stretch; direction: ltr; }
+        .cal-week-head-spacer { width: 112px; }
+        .cal-week-summary { border: 1px solid var(--border); border-radius: 12px; min-height: 84px; padding: 10px 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; text-align: center; direction: ltr; }
+        .cal-week-label { font-size: 10px; font-weight: 800; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; line-height: 1; }
+        .cal-week-pnl { font-size: 16px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+        .cal-week-count { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.04em; line-height: 1; }
         .cal-dayname { font-size: 11px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
         .cal-cell { border-radius: 12px; min-height: 84px; padding: 8px 6px 6px; display: flex; flex-direction: column; cursor: default; }
         .cal-day { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; align-self: flex-start; padding-inline-start: 2px; }
@@ -545,6 +594,13 @@ export default function StatsPage() {
         @media (max-width: 640px) {
           .cal-wrap { padding: 14px !important; }
           .cal-grid { gap: 4px; }
+          .cal-week-row { grid-template-columns: 1fr; gap: 4px; }
+          .cal-head-row { display: block; }
+          .cal-week-head-spacer { display: none; }
+          .cal-week-summary { min-height: 42px; border-radius: 10px; padding: 7px 8px; flex-direction: row; gap: 8px; }
+          .cal-week-label { font-size: 9px; }
+          .cal-week-pnl { font-size: 13px; }
+          .cal-week-count { font-size: 9px; }
           .cal-cell { min-height: 68px; border-radius: 10px; padding: 5px 4px; }
           .cal-day { font-size: 11px; } .cal-pnl { font-size: 12px; } .cal-wr { font-size: 9px; }
           .cal-dayname { font-size: 10px; }
@@ -552,6 +608,7 @@ export default function StatsPage() {
         @media (max-width: 400px) {
           .cal-wrap { padding: 12px !important; }
           .cal-grid { gap: 3px; }
+          .cal-week-summary { min-height: 38px; gap: 6px; padding: 6px; }
           .cal-cell { min-height: 56px; border-radius: 8px; padding: 4px 3px; }
           .cal-day { font-size: 10px; } .cal-pnl { font-size: 11px; } .cal-wr { font-size: 9px; }
           .cal-dayname { font-size: 9px; }
