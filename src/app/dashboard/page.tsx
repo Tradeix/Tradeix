@@ -508,7 +508,7 @@ export default function DashboardPage() {
         </div>
       ) : (
       <div className="stats-hero" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', flex: 1, alignContent: 'stretch' }}>
-        <div className="stat-card card-hover stat-anim anim-delay-4" style={{ ...card, padding: '18px 18px 16px', overflow: 'hidden', position: 'relative' }}>
+        <div className="stat-card card-hover stat-anim anim-delay-4" style={{ ...card, padding: '18px 18px 16px', overflow: 'hidden', position: 'relative', gridColumn: '1 / -1' }}>
           <div style={{ position: 'absolute', top: '-48px', insetInlineEnd: '-42px', width: '150px', height: '150px', background: `radial-gradient(circle, ${winRateGlow}, transparent 68%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
             <span style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text2)' }}>{tr.winRate}</span>
@@ -536,11 +536,6 @@ export default function DashboardPage() {
           </div>
         </div>
         {[
-          { label: `${tr.total} ${tr.trades}`, value: stats.totalTrades, icon: 'receipt_long', color: ACCENT,
-            sub: <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '600', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.wins}W</span>
-              <span style={{ fontSize: '12px', fontWeight: '600', color: '#ef4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: '6px' }}>{stats.losses}L</span>
-            </div> },
           { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
           { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#0f8d63' },
         ].map((s, i) => (
@@ -552,7 +547,6 @@ export default function DashboardPage() {
               </div>
             </div>
             <div style={{ fontSize: '29px', fontWeight: '700', color: typeof s.value === 'string' && s.value.startsWith('+') ? s.color : typeof s.value === 'string' && s.value.startsWith('-') ? '#ef4444' : 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>{s.value}</div>
-            {s.sub || null}
           </div>
         ))}
       </div>
