@@ -2,7 +2,7 @@ export type Portfolio = {
   id: string
   user_id: string
   name: string
-  market_type: 'forex' | 'stocks' | 'crypto' | 'commodities' | 'other'
+  market_type: 'forex' | 'stocks' | 'futures' | 'cfd' | 'other' | 'crypto' | 'commodities'
   initial_capital: number
   currency: string
   created_at: string

@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 import TradeModal from '@/components/TradeModal'
 
-const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
+const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', futures: '📉', cfd: '↔', other: '📊', crypto: '₿', commodities: '🥇' }
 const PORTFOLIO_COLORS = [
   { id: 'green',  primary: '#0f8d63' },
   { id: 'blue',   primary: '#3b82f6' },
@@ -24,8 +24,8 @@ const PORTFOLIO_COLORS = [
   { id: 'rose',   primary: '#f43f5e' },
 ]
 const MARKET_LABELS: Record<string, Record<string, string>> = {
-  he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
-  en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
+  he: { forex: 'פורקס', stocks: 'מניות', futures: 'חוזים עתידיים', cfd: 'CFD', other: 'אחר', crypto: 'קריפטו', commodities: 'סחורות' },
+  en: { forex: 'FOREX', stocks: 'STOCKS', futures: 'FUTURES', cfd: 'CFD', other: 'OTHER', crypto: 'Crypto', commodities: 'Commodities' },
 }
 
 const PAGE_SIZE = 6

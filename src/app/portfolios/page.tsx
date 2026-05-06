@@ -12,7 +12,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
-const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', crypto: '₿', commodities: '🥇', other: '📊' }
+const MARKET_ICONS: Record<string, string> = { forex: '💱', stocks: '📈', futures: '📉', cfd: '↔', other: '📊', crypto: '₿', commodities: '🥇' }
+const MARKET_TYPE_OPTIONS = ['forex', 'stocks', 'futures', 'cfd', 'other']
 
 const PORTFOLIO_COLORS = [
   { id: 'green',  primary: '#0f8d63' },
@@ -28,8 +29,8 @@ const PORTFOLIO_COLORS = [
 ]
 
 const MARKET_LABELS: Record<string, Record<string, string>> = {
-  he: { forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר' },
-  en: { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' },
+  he: { forex: 'פורקס', stocks: 'מניות', futures: 'חוזים עתידיים', cfd: 'CFD', other: 'אחר', crypto: 'קריפטו', commodities: 'סחורות' },
+  en: { forex: 'FOREX', stocks: 'STOCKS', futures: 'FUTURES', cfd: 'CFD', other: 'OTHER', crypto: 'Crypto', commodities: 'Commodities' },
 }
 
 interface PortfolioStats {
@@ -239,7 +240,7 @@ export default function PortfoliosPage() {
                 <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
                 <div className="select-wrap">
                   <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
-                    {Object.entries(MARKET_LABELS[language]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                    {MARKET_TYPE_OPTIONS.map(k => <option key={k} value={k}>{MARKET_LABELS[language][k]}</option>)}
                   </select>
                 </div>
               </div>

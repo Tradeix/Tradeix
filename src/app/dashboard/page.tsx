@@ -199,7 +199,7 @@ export default function DashboardPage() {
   const pnlPositive = stats.totalPnl >= 0
   const initialCapital = activePortfolio?.initial_capital || 0
   const portfolioPositive = portfolioValue.allTimePnl >= 0
-  const marketTypeLabels: Record<string, string> = { forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto', commodities: 'Commodities', other: 'Other' }
+  const marketTypeLabels: Record<string, string> = { forex: 'FOREX', stocks: 'STOCKS', futures: 'FUTURES', cfd: 'CFD', other: 'OTHER', crypto: 'Crypto', commodities: 'Commodities' }
   const mktLabel = marketTypeLabels[activePortfolio?.market_type || 'other'] || 'Other'
 
   // Portfolio color (chosen swatch) — drives the Total Balance card border

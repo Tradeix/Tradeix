@@ -154,8 +154,8 @@ export const t = {
     noPortfoliosYet: 'אין תיקים עדיין',
     noPortfoliosDesc: 'צור תיק ראשון כדי להתחיל',
     edit: 'עריכה',
-    forex: 'פורקס', stocks: 'מניות', crypto: 'קריפטו',
-    commodities: 'סחורות', other: 'אחר',
+    forex: 'פורקס', stocks: 'מניות', futures: 'חוזים עתידיים',
+    cfd: 'CFD', crypto: 'קריפטו', commodities: 'סחורות', other: 'אחר',
     initialCapitalLabel: 'הון התחלתי',
 
     // Settings
@@ -328,8 +328,8 @@ export const t = {
     noPortfoliosYet: 'No portfolios yet',
     noPortfoliosDesc: 'Create your first portfolio to get started',
     edit: 'Edit',
-    forex: 'Forex', stocks: 'Stocks', crypto: 'Crypto',
-    commodities: 'Commodities', other: 'Other',
+    forex: 'FOREX', stocks: 'STOCKS', futures: 'FUTURES',
+    cfd: 'CFD', crypto: 'Crypto', commodities: 'Commodities', other: 'OTHER',
     initialCapitalLabel: 'Initial Capital',
 
     // Settings
