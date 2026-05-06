@@ -213,6 +213,7 @@ export default function DashboardPage() {
   const portfolioColor = PORTFOLIO_COLOR_MAP[(activePortfolio as any)?.color || 'green'] || '#0f8d63'
   const winRateColor = stats.winRate >= 60 ? '#22c55e' : stats.winRate >= 40 ? '#f59e0b' : '#ef4444'
   const winRateGlow = stats.winRate >= 60 ? 'rgba(34,197,94,0.16)' : stats.winRate >= 40 ? 'rgba(245,158,11,0.16)' : 'rgba(239,68,68,0.16)'
+  const winRateArc = Math.max(0, Math.min(100, stats.winRate))
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -518,10 +519,8 @@ export default function DashboardPage() {
           <div className="winrate-meter-wrap" style={{ position: 'relative', height: '92px', margin: '2px auto 10px', maxWidth: '170px' }}>
             <svg viewBox="0 0 184 104" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} aria-hidden="true">
               <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="8" strokeLinecap="round" />
-              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(239,68,68,0.5)" strokeWidth="8" strokeLinecap="round" strokeDasharray="25 75" />
-              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(245,158,11,0.55)" strokeWidth="8" strokeLinecap="butt" strokeDasharray="25 75" strokeDashoffset="-37.5" />
-              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(34,197,94,0.55)" strokeWidth="8" strokeLinecap="round" strokeDasharray="25 75" strokeDashoffset="-75" />
-              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke={winRateColor} strokeWidth="9" strokeLinecap="round" strokeDasharray={`${Math.max(0, Math.min(100, stats.winRate))} 100`} />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="rgba(239,68,68,0.85)" strokeWidth="9" strokeLinecap="round" />
+              <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} fill="none" stroke="#22c55e" strokeWidth="9" strokeLinecap="round" strokeDasharray={`${winRateArc} 100`} />
             </svg>
             <div dir="ltr" style={{ position: 'absolute', insetInline: 0, top: '36px', textAlign: 'center', fontSize: '34px', fontWeight: '900', color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {stats.winRate.toFixed(0)}%
