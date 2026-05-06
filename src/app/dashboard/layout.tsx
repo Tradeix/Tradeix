@@ -130,7 +130,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 insetInlineStart: 0, insetInlineEnd: 'auto',
                 width: '100%',
                 maxWidth: 'calc(100vw - 24px)',
-                background: 'var(--bg2)', border: '1px solid var(--border)',
+                background: 'var(--modal-bg)', border: '1px solid var(--border)',
                 borderRadius: '10px', zIndex: 200,
                 overflow: 'hidden', padding: '6px',
                 animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -244,7 +244,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <div style={{
               position: 'absolute', top: '48px',
               [isRTL ? 'left' : 'right']: 0,
-              background: 'var(--bg2)', border: '1px solid var(--border)',
+              background: 'var(--modal-bg)', border: '1px solid var(--border)',
               borderRadius: '10px', zIndex: 200, minWidth: '180px',
               overflow: 'hidden', padding: '6px',
               animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
