@@ -526,10 +526,10 @@ export default function DashboardPage() {
         <div className="trades-section-header" style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon name="candlestick_chart" size={18} color="#0f8d63" />
+              <Icon name="show_chart" size={19} color="#0f8d63" strokeWidth={2} />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', marginBottom: '2px' }}>{tr.recentTrades}</div>
+              <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text)', marginBottom: '2px' }}>{tr.recentTrades}</div>
               <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '500' }}>{tr.liveActivity}</div>
             </div>
           </div>
