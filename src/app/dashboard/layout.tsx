@@ -51,9 +51,12 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   return (
     <header style={{
       height: '72px',
-      background: 'var(--bg2)',
-      borderBottom: '1px solid var(--border)',
+      background: 'var(--chrome-bg)',
+      borderBottom: '1px solid var(--border2)',
       position: 'sticky', top: 0, zIndex: 50,
+      backdropFilter: 'blur(18px)',
+      WebkitBackdropFilter: 'blur(18px)',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.22)',
     }}>
     <div className="header-inner" style={{
       height: '100%',

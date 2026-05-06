@@ -9,6 +9,7 @@
   --bg2: linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
   --bg3: rgba(255,255,255,0.035);
   --bg4: rgba(255,255,255,0.06);
+  --chrome-bg: rgba(5, 8, 13, 0.96);
   --border: rgba(255,255,255,0.075);
   --border2: rgba(255,255,255,0.13);
   --text: #f4f7fb;
@@ -30,6 +31,7 @@
 
 [data-theme="light"] {
   --bg: #f3f4f6; --bg2: #ffffff; --bg3: #f3f4f6; --bg4: #e5e7eb;
+  --chrome-bg: rgba(255,255,255,0.94);
   --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.12);
   --text: #111827; --text2: #374151; --text3: #6b7280;
   --glass-bg: rgba(255,255,255,0.85);
