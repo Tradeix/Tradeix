@@ -138,41 +138,47 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-.fade-up { animation: fadeUp .35s ease forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.985); filter: blur(3px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+.fade-up { animation: fadeUp .28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.985); filter: blur(3px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes countUp { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
 @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(15,141,99,0.2); } 50% { box-shadow: 0 0 12px 4px rgba(15,141,99,0.1); } }
 @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
 /* Staggered animation delays */
-.anim-delay-1 { animation-delay: 0.05s; }
-.anim-delay-2 { animation-delay: 0.1s; }
-.anim-delay-3 { animation-delay: 0.15s; }
-.anim-delay-4 { animation-delay: 0.2s; }
-.anim-delay-5 { animation-delay: 0.25s; }
-.anim-delay-6 { animation-delay: 0.3s; }
-.anim-delay-7 { animation-delay: 0.35s; }
-.anim-delay-8 { animation-delay: 0.4s; }
+.anim-delay-1 { animation-delay: 0.03s; }
+.anim-delay-2 { animation-delay: 0.06s; }
+.anim-delay-3 { animation-delay: 0.09s; }
+.anim-delay-4 { animation-delay: 0.12s; }
+.anim-delay-5 { animation-delay: 0.15s; }
+.anim-delay-6 { animation-delay: 0.18s; }
+.anim-delay-7 { animation-delay: 0.21s; }
+.anim-delay-8 { animation-delay: 0.24s; }
 
 /* Card hover lift */
 .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
 
 /* Trade row hover slide */
-.trade-row-anim { opacity: 0; animation: slideUp 0.3s ease forwards; }
+.trade-row-anim { opacity: 0; animation: slideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 /* Stat card entrance */
-.stat-anim { opacity: 0; animation: slideUp 0.4s ease forwards; }
+.stat-anim { opacity: 0; animation: slideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 /* Nav link hover */
 .nav-link-anim { transition: transform 0.15s ease, background 0.15s ease; }
@@ -184,7 +190,36 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .btn-press:active { transform: scale(0.97); }
 
 /* Page section entrance */
-.section-anim { opacity: 0; animation: slideUp 0.45s ease forwards; }
+.section-anim { opacity: 0; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.page-content.page-ready > :not(style):not(script):not(.section-anim):not(.page-header-row):not(.stat-anim):not(.trade-row-anim) {
+  opacity: 0;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.page-content.page-ready > :nth-child(1) { animation-delay: 0.00s; }
+.page-content.page-ready > :nth-child(2) { animation-delay: 0.04s; }
+.page-content.page-ready > :nth-child(3) { animation-delay: 0.08s; }
+.page-content.page-ready > :nth-child(4) { animation-delay: 0.12s; }
+.page-content.page-ready > :nth-child(5) { animation-delay: 0.16s; }
+.page-content.page-ready > :nth-child(6) { animation-delay: 0.20s; }
+.page-content.page-ready > :nth-child(7) { animation-delay: 0.24s; }
+.page-content.page-ready > :nth-child(8) { animation-delay: 0.28s; }
+.page-content.page-ready > :nth-child(9) { animation-delay: 0.32s; }
+.page-content.page-ready > :nth-child(10) { animation-delay: 0.36s; }
+.page-content.page-ready > :nth-child(11) { animation-delay: 0.40s; }
+.page-content.page-ready > :nth-child(12) { animation-delay: 0.44s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up,
+  .trade-row-anim,
+  .stat-anim,
+  .section-anim,
+  .page-content.page-ready > :not(style):not(script) {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
 
 /* ══════════════════════════════════════
    GLOBAL MODAL — covers header + sidebar,
