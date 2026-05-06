@@ -367,8 +367,8 @@ export default function StatsPage() {
         </div>
 
         {/* Chart */}
-        <div style={{ position: 'relative', zIndex: 1 }} dir={language === 'he' ? 'rtl' : 'ltr'}>
-          <div style={{ position: 'relative', height: '260px', display: 'flex' }}>
+        <div className="dow-chart" style={{ position: 'relative', zIndex: 1 }} dir={language === 'he' ? 'rtl' : 'ltr'}>
+          <div className="dow-plot" style={{ position: 'relative', height: '260px', display: 'flex' }}>
             {/* Y axis labels */}
             <div style={{ width: '40px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: '4px', fontSize: '11px', color: 'var(--text3)', fontWeight: '600' }}>
               {[100, 75, 50, 25, 0].map(v => (
@@ -384,7 +384,7 @@ export default function StatsPage() {
               ))}
 
               {/* Bars */}
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', gap: '14px', paddingInline: '12px', paddingBottom: '0' }}>
+              <div className="dow-bars" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', gap: '14px', paddingInline: '12px', paddingBottom: '0' }}>
                 {TRADING_DOWS.map(i => {
                   const b = byDow[i]
                   const wr = dowWinRate(i)
@@ -455,11 +455,12 @@ export default function StatsPage() {
           </div>
 
           {/* X axis labels */}
-          <div style={{ display: 'flex', paddingInlineStart: '40px', marginTop: '10px' }}>
-            <div style={{ flex: 1, display: 'flex', gap: '14px', paddingInline: '12px' }}>
+          <div className="dow-axis" style={{ display: 'flex', paddingInlineStart: '40px', marginTop: '10px' }}>
+            <div className="dow-axis-labels" style={{ flex: 1, display: 'flex', gap: '14px', paddingInline: '12px' }}>
               {TRADING_DOWS.map(i => (
                 <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '12px', fontWeight: '700', color: hoverDow === i ? 'var(--text)' : 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'color 0.15s' }}>
-                  {DAY_NAMES_LONG[i]}
+                  <span className="dow-label-full">{DAY_NAMES_LONG[i]}</span>
+                  <span className="dow-label-short">{DAY_NAMES[i]}</span>
                 </div>
               ))}
             </div>
@@ -468,28 +469,31 @@ export default function StatsPage() {
       </div>
 
       {/* Calendar */}
-      <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
+          {/* Header */}
+        <div className="cal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+          <div className="cal-title-row" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="cal-title-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Icon name="calendar_today" size={22} color="#0f8d63" />
             </div>
             <div>
-              <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
+              <div className="cal-title" style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>{tr.monthlyCalendar}</div>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="cal-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+              className="cal-nav-btn"
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="chevron_right" size={18} />
+              <Icon name={language === 'he' ? 'chevron_right' : 'chevron_left'} size={18} />
             </button>
-            <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
+            <div className="cal-month-label" style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+              className="cal-nav-btn"
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="chevron_left" size={18} />
+              <Icon name={language === 'he' ? 'chevron_left' : 'chevron_right'} size={18} />
             </button>
             <button onClick={captureCalendar} disabled={capturing} title={language === 'he' ? 'שמור תמונה' : 'Save image'}
+              className="cal-capture-btn"
               style={{
                 width: '36px', height: '32px', borderRadius: '10px',
                 background: '#0f8d63', border: 'none', color: '#fff',
@@ -589,26 +593,50 @@ export default function StatsPage() {
         .cal-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
         .cal-pnl { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-align: center; }
         .cal-wr { font-size: 10px; font-weight: 600; text-align: center; letter-spacing: 0.04em; }
+        .dow-label-short { display: none; }
         @media (max-width: 640px) {
           .cal-wrap { padding: 14px !important; }
-          .cal-grid { gap: 4px; }
-          .cal-week-row { grid-template-columns: 82px minmax(0, 1fr); gap: 4px; }
-          .cal-head-row { display: block; }
-          .cal-week-head-spacer { display: none; }
-          .cal-week-summary { min-height: 68px; border-radius: 10px; padding: 6px; gap: 5px; }
-          .cal-week-pnl { font-size: 13px; }
+          .dow-wrap { overflow: hidden !important; }
+          .dow-plot { height: 235px !important; }
+          .dow-bars { gap: 7px !important; padding-inline: 8px !important; }
+          .dow-axis { padding-inline-start: 40px !important; margin-top: 8px !important; }
+          .dow-axis-labels { gap: 7px !important; padding-inline: 8px !important; }
+          .dow-label-full { display: none; }
+          .dow-label-short { display: inline; }
+          .cal-header { align-items: center !important; gap: 8px !important; margin-bottom: 16px !important; }
+          .cal-title-row { gap: 8px !important; min-width: 0; flex: 1; }
+          .cal-title-icon { width: 34px !important; height: 34px !important; border-radius: 10px !important; }
+          .cal-title { font-size: 15px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          .cal-controls { gap: 5px !important; flex-shrink: 0; }
+          .cal-nav-btn { width: 28px !important; height: 28px !important; border-radius: 8px !important; }
+          .cal-month-label { min-width: 74px !important; font-size: 13px !important; white-space: nowrap; }
+          .cal-capture-btn { width: 30px !important; height: 28px !important; border-radius: 8px !important; margin-inline-start: 2px !important; }
+          .cal-grid { gap: 4px; min-width: 0; }
+          .cal-week-row { grid-template-columns: 74px minmax(0, 1fr); gap: 4px; }
+          .cal-week-head-spacer { width: 74px; }
+          .cal-week-summary { min-height: 68px; border-radius: 10px; padding: 6px 4px; gap: 5px; }
+          .cal-week-pnl { font-size: 12px; }
           .cal-week-count { font-size: 9px; }
           .cal-cell { min-height: 68px; border-radius: 10px; padding: 5px 4px; }
-          .cal-day { font-size: 11px; } .cal-pnl { font-size: 12px; } .cal-wr { font-size: 9px; }
+          .cal-day { font-size: 11px; } .cal-pnl { font-size: 11px; } .cal-wr { font-size: 8px; }
           .cal-dayname { font-size: 10px; }
         }
         @media (max-width: 400px) {
-          .cal-wrap { padding: 12px !important; }
+          .cal-wrap { padding: 10px !important; }
+          .cal-title-icon { display: none !important; }
+          .cal-title { font-size: 14px !important; }
+          .cal-controls { gap: 4px !important; }
+          .cal-nav-btn { width: 26px !important; height: 26px !important; }
+          .cal-month-label { min-width: 70px !important; font-size: 12px !important; }
+          .cal-capture-btn { width: 28px !important; height: 26px !important; }
           .cal-grid { gap: 3px; }
-          .cal-week-row { grid-template-columns: 72px minmax(0, 1fr); }
-          .cal-week-summary { min-height: 56px; gap: 5px; padding: 5px; }
+          .cal-week-row { grid-template-columns: 64px minmax(0, 1fr); }
+          .cal-week-head-spacer { width: 64px; }
+          .cal-week-summary { min-height: 56px; gap: 4px; padding: 4px 3px; }
+          .cal-week-pnl { font-size: 11px; }
+          .cal-week-count { font-size: 8px; }
           .cal-cell { min-height: 56px; border-radius: 8px; padding: 4px 3px; }
-          .cal-day { font-size: 10px; } .cal-pnl { font-size: 11px; } .cal-wr { font-size: 9px; }
+          .cal-day { font-size: 10px; } .cal-pnl { font-size: 10px; } .cal-wr { font-size: 7px; letter-spacing: 0.02em; }
           .cal-dayname { font-size: 9px; }
         }
       `}</style>
