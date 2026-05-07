@@ -732,6 +732,17 @@ export default function StrategiesPage() {
 
       <style>{`
         @media (max-width: 768px) {
+          .strat-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            width: 100% !important;
+          }
+          .strat-card {
+            width: 100% !important;
+            max-width: none !important;
+            flex: none !important;
+          }
           .strat-header { padding: 16px !important; gap: 12px !important; }
           .strat-header .strat-icon { width: 38px !important; height: 38px !important; }
           .strat-header .strat-icon span { font-size: 14px !important; }
