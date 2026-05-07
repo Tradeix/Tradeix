@@ -11,27 +11,18 @@ import { usePortfolio } from '@/lib/portfolio-context'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
-const STRATEGY_COLORS = [
-  { name: 'green', hex: '#0f8d63' },
-  { name: 'blue', hex: '#4b5563' },
-  { name: 'purple', hex: '#9ca3af' },
-  { name: 'gray', hex: '#6b7280' },
-  { name: 'cyan', hex: '#374151' },
-  { name: 'pink', hex: '#d1d5db' },
-  { name: 'amber', hex: '#f59e0b' },
-  { name: 'red', hex: '#ef4444' },
-]
-
-function getColorHex(_name: string) {
-  // Strategies all render in a neutral light gray now — no per-strategy
-  // accent color. Kept the function signature so call sites don't change.
-  return '#9ca3af'
+const RESULT_COLORS = {
+  win: '#22c55e',
+  loss: '#ef4444',
+  breakeven: '#f59e0b',
+  neutral: '#9ca3af',
 }
 
 type StrategyStats = {
   totalTrades: number
   wins: number
   losses: number
+  breakevens: number
   winRate: number
   totalPnl: number
   profitFactor: number
@@ -41,7 +32,7 @@ type StrategyStats = {
 }
 
 const EMPTY_STATS: StrategyStats = {
-  totalTrades: 0, wins: 0, losses: 0, winRate: 0,
+  totalTrades: 0, wins: 0, losses: 0, breakevens: 0, winRate: 0,
   totalPnl: 0, profitFactor: 0, bestTrade: 0, worstTrade: 0, avgPnl: 0,
 }
 
@@ -90,6 +81,7 @@ export default function StrategiesPage() {
         if (trades && trades.length > 0) {
           const wins = trades.filter((x: any) => x.outcome === 'win')
           const losses = trades.filter((x: any) => x.outcome === 'loss')
+          const breakevens = trades.filter((x: any) => x.outcome === 'breakeven')
           const totalPnl = trades.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0)
           const grossProfit = wins.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0)
           const grossLoss = Math.abs(losses.reduce((sum: number, x: any) => sum + (x.pnl || 0), 0))
@@ -97,6 +89,7 @@ export default function StrategiesPage() {
             totalTrades: trades.length,
             wins: wins.length,
             losses: losses.length,
+            breakevens: breakevens.length,
             winRate: (wins.length / trades.length) * 100,
             totalPnl,
             profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
@@ -125,6 +118,7 @@ export default function StrategiesPage() {
     if (trades && trades.length > 0) {
       const wins = trades.filter((x: any) => x.outcome === 'win')
       const losses = trades.filter((x: any) => x.outcome === 'loss')
+      const breakevens = trades.filter((x: any) => x.outcome === 'breakeven')
       const totalPnl = trades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
       const grossProfit = wins.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
       const grossLoss = Math.abs(losses.reduce((s: number, x: any) => s + (x.pnl || 0), 0))
@@ -134,6 +128,7 @@ export default function StrategiesPage() {
           totalTrades: trades.length,
           wins: wins.length,
           losses: losses.length,
+          breakevens: breakevens.length,
           winRate: (wins.length / trades.length) * 100,
           totalPnl,
           profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
@@ -294,19 +289,34 @@ export default function StrategiesPage() {
           alignItems: 'flex-start',
         }}>
           {strategies.map((s, sIdx) => {
-            const color = getColorHex(s.color)
             const stats = strategyStats[s.id] || EMPTY_STATS
             const pnlPositive = stats.totalPnl >= 0
             const hasData = stats.totalTrades > 0
-            const wr = stats.winRate
-            const wrColor = !hasData ? '#6b7280' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
+            const accentColor = RESULT_COLORS.neutral
 
             // Donut geometry — bigger, hero-style
             const donutSize = 116
             const donutStroke = 8
             const donutRadius = (donutSize - donutStroke) / 2
             const donutCircum = 2 * Math.PI * donutRadius
-            const donutOffset = donutCircum * (1 - (hasData ? wr : 0) / 100)
+            let segmentOffset = 0
+            const donutGap = hasData && stats.totalTrades > 1 ? 2 : 0
+            const donutSegments = [
+              { value: stats.wins, color: RESULT_COLORS.win },
+              { value: stats.losses, color: RESULT_COLORS.loss },
+              { value: stats.breakevens, color: RESULT_COLORS.breakeven },
+            ]
+              .filter(segment => segment.value > 0)
+              .map(segment => {
+                const length = (segment.value / stats.totalTrades) * donutCircum
+                const rendered = {
+                  ...segment,
+                  length: Math.max(length - donutGap, 0),
+                  offset: segmentOffset,
+                }
+                segmentOffset += length
+                return rendered
+              })
 
             return (
               <div
@@ -326,8 +336,8 @@ export default function StrategiesPage() {
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = `0 10px 30px ${wrColor}1f`
-                  e.currentTarget.style.borderColor = `${wrColor}55`
+                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(156,163,175,0.12)'
+                  e.currentTarget.style.borderColor = 'rgba(156,163,175,0.32)'
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'none'
@@ -338,14 +348,14 @@ export default function StrategiesPage() {
                 {/* Top accent — gradient strip */}
                 <div style={{
                   height: '3px',
-                  background: `linear-gradient(90deg, transparent, ${wrColor}88, transparent)`,
+                  background: 'linear-gradient(90deg, transparent, rgba(156,163,175,0.45), transparent)',
                   opacity: hasData ? 0.9 : 0.3,
                 }} />
 
                 {/* Soft radial glow at top */}
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0, height: '180px',
-                  background: `radial-gradient(ellipse at center top, ${wrColor}10, transparent 65%)`,
+                  background: 'radial-gradient(ellipse at center top, rgba(156,163,175,0.08), transparent 65%)',
                   pointerEvents: 'none',
                 }} />
 
@@ -366,9 +376,9 @@ export default function StrategiesPage() {
                     </div>
                     <span style={{
                       fontSize: '11px', fontWeight: '900',
-                      color: hasData ? wrColor : 'var(--text3)',
-                      background: hasData ? `${wrColor}16` : 'var(--bg3)',
-                      border: `1px solid ${hasData ? `${wrColor}40` : 'var(--border)'}`,
+                      color: hasData ? accentColor : 'var(--text3)',
+                      background: hasData ? 'rgba(156,163,175,0.1)' : 'var(--bg3)',
+                      border: `1px solid ${hasData ? 'rgba(156,163,175,0.24)' : 'var(--border)'}`,
                       padding: '5px 10px', borderRadius: '8px',
                       letterSpacing: '0.05em', fontFamily: 'Heebo, sans-serif',
                       flexShrink: 0,
@@ -377,27 +387,25 @@ export default function StrategiesPage() {
 
                   {/* Centered hero donut */}
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '18px' }}>
-                    <div style={{ position: 'relative', filter: hasData ? `drop-shadow(0 0 16px ${wrColor}40)` : 'none' }}>
+                    <div style={{ position: 'relative', filter: hasData ? 'drop-shadow(0 0 16px rgba(156,163,175,0.16))' : 'none' }}>
                       <svg width={donutSize} height={donutSize} viewBox={`0 0 ${donutSize} ${donutSize}`}>
-                        <defs>
-                          <linearGradient id={`gr-${s.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor={wrColor} stopOpacity="1" />
-                            <stop offset="100%" stopColor={wrColor} stopOpacity="0.55" />
-                          </linearGradient>
-                        </defs>
                         <circle
                           cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
                           fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={donutStroke}
                         />
-                        <circle
-                          cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
-                          fill="none" stroke={`url(#gr-${s.id})`} strokeWidth={donutStroke}
-                          strokeLinecap="round"
-                          strokeDasharray={donutCircum}
-                          strokeDashoffset={donutOffset}
-                          transform={`rotate(-90 ${donutSize / 2} ${donutSize / 2})`}
-                          style={{ transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)' }}
-                        />
+                        {donutSegments.map((segment, i) => (
+                          <circle
+                            key={i}
+                            cx={donutSize / 2} cy={donutSize / 2} r={donutRadius}
+                            fill="none"
+                            stroke={segment.color}
+                            strokeWidth={donutStroke}
+                            strokeLinecap="butt"
+                            strokeDasharray={`${segment.length} ${donutCircum}`}
+                            strokeDashoffset={-segment.offset}
+                            transform={`rotate(-90 ${donutSize / 2} ${donutSize / 2})`}
+                          />
+                        ))}
                       </svg>
                       <div dir="ltr" style={{
                         position: 'absolute', inset: 0,
@@ -405,8 +413,8 @@ export default function StrategiesPage() {
                         flexDirection: 'column', lineHeight: 1,
                         pointerEvents: 'none',
                       }}>
-                        <div style={{ fontSize: '28px', fontWeight: '900', color: wrColor, fontFamily: 'Heebo, sans-serif', letterSpacing: '-0.03em' }}>
-                          {hasData ? `${Math.round(wr)}%` : '—'}
+                        <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--text)', fontFamily: 'Heebo, sans-serif', letterSpacing: '-0.03em' }}>
+                          {hasData ? `${Math.round(stats.winRate)}%` : '—'}
                         </div>
                         <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.16em', marginTop: '4px' }}>
                           {language === 'he' ? 'הצלחה' : 'Win'}
@@ -450,21 +458,18 @@ export default function StrategiesPage() {
       {expandedId && (() => {
         const s = strategies.find(x => x.id === expandedId)
         if (!s) return null
-        const color = getColorHex(s.color)
         const stats = strategyStats[s.id] || EMPTY_STATS
         const isStatsLoading = loadingStats === s.id
         const pnlPositive = stats.totalPnl >= 0
         const hasData = stats.totalTrades > 0
-        const wr = stats.winRate
-        const wrColor = !hasData ? '#6b7280' : wr >= 60 ? '#22c55e' : wr >= 40 ? '#f59e0b' : '#ef4444'
-        const sIdx = strategies.findIndex(x => x.id === s.id)
+        const accentColor = RESULT_COLORS.neutral
 
         return (
           <div
             className="app-modal-overlay"
             onClick={() => setExpandedId(null)}
             style={{
-              background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)',
+              background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)',
               animation: 'fadeIn 0.2s ease',
             }}
           >
@@ -482,49 +487,29 @@ export default function StrategiesPage() {
                 position: 'relative',
               }}
             >
-              {/* Header */}
-              <div style={{
-                padding: '18px 22px', borderBottom: '1px solid var(--border)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1,
-                borderRadius: '20px 20px 0 0',
+              <button onClick={() => setExpandedId(null)} style={{
+                position: 'absolute', top: '20px', insetInlineStart: '22px',
+                width: '40px', height: '40px', borderRadius: '12px',
+                background: 'var(--bg3)', border: '1px solid var(--border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', zIndex: 2,
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                  <span style={{
-                    fontSize: '11px', fontWeight: '900',
-                    color: hasData ? wrColor : 'var(--text3)',
-                    background: hasData ? `${wrColor}14` : 'var(--bg3)',
-                    border: `1px solid ${hasData ? `${wrColor}33` : 'var(--border)'}`,
-                    padding: '5px 10px', borderRadius: '8px',
-                    letterSpacing: '0.04em', flexShrink: 0,
-                  }}>{String(sIdx + 1).padStart(2, '0')}</span>
-                  <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {s.name}
-                  </div>
-                </div>
-                <button onClick={() => setExpandedId(null)} style={{
-                  width: '32px', height: '32px', borderRadius: '10px',
-                  background: 'var(--bg3)', border: '1px solid var(--border)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', flexShrink: 0,
-                }}>
-                  <Icon name="close" size={16} color="var(--text2)" />
-                </button>
-              </div>
+                <Icon name="close" size={17} color="var(--text2)" />
+              </button>
 
               {/* Body */}
-              <div style={{ padding: '20px 22px' }}>
+              <div style={{ padding: '76px 22px 20px' }}>
                 {/* Stats panel */}
                 <div style={{
-                  background: `linear-gradient(135deg, ${wrColor}08, ${wrColor}02)`,
-                  border: `1px solid ${wrColor}1f`,
+                  background: 'linear-gradient(135deg, rgba(156,163,175,0.07), rgba(156,163,175,0.02))',
+                  border: '1px solid rgba(156,163,175,0.18)',
                   borderRadius: '14px',
                   padding: '18px',
                   marginBottom: s.plan || s.details ? '16px' : '0',
                 }}>
                   {isStatsLoading ? (
                     <div style={{ textAlign: 'center', padding: '20px' }}>
-                      <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: wrColor, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                      <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: accentColor, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
                     </div>
                   ) : stats.totalTrades === 0 ? (
                     <div style={{ textAlign: 'center', padding: '24px 12px' }}>
@@ -546,7 +531,7 @@ export default function StrategiesPage() {
                         </div>
                         <div style={{ background: 'var(--bg2)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
                           <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Win Rate</div>
-                          <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', letterSpacing: '-0.02em', color: wrColor }}>
+                          <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text)' }}>
                             {stats.winRate.toFixed(0)}%
                           </div>
                           <div style={{ display: 'flex', gap: '2px', marginTop: '8px', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
@@ -564,7 +549,7 @@ export default function StrategiesPage() {
                           { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics' },
                         ].map((item, i) => (
                           <div key={i} style={{ background: 'var(--bg2)', padding: '12px 8px', textAlign: 'center' }}>
-                            <Icon name={item.icon} size={14} color={wrColor} style={{ marginBottom: '5px', opacity: 0.75 }} />
+                            <Icon name={item.icon} size={14} color={accentColor} style={{ marginBottom: '5px', opacity: 0.75 }} />
                             <div style={{ fontSize: '15px', fontWeight: '800', color: item.valueColor || 'var(--text)', marginBottom: '2px' }}>{item.value}</div>
                             <div style={{ fontSize: '9px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.label}</div>
                           </div>
@@ -580,8 +565,8 @@ export default function StrategiesPage() {
                     {s.plan && (
                       <div style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Icon name="notes" size={13} color={wrColor} />
-                          <span style={{ fontSize: '11px', fontWeight: '800', color: wrColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          <Icon name="notes" size={13} color={accentColor} />
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: accentColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                             {tr.strategyPlan}
                           </span>
                         </div>
@@ -591,8 +576,8 @@ export default function StrategiesPage() {
                     {s.details && (
                       <div style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                          <Icon name="info" size={13} color={wrColor} />
-                          <span style={{ fontSize: '11px', fontWeight: '800', color: wrColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          <Icon name="info" size={13} color={accentColor} />
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: accentColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                             {tr.strategyDetails}
                           </span>
                         </div>
