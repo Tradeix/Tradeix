@@ -208,6 +208,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .page-content.page-ready > :nth-child(11) { animation-delay: 0.40s; }
 .page-content.page-ready > :nth-child(12) { animation-delay: 0.44s; }
 
+.page-content.page-ready:has(.app-modal-overlay) > :has(.app-modal-overlay) {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-up,
   .trade-row-anim,
