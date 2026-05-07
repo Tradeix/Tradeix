@@ -327,6 +327,25 @@ body:has(.app-modal-overlay--hide-header) .page-header-row {
   box-shadow: 0 1px 0 rgba(0,0,0,0.06) !important;
 }
 
+/* ── Dashboard welcome panel ── */
+[data-theme="light"] .welcome-section {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.92) 48%, rgba(236,253,245,0.74) 100%) !important;
+  border-color: rgba(15,23,42,0.06) !important;
+  box-shadow: 0 18px 42px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+[data-theme="light"] .welcome-quote-wrap {
+  background: rgba(255,255,255,0.82) !important;
+  border-color: rgba(15,141,99,0.14) !important;
+  box-shadow: 0 14px 32px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+[data-theme="light"] .welcome-title {
+  text-shadow: none !important;
+}
+[data-theme="light"] .welcome-quote {
+  color: #334155 !important;
+}
+
 /* ── Glass cards — semi-transparent, no solid white ── */
 [data-theme="light"] div[style*="var(--glass-bg)"] {
   background: rgba(255,255,255,0.75) !important;
