@@ -81,9 +81,9 @@ export default function SettingsPage() {
       if (nextTheme !== theme) await setTheme(nextTheme)
       if (nextLang !== language) await setLanguage(nextLang)
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
-      toast.success(nextLang === 'he' ? '׳”׳”׳¢׳“׳₪׳•׳× ׳ ׳©׳׳¨׳• ׳‘׳”׳¦׳׳—׳”' : 'Preferences saved successfully')
+      toast.success(nextLang === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
     } catch {
-      toast.error(nextLang === 'he' ? '׳©׳’׳™׳׳” ׳‘׳©׳׳™׳¨׳”' : 'Save failed')
+      toast.error(nextLang === 'he' ? 'שגיאה בשמירה' : 'Save failed')
     } finally {
       setSavingPrefs(false)
     }
