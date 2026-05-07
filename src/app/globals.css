@@ -191,7 +191,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Page section entrance */
 .section-anim { opacity: 0; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.page-content.page-ready > :not(style):not(script):not(.section-anim):not(.page-header-row):not(.stat-anim):not(.trade-row-anim) {
+.page-content.page-ready > :not(style):not(script):not(.app-modal-overlay):not(.section-anim):not(.page-header-row):not(.stat-anim):not(.trade-row-anim) {
   opacity: 0;
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -229,18 +229,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: fixed !important;
   inset: 0 !important;
   z-index: 9000 !important;
-  overflow-y: auto;
-  overflow-x: hidden;
+  transform: none !important;
+  overflow: hidden !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 20px;
+  padding: 20px !important;
+  background: rgba(0,0,0,0.76);
+  overscroll-behavior: contain;
 }
 .app-modal-overlay--top   { z-index: 9100 !important; }
 .app-modal-overlay--top2  { z-index: 9200 !important; }
 .app-modal-card {
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
   background: var(--modal-bg) !important;
 }
 .app-modal-card[style*="background: var(--bg2)"],
@@ -250,14 +253,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 @media (max-width: 640px) {
   .app-modal-overlay { padding: 10px !important; }
-  .app-modal-card { max-height: calc(100vh - 20px); }
+  .app-modal-card { max-height: calc(100dvh - 20px); }
   /* Trim chunky inner spacing so the modal fits without scrolling */
   .app-modal-card[data-tight="1"] { padding: 18px !important; }
 }
-/* While any modal is open, hide the sticky page header on every screen
-   size. The header overlap was causing visual clipping in some flows;
-   removing it entirely while a modal is open keeps the modal clean. */
-body:has(.app-modal-overlay) header[style*="sticky"] { display: none !important; }
+html:has(.app-modal-overlay),
+body:has(.app-modal-overlay) {
+  overflow: hidden !important;
+}
+body:has(.app-modal-overlay--image) header[style*="sticky"] {
+  display: none !important;
+}
 
 /* ══════════════════════════════════════
    RESPONSIVE — mobile fixes

@@ -9,6 +9,15 @@ import { t } from '@/lib/translations'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 
+function forceViewportTop() {
+  if (typeof window === 'undefined') return
+  const scrollOptions: ScrollToOptions = { top: 0, left: 0, behavior: 'instant' as ScrollBehavior }
+  window.scrollTo(scrollOptions)
+  document.scrollingElement?.scrollTo(scrollOptions)
+  document.documentElement.scrollTop = 0
+  document.body.scrollTop = 0
+}
+
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
   green:  '#0f8d63',
   blue:   '#3b82f6',
@@ -437,8 +446,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // Also scroll to top (fixes mobile starting mid-page)
   useEffect(() => {
     setPageKey(k => k + 1)
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
-    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }))
+    forceViewportTop()
+    requestAnimationFrame(forceViewportTop)
+    const soon = window.setTimeout(forceViewportTop, 40)
+    const afterPaint = window.setTimeout(forceViewportTop, 120)
+    return () => {
+      window.clearTimeout(soon)
+      window.clearTimeout(afterPaint)
+    }
   }, [pathname])
 
   // Disable browser scroll restoration and force top on initial load, bfcache restores,
@@ -448,9 +463,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     if (typeof window === 'undefined') return
     const prev = history.scrollRestoration
     try { history.scrollRestoration = 'manual' } catch {}
-    const toTop = () => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
-    }
+    const toTop = forceViewportTop
     toTop()
     requestAnimationFrame(toTop)
     const onPageShow = () => { toTop(); requestAnimationFrame(toTop) }
@@ -465,8 +478,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // force scroll back to top so the header is visible.
   useEffect(() => {
     if (!ready) return
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
-    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }))
+    forceViewportTop()
+    requestAnimationFrame(forceViewportTop)
+    const afterPaint = window.setTimeout(forceViewportTop, 80)
+    return () => window.clearTimeout(afterPaint)
   }, [ready])
 
   useEffect(() => {

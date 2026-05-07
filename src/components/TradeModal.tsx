@@ -698,7 +698,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
       {lightbox && imageUrl && (
         <div
           onClick={() => setLightbox(false)}
-          className="app-modal-overlay app-modal-overlay--top2"
+          className="app-modal-overlay app-modal-overlay--top2 app-modal-overlay--image"
           style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', animation: 'fadeIn 0.2s ease', cursor: 'zoom-out' }}
         >
           <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '17px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 501 }}>✕</button>
