@@ -344,6 +344,24 @@ body:has(.app-modal-overlay) .page-header-row {
   color: #334155 !important;
 }
 
+/* ── Image lightbox ── */
+[data-theme="light"] .app-modal-overlay--image {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="light"] .app-modal-overlay--image img {
+  box-shadow: 0 24px 64px rgba(15,23,42,0.14) !important;
+}
+[data-theme="light"] .app-modal-overlay--image button {
+  background: rgba(15,23,42,0.06) !important;
+  border-color: rgba(15,23,42,0.12) !important;
+  color: #111827 !important;
+}
+[data-theme="light"] .app-modal-overlay--image button:hover {
+  background: rgba(15,23,42,0.1) !important;
+}
+
 /* ── Glass cards — semi-transparent, no solid white ── */
 [data-theme="light"] div[style*="var(--glass-bg)"] {
   background: rgba(255,255,255,0.75) !important;
