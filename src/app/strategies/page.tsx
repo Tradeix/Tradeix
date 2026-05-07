@@ -466,7 +466,7 @@ export default function StrategiesPage() {
 
         return (
           <div
-            className="app-modal-overlay"
+            className="app-modal-overlay app-modal-overlay--hide-header"
             onClick={() => setExpandedId(null)}
             style={{
               background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)',

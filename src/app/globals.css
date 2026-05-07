@@ -271,6 +271,11 @@ body:has(.app-modal-overlay) {
 body:has(.app-modal-overlay--image) header[style*="sticky"] {
   display: none !important;
 }
+body:has(.app-modal-overlay--hide-header) header,
+body:has(.app-modal-overlay--hide-header) .page-header-row {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 
 /* ══════════════════════════════════════
    RESPONSIVE — mobile fixes
