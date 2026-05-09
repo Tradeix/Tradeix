@@ -57,13 +57,20 @@ create table if not exists public.portfolios (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users on delete cascade not null,
   name text not null,
-  market_type text default 'forex' check (market_type in ('forex','stocks','crypto','commodities','other')),
+  market_type text default 'forex' check (market_type in ('forex','stocks','futures','cfd','crypto','commodities','other')),
   initial_capital numeric default 0,
   currency text default 'USD',
   created_at timestamptz default now()
 );
 
 alter table public.portfolios enable row level security;
+
+alter table public.portfolios
+  drop constraint if exists portfolios_market_type_check;
+
+alter table public.portfolios
+  add constraint portfolios_market_type_check
+  check (market_type in ('forex','stocks','futures','cfd','crypto','commodities','other'));
 
 create policy "Users can manage own portfolios"
   on public.portfolios for all
