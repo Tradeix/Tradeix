@@ -17,6 +17,27 @@ const EMPTY_STATS: Stats = {
   totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
 }
 
+function calculateStats(rows: any[]): Stats {
+  if (!rows.length) return EMPTY_STATS
+  const wins = rows.filter((x: any) => x.outcome === 'win')
+  const losses = rows.filter((x: any) => x.outcome === 'loss')
+  const totalPnl = rows.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
+  const gp = wins.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
+  const gl = Math.abs(losses.reduce((s: number, x: any) => s + (x.pnl || 0), 0))
+
+  return {
+    totalTrades: rows.length,
+    wins: wins.length,
+    losses: losses.length,
+    winRate: (wins.length / rows.length) * 100,
+    totalPnl,
+    profitFactor: gl > 0 ? gp / gl : 0,
+    avgRR: 0,
+    bestTrade: Math.max(...rows.map((x: any) => x.pnl || 0)),
+    worstTrade: Math.min(...rows.map((x: any) => x.pnl || 0)),
+  }
+}
+
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language } = useApp()
@@ -26,6 +47,7 @@ export default function DashboardPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const [stats, setStats] = useState<Stats>(EMPTY_STATS)
+  const [portfolioStats, setPortfolioStats] = useState<Stats>(EMPTY_STATS)
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
   const [userName, setUserName] = useState('')
   const activePortfolioIdRef = useRef<string | null>(null)
@@ -112,12 +134,14 @@ export default function DashboardPage() {
       activePortfolioIdRef.current = null
       setTrades([])
       setStats(EMPTY_STATS)
+      setPortfolioStats(EMPTY_STATS)
       setPortfolioValue({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
       return
     }
     activePortfolioIdRef.current = activePortfolio.id
     setTrades([])
     setStats(EMPTY_STATS)
+    setPortfolioStats(EMPTY_STATS)
     setPortfolioValue({
       currentValue: activePortfolio.initial_capital || 0,
       allTimePnl: 0,
@@ -153,19 +177,11 @@ export default function DashboardPage() {
       const startDate = getStartDate(filter)
       const { data: all } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', portfolioId).gte('traded_at', startDate)
       if (activePortfolioIdRef.current !== portfolioId) return
-      if (all && all.length > 0) {
-        const wins = all.filter((x: any) => x.outcome === 'win')
-        const losses = all.filter((x: any) => x.outcome === 'loss')
-        const totalPnl = all.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
-        const gp = wins.reduce((s: number, x: any) => s + x.pnl, 0)
-        const gl = Math.abs(losses.reduce((s: number, x: any) => s + x.pnl, 0))
-        setStats({ totalTrades: all.length, wins: wins.length, losses: losses.length, winRate: (wins.length / all.length) * 100, totalPnl, profitFactor: gl > 0 ? gp / gl : 0, avgRR: 0, bestTrade: Math.max(...all.map((x: any) => x.pnl || 0)), worstTrade: Math.min(...all.map((x: any) => x.pnl || 0)) })
-      } else {
-        setStats(EMPTY_STATS)
-      }
-      const { data: allTimeTrades } = await supabase.from('trades').select('pnl, traded_at').eq('portfolio_id', portfolioId).order('traded_at', { ascending: true })
+      setStats(calculateStats(all || []))
+      const { data: allTimeTrades } = await supabase.from('trades').select('pnl, outcome, traded_at').eq('portfolio_id', portfolioId).order('traded_at', { ascending: true })
       if (activePortfolioIdRef.current !== portfolioId) return
       if (allTimeTrades) {
+        setPortfolioStats(calculateStats(allTimeTrades))
         const allTimePnl = allTimeTrades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
         const initialCapital = activePortfolio!.initial_capital || 0
         const currentValue = initialCapital + allTimePnl
@@ -407,9 +423,9 @@ export default function DashboardPage() {
           {/* Bottom — 3 stat tiles */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', padding: '0 16px 16px', marginTop: 'auto' }}>
             {[
-              { label: language === 'he' ? 'עסקאות' : 'Trades', value: stats.totalTrades, color: 'var(--text)' },
-              { label: 'Profit Factor', value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
-              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: stats.totalTrades > 0 ? `${stats.winRate.toFixed(0)}%` : '—', color: stats.winRate >= 50 ? '#22c55e' : '#ef4444' },
+              { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
+              { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
+              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
             ].map((t, i) => (
               <div key={i} style={{
                 background: 'rgba(255,255,255,0.02)',
