@@ -146,6 +146,19 @@ export default function StatsPage() {
     if (bestDow === worstDow) worstDow = -1
   }
 
+  const assetMap = new Map<string, { symbol: string; pnl: number; count: number }>()
+  trades.forEach(t => {
+    const symbol = (t.symbol || '').trim().toUpperCase() || (language === 'he' ? 'ללא שם' : 'Unnamed')
+    const current = assetMap.get(symbol) || { symbol, pnl: 0, count: 0 }
+    current.pnl += t.pnl || 0
+    current.count += 1
+    assetMap.set(symbol, current)
+  })
+  const assetRows = Array.from(assetMap.values())
+  const bestAsset = assetRows.length ? assetRows.reduce((a, b) => a.pnl >= b.pnl ? a : b) : null
+  const worstAsset = assetRows.length ? assetRows.reduce((a, b) => a.pnl <= b.pnl ? a : b) : null
+  const formatPnl = (value: number) => `${value >= 0 ? '+' : '-'}$${Math.abs(value).toLocaleString()}`
+
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
   const StatCard = ({ label, value, color, icon, idx = 0 }: any) => (
@@ -347,8 +360,9 @@ export default function StatsPage() {
         </div>
       </div>
 
+      <div className="dow-asset-grid">
       {/* ── Win rate by day of week — bar chart ── */}
-      <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', marginBottom: '16px', position: 'relative', overflow: 'visible' }}>
+      <div className="section-anim anim-delay-6 dow-wrap" style={{ ...card, padding: '24px', position: 'relative', overflow: 'visible' }}>
         <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '15%', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(15,141,99,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Header */}
@@ -468,6 +482,80 @@ export default function StatsPage() {
         </div>
       </div>
 
+      {/* ── Asset breakdown ── */}
+      <div className="section-anim anim-delay-6 asset-breakdown-card" style={{ ...card, padding: '24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-58px', insetInlineEnd: '-44px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(15,141,99,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon name="category" size={22} color="#0f8d63" />
+          </div>
+          <div>
+            <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+              {language === 'he' ? 'פילוח לפי נכסים' : 'Asset breakdown'}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '3px', fontWeight: '500' }}>
+              {language === 'he' ? 'הנכס הטוב והחלש ביותר בתיק' : 'Best and weakest symbol in this portfolio'}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gap: '12px', position: 'relative', zIndex: 1 }}>
+          {[
+            {
+              type: 'best',
+              label: language === 'he' ? 'הנכס הטוב ביותר' : 'Best asset',
+              asset: bestAsset,
+              color: '#22c55e',
+              bg: 'rgba(34,197,94,0.08)',
+              border: 'rgba(34,197,94,0.24)',
+              empty: language === 'he' ? 'אין נתונים' : 'No data',
+            },
+            {
+              type: 'worst',
+              label: language === 'he' ? 'הנכס הגרוע ביותר' : 'Worst asset',
+              asset: worstAsset,
+              color: '#ef4444',
+              bg: 'rgba(239,68,68,0.08)',
+              border: 'rgba(239,68,68,0.24)',
+              empty: language === 'he' ? 'אין נתונים' : 'No data',
+            },
+          ].map(item => (
+            <div key={item.type} style={{
+              background: item.bg,
+              border: `1px solid ${item.border}`,
+              borderRadius: '16px',
+              padding: '16px',
+              minHeight: '112px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: '800', color: item.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                {item.label}
+              </div>
+              {item.asset ? (
+                <>
+                  <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text)', lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.asset.symbol}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginTop: '12px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)' }}>
+                      {item.asset.count} {language === 'he' ? 'עסקאות' : item.asset.count === 1 ? 'trade' : 'trades'}
+                    </span>
+                    <span dir="ltr" style={{ fontSize: '20px', fontWeight: '900', color: item.asset.pnl >= 0 ? '#22c55e' : '#ef4444', lineHeight: 1 }}>
+                      {formatPnl(item.asset.pnl)}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '700' }}>{item.empty}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+
       {/* Calendar */}
         <div ref={calendarRef} className="cal-wrap section-anim anim-delay-7" style={{ ...card, padding: '24px' }}>
           {/* Header */}
@@ -571,8 +659,11 @@ export default function StatsPage() {
 
       <style>{`
         @media (max-width: 1024px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; } }
+        .dow-asset-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr); gap: 16px; align-items: stretch; margin-bottom: 16px; }
+        .asset-breakdown-card { min-height: 100%; }
         @media (max-width: 640px) {
           .stats-grid-4 { gap: 8px !important; } .stats-grid-4 > div { padding: 14px !important; } .stats-grid-4 > div > div:last-child { font-size: 21px !important; }
+          .dow-asset-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .dow-wrap { padding: 16px !important; }
           .dow-chips { gap: 5px !important; }
           .dow-chips button { padding: 10px 2px !important; }
