@@ -60,10 +60,16 @@ create table if not exists public.portfolios (
   market_type text default 'forex' check (market_type in ('forex','stocks','futures','cfd','crypto','commodities','other')),
   initial_capital numeric default 0,
   currency text default 'USD',
+  color text default 'blue',
+  archived boolean default false,
   created_at timestamptz default now()
 );
 
 alter table public.portfolios enable row level security;
+
+alter table public.portfolios
+  add column if not exists color text default 'blue',
+  add column if not exists archived boolean default false;
 
 alter table public.portfolios
   drop constraint if exists portfolios_market_type_check;
