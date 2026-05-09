@@ -6,12 +6,10 @@ import { useApp } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
 export default function SettingsPage() {
   const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription } = useApp()
-  const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
@@ -339,12 +337,12 @@ export default function SettingsPage() {
               <Icon name="warning" size={26} color="#ef4444" />
             </div>
             <div style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
-              {language === 'he' ? 'לבטל את המנוי?' : 'Cancel subscription?'}
+              {language === 'he' ? 'ניהול מנוי' : 'Manage subscription'}
             </div>
             <div style={{ fontSize: '14px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
-                ? 'האם אתה בטוח שברצונך לבטל את המנוי?\nכל ההיסטוריה, העסקאות והתוכן שלך יימחקו לצמיתות ולא ניתן יהיה לשחזרם.'
-                : 'Are you sure you want to cancel?\nAll your history, trades, and content will be permanently deleted and cannot be recovered.'}
+                ? 'הביטול והשינויים במנוי מתבצעים דרך פורטל החיוב של Lemon Squeezy. הנתונים שלך באתר לא יימחקו.'
+                : 'Subscription changes are handled in the Lemon Squeezy billing portal. Your site data will not be deleted.'}
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
@@ -354,10 +352,10 @@ export default function SettingsPage() {
                 {language === 'he' ? 'חזור' : 'Go back'}
               </button>
               <button
-                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription(); router.push('/dashboard') }}
+                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription() }}
                 style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
-                {language === 'he' ? 'כן, מחק הכל' : 'Yes, delete everything'}
+                {language === 'he' ? 'פתח ניהול חיוב' : 'Open billing portal'}
               </button>
             </div>
           </div>

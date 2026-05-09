@@ -62,8 +62,21 @@
    NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
    ANTHROPIC_API_KEY=sk-ant-...
-   NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   NEXT_PUBLIC_SITE_URL=https://tradeix.vercel.app
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   LEMONSQUEEZY_API_KEY=your_lemonsqueezy_api_key
+   LEMONSQUEEZY_STORE_ID=your_store_id
+   LEMONSQUEEZY_PRO_VARIANT_ID=your_pro_variant_id
+   LEMONSQUEEZY_WEBHOOK_SECRET=your_webhook_signing_secret
    ```
+
+Lemon Squeezy webhook callback:
+
+```
+https://tradeix.vercel.app/api/billing/webhook
+```
+
+Recommended subscription events: `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_resumed`, `subscription_expired`, `subscription_paused`, `subscription_unpaused`.
 
 ---
 

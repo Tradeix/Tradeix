@@ -132,3 +132,20 @@ create policy "Users can upload avatars"
 create policy "Users can update avatars"
   on storage.objects for update
   using (bucket_id = 'avatars');
+
+
+-- Lemon Squeezy billing fields
+alter table public.profiles
+  add column if not exists subscription_tier text default 'free',
+  add column if not exists subscription_status text default 'free',
+  add column if not exists lemon_squeezy_customer_id text,
+  add column if not exists lemon_squeezy_order_id text,
+  add column if not exists lemon_squeezy_subscription_id text,
+  add column if not exists lemon_squeezy_product_id text,
+  add column if not exists lemon_squeezy_variant_id text,
+  add column if not exists lemon_squeezy_customer_portal_url text,
+  add column if not exists lemon_squeezy_update_payment_url text,
+  add column if not exists subscription_renews_at timestamptz,
+  add column if not exists subscription_ends_at timestamptz,
+  add column if not exists subscription_trial_ends_at timestamptz,
+  add column if not exists subscription_updated_at timestamptz;

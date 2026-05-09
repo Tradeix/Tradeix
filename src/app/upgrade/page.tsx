@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useApp } from '@/lib/app-context'
 import toast from 'react-hot-toast'
 import Icon from '@/components/Icon'
@@ -32,17 +31,13 @@ const PRO_FEATURES = {
 export default function UpgradePage() {
   const { language, isPro, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   async function handleUpgrade() {
     setLoading(true)
     try {
       await upgradeToPro()
-      toast.success(language === 'he' ? 'ברוך הבא למנוי PRO!' : 'Welcome to PRO!')
-      router.push('/dashboard')
     } catch {
-      toast.error(language === 'he' ? 'שגיאה בשדרוג' : 'Upgrade failed')
-    } finally {
+      toast.error(language === 'he' ? 'לא הצלחנו לפתוח את התשלום' : 'Could not open checkout')
       setLoading(false)
     }
   }
@@ -51,10 +46,8 @@ export default function UpgradePage() {
     setLoading(true)
     try {
       await cancelSubscription()
-      toast.success(language === 'he' ? 'המנוי בוטל' : 'Subscription canceled')
     } catch {
-      toast.error(language === 'he' ? 'שגיאה בביטול' : 'Cancel failed')
-    } finally {
+      toast.error(language === 'he' ? 'לא הצלחנו לפתוח את ניהול החיוב' : 'Could not open billing portal')
       setLoading(false)
     }
   }

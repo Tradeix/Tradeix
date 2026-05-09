@@ -175,44 +175,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   async function upgradeToPro() {
-    if (!isSupabaseConfigured) return
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    await supabase.from('profiles').upsert(
-      { id: user.id, subscription_tier: 'pro', subscription_status: 'active' },
-      { onConflict: 'id' }
-    )
-    setSubscription('pro')
-    localStorage.setItem('tradeix-show-upgrade', '1')
+    if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
+
+    const response = await fetch('/api/billing/checkout', { method: 'POST' })
+    const payload = await response.json().catch(() => null)
+
+    if (!response.ok || !payload?.url) {
+      throw new Error(payload?.error || 'Could not start checkout')
+    }
+
+    window.location.assign(payload.url)
+    return
   }
 
   async function cancelSubscription() {
-    if (!isSupabaseConfigured) return
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
 
-    // 1. Get all portfolio IDs for this user
-    const { data: portfolios } = await supabase
-      .from('portfolios').select('id').eq('user_id', user.id)
-    const portfolioIds = portfolios?.map((p: any) => p.id) || []
+    const response = await fetch('/api/billing/portal')
+    const payload = await response.json().catch(() => null)
 
-    // 2. Delete all trades in those portfolios
-    if (portfolioIds.length > 0) {
-      await supabase.from('trades').delete().in('portfolio_id', portfolioIds)
+    if (!response.ok || !payload?.url) {
+      throw new Error(payload?.error || 'Could not open billing portal')
     }
 
-    // 3. Delete all portfolios
-    await supabase.from('portfolios').delete().eq('user_id', user.id)
-
-    // 4. Reset profile to free (keep the user account)
-    await supabase.from('profiles').upsert(
-      { id: user.id, subscription_tier: 'free', subscription_status: 'canceled' },
-      { onConflict: 'id' }
-    )
-
-    // 5. Update local state — stay logged in as free user
-    setSubscription('free')
-    localStorage.setItem('tradeix-show-downgrade', '1')
+    window.location.assign(payload.url)
+    return
   }
 
   const isPro = subscription === 'pro'
