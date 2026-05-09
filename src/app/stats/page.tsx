@@ -487,7 +487,7 @@ export default function StatsPage() {
         <div style={{ position: 'absolute', top: '-58px', insetInlineEnd: '-44px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(15,141,99,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px', position: 'relative', zIndex: 1 }}>
           <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Icon name="category" size={22} color="#0f8d63" />
+            <Icon name="query_stats" size={22} color="#0f8d63" />
           </div>
           <div>
             <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
