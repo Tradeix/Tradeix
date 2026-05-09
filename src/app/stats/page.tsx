@@ -64,11 +64,20 @@ export default function StatsPage() {
   const grossLoss = Math.abs(losses.reduce((s, t) => s + t.pnl, 0))
   const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : 0
 
-  const equityCurve = trades.reduce((acc: any[], t, i) => {
-    const prev = i === 0 ? 0 : acc[i - 1].value
+  const initialCapital = activePortfolio?.initial_capital || 0
+  const equityCurve = trades.reduce((acc: any[], t) => {
+    const prev = acc[acc.length - 1].value
     acc.push({ date: format(new Date(t.traded_at), 'dd/MM'), value: Math.round(prev + t.pnl) })
     return acc
-  }, [])
+  }, trades.length > 0 ? [{ date: language === 'he' ? 'התחלה' : 'Start', value: Math.round(initialCapital) }] : [])
+  const equityValues = equityCurve.map(point => point.value)
+  const equityMin = equityValues.length ? Math.min(...equityValues) : initialCapital
+  const equityMax = equityValues.length ? Math.max(...equityValues) : initialCapital
+  const equityRange = Math.max(equityMax - equityMin, Math.max(Math.abs(initialCapital), 1) * 0.12, 100)
+  const equityDomain: [number, number] = [
+    Math.floor((equityMin - equityRange * 0.18) / 10) * 10,
+    Math.ceil((equityMax + equityRange * 0.18) / 10) * 10,
+  ]
 
   const daysInMonth = getDaysInMonth(currentMonth)
   // Calendar shows weekdays only (Mon–Fri). Find the dow of the first
@@ -309,7 +318,7 @@ export default function StatsPage() {
         <div style={{ minHeight: '180px', padding: '12px 0 0 0' }}>
           {equityCurve.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
-              <AreaChart data={equityCurve} margin={{ top: 16, right: 24, left: 8, bottom: 16 }}>
+              <AreaChart data={equityCurve} margin={{ top: 22, right: 28, left: 24, bottom: 16 }}>
                 <defs>
                   <linearGradient id="eqGradGreenStats" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#0f8d63" stopOpacity={0.45} />
@@ -318,20 +327,21 @@ export default function StatsPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 6" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 10, right: 10 }} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }} axisLine={false} tickLine={false} dy={8} padding={{ left: 28, right: 18 }} />
                 <YAxis
                   tick={{ fontSize: 11, fill: 'var(--text3)', fontFamily: 'Heebo' }}
                   axisLine={false} tickLine={false}
-                  width={56}
-                  dx={-4}
-                  padding={{ top: 14, bottom: 10 }}
+                  width={64}
+                  dx={-8}
+                  padding={{ top: 12, bottom: 12 }}
+                  domain={equityDomain}
                   tickFormatter={(v: number) => {
                     const a = Math.abs(v)
                     if (a >= 1000) return `${v < 0 ? '-' : ''}$${(a / 1000).toFixed(a >= 10000 ? 0 : 1).replace(/\.0$/, '')}k`
                     return `${v < 0 ? '-' : ''}$${a}`
                   }}
                 />
-                <ReferenceLine y={0} stroke="rgba(255,255,255,0.18)" strokeDasharray="4 4" />
+                <ReferenceLine y={initialCapital} stroke="rgba(255,255,255,0.18)" strokeDasharray="4 4" />
                 <Tooltip
                   cursor={{ stroke: 'rgba(15,141,99,0.35)', strokeWidth: 1, strokeDasharray: '4 4' }}
                   content={({ active, payload, label }: any) => {
@@ -340,13 +350,13 @@ export default function StatsPage() {
                     return (
                       <div style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.25)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', padding: '10px 14px' }}>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginBottom: '4px' }}>{label}</div>
-                        <div dir="ltr" style={{ color: val < 0 ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
-                        <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{tr.cumulativePnl}</div>
+                        <div dir="ltr" style={{ color: val < initialCapital ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
+                        <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{language === 'he' ? 'שווי תיק' : 'Portfolio value'}</div>
                       </div>
                     )
                   }}
                 />
-                <Area type="monotone" dataKey="value" stroke="#0f8d63" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#0f8d63', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
+                <Area type="monotone" dataKey="value" baseValue={initialCapital} stroke="#0f8d63" strokeWidth={2.5} fill="url(#eqGradGreenStats)" dot={false} activeDot={{ r: 5, fill: '#0f8d63', stroke: 'var(--bg2)', strokeWidth: 2.5 }} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
