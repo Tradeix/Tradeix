@@ -54,7 +54,7 @@ export default function UpgradePage() {
   }
 
   const proList = PRO_FEATURES[language]
-  const price = billingPeriod === 'yearly' ? '$199' : '$20'
+  const price = billingPeriod === 'yearly' ? '$160' : '$20'
   const priceSuffix = billingPeriod === 'yearly'
     ? (language === 'he' ? 'שנה' : 'year')
     : (language === 'he' ? 'חודש' : 'month')
@@ -122,7 +122,7 @@ export default function UpgradePage() {
             }}>
               {[
                 { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
-                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'תשלום אחד' : 'One payment' },
+                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'מומלץ · חודשיים מתנה' : 'Recommended · 2 months free' },
               ].map(plan => {
                 const active = billingPeriod === plan.value
                 return (
@@ -135,7 +135,7 @@ export default function UpgradePage() {
                       background: active ? 'rgba(245,158,11,0.14)' : 'transparent',
                       color: active ? '#f59e0b' : 'var(--text3)',
                       borderRadius: '10px',
-                      padding: '10px 8px',
+                      padding: plan.value === 'yearly' ? '9px 8px 10px' : '10px 8px',
                       cursor: 'pointer',
                       fontFamily: 'Heebo, sans-serif',
                       fontWeight: '800',
@@ -145,6 +145,20 @@ export default function UpgradePage() {
                       alignItems: 'center',
                     }}
                   >
+                    {plan.value === 'yearly' && (
+                      <span style={{
+                        fontSize: '10px',
+                        lineHeight: 1,
+                        padding: '4px 8px',
+                        borderRadius: '999px',
+                        background: 'rgba(15,141,99,0.16)',
+                        border: '1px solid rgba(15,141,99,0.28)',
+                        color: '#0f8d63',
+                        marginBottom: '3px',
+                      }}>
+                        {language === 'he' ? 'מומלץ' : 'Recommended'}
+                      </span>
+                    )}
                     <span style={{ fontSize: '14px' }}>{plan.label}</span>
                     <span style={{ fontSize: '11px', opacity: 0.78 }}>{plan.sub}</span>
                   </button>
@@ -160,7 +174,7 @@ export default function UpgradePage() {
           </div>
           {billingPeriod === 'yearly' && !isPro && (
             <div style={{ marginTop: '10px', fontSize: '12px', color: '#0f8d63', fontWeight: '800' }}>
-              {language === 'he' ? 'גישה ל-PRO לשנה מלאה בתשלום אחד' : 'Full year of PRO access in one payment'}
+              {language === 'he' ? 'חודשיים מתנה ביחס למחיר החודשי' : 'Two months free compared with monthly billing'}
             </div>
           )}
         </div>
