@@ -600,7 +600,9 @@ export default function StatsPage() {
         </div>
 
         <div className="cal-week-row cal-head-row" style={{ marginBottom: '4px' }}>
-          <div className="cal-week-head-spacer" />
+          <div className="cal-week-head-spacer cal-week-title">
+            {language === 'he' ? 'סיכום שבועי' : 'Weekly summary'}
+          </div>
           <div className="cal-grid cal-week-grid" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
             {[1, 2, 3, 4, 5].map(i => <div key={i} className="cal-dayname">{DAY_NAMES[i]}</div>)}
           </div>
@@ -675,6 +677,7 @@ export default function StatsPage() {
         .cal-weeks { display: flex; flex-direction: column; gap: 6px; }
         .cal-week-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 8px; align-items: stretch; direction: ltr; }
         .cal-week-head-spacer { width: 112px; }
+        .cal-week-title { display: flex; align-items: center; justify-content: center; min-height: 25px; font-size: 10px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; text-align: center; }
         .cal-week-summary { border: 1px solid var(--border); border-radius: 12px; min-height: 84px; padding: 10px 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; text-align: center; direction: ltr; }
         .cal-week-pnl { font-size: 16px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
         .cal-week-count { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.04em; line-height: 1; }
@@ -705,6 +708,7 @@ export default function StatsPage() {
           .cal-grid { gap: 4px; min-width: 0; }
           .cal-week-row { grid-template-columns: 74px minmax(0, 1fr); gap: 4px; }
           .cal-week-head-spacer { width: 74px; }
+          .cal-week-title { font-size: 8px; letter-spacing: 0.03em; line-height: 1.15; }
           .cal-week-summary { min-height: 68px; border-radius: 10px; padding: 6px 4px; gap: 5px; }
           .cal-week-pnl { font-size: 12px; }
           .cal-week-count { font-size: 9px; }
@@ -723,6 +727,7 @@ export default function StatsPage() {
           .cal-grid { gap: 3px; }
           .cal-week-row { grid-template-columns: 64px minmax(0, 1fr); }
           .cal-week-head-spacer { width: 64px; }
+          .cal-week-title { font-size: 7px; }
           .cal-week-summary { min-height: 56px; gap: 4px; padding: 4px 3px; }
           .cal-week-pnl { font-size: 11px; }
           .cal-week-count { font-size: 8px; }
