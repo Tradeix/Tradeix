@@ -533,7 +533,7 @@ export default function DashboardPage() {
               <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '500' }}>{tr.liveActivity}</div>
             </div>
           </div>
-          <Link href="/trades" style={{
+          <Link href="/trades" className="view-all-trades-btn" style={{
             display: 'flex', alignItems: 'center', gap: '5px',
             padding: '7px 16px', borderRadius: '8px',
             background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)',
@@ -620,7 +620,9 @@ export default function DashboardPage() {
           .recent-trade-row .trade-col-symbol { gap: 8px !important; min-width: 0 !important; overflow: hidden !important; }
           .recent-trade-row .trade-col-symbol > div:first-child { width: 30px !important; height: 30px !important; border-radius: 9px !important; flex-shrink: 0 !important; }
           .recent-trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; min-width: 0 !important; }
-          .trades-section-header { padding: 14px !important; }
+          .trades-section-header { padding: 13px 14px !important; gap: 10px !important; }
+          .view-all-trades-btn { padding: 6px 11px !important; gap: 4px !important; font-size: 12px !important; border-radius: 9px !important; white-space: nowrap !important; }
+          .view-all-trades-btn svg { width: 13px !important; height: 13px !important; }
           .balance-card .bal-amount { font-size: 29px !important; }
           .balance-card .bal-header { padding: 14px 16px 12px !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
