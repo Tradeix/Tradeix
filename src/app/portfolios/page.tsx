@@ -55,6 +55,7 @@ export default function PortfoliosPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [pendingOpenNew, setPendingOpenNew] = useState(false)
   const [maxBannerDismissed, setMaxBannerDismissed] = useState(false)
+  const [marketMenuOpen, setMarketMenuOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -141,7 +142,7 @@ export default function PortfoliosPage() {
 
   function startEdit(p: Portfolio) {
     setForm({ name: p.name, market_type: p.market_type, initial_capital: p.initial_capital.toString(), color: (p as any).color || 'blue' })
-    setEditingId(p.id); setShowForm(true)
+    setEditingId(p.id); setMarketMenuOpen(false); setShowForm(true)
   }
 
   function openNewForm() {
@@ -157,7 +158,7 @@ export default function PortfoliosPage() {
       return
     }
     setForm({ name: '', market_type: 'forex', initial_capital: '', color: 'blue' })
-    setEditingId(null); setShowForm(true)
+    setEditingId(null); setMarketMenuOpen(false); setShowForm(true)
   }
 
   const getColor = (id: string) => PORTFOLIO_COLORS.find(c => c.id === id)?.primary || '#0f8d63'
@@ -238,10 +239,104 @@ export default function PortfoliosPage() {
               </div>
               <div>
                 <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.marketType}</label>
-                <div className="select-wrap">
-                  <select value={form.market_type} onChange={e => setForm(p => ({ ...p, market_type: e.target.value }))}>
-                    {MARKET_TYPE_OPTIONS.map(k => <option key={k} value={k}>{MARKET_LABELS[language][k]}</option>)}
-                  </select>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMarketMenuOpen(v => !v)}
+                    style={{
+                      width: '100%',
+                      minHeight: '46px',
+                      borderRadius: '14px',
+                      border: '1px solid rgba(15,141,99,0.32)',
+                      background: 'linear-gradient(135deg, rgba(15,141,99,0.08), rgba(255,255,255,0.025))',
+                      color: 'var(--text)',
+                      padding: '10px 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      fontFamily: 'Heebo, sans-serif',
+                      boxShadow: marketMenuOpen ? '0 0 0 3px rgba(15,141,99,0.12)' : 'none',
+                      transition: 'border-color 0.16s, box-shadow 0.16s, background 0.16s',
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+                      <span style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '9px',
+                        background: 'rgba(15,141,99,0.14)',
+                        border: '1px solid rgba(15,141,99,0.22)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        flexShrink: 0,
+                      }}>
+                        {MARKET_ICONS[form.market_type]}
+                      </span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 800, fontSize: '14px' }}>
+                        {MARKET_LABELS[language][form.market_type]}
+                      </span>
+                    </span>
+                    <Icon name={marketMenuOpen ? 'expand_less' : 'expand_more'} size={18} color="var(--text3)" />
+                  </button>
+
+                  {marketMenuOpen && (
+                    <>
+                      <div onClick={() => setMarketMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 20 }} />
+                      <div style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 8px)',
+                        insetInlineStart: 0,
+                        insetInlineEnd: 0,
+                        zIndex: 21,
+                        borderRadius: '16px',
+                        border: '1px solid var(--border2)',
+                        background: 'var(--modal-bg)',
+                        boxShadow: '0 22px 55px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.04)',
+                        padding: '6px',
+                        overflow: 'hidden',
+                        animation: 'scaleIn 0.14s ease',
+                      }}>
+                        {MARKET_TYPE_OPTIONS.map(k => {
+                          const active = form.market_type === k
+                          return (
+                            <button
+                              key={k}
+                              type="button"
+                              onClick={() => { setForm(p => ({ ...p, market_type: k })); setMarketMenuOpen(false) }}
+                              style={{
+                                width: '100%',
+                                border: 'none',
+                                background: active ? 'rgba(15,141,99,0.14)' : 'transparent',
+                                color: active ? '#0f8d63' : 'var(--text2)',
+                                borderRadius: '11px',
+                                padding: '10px 11px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                cursor: 'pointer',
+                                fontFamily: 'Heebo, sans-serif',
+                                fontWeight: active ? 900 : 700,
+                                textAlign: language === 'he' ? 'right' : 'left',
+                                transition: 'background 0.15s, color 0.15s',
+                              }}
+                              onMouseOver={e => { if (!active) e.currentTarget.style.background = 'var(--bg3)' }}
+                              onMouseOut={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
+                            >
+                              <span style={{ width: '26px', height: '26px', borderRadius: '8px', background: active ? 'rgba(15,141,99,0.16)' : 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', flexShrink: 0 }}>
+                                {MARKET_ICONS[k]}
+                              </span>
+                              <span style={{ flex: 1 }}>{MARKET_LABELS[language][k]}</span>
+                              {active && <Icon name="check" size={16} color="#0f8d63" />}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
