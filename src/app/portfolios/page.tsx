@@ -12,15 +12,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
-const MARKET_ICONS: Record<string, string> = {
-  forex: 'currency_exchange',
-  stocks: 'show_chart',
-  futures: 'trending_down',
-  cfd: 'sync_alt',
-  other: 'query_stats',
-  crypto: 'currency_bitcoin',
-  commodities: 'diamond',
-}
 const MARKET_TYPE_OPTIONS = ['forex', 'stocks', 'futures', 'cfd', 'other']
 
 const PORTFOLIO_COLORS = [
@@ -269,23 +260,8 @@ export default function PortfoliosPage() {
                       transition: 'border-color 0.16s, box-shadow 0.16s, background 0.16s',
                     }}
                   >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
-                      <span style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '9px',
-                        background: 'rgba(15,141,99,0.14)',
-                        border: '1px solid rgba(15,141,99,0.22)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}>
-                        <Icon name={MARKET_ICONS[form.market_type]} size={15} color="#0f8d63" />
-                      </span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 800, fontSize: '14px' }}>
-                        {MARKET_LABELS[language][form.market_type]}
-                      </span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 800, fontSize: '14px', minWidth: 0 }}>
+                      {MARKET_LABELS[language][form.market_type]}
                     </span>
                     <Icon name={marketMenuOpen ? 'expand_less' : 'expand_more'} size={18} color="var(--text3)" />
                   </button>
@@ -333,9 +309,6 @@ export default function PortfoliosPage() {
                               onMouseOver={e => { if (!active) e.currentTarget.style.background = 'var(--bg3)' }}
                               onMouseOut={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
                             >
-                              <span style={{ width: '26px', height: '26px', borderRadius: '8px', background: active ? 'rgba(15,141,99,0.16)' : 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <Icon name={MARKET_ICONS[k]} size={14} color={active ? '#0f8d63' : 'var(--text3)'} />
-                              </span>
                               <span style={{ flex: 1 }}>{MARKET_LABELS[language][k]}</span>
                               {active && <Icon name="check" size={16} color="#0f8d63" />}
                             </button>
