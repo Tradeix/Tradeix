@@ -12,7 +12,11 @@ function getSiteUrl(request: Request) {
 export async function POST(request: Request) {
   const apiKey = process.env.LEMONSQUEEZY_API_KEY
   const storeId = process.env.LEMONSQUEEZY_STORE_ID
-  const variantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID
+  const monthlyVariantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID
+  const yearlyVariantId = process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID
+  const body = await request.json().catch(() => null)
+  const billingPeriod = body?.billingPeriod === 'yearly' ? 'yearly' : 'monthly'
+  const variantId = billingPeriod === 'yearly' ? yearlyVariantId : monthlyVariantId
 
   if (!apiKey || !storeId || !variantId) {
     return NextResponse.json({ error: 'Billing is not configured' }, { status: 500 })
@@ -54,6 +58,7 @@ export async function POST(request: Request) {
             name: fullName,
             custom: {
               user_id: user.id,
+              billing_period: billingPeriod,
             },
           },
         },

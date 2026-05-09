@@ -67,6 +67,7 @@
    LEMONSQUEEZY_API_KEY=your_lemonsqueezy_api_key
    LEMONSQUEEZY_STORE_ID=your_store_id
    LEMONSQUEEZY_PRO_VARIANT_ID=your_pro_variant_id
+   LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=your_yearly_pro_variant_id
    LEMONSQUEEZY_WEBHOOK_SECRET=your_webhook_signing_secret
    ```
 

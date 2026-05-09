@@ -31,11 +31,12 @@ const PRO_FEATURES = {
 export default function UpgradePage() {
   const { language, isPro, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
   const [loading, setLoading] = useState(false)
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
 
   async function handleUpgrade() {
     setLoading(true)
     try {
-      await upgradeToPro()
+      await upgradeToPro(billingPeriod)
     } catch {
       toast.error(language === 'he' ? 'לא הצלחנו לפתוח את התשלום' : 'Could not open checkout')
       setLoading(false)
@@ -53,6 +54,10 @@ export default function UpgradePage() {
   }
 
   const proList = PRO_FEATURES[language]
+  const price = billingPeriod === 'yearly' ? '$199' : '$20'
+  const priceSuffix = billingPeriod === 'yearly'
+    ? (language === 'he' ? 'שנה' : 'year')
+    : (language === 'he' ? 'חודש' : 'month')
 
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', maxWidth: '580px', margin: '0 auto', padding: '20px 0' }}>
@@ -104,12 +109,60 @@ export default function UpgradePage() {
               {language === 'he' ? 'מנוי פרימיום' : 'Premium Plan'}
             </span>
           </div>
+          {!isPro && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '8px',
+              background: 'rgba(0,0,0,0.18)',
+              border: '1px solid rgba(245,158,11,0.14)',
+              borderRadius: '14px',
+              padding: '6px',
+              marginBottom: '22px',
+            }}>
+              {[
+                { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
+                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'תשלום אחד' : 'One payment' },
+              ].map(plan => {
+                const active = billingPeriod === plan.value
+                return (
+                  <button
+                    key={plan.value}
+                    type="button"
+                    onClick={() => setBillingPeriod(plan.value)}
+                    style={{
+                      border: active ? '1px solid rgba(245,158,11,0.55)' : '1px solid transparent',
+                      background: active ? 'rgba(245,158,11,0.14)' : 'transparent',
+                      color: active ? '#f59e0b' : 'var(--text3)',
+                      borderRadius: '10px',
+                      padding: '10px 8px',
+                      cursor: 'pointer',
+                      fontFamily: 'Heebo, sans-serif',
+                      fontWeight: '800',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: '14px' }}>{plan.label}</span>
+                    <span style={{ fontSize: '11px', opacity: 0.78 }}>{plan.sub}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '4px' }}>
-            <span style={{ fontSize: '53px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>$20</span>
+            <span style={{ fontSize: '53px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>{price}</span>
             <span style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '600', paddingBottom: '10px' }}>
-              / {language === 'he' ? 'חודש' : 'month'}
+              / {priceSuffix}
             </span>
           </div>
+          {billingPeriod === 'yearly' && !isPro && (
+            <div style={{ marginTop: '10px', fontSize: '12px', color: '#0f8d63', fontWeight: '800' }}>
+              {language === 'he' ? 'גישה ל-PRO לשנה מלאה בתשלום אחד' : 'Full year of PRO access in one payment'}
+            </div>
+          )}
         </div>
 
         {/* Features grid */}

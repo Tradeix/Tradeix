@@ -15,7 +15,7 @@ type AppContextType = {
   subscription: SubscriptionTier
   isPro: boolean
   subscriptionLoading: boolean
-  upgradeToPro: () => Promise<void>
+  upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<void>
   cancelSubscription: () => Promise<void>
 }
 
@@ -174,10 +174,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (user) await supabase.from('profiles').upsert({ id: user.id, language: l }, { onConflict: 'id' })
   }
 
-  async function upgradeToPro() {
+  async function upgradeToPro(billingPeriod: 'monthly' | 'yearly' = 'monthly') {
     if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
 
-    const response = await fetch('/api/billing/checkout', { method: 'POST' })
+    const response = await fetch('/api/billing/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingPeriod }),
+    })
     const payload = await response.json().catch(() => null)
 
     if (!response.ok || !payload?.url) {
