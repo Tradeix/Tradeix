@@ -410,6 +410,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // Desktop: starts collapsed, expands on hover. Mobile (≤1024px) is forced
   // to 210px via CSS regardless of this state.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false)
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
@@ -495,6 +496,19 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!ready || !authedUser?.id || !authedUser?.created_at) return
+    const storageKey = `tradeix-welcome-seen-${authedUser.id}`
+    if (localStorage.getItem(storageKey) === '1') return
+
+    const createdAt = new Date(authedUser.created_at).getTime()
+    const isNewUser = Number.isFinite(createdAt) && Date.now() - createdAt < 10 * 60 * 1000
+    if (!isNewUser) return
+
+    localStorage.setItem(storageKey, '1')
+    setShowWelcomePopup(true)
+  }, [ready, authedUser?.id, authedUser?.created_at])
+
   const sidebarWidth = sidebarCollapsed ? '72px' : '210px'
 
   const handleSignOut = async () => {
@@ -545,6 +559,63 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
+
+      {/* ── NEW USER WELCOME POPUP ── */}
+      {showWelcomePopup && (
+        <div className="app-modal-overlay" onClick={() => setShowWelcomePopup(false)} style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
+          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" dir={isRTL ? 'rtl' : 'ltr'} style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(15,141,99,0.24)', borderRadius: '28px', padding: '38px 34px 30px', maxWidth: '470px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+            <button onClick={() => setShowWelcomePopup(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(229,226,225,0.45)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+              onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
+              onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.45)' }}
+            >
+              <Icon name="close" size={18} color="currentColor" />
+            </button>
+            <div style={{ position: 'absolute', top: '-70px', left: '50%', transform: 'translateX(-50%)', width: '240px', height: '240px', background: 'rgba(15,141,99,0.11)', filter: 'blur(62px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ width: '70px', height: '70px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(15,141,99,0.18), rgba(15,141,99,0.08))', border: '1px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Icon name="sentiment_satisfied" size={34} color="#0f8d63" />
+            </div>
+            <div style={{ fontSize: '25px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
+              {language === 'he' ? 'ברוכים הבאים ל-Tradeix' : 'Welcome to Tradeix'}
+            </div>
+            <div style={{ fontSize: '14px', color: 'rgba(229,226,225,0.56)', lineHeight: 1.75, marginBottom: '24px' }}>
+              {language === 'he'
+                ? 'בהצלחה במסע המסחר שלך. כרגע אתה במנוי החינמי, ואפשר להתחיל לעבוד מיד.'
+                : 'Good luck on your trading journey. You are currently on the free plan and can start right away.'}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', textAlign: isRTL ? 'right' : 'left' }}>
+              <div style={{ fontSize: '11px', fontWeight: '900', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '12px', textAlign: 'center' }}>
+                {language === 'he' ? 'מה כלול בחינם' : 'Free plan includes'}
+              </div>
+              {[
+                { icon: 'folder_open', text: language === 'he' ? 'תיק מסחר אחד לניהול הפעילות שלך' : '1 trading portfolio to manage your activity', ok: true },
+                { icon: 'receipt_long', text: language === 'he' ? 'עד 20 עסקאות לתיעוד ומעקב' : 'Up to 20 trades for tracking and journaling', ok: true },
+                { icon: 'psychology', text: language === 'he' ? 'ניהול אסטרטגיות והצמדתן לעסקאות' : 'Strategy management and linking trades', ok: true },
+                { icon: 'lock', text: language === 'he' ? 'סטטיסטיקות מלאות וארכיון זמינים ב-PRO' : 'Full statistics and archive are available in PRO', ok: false },
+              ].map((item, i, arr) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.055)' : 'none' }}>
+                  <Icon name={item.icon} size={15} color={item.ok ? '#0f8d63' : 'rgba(255,255,255,0.28)'} />
+                  <span style={{ fontSize: '14px', color: item.ok ? 'rgba(229,226,225,0.72)' : 'rgba(229,226,225,0.42)', fontWeight: '650', lineHeight: 1.45 }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: '12.5px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.6, marginBottom: '18px' }}>
+              {language === 'he'
+                ? 'כשתרצה לפתוח את כל היכולות, כפתור שדרג ל-PRO מחכה בראש האתר מצד שמאל.'
+                : 'When you are ready to unlock everything, the Upgrade to PRO button is waiting in the top bar.'}
+            </div>
+            <button onClick={() => setShowWelcomePopup(false)} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              width: '100%', background: '#0f8d63', border: 'none',
+              color: '#fff', borderRadius: '14px', padding: '13px',
+              fontSize: '15px', fontWeight: '800', cursor: 'pointer',
+              fontFamily: 'Heebo, sans-serif', boxShadow: '0 0 28px rgba(15,141,99,0.28)',
+            }}>
+              <Icon name="check" size={18} color="#fff" strokeWidth={2.5} />
+              {language === 'he' ? 'הבנתי, בהצלחה' : 'Got it, good luck'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── DOWNGRADE POPUP ── */}
       {showDowngradePopup && (
