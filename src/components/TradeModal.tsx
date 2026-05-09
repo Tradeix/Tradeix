@@ -39,6 +39,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
   })
   const [strategies, setStrategies] = useState<Strategy[]>([])
   const [strategiesLoaded, setStrategiesLoaded] = useState(false)
+  const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
   const [lightbox, setLightbox] = useState(false)
   const { language } = useApp()
@@ -56,6 +57,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
   }, [trade.portfolio_id])
 
   const currentStrategy = strategies.find(s => s.id === (editing ? form.strategy_id : trade.strategy_id))
+  const selectedStrategyLabel = currentStrategy?.name || (language === 'he' ? 'ללא אסטרטגיה' : 'No strategy')
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -115,6 +117,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
       setEditing(false)
+      setStrategyMenuOpen(false)
       onUpdate?.()
       router.refresh()
     } catch { toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed') }
@@ -328,16 +331,93 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false 
                   {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
                 </label>
                 {strategies.length > 0 ? (
-                  <div className="select-wrap">
-                    <select
-                      value={form.strategy_id}
-                      onChange={e => setForm(p => ({ ...p, strategy_id: e.target.value }))}
+                  <div style={{ position: 'relative', zIndex: strategyMenuOpen ? 60 : 1 }}>
+                    <button
+                      type="button"
+                      onClick={() => setStrategyMenuOpen(v => !v)}
+                      style={{
+                        width: '100%',
+                        minHeight: '50px',
+                        borderRadius: '14px',
+                        border: strategyMenuOpen ? '1px solid rgba(15,141,99,0.55)' : '1px solid var(--border2)',
+                        background: 'linear-gradient(180deg, var(--bg3), var(--bg2))',
+                        color: 'var(--text)',
+                        padding: '0 14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        cursor: 'pointer',
+                        fontFamily: 'Heebo, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 800,
+                        boxShadow: strategyMenuOpen ? '0 0 0 3px rgba(15,141,99,0.12), 0 14px 34px rgba(0,0,0,0.28)' : 'none',
+                        transition: 'border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease',
+                      }}
                     >
-                      <option value="">{language === 'he' ? 'ללא אסטרטגיה' : 'No strategy'}</option>
-                      {strategies.map(s => (
-                        <option key={s.id} value={s.id}>{s.name}</option>
-                      ))}
-                    </select>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: language === 'he' ? 'right' : 'left' }}>
+                        {selectedStrategyLabel}
+                      </span>
+                      <Icon name={strategyMenuOpen ? 'expand_less' : 'expand_more'} size={18} color="var(--text3)" />
+                    </button>
+
+                    {strategyMenuOpen && (
+                      <>
+                        <div onClick={() => setStrategyMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 58 }} />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 'calc(100% + 8px)',
+                            left: 0,
+                            right: 0,
+                            zIndex: 59,
+                            borderRadius: '16px',
+                            border: '1px solid rgba(15,141,99,0.32)',
+                            background: 'var(--bg2)',
+                            boxShadow: '0 22px 55px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset',
+                            padding: '6px',
+                            maxHeight: '240px',
+                            overflowY: 'auto',
+                          }}
+                        >
+                          {[{ id: '', name: language === 'he' ? 'ללא אסטרטגיה' : 'No strategy' }, ...strategies].map(strategy => {
+                            const active = form.strategy_id === strategy.id
+                            return (
+                              <button
+                                key={strategy.id || 'none'}
+                                type="button"
+                                onClick={() => {
+                                  setForm(p => ({ ...p, strategy_id: strategy.id }))
+                                  setStrategyMenuOpen(false)
+                                }}
+                                style={{
+                                  width: '100%',
+                                  minHeight: '42px',
+                                  borderRadius: '11px',
+                                  border: '1px solid transparent',
+                                  background: active ? 'rgba(15,141,99,0.14)' : 'transparent',
+                                  color: active ? '#0f8d63' : 'var(--text2)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: language === 'he' ? 'flex-end' : 'flex-start',
+                                  textAlign: language === 'he' ? 'right' : 'left',
+                                  padding: '0 12px',
+                                  fontFamily: 'Heebo, sans-serif',
+                                  fontSize: '14px',
+                                  fontWeight: active ? 900 : 700,
+                                  cursor: 'pointer',
+                                  transition: 'background 0.15s ease, color 0.15s ease',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = active ? 'rgba(15,141,99,0.18)' : 'var(--bg3)' }}
+                                onMouseLeave={e => { e.currentTarget.style.background = active ? 'rgba(15,141,99,0.14)' : 'transparent' }}
+                              >
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{strategy.name}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div style={{
