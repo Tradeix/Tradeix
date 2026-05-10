@@ -43,6 +43,7 @@ export default function AddTradePage() {
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [showAiSuccessPopup, setShowAiSuccessPopup] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
     entry_price: '', exit_price: '', stop_loss: '',
@@ -54,6 +55,8 @@ export default function AddTradePage() {
   const { language, isPro, subscriptionLoading } = useApp()
   const tr = t[language]
   const supabase = createClient()
+  const selectedStrategy = strategies.find(strategy => strategy.id === tradeData.strategy_id)
+  const selectedStrategyLabel = selectedStrategy?.name || tr.noStrategy
 
   // Load strategies for PRO users
   useEffect(() => {
@@ -609,16 +612,93 @@ export default function AddTradePage() {
                       {tr.selectStrategy}
                     </label>
                     {strategies.length > 0 ? (
-                      <div className="select-wrap">
-                        <select
-                          value={tradeData.strategy_id}
-                          onChange={e => setTradeData(p => ({ ...p, strategy_id: e.target.value }))}
+                      <div style={{ position: 'relative', zIndex: strategyMenuOpen ? 60 : 1 }}>
+                        <button
+                          type="button"
+                          onClick={() => setStrategyMenuOpen(v => !v)}
+                          style={{
+                            width: '100%',
+                            minHeight: '50px',
+                            borderRadius: '14px',
+                            border: strategyMenuOpen ? '1px solid rgba(15,141,99,0.55)' : '1px solid var(--border2)',
+                            background: 'linear-gradient(180deg, var(--bg3), var(--bg2))',
+                            color: 'var(--text)',
+                            padding: '0 14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            fontFamily: 'Heebo, sans-serif',
+                            fontSize: '14px',
+                            fontWeight: 800,
+                            boxShadow: strategyMenuOpen ? '0 0 0 3px rgba(15,141,99,0.12), 0 14px 34px rgba(0,0,0,0.28)' : 'none',
+                            transition: 'border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease',
+                          }}
                         >
-                          <option value="">{tr.noStrategy}</option>
-                          {strategies.map(s => (
-                            <option key={s.id} value={s.id}>{s.name}</option>
-                          ))}
-                        </select>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: language === 'he' ? 'right' : 'left' }}>
+                            {selectedStrategyLabel}
+                          </span>
+                          <Icon name={strategyMenuOpen ? 'expand_less' : 'expand_more'} size={18} color="var(--text3)" />
+                        </button>
+
+                        {strategyMenuOpen && (
+                          <>
+                            <div onClick={() => setStrategyMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 58 }} />
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: 'calc(100% + 8px)',
+                                left: 0,
+                                right: 0,
+                                zIndex: 59,
+                                borderRadius: '16px',
+                                border: '1px solid rgba(15,141,99,0.32)',
+                                background: 'var(--bg2)',
+                                boxShadow: '0 22px 55px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset',
+                                padding: '6px',
+                                maxHeight: '240px',
+                                overflowY: 'auto',
+                              }}
+                            >
+                              {[{ id: '', name: tr.noStrategy }, ...strategies].map(strategy => {
+                                const active = tradeData.strategy_id === strategy.id
+                                return (
+                                  <button
+                                    key={strategy.id || 'none'}
+                                    type="button"
+                                    onClick={() => {
+                                      setTradeData(p => ({ ...p, strategy_id: strategy.id }))
+                                      setStrategyMenuOpen(false)
+                                    }}
+                                    style={{
+                                      width: '100%',
+                                      minHeight: '42px',
+                                      borderRadius: '11px',
+                                      border: '1px solid transparent',
+                                      background: active ? 'rgba(15,141,99,0.14)' : 'transparent',
+                                      color: active ? '#0f8d63' : 'var(--text2)',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: language === 'he' ? 'flex-end' : 'flex-start',
+                                      textAlign: language === 'he' ? 'right' : 'left',
+                                      padding: '0 12px',
+                                      fontFamily: 'Heebo, sans-serif',
+                                      fontSize: '14px',
+                                      fontWeight: active ? 900 : 700,
+                                      cursor: 'pointer',
+                                      transition: 'background 0.15s ease, color 0.15s ease',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = active ? 'rgba(15,141,99,0.18)' : 'var(--bg3)' }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = active ? 'rgba(15,141,99,0.14)' : 'transparent' }}
+                                  >
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{strategy.name}</span>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </>
+                        )}
                       </div>
                     ) : (
                       <div style={{
