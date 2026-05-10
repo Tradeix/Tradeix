@@ -247,7 +247,7 @@ export default function PortfoliosPage() {
                       minHeight: '46px',
                       borderRadius: '14px',
                       border: '1px solid rgba(15,141,99,0.32)',
-                      background: 'linear-gradient(135deg, rgba(15,141,99,0.08), rgba(255,255,255,0.025))',
+                      background: 'var(--modal-bg)',
                       color: 'var(--text)',
                       padding: '10px 12px',
                       display: 'flex',
