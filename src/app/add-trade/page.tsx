@@ -153,18 +153,24 @@ export default function AddTradePage() {
     setAiMissingFields(missing)
 
     let detectedOutcome: 'win' | 'loss' | undefined
-    if (data.direction && data.entry_price != null && data.exit_price != null) {
+    if (data.outcome === 'win' || data.outcome === 'loss') {
+      detectedOutcome = data.outcome
+    } else if (data.direction && data.entry_price != null && data.exit_price != null) {
       const isLong = data.direction === 'long'
       const priceWentUp = data.exit_price > data.entry_price
       detectedOutcome = (isLong ? priceWentUp : !priceWentUp) ? 'win' : 'loss'
     }
+    const resolvedExitPrice =
+      detectedOutcome === 'loss' && data.stop_loss != null ? data.stop_loss :
+      detectedOutcome === 'win' && data.take_profit != null ? data.take_profit :
+      data.exit_price
 
     setTradeData(prev => ({
       ...prev,
       symbol: data.symbol || '',
       direction: data.direction === 'short' ? 'short' : 'long',
       entry_price: data.entry_price?.toString() || '',
-      exit_price: data.exit_price?.toString() || '',
+      exit_price: resolvedExitPrice?.toString() || '',
       stop_loss: data.stop_loss?.toString() || '',
       ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
     }))
@@ -192,20 +198,27 @@ export default function AddTradePage() {
       if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
       setAiMissingFields(missing)
 
-      // Auto-detect outcome from direction + entry/exit prices
+      // Prefer the AI first-touch outcome. Fall back to direction + exit only
+      // when older API responses do not include outcome.
       let detectedOutcome: 'win' | 'loss' | undefined
-      if (data.direction && data.entry_price != null && data.exit_price != null) {
+      if (data.outcome === 'win' || data.outcome === 'loss') {
+        detectedOutcome = data.outcome
+      } else if (data.direction && data.entry_price != null && data.exit_price != null) {
         const isLong = data.direction === 'long'
         const priceWentUp = data.exit_price > data.entry_price
         detectedOutcome = (isLong ? priceWentUp : !priceWentUp) ? 'win' : 'loss'
       }
+      const resolvedExitPrice =
+        detectedOutcome === 'loss' && data.stop_loss != null ? data.stop_loss :
+        detectedOutcome === 'win' && data.take_profit != null ? data.take_profit :
+        data.exit_price
 
       setTradeData(prev => ({
         ...prev,
         symbol: data.symbol || '',
         direction: data.direction === 'short' ? 'short' : 'long',
         entry_price: data.entry_price?.toString() || '',
-        exit_price: data.exit_price?.toString() || '',
+        exit_price: resolvedExitPrice?.toString() || '',
         stop_loss: data.stop_loss?.toString() || '',
         ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
       }))

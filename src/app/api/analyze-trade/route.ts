@@ -71,6 +71,24 @@ EXIT price (the actual close):
   - Where a P&L bar stops on the right side of the trade tool.
   - If the chart shows only a PLAN (no close), return 0.
 
+OUTCOME is determined by FIRST TOUCH after entry, not by where price
+eventually went later:
+  - Scan candles left-to-right after the trade entry/activation point.
+  - For LONG: if price touches STOP_LOSS before TAKE_PROFIT, outcome = "loss"
+    and exit_price = stop_loss, even if price later rallies to TP.
+  - For LONG: if price touches TAKE_PROFIT before STOP_LOSS, outcome = "win"
+    and exit_price = take_profit.
+  - For SHORT: if price touches STOP_LOSS before TAKE_PROFIT, outcome = "loss"
+    and exit_price = stop_loss, even if price later drops to TP.
+  - For SHORT: if price touches TAKE_PROFIT before STOP_LOSS, outcome = "win"
+    and exit_price = take_profit.
+  - Candle wicks count as touches. A wick through SL means stopped out.
+  - If SL and TP appear touched in the same candle and the intrabar order is
+    impossible to verify, choose outcome = "loss" and confidence <= 60.
+  - If there is no clear first touch, outcome = "unknown" and exit_price = 0.
+Never mark a trade as a win just because price eventually reaches TP after SL
+was touched first.
+
 ══════════════════════════════════════════════════════════════
 STEP 4 — Read each price precisely from the right-edge price axis
 ══════════════════════════════════════════════════════════════
@@ -94,9 +112,10 @@ STEP 5 — Self-check before returning
 Before calling the tool, verify ALL of these:
   1. If direction = "long":  stop_loss < entry < take_profit  (when both set)
   2. If direction = "short": stop_loss > entry > take_profit  (when both set)
-  3. If exit_price is set, it sits between stop_loss and take_profit
-     (or just outside if the trade ran past target).
-  4. The price decimal places match the instrument type.
+  3. outcome follows the first-touch rule: SL first -> loss, TP first -> win.
+  4. If outcome = "loss", exit_price should normally equal stop_loss.
+     If outcome = "win", exit_price should normally equal take_profit.
+  5. The price decimal places match the instrument type.
 
 If any check fails, REVISIT step 2 — direction was probably wrong.
 
@@ -123,6 +142,7 @@ RULES
 - Numbers only for prices. Use 0 (zero) when a value is unreadable / not visible — the app will treat 0 as "missing" and let the user fill it in.
 - symbol uppercase, no exchange prefix. Use "" if unreadable.
 - direction is exactly "long" or "short".
+- outcome is exactly "win", "loss", or "unknown".
 - confidence is an integer 0-100.`
 
 // Tool with simple-typed schema — the API accepts these reliably across SDK
@@ -162,6 +182,12 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
         type: 'number',
         description: 'Take profit price. 0 if not visible.',
       },
+      outcome: {
+        type: 'string',
+        enum: ['win', 'loss', 'unknown'],
+        description:
+          'Trade result based on first touch after entry: SL first = loss, TP first = win, unknown if no clear first touch.',
+      },
       confidence: {
         type: 'integer',
         description: 'Confidence 0-100 that the extracted values are correct.',
@@ -179,6 +205,7 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
       'exit_price',
       'stop_loss',
       'take_profit',
+      'outcome',
       'confidence',
       'analysis',
     ],
@@ -301,6 +328,7 @@ export async function POST(req: NextRequest) {
       exit_price: number
       stop_loss: number
       take_profit: number
+      outcome?: 'win' | 'loss' | 'unknown'
       confidence: number
       analysis: string
     }
@@ -313,6 +341,7 @@ export async function POST(req: NextRequest) {
       exit_price: raw.exit_price && raw.exit_price > 0 ? raw.exit_price : null,
       stop_loss: raw.stop_loss && raw.stop_loss > 0 ? raw.stop_loss : null,
       take_profit: raw.take_profit && raw.take_profit > 0 ? raw.take_profit : null,
+      outcome: raw.outcome === 'win' || raw.outcome === 'loss' ? raw.outcome : null,
       confidence: typeof raw.confidence === 'number' ? raw.confidence : 0,
       analysis: raw.analysis || '',
     }
@@ -360,6 +389,26 @@ export async function POST(req: NextRequest) {
           corrections.push('swapped sl/tp')
         }
       }
+    }
+
+    // Prefer the model's first-touch outcome. When it is available, align
+    // the close price to the boundary that ended the trade so the frontend
+    // does not reclassify a stopped trade as a win after a later TP touch.
+    if (normalized.outcome === 'loss' && normalized.stop_loss != null) {
+      if (normalized.exit_price !== normalized.stop_loss) {
+        normalized.exit_price = normalized.stop_loss
+        corrections.push('exit set to sl for loss')
+      }
+    } else if (normalized.outcome === 'win' && normalized.take_profit != null) {
+      if (normalized.exit_price !== normalized.take_profit) {
+        normalized.exit_price = normalized.take_profit
+        corrections.push('exit set to tp for win')
+      }
+    } else if (!normalized.outcome && e != null && x != null) {
+      const isLong = normalized.direction === 'long'
+      const priceWentUp = x > e
+      normalized.outcome = (isLong ? priceWentUp : !priceWentUp) ? 'win' : 'loss'
+      corrections.push('outcome inferred from exit')
     }
 
     // Penalize confidence when we had to correct
