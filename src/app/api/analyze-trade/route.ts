@@ -74,6 +74,10 @@ EXIT price (the actual close):
 OUTCOME is determined by FIRST TOUCH after entry, not by where price
 eventually went later:
   - Scan candles left-to-right after the trade entry/activation point.
+  - The trade starts at the LEFT edge of the TradingView position tool / the
+    first candle after the entry marker. Ignore candles before that.
+  - Do not look at the final visible candle first. Determine which boundary
+    was touched earliest in time.
   - For LONG: if price touches STOP_LOSS before TAKE_PROFIT, outcome = "loss"
     and exit_price = stop_loss, even if price later rallies to TP.
   - For LONG: if price touches TAKE_PROFIT before STOP_LOSS, outcome = "win"
@@ -88,6 +92,13 @@ eventually went later:
   - If there is no clear first touch, outcome = "unknown" and exit_price = 0.
 Never mark a trade as a win just because price eventually reaches TP after SL
 was touched first.
+You MUST also return first_touch:
+  - "stop_loss" when SL was touched first.
+  - "take_profit" when TP was touched first.
+  - "unknown" when the first touch is not visible/clear.
+For screenshots where price drops into the stop zone immediately after entry
+and only later rises into the green target zone, first_touch = "stop_loss",
+outcome = "loss", exit_price = stop_loss.
 
 ══════════════════════════════════════════════════════════════
 STEP 4 — Read each price precisely from the right-edge price axis
@@ -112,10 +123,11 @@ STEP 5 — Self-check before returning
 Before calling the tool, verify ALL of these:
   1. If direction = "long":  stop_loss < entry < take_profit  (when both set)
   2. If direction = "short": stop_loss > entry > take_profit  (when both set)
-  3. outcome follows the first-touch rule: SL first -> loss, TP first -> win.
-  4. If outcome = "loss", exit_price should normally equal stop_loss.
+  3. first_touch follows the candle order from left to right.
+  4. outcome follows first_touch: stop_loss -> loss, take_profit -> win.
+  5. If outcome = "loss", exit_price should normally equal stop_loss.
      If outcome = "win", exit_price should normally equal take_profit.
-  5. The price decimal places match the instrument type.
+  6. The price decimal places match the instrument type.
 
 If any check fails, REVISIT step 2 — direction was probably wrong.
 
@@ -142,6 +154,7 @@ RULES
 - Numbers only for prices. Use 0 (zero) when a value is unreadable / not visible — the app will treat 0 as "missing" and let the user fill it in.
 - symbol uppercase, no exchange prefix. Use "" if unreadable.
 - direction is exactly "long" or "short".
+- first_touch is exactly "stop_loss", "take_profit", or "unknown".
 - outcome is exactly "win", "loss", or "unknown".
 - confidence is an integer 0-100.`
 
@@ -188,6 +201,12 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
         description:
           'Trade result based on first touch after entry: SL first = loss, TP first = win, unknown if no clear first touch.',
       },
+      first_touch: {
+        type: 'string',
+        enum: ['stop_loss', 'take_profit', 'unknown'],
+        description:
+          'Which boundary was touched first after entry when scanning candles left-to-right. stop_loss if SL was hit before TP, take_profit if TP was hit before SL, unknown if unclear.',
+      },
       confidence: {
         type: 'integer',
         description: 'Confidence 0-100 that the extracted values are correct.',
@@ -206,6 +225,7 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
       'stop_loss',
       'take_profit',
       'outcome',
+      'first_touch',
       'confidence',
       'analysis',
     ],
@@ -305,7 +325,7 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: 'Analyze this trading chart and submit the values via submit_trade_analysis.',
+              text: 'Analyze this trading chart and submit the values via submit_trade_analysis. Be especially careful with first_touch: scan the candles from the trade entry forward. If price hit stop loss first and only later reached take profit, return first_touch="stop_loss", outcome="loss", and exit_price=stop_loss.',
             },
           ],
         },
@@ -329,6 +349,7 @@ export async function POST(req: NextRequest) {
       stop_loss: number
       take_profit: number
       outcome?: 'win' | 'loss' | 'unknown'
+      first_touch?: 'stop_loss' | 'take_profit' | 'unknown'
       confidence: number
       analysis: string
     }
@@ -342,6 +363,7 @@ export async function POST(req: NextRequest) {
       stop_loss: raw.stop_loss && raw.stop_loss > 0 ? raw.stop_loss : null,
       take_profit: raw.take_profit && raw.take_profit > 0 ? raw.take_profit : null,
       outcome: raw.outcome === 'win' || raw.outcome === 'loss' ? raw.outcome : null,
+      first_touch: raw.first_touch === 'stop_loss' || raw.first_touch === 'take_profit' ? raw.first_touch : null,
       confidence: typeof raw.confidence === 'number' ? raw.confidence : 0,
       analysis: raw.analysis || '',
     }
@@ -391,9 +413,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Prefer the model's first-touch outcome. When it is available, align
-    // the close price to the boundary that ended the trade so the frontend
-    // does not reclassify a stopped trade as a win after a later TP touch.
+    // Prefer the explicit first-touch field over the model's summary
+    // outcome. This prevents a later TP touch from overriding an earlier stop.
+    if (normalized.first_touch === 'stop_loss') {
+      if (normalized.outcome !== 'loss') corrections.push('outcome set to loss from first_touch')
+      normalized.outcome = 'loss'
+    } else if (normalized.first_touch === 'take_profit') {
+      if (normalized.outcome !== 'win') corrections.push('outcome set to win from first_touch')
+      normalized.outcome = 'win'
+    }
+
+    // Align the close price to the boundary that ended the trade so the
+    // frontend does not reclassify a stopped trade as a win after a later TP.
     if (normalized.outcome === 'loss' && normalized.stop_loss != null) {
       if (normalized.exit_price !== normalized.stop_loss) {
         normalized.exit_price = normalized.stop_loss
