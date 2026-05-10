@@ -317,7 +317,7 @@ export default function AddTradePage() {
       toast.error(language === 'he' ? 'נא למלא סכום רווח/הפסד' : 'Please enter trade P&L')
       return
     }
-    const data = { ...pendingAiSave.data, pnl }
+    const data = { ...pendingAiSave.data, outcome: tradeData.outcome, pnl }
     setShowAiPnlPopup(false)
     await saveTrade(data, pendingAiSave.imageFile, { redirect: false, sourceAi: true, aiAnalysis: pendingAiSave.analysis })
     setPendingAiSave(null)
@@ -1065,14 +1065,41 @@ export default function AddTradePage() {
             style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '20px', padding: '28px', maxWidth: '390px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
           >
             <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text)', marginBottom: '8px' }}>
-              {pendingAiSave.data.outcome === 'win'
-                ? (language === 'he' ? 'כמה הרווחת בעסקה?' : 'How much did you win?')
-                : (language === 'he' ? 'כמה הפסדת בעסקה?' : 'How much did you lose?')}
+              {language === 'he' ? 'כמה הרווחת / הפסדת בעסקה?' : 'How much did you win / lose?'}
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '18px', lineHeight: 1.5 }}>
               {language === 'he'
-                ? 'הסכום הזה יישמר בפרטי העסקה ויוצג בפופאפ הסיכום.'
-                : 'This amount will be saved on the trade and shown in the summary popup.'}
+                ? 'בחר אם זו עסקת רווח או הפסד והזן את הסכום.'
+                : 'Choose whether this was a win or loss and enter the amount.'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+              {(['win', 'loss'] as const).map(outcome => {
+                const active = tradeData.outcome === outcome
+                const color = outcome === 'win' ? '#22c55e' : '#ef4444'
+                return (
+                  <button
+                    key={outcome}
+                    type="button"
+                    onClick={() => {
+                      setTradeData(p => ({ ...p, outcome }))
+                      if (pendingAiSave) setPendingAiSave({ ...pendingAiSave, data: { ...pendingAiSave.data, outcome } })
+                    }}
+                    style={{
+                      height: '44px',
+                      borderRadius: '12px',
+                      border: `1px solid ${active ? color : 'var(--border)'}`,
+                      background: active ? `${color}18` : 'var(--bg3)',
+                      color: active ? color : 'var(--text2)',
+                      fontFamily: 'Heebo, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 900,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {outcome.toUpperCase()}
+                  </button>
+                )
+              })}
             </div>
             <input
               type="number"
@@ -1089,7 +1116,7 @@ export default function AddTradePage() {
                 fontWeight: 900,
                 height: '58px',
                 marginBottom: pnlError ? '6px' : '18px',
-                borderColor: pnlError ? '#ef4444' : pendingAiSave.data.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
+                borderColor: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
                 boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
               }}
             />
