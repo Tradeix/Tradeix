@@ -42,6 +42,12 @@ type SavedTradeSummary = {
   date: string
 }
 
+type PendingAiSave = {
+  data: TradeData
+  imageFile: File | null
+  analysis: string
+}
+
 export default function AddTradePage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const [step, setStep] = useState<Step>(1)
@@ -56,9 +62,11 @@ export default function AddTradePage() {
   const [lightbox, setLightbox] = useState(false)
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [showAiSuccessPopup, setShowAiSuccessPopup] = useState(false)
+  const [showAiPnlPopup, setShowAiPnlPopup] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [savedTradeSummary, setSavedTradeSummary] = useState<SavedTradeSummary | null>(null)
   const [autoEditTrade, setAutoEditTrade] = useState<Trade | null>(null)
+  const [pendingAiSave, setPendingAiSave] = useState<PendingAiSave | null>(null)
   const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
@@ -191,9 +199,9 @@ export default function AddTradePage() {
       exit_price: resolvedExitPrice?.toString() || '',
       stop_loss: data.stop_loss?.toString() || '',
       take_profit: data.take_profit?.toString() || '',
+      pnl: '',
       ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
     }
-    nextTradeData.pnl = estimatePnl(nextTradeData).toString()
     setTradeData(nextTradeData)
     const analysis = data.analysis || ''
     setAiConfidence(data.confidence || 85)
@@ -203,7 +211,8 @@ export default function AddTradePage() {
       setStep(3)
       return
     }
-    await saveTrade(nextTradeData, sourceImageFile ?? imageFile, { redirect: false, sourceAi: true, aiAnalysis: analysis })
+    setPendingAiSave({ data: nextTradeData, imageFile: sourceImageFile ?? imageFile, analysis })
+    setShowAiPnlPopup(true)
   }
 
   async function runAiAnalysis(file: File) {
@@ -300,9 +309,23 @@ export default function AddTradePage() {
     return risk > 0 ? parseFloat((reward / risk).toFixed(2)) : null
   }
 
+  async function confirmAiPnl() {
+    if (!pendingAiSave) return
+    const pnl = tradeData.pnl.trim()
+    if (!pnl || Number.isNaN(parseFloat(pnl))) {
+      setPnlError(true)
+      toast.error(language === 'he' ? 'נא למלא סכום רווח/הפסד' : 'Please enter trade P&L')
+      return
+    }
+    const data = { ...pendingAiSave.data, pnl }
+    setShowAiPnlPopup(false)
+    await saveTrade(data, pendingAiSave.imageFile, { redirect: false, sourceAi: true, aiAnalysis: pendingAiSave.analysis })
+    setPendingAiSave(null)
+  }
+
   async function saveTrade(data: TradeData, sourceImageFile: File | null, options: { redirect: boolean; sourceAi: boolean; aiAnalysis?: string }) {
     const targetPrice = data.take_profit || data.exit_price
-    if (!data.symbol || !data.entry_price || !data.stop_loss || !targetPrice) {
+    if (!data.symbol || !data.entry_price || !data.stop_loss || !targetPrice || !data.pnl) {
       toast.error(language === 'he' ? 'חסרים נתוני חובה לעסקה' : 'Missing required trade data')
       setStep(3)
       return
@@ -1031,6 +1054,62 @@ export default function AddTradePage() {
         }
       `}</style>
 
+      {showAiPnlPopup && pendingAiSave && (
+        <div
+          className="app-modal-overlay"
+          style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.2s ease' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="app-modal-card" data-tight="1"
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '20px', padding: '28px', maxWidth: '390px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
+          >
+            <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text)', marginBottom: '8px' }}>
+              {pendingAiSave.data.outcome === 'win'
+                ? (language === 'he' ? 'כמה הרווחת בעסקה?' : 'How much did you win?')
+                : (language === 'he' ? 'כמה הפסדת בעסקה?' : 'How much did you lose?')}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '18px', lineHeight: 1.5 }}>
+              {language === 'he'
+                ? 'הסכום הזה יישמר בפרטי העסקה ויוצג בפופאפ הסיכום.'
+                : 'This amount will be saved on the trade and shown in the summary popup.'}
+            </div>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              autoFocus
+              value={tradeData.pnl}
+              onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); setPnlError(false) }}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmAiPnl() } }}
+              placeholder="0.00"
+              style={{
+                textAlign: 'center',
+                fontSize: '28px',
+                fontWeight: 900,
+                height: '58px',
+                marginBottom: pnlError ? '6px' : '18px',
+                borderColor: pnlError ? '#ef4444' : pendingAiSave.data.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
+                boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
+              }}
+            />
+            {pnlError && (
+              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 800, marginBottom: '12px' }}>
+                {language === 'he' ? 'שדה חובה' : 'Required field'}
+              </div>
+            )}
+            <button
+              onClick={confirmAiPnl}
+              disabled={submitting}
+              className="btn-primary"
+              style={{ width: '100%', padding: '13px', fontSize: '15px', fontWeight: 800, opacity: submitting ? 0.65 : 1, cursor: submitting ? 'wait' : 'pointer' }}
+            >
+              {submitting ? tr.submitting : (language === 'he' ? 'שמור עסקה' : 'Save Trade')}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* AI Analysis Success Popup */}
       {showAiSuccessPopup && (
         <div
@@ -1061,14 +1140,6 @@ export default function AddTradePage() {
                 </div>
               </div>
             )}
-
-            {/* Detected data summary */}
-            <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '14px', direction: 'ltr' }}>
-              {tradeData.symbol && <span style={{ fontWeight: '700', color: 'var(--text)' }}>{tradeData.symbol}</span>}
-              {tradeData.entry_price ? ` • Entry: ${tradeData.entry_price}` : ''}
-              {tradeData.exit_price ? ` • Exit: ${tradeData.exit_price}` : ''}
-              {tradeData.stop_loss ? ` • SL: ${tradeData.stop_loss}` : ''}
-            </div>
 
             {/* Disclaimer */}
             {savedTradeSummary && (
