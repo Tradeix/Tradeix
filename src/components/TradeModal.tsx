@@ -15,11 +15,12 @@ interface TradeModalProps {
   onClose: () => void
   onUpdate?: () => void
   readOnly?: boolean
+  initialEditing?: boolean
 }
 
-export default function TradeModal({ trade, onClose, onUpdate, readOnly = false }: TradeModalProps) {
+export default function TradeModal({ trade, onClose, onUpdate, readOnly = false, initialEditing = false }: TradeModalProps) {
   const router = useRouter()
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(initialEditing)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)

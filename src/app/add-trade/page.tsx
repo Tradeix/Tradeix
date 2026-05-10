@@ -9,8 +9,9 @@ import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
 import { usePortfolio } from '@/lib/portfolio-context'
-import { Strategy } from '@/types'
+import { Strategy, Trade } from '@/types'
 import Icon from '@/components/Icon'
+import TradeModal from '@/components/TradeModal'
 
 
 type Step = 1 | 2 | 3
@@ -22,10 +23,23 @@ interface TradeData {
   entry_price: string
   exit_price: string
   stop_loss: string
+  take_profit: string
   pnl: string
   traded_at: string
   notes: string
   strategy_id: string
+}
+
+type SavedTradeSummary = {
+  symbol: string
+  outcome: 'win' | 'loss'
+  pnl: number
+  entry: number | null
+  exit: number | null
+  stopLoss: number | null
+  takeProfit: number | null
+  rr: number | null
+  date: string
 }
 
 export default function AddTradePage() {
@@ -43,10 +57,12 @@ export default function AddTradePage() {
   const [aiMissingFields, setAiMissingFields] = useState<string[]>([])
   const [showAiSuccessPopup, setShowAiSuccessPopup] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [savedTradeSummary, setSavedTradeSummary] = useState<SavedTradeSummary | null>(null)
+  const [autoEditTrade, setAutoEditTrade] = useState<Trade | null>(null)
   const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
-    entry_price: '', exit_price: '', stop_loss: '',
+    entry_price: '', exit_price: '', stop_loss: '', take_profit: '',
     pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
     strategy_id: '',
   })
@@ -114,6 +130,7 @@ export default function AddTradePage() {
     setTvSubmitting(true)
     setStep(2)
     try {
+      let snapshotFile: File | null = null
       const res = await fetch('/api/analyze-trade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,12 +149,13 @@ export default function AddTradePage() {
           const ext = (data.fetchedMediaType.split('/')[1] || 'png').replace('jpeg', 'jpg')
           const fname = `tv-snapshot-${Date.now()}.${ext}`
           const file = new File([arr], fname, { type: data.fetchedMediaType })
+          snapshotFile = file
           setImageFile(file)
         } catch (e) {
           console.warn('Could not materialize TV snapshot as File', e)
         }
       }
-      applyAiResult(data)
+      await applyAiResult(data, snapshotFile)
     } catch (err: any) {
       toast.error(language === 'he' ? `שגיאה: ${err.message}` : `Error: ${err.message}`)
       setStep(1)
@@ -146,7 +164,7 @@ export default function AddTradePage() {
     }
   }
 
-  function applyAiResult(data: any) {
+  async function applyAiResult(data: any, sourceImageFile?: File | null) {
     const missing: string[] = []
     if (!data.symbol) missing.push(language === 'he' ? 'שם הצמד' : 'Symbol')
     if (data.entry_price == null) missing.push(language === 'he' ? 'מחיר כניסה' : 'Entry price')
@@ -165,19 +183,27 @@ export default function AddTradePage() {
       detectedOutcome === 'win' && data.take_profit != null ? data.take_profit :
       data.exit_price
 
-    setTradeData(prev => ({
-      ...prev,
+    const nextTradeData: TradeData = {
+      ...tradeData,
       symbol: data.symbol || '',
       direction: data.direction === 'short' ? 'short' : 'long',
       entry_price: data.entry_price?.toString() || '',
       exit_price: resolvedExitPrice?.toString() || '',
       stop_loss: data.stop_loss?.toString() || '',
+      take_profit: data.take_profit?.toString() || '',
       ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
-    }))
+    }
+    nextTradeData.pnl = estimatePnl(nextTradeData).toString()
+    setTradeData(nextTradeData)
+    const analysis = data.analysis || ''
     setAiConfidence(data.confidence || 85)
-    setAiRaw(data.analysis || '')
-    setShowAiSuccessPopup(true)
-    setStep(3)
+    setAiRaw(analysis)
+    if (missing.length > 0 || !nextTradeData.stop_loss || !nextTradeData.take_profit) {
+      toast.error(language === 'he' ? 'חסרים נתונים לשמירה אוטומטית, בדוק ידנית' : 'Missing data for auto-save, please review manually')
+      setStep(3)
+      return
+    }
+    await saveTrade(nextTradeData, sourceImageFile ?? imageFile, { redirect: false, sourceAi: true, aiAnalysis: analysis })
   }
 
   async function runAiAnalysis(file: File) {
@@ -192,6 +218,8 @@ export default function AddTradePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Analysis failed')
       if (data.error) throw new Error(data.error)
+      await applyAiResult(data, file)
+      return
       // Detect which fields the AI couldn't identify
       const missing: string[] = []
       if (!data.symbol) missing.push(language === 'he' ? 'שם הצמד' : 'Symbol')
@@ -253,7 +281,123 @@ export default function AddTradePage() {
     setStep(3)
   }
 
+  function estimatePnl(data: TradeData) {
+    const entry = parseFloat(data.entry_price)
+    const exit = parseFloat(data.exit_price)
+    if (Number.isNaN(entry) || Number.isNaN(exit)) return 0
+    const move = data.direction === 'long' ? exit - entry : entry - exit
+    return Number(Math.abs(move).toFixed(2))
+  }
+
+  function calculateRr(data: TradeData) {
+    if (data.outcome !== 'win') return null
+    const entry = parseFloat(data.entry_price)
+    const tp = parseFloat(data.take_profit || data.exit_price)
+    const sl = parseFloat(data.stop_loss)
+    if ([entry, tp, sl].some(Number.isNaN)) return null
+    const risk = Math.abs(entry - sl)
+    const reward = Math.abs(tp - entry)
+    return risk > 0 ? parseFloat((reward / risk).toFixed(2)) : null
+  }
+
+  async function saveTrade(data: TradeData, sourceImageFile: File | null, options: { redirect: boolean; sourceAi: boolean; aiAnalysis?: string }) {
+    const targetPrice = data.take_profit || data.exit_price
+    if (!data.symbol || !data.entry_price || !data.stop_loss || !targetPrice) {
+      toast.error(language === 'he' ? 'חסרים נתוני חובה לעסקה' : 'Missing required trade data')
+      setStep(3)
+      return
+    }
+    setSubmitting(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('לא מחובר')
+
+      if (!isPro) {
+        const { count } = await supabase.from('trades').select('id', { count: 'exact', head: true }).eq('user_id', user!.id)
+        if ((count ?? 0) >= 20) {
+          toast.error(language === 'he' ? 'הגעת למגבלת 20 עסקאות - שדרג ל PRO' : 'Reached 20 trade limit - upgrade to PRO')
+          router.push('/upgrade')
+          return
+        }
+      }
+
+      const savedId = localStorage.getItem('tradeix-active-portfolio')
+      let portfolioId = savedId
+      if (!portfolioId) {
+        const { data: portfolios } = await supabase.from('portfolios').select('id').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1)
+        if ((portfolios?.length ?? 0) === 0) {
+          toast.error(language === 'he' ? 'אין תיק - צור תיק קודם' : 'No portfolio found')
+          router.push('/portfolios')
+          return
+        }
+        portfolioId = portfolios![0].id
+      }
+
+      let imageUrl = null
+      if (sourceImageFile) {
+        const ext = sourceImageFile.name.split('.').pop()
+        const path = `${user.id}/${Date.now()}.${ext}`
+        const { error: uploadError } = await supabase.storage.from('trade-images').upload(path, sourceImageFile)
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('trade-images').getPublicUrl(path)
+          imageUrl = urlData.publicUrl
+        }
+      }
+
+      const entryNum = parseFloat(data.entry_price)
+      const exitNum = data.exit_price ? parseFloat(data.exit_price) : null
+      const slNum = parseFloat(data.stop_loss)
+      const tpNum = parseFloat(targetPrice)
+      const pnlAbs = Math.abs(parseFloat(data.pnl) || estimatePnl(data))
+      const pnl = data.outcome === 'loss' ? -pnlAbs : pnlAbs
+      const rrRatio = calculateRr(data)
+
+      const { data: inserted, error } = await supabase.from('trades').insert({
+        portfolio_id: portfolioId, user_id: user.id,
+        symbol: data.symbol.toUpperCase(),
+        direction: data.direction,
+        entry_price: entryNum,
+        exit_price: exitNum,
+        stop_loss: slNum,
+        take_profit: tpNum,
+        pnl,
+        rr_ratio: rrRatio,
+        image_url: imageUrl, ai_analysis: options.sourceAi ? (options.aiAnalysis ?? aiRaw) : null,
+        notes: data.notes, traded_at: data.traded_at,
+        outcome: data.outcome,
+        strategy_id: data.strategy_id || null,
+      }).select('*').single()
+      if (error) throw error
+
+      setSavedTradeSummary({
+        symbol: data.symbol.toUpperCase(),
+        outcome: data.outcome,
+        pnl,
+        entry: entryNum,
+        exit: exitNum,
+        stopLoss: slNum,
+        takeProfit: tpNum,
+        rr: rrRatio,
+        date: data.traded_at,
+      })
+      setAutoEditTrade(inserted as Trade)
+      setShowAiSuccessPopup(true)
+      toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
+      if (options.redirect) {
+        router.push('/trades')
+        router.refresh()
+      }
+    } catch (err: any) {
+      toast.error(err.message || (language === 'he' ? 'שגיאה' : 'Error'))
+    } finally {
+      setSubmitting(false)
+      setTvSubmitting(false)
+    }
+  }
+
   async function handleSubmit() {
+    await saveTrade(tradeData, imageFile, { redirect: true, sourceAi: false })
+    return
     const missingPnl = !tradeData.pnl || tradeData.pnl.trim() === ''
     if (missingPnl) setPnlError(true)
     if (!tradeData.symbol || missingPnl) {
@@ -267,7 +411,7 @@ export default function AddTradePage() {
 
       // Free tier: max 20 trades
       if (!isPro) {
-        const { count } = await supabase.from('trades').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+        const { count } = await supabase.from('trades').select('id', { count: 'exact', head: true }).eq('user_id', user!.id)
         if ((count ?? 0) >= 20) {
           toast.error(language === 'he' ? 'הגעת למגבלת 20 עסקאות — שדרג ל PRO' : 'Reached 20 trade limit — upgrade to PRO')
           router.push('/upgrade')
@@ -279,19 +423,19 @@ export default function AddTradePage() {
       const savedId = localStorage.getItem('tradeix-active-portfolio')
       let portfolioId = savedId
       if (!portfolioId) {
-        const { data: portfolios } = await supabase.from('portfolios').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1)
-        if (!portfolios || portfolios.length === 0) {
+        const { data: portfolios } = await supabase.from('portfolios').select('id').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1)
+        if ((portfolios?.length ?? 0) === 0) {
           toast.error(language === 'he' ? 'אין תיק — צור תיק קודם' : 'No portfolio found')
           router.push('/portfolios')
           return
         }
-        portfolioId = portfolios[0].id
+        portfolioId = portfolios![0].id
       }
       let imageUrl = null
       if (imageFile) {
-        const ext = imageFile.name.split('.').pop()
-        const path = `${user.id}/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage.from('trade-images').upload(path, imageFile)
+        const ext = imageFile!.name.split('.').pop()
+        const path = `${user!.id}/${Date.now()}.${ext}`
+        const { error: uploadError } = await supabase.storage.from('trade-images').upload(path, imageFile!)
         if (!uploadError) {
           const { data: urlData } = supabase.storage.from('trade-images').getPublicUrl(path)
           imageUrl = urlData.publicUrl
@@ -306,12 +450,12 @@ export default function AddTradePage() {
       // losing trades we leave rr_ratio null so the field is hidden everywhere.
       let rrRatio: number | null = null
       if (tradeData.outcome === 'win' && entryNum != null && exitNum != null && slNum != null) {
-        const reward = tradeData.direction === 'long' ? exitNum - entryNum : entryNum - exitNum
-        const risk   = tradeData.direction === 'long' ? entryNum - slNum  : slNum - entryNum
+        const reward = tradeData.direction === 'long' ? exitNum! - entryNum! : entryNum! - exitNum!
+        const risk   = tradeData.direction === 'long' ? entryNum! - slNum!  : slNum! - entryNum!
         if (risk > 0) rrRatio = parseFloat((reward / risk).toFixed(2))
       }
       const { error } = await supabase.from('trades').insert({
-        portfolio_id: portfolioId, user_id: user.id,
+        portfolio_id: portfolioId, user_id: user!.id,
         symbol: tradeData.symbol.toUpperCase(),
         direction: tradeData.direction,
         entry_price: entryNum,
@@ -890,7 +1034,7 @@ export default function AddTradePage() {
       {/* AI Analysis Success Popup */}
       {showAiSuccessPopup && (
         <div
-          onClick={() => setShowAiSuccessPopup(false)}
+          onClick={e => e.stopPropagation()}
           className="app-modal-overlay"
           style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.25s ease' }}
         >
@@ -927,15 +1071,45 @@ export default function AddTradePage() {
             </div>
 
             {/* Disclaimer */}
+            {savedTradeSummary && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px', textAlign: 'start' }}>
+                {[
+                  ['WIN/LOSS', savedTradeSummary.outcome.toUpperCase()],
+                  ['PNL', `${savedTradeSummary.pnl >= 0 ? '+' : '-'}$${Math.abs(savedTradeSummary.pnl).toLocaleString()}`],
+                  ['ENTRY', savedTradeSummary.entry ?? '-'],
+                  ['SL', savedTradeSummary.stopLoss ?? '-'],
+                  ['TP', savedTradeSummary.takeProfit ?? '-'],
+                  ['RR', savedTradeSummary.rr ? `1 : ${savedTradeSummary.rr.toFixed(2)}` : '-'],
+                  ['DATE', savedTradeSummary.date],
+                  ['SYMBOL', savedTradeSummary.symbol],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px 12px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 800, letterSpacing: '0.08em', marginBottom: '3px' }}>{label}</div>
+                    <div dir="ltr" style={{ fontSize: '14px', color: label === 'WIN/LOSS' ? (String(value) === 'WIN' ? '#22c55e' : '#ef4444') : 'var(--text)', fontWeight: 900 }}>{String(value)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div style={{ fontSize: '12.5px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '22px', padding: '0 4px' }}>
               {language === 'he'
                 ? 'חשוב לוודא שהנתונים שהוזנו נכונים. גם בינה מלאכותית יכולה לטעות לפעמים.'
                 : 'Please verify that the data entered is correct. AI can sometimes make mistakes.'}
             </div>
 
+            {autoEditTrade && (
+              <button
+                onClick={() => setShowAiSuccessPopup(false)}
+                className="btn-ghost"
+                style={{ width: '100%', marginBottom: '10px', padding: '13px', fontSize: '15px', fontWeight: '800' }}
+              >
+                {language === 'he' ? 'ערוך עסקה' : 'Edit Trade'}
+              </button>
+            )}
+
             {/* OK button */}
             <button
-              onClick={() => setShowAiSuccessPopup(false)}
+              onClick={() => { setAutoEditTrade(null); setShowAiSuccessPopup(false); router.push('/trades') }}
               className="btn-primary"
               style={{ width: '100%', padding: '13px', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
@@ -944,6 +1118,15 @@ export default function AddTradePage() {
             </button>
           </div>
         </div>
+      )}
+
+      {autoEditTrade && !showAiSuccessPopup && (
+        <TradeModal
+          trade={autoEditTrade}
+          initialEditing
+          onClose={() => setAutoEditTrade(null)}
+          onUpdate={() => router.refresh()}
+        />
       )}
 
       {/* Image lightbox */}
