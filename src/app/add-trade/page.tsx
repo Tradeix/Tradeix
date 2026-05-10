@@ -1061,18 +1061,18 @@ export default function AddTradePage() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="app-modal-card" data-tight="1"
-            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '20px', padding: '28px', maxWidth: '390px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
+            className="app-modal-card app-modal-card--compact" data-tight="1"
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px', maxWidth: '340px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
           >
-            <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '16px', fontWeight: 900, color: 'var(--text)', marginBottom: '6px' }}>
               {language === 'he' ? 'כמה הרווחת / הפסדת בעסקה?' : 'How much did you win / lose?'}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '18px', lineHeight: 1.5 }}>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '12px', lineHeight: 1.35 }}>
               {language === 'he'
                 ? 'בחר אם זו עסקת רווח או הפסד והזן את הסכום.'
                 : 'Choose whether this was a win or loss and enter the amount.'}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px', marginBottom: '10px' }}>
               {(['win', 'loss'] as const).map(outcome => {
                 const active = tradeData.outcome === outcome
                 const color = outcome === 'win' ? '#22c55e' : '#ef4444'
@@ -1085,13 +1085,13 @@ export default function AddTradePage() {
                       if (pendingAiSave) setPendingAiSave({ ...pendingAiSave, data: { ...pendingAiSave.data, outcome } })
                     }}
                     style={{
-                      height: '44px',
-                      borderRadius: '12px',
+                      height: '38px',
+                      borderRadius: '10px',
                       border: `1px solid ${active ? color : 'var(--border)'}`,
                       background: active ? `${color}18` : 'var(--bg3)',
                       color: active ? color : 'var(--text2)',
                       fontFamily: 'Heebo, sans-serif',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: 900,
                       cursor: 'pointer',
                     }}
@@ -1112,16 +1112,16 @@ export default function AddTradePage() {
               placeholder="0.00"
               style={{
                 textAlign: 'center',
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: 900,
-                height: '58px',
-                marginBottom: pnlError ? '6px' : '18px',
+                height: '48px',
+                marginBottom: pnlError ? '5px' : '12px',
                 borderColor: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
                 boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
               }}
             />
             {pnlError && (
-              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 800, marginBottom: '12px' }}>
+              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>
                 {language === 'he' ? 'שדה חובה' : 'Required field'}
               </div>
             )}
@@ -1129,7 +1129,7 @@ export default function AddTradePage() {
               onClick={confirmAiPnl}
               disabled={submitting}
               className="btn-primary"
-              style={{ width: '100%', padding: '13px', fontSize: '15px', fontWeight: 800, opacity: submitting ? 0.65 : 1, cursor: submitting ? 'wait' : 'pointer' }}
+              style={{ width: '100%', padding: '11px', fontSize: '14px', fontWeight: 800, opacity: submitting ? 0.65 : 1, cursor: submitting ? 'wait' : 'pointer' }}
             >
               {submitting ? tr.submitting : (language === 'he' ? 'שמור עסקה' : 'Save Trade')}
             </button>

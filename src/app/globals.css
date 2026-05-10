@@ -253,6 +253,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   overscroll-behavior: contain;
   background: var(--modal-bg) !important;
 }
+.app-modal-card--compact {
+  max-height: none !important;
+  overflow: visible !important;
+}
 .app-modal-card[style*="background: var(--bg2)"],
 .app-modal-card [style*="background: var(--bg2)"],
 .app-modal-card [style*="position: sticky"] {
@@ -263,6 +267,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .app-modal-card { max-height: calc(100dvh - 20px); }
   /* Trim chunky inner spacing so the modal fits without scrolling */
   .app-modal-card[data-tight="1"] { padding: 18px !important; }
+  .app-modal-card--compact[data-tight="1"] { padding: 16px !important; }
 }
 html:has(.app-modal-overlay),
 body:has(.app-modal-overlay) {
