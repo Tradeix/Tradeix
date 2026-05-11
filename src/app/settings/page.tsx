@@ -9,7 +9,7 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription } = useApp()
+  const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<{
     subscription_status: string | null
@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
+  const [resumingPro, setResumingPro] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [pendingLang, setPendingLang] = useState(language)
@@ -124,6 +125,29 @@ export default function SettingsPage() {
       toast.error(error?.message || (language === 'he' ? 'שגיאה בביטול המנוי' : 'Subscription cancellation failed'))
     } finally {
       setCancelingPro(false)
+    }
+  }
+
+  async function handleResumePro() {
+    setResumingPro(true)
+    try {
+      const payload = await resumeSubscription()
+      const resumed = payload?.subscription
+
+      setBillingProfile(prev => ({
+        subscription_status: resumed?.status || 'active',
+        subscription_renews_at: resumed?.renewsAt ?? prev?.subscription_renews_at ?? null,
+        subscription_ends_at: resumed?.endsAt ?? null,
+        subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
+      }))
+
+      toast.success(language === 'he'
+        ? 'המנוי חודש. החיוב הבא ימשיך לפי תאריך החידוש המקורי.'
+        : 'Subscription resumed. Future billing will continue on the original renewal date.')
+    } catch (error: any) {
+      toast.error(error?.message || (language === 'he' ? 'שגיאה בחידוש המנוי' : 'Subscription resume failed'))
+    } finally {
+      setResumingPro(false)
     }
   }
 
@@ -432,16 +456,27 @@ export default function SettingsPage() {
           )}
 
           {isPro ? (
-            <button
-              onClick={() => setShowCancelConfirm(true)}
-              disabled={cancelingPro}
-              style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1, marginTop: 'auto' }}
-              onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
-              onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
-            >
-              <Icon name="cancel" size={15} />
-              {cancelingPro ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
-            </button>
+            isCanceledButActive ? (
+              <button
+                onClick={handleResumePro}
+                disabled={resumingPro}
+                style={{ width: '100%', background: '#0f8d63', border: '1px solid rgba(15,141,99,0.5)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '800', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: resumingPro ? 0.65 : 1, marginTop: 'auto' }}
+              >
+                <Icon name="autorenew" size={16} color="#fff" />
+                {resumingPro ? (language === 'he' ? 'מחדש...' : 'Resuming...') : (language === 'he' ? 'חדש מנוי' : 'Resume subscription')}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowCancelConfirm(true)}
+                disabled={cancelingPro}
+                style={{ width: '100%', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: 'rgba(239,68,68,0.7)', cursor: cancelingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: cancelingPro ? 0.6 : 1, marginTop: 'auto' }}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.04)' }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = 'rgba(239,68,68,0.7)'; e.currentTarget.style.background = 'transparent' }}
+              >
+                <Icon name="cancel" size={15} />
+                {cancelingPro ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
+              </button>
+            )
           ) : (
             <Link href="/upgrade" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',

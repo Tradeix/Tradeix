@@ -25,13 +25,14 @@ type AppContextType = {
   subscriptionLoading: boolean
   upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
+  resumeSubscription: () => Promise<CancelSubscriptionResult>
 }
 
 const AppContext = createContext<AppContextType>({
   theme: 'dark', language: 'en',
   setTheme: () => {}, setLanguage: () => {},
   subscription: 'free', isPro: false, subscriptionLoading: true,
-  upgradeToPro: async () => {}, cancelSubscription: async () => ({}),
+  upgradeToPro: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
 })
 
 function isLanguage(value: string | null): value is Language {
@@ -226,13 +227,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return payload || {}
   }
 
+  async function resumeSubscription() {
+    if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
+
+    const response = await fetch('/api/billing/resume', { method: 'POST' })
+    const payload = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new Error(payload?.error || 'Could not resume subscription')
+    }
+
+    setSubscription('pro')
+    return payload || {}
+  }
+
   const isPro = subscription === 'pro'
 
   return (
     <AppContext.Provider value={{
       theme, language, setTheme, setLanguage,
       subscription, isPro, subscriptionLoading,
-      upgradeToPro, cancelSubscription,
+      upgradeToPro, cancelSubscription, resumeSubscription,
     }}>
       {children}
     </AppContext.Provider>
