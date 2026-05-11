@@ -3,81 +3,201 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
+import { useApp } from '@/lib/app-context'
 
-const NAV_SECTIONS = [
-  { id: 'features',    label: 'תכונות' },
-  { id: 'how',         label: 'איך זה עובד' },
-  { id: 'pricing',     label: 'מחירים' },
-  { id: 'faq',         label: 'שאלות נפוצות' },
-]
-
-const FEATURES = [
-  { icon: 'auto_awesome',  title: 'ניתוח AI מתקדם',   desc: 'העלה צילום של גרף, וה-AI יזהה אוטומטית את הצמד, הכניסה, היציאה וה-SL.' },
-  { icon: 'monitoring',    title: 'סטטיסטיקות עומק',  desc: 'אחוז זכייה, Profit Factor, Drawdown, גרף הון, ולוח שנה חודשי של P&L.' },
-  { icon: 'psychology',    title: 'ניהול אסטרטגיות',  desc: 'בנה אסטרטגיות, תייג עסקאות, ועקוב אחרי הביצועים של כל אחת בנפרד.' },
-  { icon: 'cases',         title: 'תיקים מרובים',     desc: 'נהל עד 3 תיקים פעילים במנוי PRO — Forex, מניות, קריפטו, סחורות.' },
-  { icon: 'event_available', title: 'ניתוח לפי יום',    desc: 'גלה באיזה יום בשבוע אתה הכי חזק וקבל תובנות לבניית שיגרת מסחר חכמה.' },
-  { icon: 'photo_library', title: 'גלריית הוכחות',    desc: 'שמור צילומי payouts, תעודות מבחן, צילומי מסך ופרטי גישה במקום אחד.' },
-]
-
-const STEPS = [
-  { icon: 'photo_camera',   title: 'צלם את הגרף',     desc: 'גרור צילום של ה-trade שלך לתוך הטופס — או הזן ידנית.' },
-  { icon: 'auto_awesome',   title: 'ה-AI מנתח',        desc: 'תוך פחות משלוש שניות, הנתונים מזוהים ומסודרים אוטומטית.' },
-  { icon: 'show_chart',     title: 'עקוב והשתפר',      desc: 'צבור היסטוריה, גלה דפוסים, ושפר את העקביות שלך לאורך זמן.' },
-]
-
-const FAQS = [
-  { q: 'מה זה TRADEIX?',                          a: 'יומן מסחר חכם שמלווה אותך לאורך כל הקריירה שלך — מנתח גרפים בעזרת AI, מציג סטטיסטיקות מתקדמות ועוזר לזהות מה עובד לך ומה לא.' },
-  { q: 'איך ה-AI עובד?',                          a: 'מודלי vision של Anthropic מזהים את הצמד, מחיר הכניסה, מחיר היציאה וה-Stop Loss מתוך צילום מסך של הגרף. בכל מקרה אתה יכול לערוך ידנית את הנתונים לפני שמירה.' },
-  { q: 'האם הנתונים שלי בטוחים?',                  a: 'כן. הנתונים מאוחסנים ב-Supabase עם הצפנה והרשאות ברמת המשתמש. אף אחד מלבדך לא רואה את העסקאות.' },
-  { q: 'אפשר לבטל בכל זמן?',                       a: 'כן. ביטול המנוי נעשה בלחיצה אחת מתוך הגדרות החשבון, וה-PRO ימשיך לפעול עד סוף תקופת החיוב הנוכחית.' },
-  { q: 'מתאים גם לסוחרים מתחילים?',                 a: 'בהחלט. הממשק נוקה במכוון מסביבת מסחר עמוסה — אתה צריך רק להתחיל להעלות עסקאות, וה-TRADEIX יעשה את הקטע של הסטטיסטיקות.' },
-  { q: 'אני יכול להשתמש בנייד?',                   a: 'כן. כל האתר רספונסיבי לחלוטין — דשבורד, הוספת עסקה, ניתוח גרפים, הכל עובד מצוין מהמובייל.' },
-]
-
-const PRICING = {
-  free: {
-    name: 'חינמי',
-    price: '$0',
-    period: 'לתמיד',
-    cta: 'התחל בחינם',
-    perks: [
-      'תיק מסחר אחד',
-      'עד 20 עסקאות',
-      'דשבורד בסיסי',
-      'הוספה ידנית של עסקאות',
+const COPY = {
+  he: {
+    nav: [
+      { id: 'features', label: 'תכונות' },
+      { id: 'how', label: 'איך זה עובד' },
+      { id: 'pricing', label: 'מחירים' },
+      { id: 'faq', label: 'שאלות נפוצות' },
     ],
-    locked: [
-      'ניתוח AI של גרפים',
-      'עמוד סטטיסטיקות מתקדם',
-      'אסטרטגיות',
-      'ארכיון תיקים',
+    hero: {
+      login: 'התחבר',
+      eyebrow: 'יומן מסחר חכם עם AI',
+      titleLead: 'עקוב, נתח,',
+      titleAccent: 'השתפר',
+      titleTail: '— בכל עסקה.',
+      subtitle: 'TRADEIX מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, ועוזר לך לראות מה באמת עובד בלי טבלאות אקסל ובלי חישובים בראש.',
+      primary: 'התחל בחינם',
+      secondary: 'איך זה עובד',
+      portfolioValue: 'שווי תיק נוכחי',
+    },
+    featuresHeader: {
+      eyebrow: 'מה יש בפנים',
+      title: 'כלים שגורמים לך לחזור על מה שעובד',
+      subtitle: 'הכל באתר אחד: קליטת עסקאות, ניתוח, סטטיסטיקה וגלריית תוצאות.',
+    },
+    features: [
+      { icon: 'auto_awesome', title: 'ניתוח AI מתקדם', desc: 'העלה צילום של גרף וה-AI יזהה אוטומטית את הצמד, הכניסה, היציאה וה-SL.' },
+      { icon: 'monitoring', title: 'סטטיסטיקות עומק', desc: 'אחוז זכייה, Profit Factor, Drawdown, גרף הון ולוח חודשי של P&L.' },
+      { icon: 'psychology', title: 'ניהול אסטרטגיות', desc: 'בנה אסטרטגיות, תייג עסקאות ועקוב אחרי הביצועים של כל אחת בנפרד.' },
+      { icon: 'cases', title: 'תיקים מרובים', desc: 'נהל עד 3 תיקים פעילים במנוי PRO: פורקס, מניות, קריפטו, חוזים ועוד.' },
+      { icon: 'event_available', title: 'ניתוח לפי ימים', desc: 'גלה באיזה יום בשבוע אתה הכי חזק וקבל תובנות לבניית שגרת מסחר חכמה.' },
+      { icon: 'photo_library', title: 'גלריית הוכחות', desc: 'שמור צילומי payouts, תעודות מבחן, צילומי מסך ופרטי גישה במקום אחד.' },
     ],
+    ai: {
+      eyebrow: 'AI Engine',
+      titleLead: 'AI ש',
+      titleAccent: 'קורא גרפים',
+      titleTail: '— לא עוד יומן ידני.',
+      subtitle: 'מבוסס על מודל הראייה של Anthropic Claude. מצילום בודד: שש נקודות נתונים, פחות משלוש שניות, אפס הקלדה.',
+      detected: 'זוהה אוטומטית',
+      fields: [
+        ['שם הצמד', 'EUR/USD'],
+        ['מחיר כניסה', '1.0823'],
+        ['מחיר יציאה', '1.0867'],
+        ['Stop Loss', '1.0795'],
+        ['כיוון', 'LONG'],
+        ['יחס R / R', '1 : 1.6'],
+      ],
+      stats: [
+        ['< 3s', 'זמן ניתוח'],
+        ['6+', 'נקודות נתונים'],
+        ['100%', 'ניתן לעריכה'],
+      ],
+      steps: [
+        { icon: 'photo_camera', title: 'צלם את הגרף' },
+        { icon: 'auto_awesome', title: 'ה-AI מנתח' },
+        { icon: 'show_chart', title: 'עקוב והשתפר' },
+      ],
+    },
+    pricing: {
+      eyebrow: 'מחירים',
+      title: 'תכנית פשוטה. בלי שלבי ביניים.',
+      subtitle: 'תתחיל בחינם. תשדרג ל-PRO ברגע שתרצה את כל הכלים.',
+      popular: 'מומלץ',
+      free: {
+        name: 'חינמי',
+        price: '$0',
+        period: 'לתמיד',
+        cta: 'התחל בחינם',
+        desc: 'בשביל להתחיל לבנות שגרה',
+        perks: ['תיק מסחר אחד', 'עד 20 עסקאות', 'דשבורד בסיסי', 'הוספה ידנית של עסקאות'],
+        locked: ['ניתוח AI של גרפים', 'עמוד סטטיסטיקות מתקדם', 'אסטרטגיות', 'ארכיון תיקים'],
+      },
+      pro: {
+        name: 'PRO',
+        price: '$20',
+        period: 'לחודש',
+        cta: 'שדרג עכשיו',
+        desc: 'הכל פתוח. בלי הגבלות.',
+        perks: ['עד 3 תיקים פעילים', 'עסקאות ללא הגבלה', 'ניתוח AI מלא של גרפים', 'עמוד סטטיסטיקות מתקדם', 'מערכת אסטרטגיות', 'ארכיון תיקים שלם', 'גלריית הוכחות', 'תמיכת PRO'],
+      },
+    },
+    faqHeader: { eyebrow: 'שאלות נפוצות', title: 'הכל מה שצריך לדעת' },
+    faqs: [
+      ['מה זה TRADEIX?', 'יומן מסחר חכם שמלווה אותך לאורך הקריירה שלך: מנתח גרפים בעזרת AI, מציג סטטיסטיקות מתקדמות ועוזר לזהות מה עובד לך ומה לא.'],
+      ['איך ה-AI עובד?', 'מודלי vision של Anthropic מזהים מתוך צילום מסך את הצמד, מחיר הכניסה, מחיר היציאה וה-Stop Loss. תמיד אפשר לערוך ידנית לפני שמירה.'],
+      ['האם הנתונים שלי בטוחים?', 'כן. הנתונים מאוחסנים ב-Supabase עם הצפנה והרשאות ברמת המשתמש. רק אתה רואה את העסקאות שלך.'],
+      ['אפשר לבטל בכל זמן?', 'כן. ביטול המנוי נעשה מתוך הגדרות החשבון, וה-PRO ימשיך לפעול עד סוף תקופת החיוב הנוכחית.'],
+      ['מתאים גם לסוחרים מתחילים?', 'בהחלט. הממשק נקי בכוונה: אתה מעלה עסקאות ו-TRADEIX עושה את עבודת הסטטיסטיקות.'],
+      ['אפשר להשתמש בנייד?', 'כן. הדשבורד, הוספת עסקה וניתוח גרפים עובדים גם במובייל.'],
+    ],
+    footer: 'כל הזכויות שמורות.',
   },
-  pro: {
-    name: 'PRO',
-    price: '$20',
-    period: 'לחודש',
-    cta: 'שדרג עכשיו',
-    perks: [
-      'עד 3 תיקים פעילים',
-      'עסקאות ללא הגבלה',
-      'ניתוח AI מלא של גרפים',
-      'עמוד סטטיסטיקות מתקדם',
-      'מערכת אסטרטגיות',
-      'ארכיון תיקים שלם',
-      'גלריית הוכחות',
-      'תמיכת PRO',
+  en: {
+    nav: [
+      { id: 'features', label: 'Features' },
+      { id: 'how', label: 'How it works' },
+      { id: 'pricing', label: 'Pricing' },
+      { id: 'faq', label: 'FAQ' },
     ],
+    hero: {
+      login: 'Log in',
+      eyebrow: 'Smart trading journal with AI',
+      titleLead: 'Track, analyze,',
+      titleAccent: 'improve',
+      titleTail: '— every trade.',
+      subtitle: 'TRADEIX analyzes your charts with AI, collects your stats, and helps you see what actually works without spreadsheets or mental math.',
+      primary: 'Start free',
+      secondary: 'How it works',
+      portfolioValue: 'Current portfolio value',
+    },
+    featuresHeader: {
+      eyebrow: 'What is inside',
+      title: 'Tools that help you repeat what works',
+      subtitle: 'Trade capture, analysis, statistics, and result gallery in one focused workspace.',
+    },
+    features: [
+      { icon: 'auto_awesome', title: 'Advanced AI analysis', desc: 'Upload a chart screenshot and AI detects the symbol, entry, exit, and SL automatically.' },
+      { icon: 'monitoring', title: 'Deep statistics', desc: 'Win rate, Profit Factor, Drawdown, equity curve, and monthly P&L calendar.' },
+      { icon: 'psychology', title: 'Strategy tracking', desc: 'Build strategies, tag trades, and track each setup separately.' },
+      { icon: 'cases', title: 'Multiple portfolios', desc: 'Manage up to 3 active PRO portfolios: forex, stocks, crypto, futures, and more.' },
+      { icon: 'event_available', title: 'Day-of-week analysis', desc: 'See which trading days perform best and shape a smarter routine.' },
+      { icon: 'photo_library', title: 'Proof gallery', desc: 'Keep payout screenshots, certificates, chart screenshots, and access details in one place.' },
+    ],
+    ai: {
+      eyebrow: 'AI Engine',
+      titleLead: 'AI that ',
+      titleAccent: 'reads charts',
+      titleTail: '— no more manual journal.',
+      subtitle: 'Powered by Anthropic Claude vision. One screenshot, six data points, under three seconds, zero typing.',
+      detected: 'Automatically detected',
+      fields: [
+        ['Symbol', 'EUR/USD'],
+        ['Entry price', '1.0823'],
+        ['Exit price', '1.0867'],
+        ['Stop Loss', '1.0795'],
+        ['Direction', 'LONG'],
+        ['R / R ratio', '1 : 1.6'],
+      ],
+      stats: [
+        ['< 3s', 'Analysis time'],
+        ['6+', 'Data points'],
+        ['100%', 'Editable'],
+      ],
+      steps: [
+        { icon: 'photo_camera', title: 'Capture the chart' },
+        { icon: 'auto_awesome', title: 'AI analyzes it' },
+        { icon: 'show_chart', title: 'Track and improve' },
+      ],
+    },
+    pricing: {
+      eyebrow: 'Pricing',
+      title: 'Simple plans. No middle tiers.',
+      subtitle: 'Start free. Upgrade to PRO when you want every tool unlocked.',
+      popular: 'Recommended',
+      free: {
+        name: 'Free',
+        price: '$0',
+        period: 'forever',
+        cta: 'Start free',
+        desc: 'For building your first routine',
+        perks: ['One trading portfolio', 'Up to 20 trades', 'Basic dashboard', 'Manual trade entry'],
+        locked: ['AI chart analysis', 'Advanced statistics page', 'Strategies', 'Portfolio archive'],
+      },
+      pro: {
+        name: 'PRO',
+        price: '$20',
+        period: 'per month',
+        cta: 'Upgrade now',
+        desc: 'Everything unlocked. No limits.',
+        perks: ['Up to 3 active portfolios', 'Unlimited trades', 'Full AI chart analysis', 'Advanced statistics page', 'Strategy system', 'Full portfolio archive', 'Proof gallery', 'PRO support'],
+      },
+    },
+    faqHeader: { eyebrow: 'FAQ', title: 'Everything you need to know' },
+    faqs: [
+      ['What is TRADEIX?', 'A smart trading journal that analyzes charts with AI, shows advanced statistics, and helps you understand what is working and what is not.'],
+      ['How does the AI work?', 'Anthropic vision models detect the symbol, entry, exit, and Stop Loss from a chart screenshot. You can always edit the data before saving.'],
+      ['Is my data secure?', 'Yes. Your data is stored in Supabase with encryption and user-level permissions. Only you can access your trades.'],
+      ['Can I cancel anytime?', 'Yes. You can cancel from account settings, and PRO stays active until the end of the current billing period.'],
+      ['Is it good for beginners?', 'Absolutely. The interface is intentionally clean: you upload trades and TRADEIX handles the statistics.'],
+      ['Can I use it on mobile?', 'Yes. Dashboard, trade entry, and chart analysis all work on mobile.'],
+    ],
+    footer: 'All rights reserved.',
   },
-}
+} as const
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
+  const { language } = useApp()
+  const copy = COPY[language]
+  const isHe = language === 'he'
 
-  // Sticky-nav background appears once user scrolls past the hero band
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30)
     onScroll()
@@ -85,640 +205,863 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Reveal-on-scroll for any element with data-animate
   useEffect(() => {
     const targets = document.querySelectorAll('[data-animate]')
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          ;(e.target as HTMLElement).dataset.visible = 'true'
-          io.unobserve(e.target)
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          ;(entry.target as HTMLElement).dataset.visible = 'true'
+          io.unobserve(entry.target)
         }
       })
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
-    targets.forEach(t => io.observe(t))
+    targets.forEach(target => io.observe(target))
     return () => io.disconnect()
-  }, [])
+  }, [language])
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
-    if (el) {
-      const navHeight = 70
-      const top = el.getBoundingClientRect().top + window.scrollY - navHeight
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
+    if (!el) return
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' })
   }
 
-  // All login CTAs send the user to the dedicated /auth/login page,
-  // which handles the Google OAuth handshake.
   const goLogin = () => router.push('/auth/login')
 
   return (
-    <div dir="rtl" style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Animated grid background */}
-      <div style={{
-        position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
-        background: 'var(--bg)',
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-        animation: 'gridDrift 90s linear infinite',
-      }} />
+    <div dir={isHe ? 'rtl' : 'ltr'} style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, Manrope, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
+      <div className="lp-grid-bg" />
+      <div className="lp-glow lp-glow-a" />
+      <div className="lp-glow lp-glow-b" />
 
-      {/* Two soft green glows */}
-      <div style={{ position: 'fixed', top: '10%', insetInlineEnd: '15%', width: '460px', height: '460px', borderRadius: '50%', background: 'rgba(15,141,99,0.10)', filter: 'blur(110px)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'fixed', top: '50%', insetInlineStart: '12%', width: '380px', height: '380px', borderRadius: '50%', background: 'rgba(15,141,99,0.07)', filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0 }} />
-
-      {/* ── NAV ── */}
-      <nav style={{
-        position: 'fixed', top: 0, insetInlineStart: 0, insetInlineEnd: 0,
-        height: '70px', zIndex: 50,
-        background: scrolled ? 'rgba(11,13,19,0.85)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(14px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-        transition: 'all 0.25s ease',
-      }}>
-        <div style={{
-          maxWidth: '1280px', margin: '0 auto', height: '100%',
-          padding: '0 32px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }} className="lp-nav-inner">
-          {/* Logo */}
-          <a href="#hero" onClick={e => { e.preventDefault(); scrollTo('hero') }} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <svg width="34" height="34" viewBox="0 0 38 38" fill="none">
-              <rect width="38" height="38" rx="8" fill="#0f8d63"/>
-              <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
-              <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
-              <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
-              <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)"/>
-              <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
-              <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
-            </svg>
-            <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '21px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
-              Trade<span style={{ color: '#0f8d63' }}>IX</span>
-            </span>
+      <nav className={`lp-nav ${scrolled ? 'lp-nav-scrolled' : ''}`}>
+        <div className="lp-nav-inner">
+          <a href="#hero" onClick={e => { e.preventDefault(); scrollTo('hero') }} className="lp-logo">
+            <LogoMark size={34} />
+            <span>Trade<span>IX</span></span>
           </a>
 
-          {/* Section links */}
-          <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {NAV_SECTIONS.map(s => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                onClick={e => { e.preventDefault(); scrollTo(s.id) }}
-                style={{
-                  padding: '8px 14px', borderRadius: '10px',
-                  color: 'var(--text2)', textDecoration: 'none',
-                  fontSize: '14px', fontWeight: '600',
-                  transition: 'color 0.15s, background 0.15s',
-                }}
-                onMouseOver={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-                onMouseOut={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent' }}
-              >
-                {s.label}
+          <div className="lp-nav-links">
+            {copy.nav.map(item => (
+              <a key={item.id} href={`#${item.id}`} onClick={e => { e.preventDefault(); scrollTo(item.id) }}>
+                {item.label}
               </a>
             ))}
           </div>
 
-          {/* CTA */}
-          <button
-            onClick={goLogin}
-            
-            className="lp-nav-cta"
-            style={{
-              background: '#0f8d63', color: '#fff', border: 'none',
-              borderRadius: '10px', padding: '9px 22px',
-              fontSize: '14px', fontWeight: '700', cursor: 'pointer',
-              fontFamily: 'Heebo, sans-serif',
-              boxShadow: '0 4px 16px rgba(15,141,99,0.35)',
-              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-            }}
-            onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,141,99,0.5)' }}
-            onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,141,99,0.35)' }}
-          >
-            התחבר
+          <button onClick={goLogin} className="lp-primary small">
+            {copy.hero.login}
           </button>
         </div>
       </nav>
 
-      <main style={{ position: 'relative', zIndex: 1 }}>
-        {/* ── HERO ── */}
-        <section id="hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 24px 80px' }}>
-          <div style={{ maxWidth: '900px', width: '100%', textAlign: 'center' }}>
-            {/* Eyebrow chip */}
-            <div data-animate style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 14px', borderRadius: '999px',
-              background: 'rgba(15,141,99,0.08)',
-              border: '1px solid rgba(15,141,99,0.25)',
-              fontSize: '12px', fontWeight: '700', color: '#0f8d63',
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-              marginBottom: '24px',
-            }}>
+      <main>
+        <section id="hero" className="lp-hero">
+          <div className="lp-hero-inner">
+            <div data-animate className="lp-chip">
               <Icon name="auto_awesome" size={14} color="#0f8d63" />
-              יומן מסחר חכם עם AI
+              {copy.hero.eyebrow}
             </div>
 
-            <h1 data-animate className="lp-hero-title" style={{
-              fontSize: '64px', fontWeight: '900', lineHeight: 1.05,
-              letterSpacing: '-0.03em', margin: '0 0 22px',
-              color: 'var(--text)',
-            }}>
-              עקוב, נתח,{' '}
-              <span style={{
-                background: 'linear-gradient(90deg, #0f8d63 0%, #14b886 50%, #0f8d63 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>השתפר</span>
-              {' '}— בכל עסקה.
+            <h1 data-animate>
+              {copy.hero.titleLead}{' '}
+              <span>{copy.hero.titleAccent}</span>
+              {' '}{copy.hero.titleTail}
             </h1>
 
-            <p data-animate className="lp-hero-sub" style={{
-              fontSize: '19px', color: 'var(--text2)',
-              maxWidth: '620px', margin: '0 auto 36px',
-              lineHeight: 1.6, fontWeight: '500',
-            }}>
-              TRADEIX מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, וגורם לך לראות מה באמת עובד — בלי טבלאות אקסל ובלי חשבונות-בראש.
-            </p>
+            <p data-animate className="lp-subtitle">{copy.hero.subtitle}</p>
 
-            <div data-animate style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '40px' }}>
-              <button
-                onClick={goLogin}
-                
-                style={{
-                  background: '#0f8d63', color: '#fff', border: 'none',
-                  borderRadius: '12px', padding: '15px 32px',
-                  fontSize: '16px', fontWeight: '800', cursor: 'pointer',
-                  fontFamily: 'Heebo, sans-serif',
-                  display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  boxShadow: '0 8px 32px rgba(15,141,99,0.45)',
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                }}
-                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(15,141,99,0.6)' }}
-                onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(15,141,99,0.45)' }}
-              >
+            <div data-animate className="lp-cta-row">
+              <button onClick={goLogin} className="lp-primary">
                 <Icon name="rocket_launch" size={18} color="#fff" />
-                התחל בחינם
+                {copy.hero.primary}
               </button>
-              <button
-                onClick={() => scrollTo('how')}
-                style={{
-                  background: 'transparent', color: 'var(--text)',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  borderRadius: '12px', padding: '15px 28px',
-                  fontSize: '16px', fontWeight: '700', cursor: 'pointer',
-                  fontFamily: 'Heebo, sans-serif',
-                  transition: 'background 0.15s ease, border-color 0.15s ease',
-                }}
-                onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)' }}
-                onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)' }}
-              >
-                איך זה עובד ←
+              <button onClick={() => scrollTo('how')} className="lp-secondary">
+                {copy.hero.secondary}
+                <Icon name={isHe ? 'arrow_back' : 'arrow_forward'} size={17} color="currentColor" />
               </button>
             </div>
 
-            {/* Floating preview mock */}
-            <div data-animate style={{ marginTop: '20px', position: 'relative' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '20px',
-                padding: '24px',
-                boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
-                maxWidth: '760px', margin: '0 auto',
-                position: 'relative', overflow: 'hidden',
-              }}>
-                <div style={{ position: 'absolute', top: '-100px', insetInlineEnd: '-80px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(15,141,99,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative' }}>
-                  <div>
-                    <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>שווי תיק נוכחי</div>
-                    <div dir="ltr" style={{ fontSize: '38px', fontWeight: '900', color: '#22c55e', letterSpacing: '-0.02em', lineHeight: 1 }}>$254,890</div>
-                  </div>
-                  <div style={{ padding: '8px 16px', borderRadius: '10px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', fontSize: '14px', fontWeight: '800' }} dir="ltr">+12.4%</div>
+            <div data-animate className="lp-preview">
+              <div className="lp-preview-head">
+                <div>
+                  <div className="lp-kicker">{copy.hero.portfolioValue}</div>
+                  <div dir="ltr" className="lp-money">$254,890</div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                  {[
-                    { label: 'WIN RATE', value: '67%', color: '#0f8d63' },
-                    { label: 'PROFIT FACTOR', value: '2.34', color: '#0f8d63' },
-                    { label: 'TRADES', value: '142', color: 'var(--text)' },
-                  ].map(s => (
-                    <div key={s.label} style={{ background: 'var(--bg2)', borderRadius: '12px', padding: '14px 16px', border: '1px solid var(--border)' }}>
-                      <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{s.label}</div>
-                      <div style={{ fontSize: '22px', fontWeight: '800', color: s.color }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
+                <div dir="ltr" className="lp-growth">+12.4%</div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FEATURES ── */}
-        <section id="features" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
-            <div data-animate style={{ textAlign: 'center', marginBottom: '60px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>
-                מה יש בפנים
-              </div>
-              <h2 className="lp-h2" style={{ fontSize: '44px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 14px', lineHeight: 1.1 }}>
-                כלים שגורמים לך לחזור על מה שעובד
-              </h2>
-              <p style={{ fontSize: '17px', color: 'var(--text2)', maxWidth: '560px', margin: '0 auto', lineHeight: 1.6 }}>
-                הכל באתר אחד — מקליטה, ניתוח, סטטיסטיקה, ועד גלריית תוצאות.
-              </p>
-            </div>
-
-            <div className="lp-feature-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px' }}>
-              {FEATURES.map((f, i) => (
-                <div key={i} data-animate className="lp-feature-card" style={{
-                  background: 'var(--bg2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '18px',
-                  padding: '28px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
-                  cursor: 'default',
-                }}
-                  onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'rgba(15,141,99,0.45)'; e.currentTarget.style.boxShadow = '0 18px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(15,141,99,0.15)' }}
-                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none' }}
-                >
-                  <div style={{ position: 'absolute', top: '-30px', insetInlineEnd: '-30px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(15,141,99,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                  <div style={{
-                    width: '52px', height: '52px', borderRadius: '14px',
-                    background: 'rgba(15,141,99,0.12)',
-                    border: '1px solid rgba(15,141,99,0.3)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginBottom: '18px', position: 'relative',
-                  }}>
-                    <Icon name={f.icon} size={24} color="#0f8d63" />
-                  </div>
-                  <div style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text)', marginBottom: '8px', position: 'relative' }}>{f.title}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.6, position: 'relative' }}>{f.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── AI ENGINE / HOW IT WORKS ── */}
-        <section id="how" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
-            <div data-animate style={{ textAlign: 'center', marginBottom: '50px' }}>
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: '9px',
-                padding: '6px 14px', borderRadius: '999px',
-                background: 'rgba(15,141,99,0.10)',
-                border: '1px solid rgba(15,141,99,0.32)',
-                fontSize: '11px', fontWeight: '900', color: '#0f8d63',
-                letterSpacing: '0.18em', textTransform: 'uppercase',
-                marginBottom: '18px',
-              }}>
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#0f8d63', boxShadow: '0 0 10px #0f8d63', animation: 'lpPulseDot 1.8s ease-in-out infinite' }} />
-                AI Engine
-              </div>
-              <h2 className="lp-h2" style={{ fontSize: '46px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 16px', lineHeight: 1.05 }}>
-                AI ש<span style={{ background: 'linear-gradient(90deg, #0f8d63 0%, #14b886 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>קורא גרפים</span> — לא עוד יומן ידני.
-              </h2>
-              <p style={{ fontSize: '17px', color: 'var(--text2)', maxWidth: '620px', margin: '0 auto', lineHeight: 1.65 }}>
-                מבוסס על מודל הראייה של Anthropic Claude. מצילום בודד — שש נקודות נתונים, פחות משלוש שניות, אפס הקלדה.
-              </p>
-            </div>
-
-            {/* Showcase card */}
-            <div data-animate className="ai-showcase" style={{
-              background: 'linear-gradient(135deg, var(--bg2) 0%, rgba(15,141,99,0.05) 100%)',
-              border: '1px solid rgba(15,141,99,0.32)',
-              borderRadius: '24px',
-              padding: '32px',
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 28px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}>
-              <div style={{ position: 'absolute', top: '-120px', insetInlineEnd: '-90px', width: '420px', height: '420px', background: 'radial-gradient(circle, rgba(15,141,99,0.16) 0%, transparent 65%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: '-100px', insetInlineStart: '-60px', width: '320px', height: '320px', background: 'radial-gradient(circle, rgba(15,141,99,0.10) 0%, transparent 65%)', pointerEvents: 'none' }} />
-
-              <div className="ai-showcase-grid" style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '28px', alignItems: 'stretch', position: 'relative' }}>
-                {/* Chart mock — forced LTR so the chart axes/labels stay normal */}
-                <div dir="ltr" className="ai-chart-mock" style={{
-                  background: '#0a0c12',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: '16px',
-                  height: '340px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
-                  backgroundSize: '28px 28px',
-                }}>
-                  {/* Symbol header */}
-                  <div style={{ position: 'absolute', top: '14px', left: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--text)', letterSpacing: '0.04em' }}>EUR/USD</div>
-                    <div style={{ fontSize: '10px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', padding: '2px 7px', borderRadius: '6px', letterSpacing: '0.06em' }}>LONG</div>
-                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text3)' }}>1H</div>
-                  </div>
-
-                  {/* Price line */}
-                  <svg viewBox="0 0 400 240" style={{ position: 'absolute', inset: '44px 16px 16px', width: 'calc(100% - 32px)', height: 'calc(100% - 60px)' }} preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="lpPriceGlow" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(34,197,94,0.32)" />
-                        <stop offset="100%" stopColor="rgba(34,197,94,0)" />
-                      </linearGradient>
-                    </defs>
-                    {/* Reference lines */}
-                    <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(34,197,94,0.45)" strokeWidth="1" strokeDasharray="4 4" />
-                    <line x1="0" y1="140" x2="400" y2="140" stroke="rgba(255,255,255,0.32)" strokeWidth="1" strokeDasharray="4 4" />
-                    <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(239,68,68,0.45)" strokeWidth="1" strokeDasharray="4 4" />
-                    {/* Glow under path */}
-                    <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60 L 400 240 L 0 240 Z" fill="url(#lpPriceGlow)" />
-                    {/* Price path */}
-                    <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60" fill="none" stroke="#22c55e" strokeWidth="2" />
-                    {/* Entry & exit dots */}
-                    <circle cx="6" cy="140" r="5" fill="var(--text)" stroke="#0a0c12" strokeWidth="2" />
-                    <circle cx="394" cy="60" r="5" fill="#22c55e" stroke="#0a0c12" strokeWidth="2" />
-                  </svg>
-
-                  {/* Floating price labels (right side of chart) */}
-                  <div style={{ position: 'absolute', top: '78px', right: '18px', fontSize: '10px', fontWeight: '800', color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', padding: '3px 8px', borderRadius: '6px' }}>EXIT 1.0867</div>
-                  <div style={{ position: 'absolute', top: '160px', right: '18px', fontSize: '10px', fontWeight: '800', color: 'var(--text)', background: 'var(--bg3)', border: '1px solid var(--border2)', padding: '3px 8px', borderRadius: '6px' }}>ENTRY 1.0823</div>
-                  <div style={{ position: 'absolute', top: '218px', right: '18px', fontSize: '10px', fontWeight: '800', color: '#ef4444', background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.35)', padding: '3px 8px', borderRadius: '6px' }}>SL 1.0795</div>
-
-                  {/* AI scan overlay */}
-                  <div style={{ position: 'absolute', insetInlineStart: '16px', insetInlineEnd: '16px', top: '44px', height: 'calc(100% - 60px)', overflow: 'hidden', pointerEvents: 'none' }}>
-                    <div className="ai-scan-line" style={{
-                      position: 'absolute', insetInlineStart: 0, insetInlineEnd: 0,
-                      height: '50px',
-                      background: 'linear-gradient(180deg, transparent 0%, rgba(15,141,99,0.22) 50%, transparent 100%)',
-                      borderTop: '1px solid rgba(15,141,99,0.55)',
-                      borderBottom: '1px solid rgba(15,141,99,0.55)',
-                    }} />
-                  </div>
-
-                  {/* Bottom-left analysing tag */}
-                  <div style={{ position: 'absolute', bottom: '14px', left: '16px', display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '999px', background: 'rgba(15,141,99,0.14)', border: '1px solid rgba(15,141,99,0.35)' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0f8d63', boxShadow: '0 0 8px #0f8d63', animation: 'lpPulseDot 1.4s ease-in-out infinite' }} />
-                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Analyzing</span>
-                  </div>
-                </div>
-
-                {/* Extracted fields */}
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-                      <Icon name="auto_awesome" size={15} color="#0f8d63" />
-                      <span style={{ fontSize: '11px', fontWeight: '900', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase' }}>זוהה אוטומטית</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {[
-                        { label: 'שם הצמד',     value: 'EUR/USD' },
-                        { label: 'מחיר כניסה',  value: '1.0823' },
-                        { label: 'מחיר יציאה',  value: '1.0867' },
-                        { label: 'Stop Loss',  value: '1.0795' },
-                        { label: 'כיוון',       value: 'LONG'    },
-                        { label: 'יחס R / R',  value: '1 : 1.6' },
-                      ].map((f, i) => (
-                        <div key={i} className="ai-field-row" style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(15,141,99,0.18)',
-                          borderRadius: '10px', padding: '10px 14px',
-                          animationDelay: `${0.15 + i * 0.07}s`,
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(15,141,99,0.20)', border: '1px solid rgba(15,141,99,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              <Icon name="check" size={12} color="#0f8d63" />
-                            </div>
-                            <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text2)' }}>{f.label}</span>
-                          </div>
-                          <span dir="ltr" style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text)', fontFamily: 'Manrope, Heebo, sans-serif', letterSpacing: '0.01em' }}>{f.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom stats row */}
-              <div className="ai-stats-row" style={{
-                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px',
-                marginTop: '28px', paddingTop: '24px',
-                borderTop: '1px solid rgba(15,141,99,0.18)',
-                position: 'relative',
-              }}>
+              <div className="lp-preview-stats">
                 {[
-                  { value: '< 3s',   label: 'זמן ניתוח' },
-                  { value: '6+',     label: 'נקודות נתונים' },
-                  { value: '100%',   label: 'ניתן לעריכה' },
-                ].map((s, i) => (
-                  <div key={i} style={{ textAlign: 'center' }}>
-                    <div dir="ltr" style={{ fontSize: '28px', fontWeight: '900', color: '#0f8d63', letterSpacing: '-0.02em', marginBottom: '4px', lineHeight: 1, fontFamily: 'Manrope, Heebo, sans-serif' }}>{s.value}</div>
-                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>{s.label}</div>
+                  ['WIN RATE', '67%', '#0f8d63'],
+                  ['PROFIT FACTOR', '2.34', '#0f8d63'],
+                  ['TRADES', '142', 'var(--text)'],
+                ].map(([label, value, color]) => (
+                  <div key={label}>
+                    <small>{label}</small>
+                    <strong style={{ color }}>{value}</strong>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Tiny step ribbon — keeps the original 3-step idea but ribbon-ed */}
-            <div data-animate className="ai-ribbon" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              marginTop: '32px', flexWrap: 'wrap',
-            }}>
-              {STEPS.map((s, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: '9px',
-                  padding: '9px 16px', borderRadius: '999px',
-                  background: 'var(--bg2)',
-                  border: '1px solid var(--border)',
-                }}>
-                  <span style={{ fontSize: '10px', fontWeight: '900', color: '#0f8d63', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.35)', padding: '1px 7px', borderRadius: '999px' }}>0{i + 1}</span>
-                  <Icon name={s.icon} size={14} color="var(--text2)" />
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>{s.title}</span>
+        <section id="features" className="lp-section">
+          <SectionTitle eyebrow={copy.featuresHeader.eyebrow} title={copy.featuresHeader.title} subtitle={copy.featuresHeader.subtitle} />
+          <div className="lp-feature-grid">
+            {copy.features.map((feature, index) => (
+              <article key={index} data-animate className="lp-card">
+                <div className="lp-card-icon">
+                  <Icon name={feature.icon} size={24} color="#0f8d63" />
+                </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="how" className="lp-section">
+          <div data-animate className="lp-ai-head">
+            <div className="lp-chip pulse"><span />{copy.ai.eyebrow}</div>
+            <h2>{copy.ai.titleLead}<span>{copy.ai.titleAccent}</span> {copy.ai.titleTail}</h2>
+            <p>{copy.ai.subtitle}</p>
+          </div>
+
+          <div data-animate className="lp-ai-card">
+            <div className="lp-chart" dir="ltr">
+              <div className="lp-chart-title">
+                <strong>EUR/USD</strong>
+                <span>LONG</span>
+                <small>1H</small>
+              </div>
+              <svg viewBox="0 0 400 240" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="lpPriceGlow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="rgba(34,197,94,0.32)" />
+                    <stop offset="100%" stopColor="rgba(34,197,94,0)" />
+                  </linearGradient>
+                </defs>
+                <line x1="0" y1="60" x2="400" y2="60" />
+                <line x1="0" y1="140" x2="400" y2="140" />
+                <line x1="0" y1="200" x2="400" y2="200" />
+                <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60 L 400 240 L 0 240 Z" fill="url(#lpPriceGlow)" />
+                <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60" fill="none" />
+                <circle cx="6" cy="140" r="5" />
+                <circle cx="394" cy="60" r="5" />
+              </svg>
+              <div className="lp-scan" />
+              <div className="lp-analyzing"><span />Analyzing</div>
+            </div>
+
+            <div className="lp-fields">
+              <div className="lp-detected">
+                <Icon name="auto_awesome" size={15} color="#0f8d63" />
+                {copy.ai.detected}
+              </div>
+              {copy.ai.fields.map(([label, value], index) => (
+                <div key={label} className="lp-field" style={{ animationDelay: `${0.12 + index * 0.06}s` }}>
+                  <span><Icon name="check" size={12} color="#0f8d63" />{label}</span>
+                  <strong dir="ltr">{value}</strong>
+                </div>
+              ))}
+            </div>
+
+            <div className="lp-ai-stats">
+              {copy.ai.stats.map(([value, label]) => (
+                <div key={label}>
+                  <strong dir="ltr">{value}</strong>
+                  <span>{label}</span>
                 </div>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* ── PRICING ── */}
-        <section id="pricing" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: '960px', margin: '0 auto' }}>
-            <div data-animate style={{ textAlign: 'center', marginBottom: '60px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>מחירים</div>
-              <h2 className="lp-h2" style={{ fontSize: '44px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 14px', lineHeight: 1.1 }}>תכנית פשוטה. בלי שלבי ביניים.</h2>
-              <p style={{ fontSize: '17px', color: 'var(--text2)', maxWidth: '520px', margin: '0 auto', lineHeight: 1.6 }}>תתחיל בחינם. תשדרג ל-PRO ברגע שתרצה את כל הכלים.</p>
-            </div>
-
-            <div className="lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-              {/* FREE */}
-              <div data-animate style={{
-                background: 'var(--bg2)',
-                border: '1px solid var(--border)',
-                borderRadius: '20px',
-                padding: '32px',
-                position: 'relative',
-              }}>
-                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text3)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>{PRICING.free.name}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '6px' }}>
-                  <div dir="ltr" style={{ fontSize: '46px', fontWeight: '900', letterSpacing: '-0.02em', color: 'var(--text)', lineHeight: 1 }}>{PRICING.free.price}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600' }}>{PRICING.free.period}</div>
-                </div>
-                <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>בשביל להתחיל לבנות שיגרה</div>
-                <button onClick={goLogin}  style={{
-                  width: '100%', background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text)',
-                  borderRadius: '12px', padding: '13px',
-                  fontSize: '14px', fontWeight: '800', cursor: 'pointer',
-                  fontFamily: 'Heebo, sans-serif',
-                  marginBottom: '24px',
-                  transition: 'background 0.15s ease',
-                }}
-                  onMouseOver={e => e.currentTarget.style.background = 'var(--bg4)'}
-                  onMouseOut={e => e.currentTarget.style.background = 'var(--bg3)'}
-                >
-                  {PRICING.free.cta}
-                </button>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {PRICING.free.perks.map((p, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text2)', fontWeight: '500' }}>
-                      <Icon name="check" size={16} color="#0f8d63" />
-                      {p}
-                    </div>
-                  ))}
-                  {PRICING.free.locked.map((p, i) => (
-                    <div key={'l' + i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text3)', fontWeight: '500', opacity: 0.6 }}>
-                      <Icon name="lock" size={14} color="var(--text3)" />
-                      {p}
-                    </div>
-                  ))}
-                </div>
+          <div data-animate className="lp-steps">
+            {copy.ai.steps.map((step, index) => (
+              <div key={step.title}>
+                <span>0{index + 1}</span>
+                <Icon name={step.icon} size={14} color="var(--text2)" />
+                {step.title}
               </div>
-
-              {/* PRO */}
-              <div data-animate style={{
-                background: 'linear-gradient(180deg, rgba(15,141,99,0.08) 0%, var(--bg2) 100%)',
-                border: '1px solid rgba(15,141,99,0.45)',
-                borderRadius: '20px',
-                padding: '32px',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 24px 60px rgba(15,141,99,0.18), 0 0 0 1px rgba(15,141,99,0.2)',
-              }}>
-                <div style={{ position: 'absolute', top: '-50px', insetInlineEnd: '-40px', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(15,141,99,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', top: '14px', insetInlineEnd: '14px', fontSize: '10px', fontWeight: '900', letterSpacing: '0.1em', color: '#0f8d63', background: 'rgba(15,141,99,0.18)', border: '1px solid rgba(15,141,99,0.45)', padding: '4px 9px', borderRadius: '6px', textTransform: 'uppercase' }}>הכי פופולרי</div>
-                <div style={{ fontSize: '13px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>{PRICING.pro.name}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '6px' }}>
-                  <div dir="ltr" style={{ fontSize: '46px', fontWeight: '900', letterSpacing: '-0.02em', color: 'var(--text)', lineHeight: 1 }}>{PRICING.pro.price}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: '600' }}>{PRICING.pro.period}</div>
-                </div>
-                <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>הכל פתוח. בלי הגבלות.</div>
-                <button onClick={goLogin}  style={{
-                  width: '100%', background: '#0f8d63', border: 'none', color: '#fff',
-                  borderRadius: '12px', padding: '13px',
-                  fontSize: '14px', fontWeight: '800', cursor: 'pointer',
-                  fontFamily: 'Heebo, sans-serif',
-                  marginBottom: '24px',
-                  boxShadow: '0 8px 24px rgba(15,141,99,0.4)',
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                }}
-                  onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(15,141,99,0.55)' }}
-                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(15,141,99,0.4)' }}
-                >
-                  {PRICING.pro.cta}
-                </button>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {PRICING.pro.perks.map((p, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text)', fontWeight: '500' }}>
-                      <Icon name="check_circle" size={16} color="#0f8d63" />
-                      {p}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* ── FAQ ── */}
-        <section id="faq" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: '780px', margin: '0 auto' }}>
-            <div data-animate style={{ textAlign: 'center', marginBottom: '50px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>שאלות נפוצות</div>
-              <h2 className="lp-h2" style={{ fontSize: '44px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 14px', lineHeight: 1.1 }}>הכל מה שצריך לדעת</h2>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {FAQS.map((f, i) => {
-                const open = openFaq === i
-                return (
-                  <div key={i} data-animate style={{
-                    background: 'var(--bg2)',
-                    border: `1px solid ${open ? 'rgba(15,141,99,0.35)' : 'var(--border)'}`,
-                    borderRadius: '14px',
-                    overflow: 'hidden',
-                    transition: 'border-color 0.2s ease',
-                  }}>
-                    <button
-                      onClick={() => setOpenFaq(open ? null : i)}
-                      style={{
-                        width: '100%', textAlign: 'inherit',
-                        background: 'transparent', border: 'none', cursor: 'pointer',
-                        padding: '20px 22px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
-                        fontFamily: 'Heebo, sans-serif',
-                      }}
-                    >
-                      <span style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text)' }}>{f.q}</span>
-                      <span style={{
-                        width: '28px', height: '28px', borderRadius: '8px',
-                        background: open ? 'rgba(15,141,99,0.15)' : 'var(--bg3)',
-                        border: '1px solid ' + (open ? 'rgba(15,141,99,0.3)' : 'var(--border)'),
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0,
-                        transition: 'transform 0.25s ease, background 0.2s ease',
-                        transform: open ? 'rotate(180deg)' : 'rotate(0)',
-                      }}>
-                        <Icon name="expand_more" size={16} color={open ? '#0f8d63' : 'var(--text2)'} />
-                      </span>
-                    </button>
-                    <div style={{
-                      maxHeight: open ? '300px' : '0',
-                      transition: 'max-height 0.3s ease',
-                      overflow: 'hidden',
-                    }}>
-                      <div style={{ padding: '0 22px 20px', fontSize: '14px', color: 'var(--text2)', lineHeight: 1.7 }}>
-                        {f.a}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+        <section id="pricing" className="lp-section narrow">
+          <SectionTitle eyebrow={copy.pricing.eyebrow} title={copy.pricing.title} subtitle={copy.pricing.subtitle} />
+          <div className="lp-pricing-grid">
+            <PlanCard plan={copy.pricing.free} isPro={false} onClick={goLogin} />
+            <PlanCard plan={copy.pricing.pro} isPro popular={copy.pricing.popular} onClick={goLogin} />
           </div>
         </section>
 
-        {/* ── FOOTER ── */}
-        <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 24px', position: 'relative' }}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <svg width="26" height="26" viewBox="0 0 38 38" fill="none">
-                <rect width="38" height="38" rx="8" fill="#0f8d63"/>
-                <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
-                <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
-                <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
-                <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)"/>
-                <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
-                <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
-              </svg>
-              <span style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '17px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
-                Trade<span style={{ color: '#0f8d63' }}>IX</span>
-              </span>
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '500' }}>
-              © {new Date().getFullYear()} TRADEIX. כל הזכויות שמורות.
-            </div>
+        <section id="faq" className="lp-section faq">
+          <SectionTitle eyebrow={copy.faqHeader.eyebrow} title={copy.faqHeader.title} />
+          <div className="lp-faq-list">
+            {copy.faqs.map(([question, answer], index) => {
+              const open = openFaq === index
+              return (
+                <article key={question} data-animate className={`lp-faq ${open ? 'open' : ''}`}>
+                  <button onClick={() => setOpenFaq(open ? null : index)}>
+                    <span>{question}</span>
+                    <Icon name="expand_more" size={16} color={open ? '#0f8d63' : 'var(--text2)'} />
+                  </button>
+                  <div><p>{answer}</p></div>
+                </article>
+              )
+            })}
           </div>
+        </section>
+
+        <footer className="lp-footer">
+          <div>
+            <LogoMark size={26} />
+            <strong>Trade<span>IX</span></strong>
+          </div>
+          <p>© {new Date().getFullYear()} TRADEIX. {copy.footer}</p>
         </footer>
       </main>
 
       <style jsx global>{`
+        .lp-grid-bg {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background: var(--bg);
+          background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+          background-size: 50px 50px;
+          animation: gridDrift 90s linear infinite;
+        }
+        .lp-glow {
+          position: fixed;
+          border-radius: 50%;
+          background: rgba(15,141,99,0.1);
+          filter: blur(110px);
+          pointer-events: none;
+          z-index: 0;
+        }
+        .lp-glow-a { top: 10%; inset-inline-end: 15%; width: 460px; height: 460px; }
+        .lp-glow-b { top: 50%; inset-inline-start: 12%; width: 380px; height: 380px; opacity: 0.7; }
+        .lp-nav {
+          position: fixed;
+          top: 0;
+          inset-inline: 0;
+          height: 70px;
+          z-index: 50;
+          transition: all 0.25s ease;
+          border-bottom: 1px solid transparent;
+        }
+        .lp-nav-scrolled {
+          background: rgba(11,13,19,0.85);
+          backdrop-filter: blur(14px);
+          border-bottom-color: rgba(255,255,255,0.06);
+        }
+        .lp-nav-inner {
+          max-width: 1280px;
+          height: 100%;
+          margin: 0 auto;
+          padding: 0 32px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+        }
+        .lp-logo, .lp-footer > div {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--text);
+          text-decoration: none;
+          font-family: Manrope, Heebo, sans-serif;
+          font-weight: 800;
+          letter-spacing: 0;
+        }
+        .lp-logo > span { font-size: 21px; }
+        .lp-logo span span, .lp-footer span { color: #0f8d63; }
+        .lp-nav-links {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .lp-nav-links a {
+          padding: 8px 14px;
+          border-radius: 10px;
+          color: var(--text2);
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 700;
+          transition: color 0.15s, background 0.15s;
+        }
+        .lp-nav-links a:hover {
+          color: var(--text);
+          background: rgba(255,255,255,0.04);
+        }
+        main {
+          position: relative;
+          z-index: 1;
+        }
+        .lp-hero {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 120px 24px 80px;
+        }
+        .lp-hero-inner {
+          width: 100%;
+          max-width: 900px;
+          text-align: center;
+        }
+        .lp-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          border-radius: 999px;
+          background: rgba(15,141,99,0.08);
+          border: 1px solid rgba(15,141,99,0.25);
+          font-size: 12px;
+          font-weight: 800;
+          color: #0f8d63;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+        }
+        .lp-hero h1 {
+          margin: 0 0 22px;
+          color: var(--text);
+          font-size: 64px;
+          font-weight: 900;
+          line-height: 1.05;
+          letter-spacing: 0;
+        }
+        .lp-hero h1 span, .lp-ai-head h2 span {
+          background: linear-gradient(90deg, #0f8d63 0%, #14b886 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .lp-subtitle {
+          max-width: 640px;
+          margin: 0 auto 36px;
+          color: var(--text2);
+          font-size: 19px;
+          font-weight: 500;
+          line-height: 1.6;
+        }
+        .lp-cta-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-bottom: 40px;
+        }
+        .lp-primary, .lp-secondary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          border-radius: 12px;
+          padding: 15px 32px;
+          font-family: Heebo, Manrope, sans-serif;
+          font-size: 16px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .lp-primary {
+          background: #0f8d63;
+          color: #fff;
+          border: none;
+          box-shadow: 0 8px 32px rgba(15,141,99,0.45);
+        }
+        .lp-primary.small {
+          padding: 9px 22px;
+          border-radius: 10px;
+          font-size: 14px;
+          box-shadow: 0 4px 16px rgba(15,141,99,0.35);
+        }
+        .lp-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(15,141,99,0.6);
+        }
+        .lp-secondary {
+          background: transparent;
+          color: var(--text);
+          border: 1px solid rgba(255,255,255,0.18);
+        }
+        .lp-secondary:hover {
+          background: rgba(255,255,255,0.04);
+          border-color: rgba(255,255,255,0.3);
+        }
+        .lp-preview, .lp-ai-card {
+          background: linear-gradient(135deg, var(--bg2), var(--bg3));
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+          overflow: hidden;
+          position: relative;
+        }
+        .lp-preview {
+          max-width: 760px;
+          margin: 20px auto 0;
+          padding: 24px;
+        }
+        .lp-preview-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 18px;
+          margin-bottom: 20px;
+        }
+        .lp-kicker {
+          color: var(--text3);
+          font-size: 13px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 6px;
+        }
+        .lp-money {
+          color: #22c55e;
+          font-size: 38px;
+          font-weight: 900;
+          line-height: 1;
+          letter-spacing: 0;
+        }
+        .lp-growth {
+          padding: 8px 16px;
+          border-radius: 10px;
+          background: rgba(34,197,94,0.1);
+          border: 1px solid rgba(34,197,94,0.3);
+          color: #22c55e;
+          font-size: 14px;
+          font-weight: 800;
+        }
+        .lp-preview-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+        .lp-preview-stats div, .lp-card, .lp-faq, .lp-steps div {
+          background: var(--bg2);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+        }
+        .lp-preview-stats div {
+          padding: 14px 16px;
+          text-align: start;
+        }
+        .lp-preview-stats small {
+          display: block;
+          color: var(--text3);
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          margin-bottom: 6px;
+        }
+        .lp-preview-stats strong {
+          font-size: 22px;
+          font-weight: 900;
+        }
+        .lp-section {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 80px 24px;
+        }
+        .lp-section.narrow { max-width: 960px; }
+        .lp-section.faq { max-width: 780px; }
+        .lp-section-title {
+          text-align: center;
+          margin-bottom: 60px;
+        }
+        .lp-section-title small {
+          display: block;
+          color: #0f8d63;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-bottom: 12px;
+        }
+        .lp-section-title h2, .lp-ai-head h2 {
+          margin: 0 0 14px;
+          font-size: 44px;
+          font-weight: 900;
+          line-height: 1.1;
+          letter-spacing: 0;
+        }
+        .lp-section-title p, .lp-ai-head p {
+          max-width: 620px;
+          margin: 0 auto;
+          color: var(--text2);
+          font-size: 17px;
+          line-height: 1.65;
+        }
+        .lp-feature-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+        }
+        .lp-card {
+          padding: 28px;
+          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .lp-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(15,141,99,0.45);
+          box-shadow: 0 18px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(15,141,99,0.15);
+        }
+        .lp-card-icon {
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
+          background: rgba(15,141,99,0.12);
+          border: 1px solid rgba(15,141,99,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 18px;
+        }
+        .lp-card h3 {
+          margin: 0 0 8px;
+          font-size: 19px;
+          font-weight: 900;
+        }
+        .lp-card p {
+          margin: 0;
+          color: var(--text2);
+          font-size: 14px;
+          line-height: 1.6;
+        }
+        .lp-ai-head {
+          text-align: center;
+          margin-bottom: 50px;
+        }
+        .lp-chip.pulse span, .lp-analyzing span {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #0f8d63;
+          box-shadow: 0 0 10px #0f8d63;
+          animation: lpPulseDot 1.8s ease-in-out infinite;
+        }
+        .lp-ai-card {
+          display: grid;
+          grid-template-columns: 1.25fr 1fr;
+          gap: 28px;
+          padding: 32px;
+          border-color: rgba(15,141,99,0.32);
+          background: linear-gradient(135deg, var(--bg2), rgba(15,141,99,0.05));
+        }
+        .lp-chart {
+          min-height: 340px;
+          background: #0a0c12;
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 16px;
+          position: relative;
+          overflow: hidden;
+          background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+          background-size: 28px 28px;
+        }
+        .lp-chart-title {
+          position: absolute;
+          top: 14px;
+          left: 16px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          z-index: 2;
+        }
+        .lp-chart-title strong { color: var(--text); font-size: 13px; }
+        .lp-chart-title span {
+          color: #22c55e;
+          background: rgba(34,197,94,0.12);
+          border: 1px solid rgba(34,197,94,0.3);
+          border-radius: 6px;
+          padding: 2px 7px;
+          font-size: 10px;
+          font-weight: 900;
+        }
+        .lp-chart-title small { color: var(--text3); font-weight: 800; }
+        .lp-chart svg {
+          position: absolute;
+          inset: 44px 16px 16px;
+          width: calc(100% - 32px);
+          height: calc(100% - 60px);
+        }
+        .lp-chart svg line { stroke: rgba(255,255,255,0.25); stroke-dasharray: 4 4; }
+        .lp-chart svg path:last-of-type { stroke: #22c55e; stroke-width: 2; }
+        .lp-chart svg circle:first-of-type { fill: var(--text); stroke: #0a0c12; stroke-width: 2; }
+        .lp-chart svg circle:last-of-type { fill: #22c55e; stroke: #0a0c12; stroke-width: 2; }
+        .lp-scan {
+          position: absolute;
+          inset-inline: 16px;
+          top: 44px;
+          height: 50px;
+          background: linear-gradient(180deg, transparent, rgba(15,141,99,0.22), transparent);
+          border-top: 1px solid rgba(15,141,99,0.55);
+          border-bottom: 1px solid rgba(15,141,99,0.55);
+          animation: lpAiScan 3.6s ease-in-out infinite;
+        }
+        .lp-analyzing {
+          position: absolute;
+          bottom: 14px;
+          left: 16px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          border-radius: 999px;
+          background: rgba(15,141,99,0.14);
+          border: 1px solid rgba(15,141,99,0.35);
+          color: #0f8d63;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .lp-fields {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 8px;
+        }
+        .lp-detected {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #0f8d63;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+        .lp-field {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          background: rgba(0,0,0,0.25);
+          border: 1px solid rgba(15,141,99,0.18);
+          border-radius: 10px;
+          padding: 10px 14px;
+          animation: lpFieldFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .lp-field span {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 700;
+        }
+        .lp-field span svg {
+          background: rgba(15,141,99,0.2);
+          border: 1px solid rgba(15,141,99,0.5);
+          border-radius: 50%;
+          padding: 3px;
+          box-sizing: content-box;
+        }
+        .lp-field strong {
+          color: var(--text);
+          font: 900 14px Manrope, Heebo, sans-serif;
+        }
+        .lp-ai-stats {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
+          padding-top: 24px;
+          border-top: 1px solid rgba(15,141,99,0.18);
+        }
+        .lp-ai-stats div {
+          text-align: center;
+        }
+        .lp-ai-stats strong {
+          display: block;
+          color: #0f8d63;
+          font: 900 28px Manrope, Heebo, sans-serif;
+          line-height: 1;
+          margin-bottom: 4px;
+        }
+        .lp-ai-stats span {
+          color: var(--text3);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+        .lp-steps {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 32px;
+        }
+        .lp-steps div {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          padding: 9px 16px;
+          border-radius: 999px;
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 800;
+        }
+        .lp-steps span {
+          color: #0f8d63;
+          background: rgba(15,141,99,0.15);
+          border: 1px solid rgba(15,141,99,0.35);
+          border-radius: 999px;
+          padding: 1px 7px;
+          font-size: 10px;
+          font-weight: 900;
+        }
+        .lp-pricing-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+        .lp-plan {
+          position: relative;
+          padding: 32px;
+          border-radius: 20px;
+          background: var(--bg2);
+          border: 1px solid var(--border);
+        }
+        .lp-plan.pro {
+          background: linear-gradient(180deg, rgba(15,141,99,0.08), var(--bg2));
+          border-color: rgba(15,141,99,0.45);
+          box-shadow: 0 24px 60px rgba(15,141,99,0.18), 0 0 0 1px rgba(15,141,99,0.2);
+          overflow: hidden;
+        }
+        .lp-badge {
+          position: absolute;
+          top: 14px;
+          inset-inline-end: 14px;
+          color: #0f8d63;
+          background: rgba(15,141,99,0.18);
+          border: 1px solid rgba(15,141,99,0.45);
+          border-radius: 6px;
+          padding: 4px 9px;
+          font-size: 10px;
+          font-weight: 900;
+          text-transform: uppercase;
+        }
+        .lp-plan h3 {
+          margin: 0 0 8px;
+          color: var(--text3);
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .lp-plan.pro h3 { color: #0f8d63; }
+        .lp-price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+          margin-bottom: 6px;
+        }
+        .lp-price-row strong {
+          color: var(--text);
+          font: 900 46px Manrope, Heebo, sans-serif;
+          line-height: 1;
+        }
+        .lp-price-row span, .lp-plan-desc {
+          color: var(--text3);
+          font-size: 14px;
+          font-weight: 700;
+        }
+        .lp-plan-desc { margin-bottom: 24px; }
+        .lp-plan button {
+          width: 100%;
+          margin-bottom: 24px;
+        }
+        .lp-plan-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .lp-plan-list div {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--text2);
+          font-size: 14px;
+          font-weight: 700;
+        }
+        .lp-plan.pro .lp-plan-list div { color: var(--text); }
+        .lp-plan-list div.locked {
+          color: var(--text3);
+          opacity: 0.62;
+        }
+        .lp-faq-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .lp-faq {
+          overflow: hidden;
+          transition: border-color 0.2s ease;
+        }
+        .lp-faq.open { border-color: rgba(15,141,99,0.35); }
+        .lp-faq button {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          padding: 20px 22px;
+          background: transparent;
+          border: none;
+          color: var(--text);
+          cursor: pointer;
+          text-align: inherit;
+          font: 800 16px Heebo, Manrope, sans-serif;
+        }
+        .lp-faq button svg {
+          flex: 0 0 auto;
+          transition: transform 0.25s ease;
+        }
+        .lp-faq.open button svg { transform: rotate(180deg); }
+        .lp-faq > div {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+        }
+        .lp-faq.open > div { max-height: 260px; }
+        .lp-faq p {
+          margin: 0;
+          padding: 0 22px 20px;
+          color: var(--text2);
+          font-size: 14px;
+          line-height: 1.7;
+        }
+        .lp-footer {
+          position: relative;
+          z-index: 1;
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 32px 24px;
+          border-top: 1px solid rgba(255,255,255,0.06);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+        .lp-footer strong { color: var(--text); font-size: 17px; }
+        .lp-footer p {
+          margin: 0;
+          color: var(--text3);
+          font-size: 13px;
+          font-weight: 600;
+        }
         [data-animate] {
           opacity: 0;
           transform: translateY(28px);
@@ -728,50 +1071,115 @@ export default function LandingPage() {
           opacity: 1;
           transform: translateY(0);
         }
-        @keyframes lpGradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
         @keyframes lpPulseDot {
           0%, 100% { opacity: 1; transform: scale(1); }
-          50%      { opacity: 0.55; transform: scale(1.5); }
+          50% { opacity: 0.55; transform: scale(1.5); }
         }
         @keyframes lpAiScan {
-          0%   { transform: translateY(-50px); }
-          50%  { transform: translateY(calc(100% - 10px)); }
+          0% { transform: translateY(-50px); }
+          50% { transform: translateY(calc(100% + 220px)); }
           100% { transform: translateY(-50px); }
         }
-        .ai-scan-line { animation: lpAiScan 3.6s ease-in-out infinite; }
         @keyframes lpFieldFadeIn {
           from { opacity: 0; transform: translateX(10px); }
-          to   { opacity: 1; transform: translateX(0); }
+          to { opacity: 1; transform: translateX(0); }
         }
-        [dir="rtl"] .ai-field-row { animation: lpFieldFadeInRtl 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        [dir="ltr"] .ai-field-row { animation: lpFieldFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        [dir="rtl"] .lp-field { animation-name: lpFieldFadeInRtl; }
         @keyframes lpFieldFadeInRtl {
           from { opacity: 0; transform: translateX(-10px); }
-          to   { opacity: 1; transform: translateX(0); }
+          to { opacity: 1; transform: translateX(0); }
         }
         @media (max-width: 900px) {
-          .lp-nav-links { display: none !important; }
-          .lp-nav-inner { padding: 0 18px !important; }
-          .lp-feature-grid { grid-template-columns: 1fr 1fr !important; }
-          .lp-steps { grid-template-columns: 1fr !important; gap: 36px !important; }
-          .lp-pricing-grid { grid-template-columns: 1fr !important; }
-          .lp-hero-title { font-size: 44px !important; }
-          .lp-hero-sub { font-size: 16px !important; }
-          .lp-h2 { font-size: 32px !important; }
-          .ai-showcase-grid { grid-template-columns: 1fr !important; gap: 22px !important; }
-          .ai-chart-mock { height: 240px !important; }
-          .ai-stats-row { grid-template-columns: 1fr !important; gap: 14px !important; padding-top: 20px !important; }
-          .ai-ribbon { gap: 6px !important; }
+          .lp-nav-links { display: none; }
+          .lp-nav-inner { padding: 0 18px; }
+          .lp-hero h1 { font-size: 44px; }
+          .lp-subtitle { font-size: 16px; }
+          .lp-section-title h2, .lp-ai-head h2 { font-size: 32px; }
+          .lp-feature-grid, .lp-pricing-grid { grid-template-columns: 1fr; }
+          .lp-ai-card { grid-template-columns: 1fr; padding: 24px; }
+          .lp-chart { min-height: 250px; }
+          .lp-ai-stats { grid-template-columns: 1fr; }
         }
         @media (max-width: 560px) {
-          .lp-feature-grid { grid-template-columns: 1fr !important; }
-          .lp-hero-title { font-size: 36px !important; }
-          .ai-showcase { padding: 22px !important; }
+          .lp-primary, .lp-secondary { width: 100%; padding-inline: 20px; }
+          .lp-hero h1 { font-size: 36px; }
+          .lp-preview-head, .lp-footer { align-items: flex-start; flex-direction: column; }
+          .lp-preview-stats { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>
+  )
+}
+
+function SectionTitle({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
+  return (
+    <div data-animate className="lp-section-title">
+      <small>{eyebrow}</small>
+      <h2>{title}</h2>
+      {subtitle ? <p>{subtitle}</p> : null}
+    </div>
+  )
+}
+
+function PlanCard({
+  plan,
+  isPro,
+  popular,
+  onClick,
+}: {
+  plan: {
+    name: string
+    price: string
+    period: string
+    cta: string
+    desc: string
+    perks: readonly string[]
+    locked?: readonly string[]
+  }
+  isPro: boolean
+  popular?: string
+  onClick: () => void
+}) {
+  return (
+    <article data-animate className={`lp-plan ${isPro ? 'pro' : ''}`}>
+      {popular ? <div className="lp-badge">{popular}</div> : null}
+      <h3>{plan.name}</h3>
+      <div className="lp-price-row">
+        <strong dir="ltr">{plan.price}</strong>
+        <span>{plan.period}</span>
+      </div>
+      <div className="lp-plan-desc">{plan.desc}</div>
+      <button onClick={onClick} className={isPro ? 'lp-primary' : 'lp-secondary'}>
+        {plan.cta}
+      </button>
+      <div className="lp-plan-list">
+        {plan.perks.map(perk => (
+          <div key={perk}>
+            <Icon name={isPro ? 'check_circle' : 'check'} size={16} color="#0f8d63" />
+            {perk}
+          </div>
+        ))}
+        {plan.locked?.map(item => (
+          <div key={item} className="locked">
+            <Icon name="lock" size={14} color="var(--text3)" />
+            {item}
+          </div>
+        ))}
+      </div>
+    </article>
+  )
+}
+
+function LogoMark({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 38 38" fill="none" aria-hidden="true">
+      <rect width="38" height="38" rx="8" fill="#0f8d63" />
+      <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)" />
+      <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)" />
+      <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white" />
+    </svg>
   )
 }

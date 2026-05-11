@@ -4,13 +4,13 @@ import { AppProvider } from '@/lib/app-context'
 import AppToaster from '@/components/AppToaster'
 
 export const metadata: Metadata = {
-  title: 'TRADEIX — יומן מסחר חכם',
-  description: 'עקוב, נתח ושפר את ביצועי המסחר שלך עם TRADEIX',
+  title: 'TRADEIX — Smart Trading Journal',
+  description: 'Track, analyze, and improve your trading performance with TRADEIX',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body>
         <AppProvider>
           {children}
