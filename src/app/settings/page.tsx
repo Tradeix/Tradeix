@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useApp } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
@@ -8,15 +8,20 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 
+type BillingProfile = {
+  subscription_tier: 'free' | 'pro' | null
+  subscription_status: string | null
+  subscription_renews_at: string | null
+  subscription_ends_at: string | null
+  subscription_trial_ends_at: string | null
+}
+
+const BILLING_PROFILE_SELECT = 'subscription_tier, subscription_status, subscription_renews_at, subscription_ends_at, subscription_trial_ends_at'
+
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
-  const [billingProfile, setBillingProfile] = useState<{
-    subscription_status: string | null
-    subscription_renews_at: string | null
-    subscription_ends_at: string | null
-    subscription_trial_ends_at: string | null
-  } | null>(null)
+  const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
@@ -29,26 +34,78 @@ export default function SettingsPage() {
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
 
+  const refreshBillingProfile = useCallback(async (targetUserId?: string) => {
+    const profileUserId = targetUserId || user?.id
+    if (!profileUserId) return null
+
+    const { data } = await supabase
+      .from('profiles')
+      .select(BILLING_PROFILE_SELECT)
+      .eq('id', profileUserId)
+      .single()
+
+    if (data) setBillingProfile(data as BillingProfile)
+    return data as BillingProfile | null
+  }, [supabase, user?.id])
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    let mounted = true
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!mounted) return
       setUser(user)
       setNickname(user?.user_metadata?.full_name || '')
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
+
       if (user) {
-        supabase
+        const { data } = await supabase
           .from('profiles')
-          .select('subscription_status, subscription_renews_at, subscription_ends_at, subscription_trial_ends_at')
+          .select(BILLING_PROFILE_SELECT)
           .eq('id', user.id)
           .single()
-          .then(({ data }) => {
-            if (data) setBillingProfile(data)
-          })
+        if (mounted && data) setBillingProfile(data as BillingProfile)
       }
     })
-  }, [])
+
+    return () => { mounted = false }
+  }, [supabase])
+
+  useEffect(() => {
+    if (!user?.id) return
+
+    const channel = supabase
+      .channel(`settings-billing-profile-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
+        payload => {
+          if (payload.new) {
+            const next = payload.new as BillingProfile
+            setBillingProfile({
+              subscription_tier: next.subscription_tier,
+              subscription_status: next.subscription_status,
+              subscription_renews_at: next.subscription_renews_at,
+              subscription_ends_at: next.subscription_ends_at,
+              subscription_trial_ends_at: next.subscription_trial_ends_at,
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    const refreshOnFocus = () => { if (document.visibilityState !== 'hidden') void refreshBillingProfile(user.id) }
+    window.addEventListener('focus', refreshOnFocus)
+    document.addEventListener('visibilitychange', refreshOnFocus)
+
+    return () => {
+      supabase.removeChannel(channel)
+      window.removeEventListener('focus', refreshOnFocus)
+      document.removeEventListener('visibilitychange', refreshOnFocus)
+    }
+  }, [refreshBillingProfile, supabase, user?.id])
 
   useEffect(() => {
     setPendingLang(language)
@@ -113,11 +170,13 @@ export default function SettingsPage() {
       const cancelled = payload?.subscription
 
       setBillingProfile(prev => ({
+        subscription_tier: prev?.subscription_tier ?? 'pro',
         subscription_status: cancelled?.status || 'cancelled',
         subscription_renews_at: cancelled?.renewsAt ?? prev?.subscription_renews_at ?? null,
         subscription_ends_at: cancelled?.endsAt ?? prev?.subscription_ends_at ?? null,
         subscription_trial_ends_at: cancelled?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
       }))
+      await refreshBillingProfile()
 
       toast.success(language === 'he'
         ? 'המנוי בוטל. הגישה ל-PRO תישאר עד סוף התקופה ששולמה.'
@@ -146,12 +205,14 @@ export default function SettingsPage() {
         })()
 
         return {
+          subscription_tier: 'pro',
           subscription_status: resumed?.status || 'active',
           subscription_renews_at: fallbackRenewal,
           subscription_ends_at: resumed?.endsAt ?? null,
           subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
         }
       })
+      await refreshBillingProfile()
 
       toast.success(language === 'he'
         ? billingPeriod === 'yearly'
@@ -172,6 +233,7 @@ export default function SettingsPage() {
   }
 
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
+  const isPro = billingProfile?.subscription_tier ? billingProfile.subscription_tier === 'pro' : contextIsPro
   const renewalDate = billingProfile?.subscription_renews_at || null
   const endsDate = billingProfile?.subscription_ends_at || null
   const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
