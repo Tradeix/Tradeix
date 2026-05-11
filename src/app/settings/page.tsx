@@ -461,26 +461,47 @@ export default function SettingsPage() {
 
           {isPro ? (
             isCanceledButActive ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: 'auto' }}>
                 <button
                   onClick={() => handleResumePro('monthly')}
                   disabled={Boolean(resumingPro)}
-                  style={{ width: '100%', background: '#0f8d63', border: '1px solid rgba(15,141,99,0.5)', borderRadius: '12px', padding: '11px 8px', fontSize: '13px', fontWeight: '800', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: resumingPro ? 0.65 : 1 }}
+                  style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, #0f8d63 0%, #12a875 100%)', border: '1px solid rgba(31,210,145,0.55)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.28), inset 0 1px 0 rgba(255,255,255,0.18)' }}
+                  onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(15,141,99,0.38), inset 0 1px 0 rgba(255,255,255,0.22)' } }}
+                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(15,141,99,0.28), inset 0 1px 0 rgba(255,255,255,0.18)' }}
                 >
-                  <Icon name="autorenew" size={15} color="#fff" />
-                  {resumingPro === 'monthly'
-                    ? (language === 'he' ? 'מחדש...' : 'Resuming...')
-                    : (language === 'he' ? 'חדש חודשי' : 'Resume monthly')}
+                  <span style={{ width: '28px', height: '28px', borderRadius: '10px', background: 'rgba(255,255,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="autorenew" size={16} color="#fff" />
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
+                    {resumingPro === 'monthly'
+                      ? (language === 'he' ? 'מחדש...' : 'Resuming...')
+                      : (language === 'he' ? 'חדש חודשי' : 'Monthly')}
+                  </span>
+                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.78, lineHeight: 1 }}>
+                    {language === 'he' ? '$20 / חודש' : '$20 / mo'}
+                  </span>
                 </button>
                 <button
                   onClick={() => handleResumePro('yearly')}
                   disabled={Boolean(resumingPro)}
-                  style={{ width: '100%', background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.38)', borderRadius: '12px', padding: '11px 8px', fontSize: '13px', fontWeight: '800', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: resumingPro ? 0.65 : 1 }}
+                  style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.10)', position: 'relative', overflow: 'hidden' }}
+                  onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(245,158,11,0.24), inset 0 1px 0 rgba(255,255,255,0.14)' } }}
+                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.10)' }}
                 >
-                  <Icon name="calendar_month" size={15} color="#f59e0b" />
-                  {resumingPro === 'yearly'
-                    ? (language === 'he' ? 'מעביר...' : 'Switching...')
-                    : (language === 'he' ? 'חדש שנתי' : 'Resume yearly')}
+                  <span style={{ position: 'absolute', top: '7px', insetInlineEnd: '7px', padding: '2px 6px', borderRadius: '999px', background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.28)', fontSize: '9px', fontWeight: '900', lineHeight: 1 }}>
+                    {language === 'he' ? 'חסכון' : 'Save'}
+                  </span>
+                  <span style={{ width: '28px', height: '28px', borderRadius: '10px', background: 'rgba(245,158,11,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="calendar_month" size={16} color="#f59e0b" />
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
+                    {resumingPro === 'yearly'
+                      ? (language === 'he' ? 'מעביר...' : 'Switching...')
+                      : (language === 'he' ? 'חדש שנתי' : 'Yearly')}
+                  </span>
+                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.78, lineHeight: 1 }}>
+                    {language === 'he' ? '$160 / שנה' : '$160 / yr'}
+                  </span>
                 </button>
               </div>
             ) : (
