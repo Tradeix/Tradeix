@@ -165,7 +165,8 @@ export default function StatsPage() {
   })
   const assetRows = Array.from(assetMap.values())
   const bestAsset = assetRows.length ? assetRows.reduce((a, b) => a.pnl >= b.pnl ? a : b) : null
-  const worstAsset = assetRows.length ? assetRows.reduce((a, b) => a.pnl <= b.pnl ? a : b) : null
+  const losingAssets = assetRows.filter(asset => asset.pnl < 0)
+  const worstAsset = losingAssets.length ? losingAssets.reduce((a, b) => a.pnl <= b.pnl ? a : b) : null
   const formatPnl = (value: number) => `${value >= 0 ? '+' : '-'}$${Math.abs(value).toLocaleString()}`
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -527,7 +528,7 @@ export default function StatsPage() {
               color: '#ef4444',
               bg: 'rgba(239,68,68,0.08)',
               border: 'rgba(239,68,68,0.24)',
-              empty: language === 'he' ? 'אין נתונים' : 'No data',
+              empty: language === 'he' ? 'אין כרגע נכסים מפסידים' : 'No losing assets yet',
             },
           ].map(item => (
             <div key={item.type} style={{
