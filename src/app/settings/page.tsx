@@ -136,12 +136,23 @@ export default function SettingsPage() {
       const payload = await resumeSubscription(billingPeriod)
       const resumed = payload?.subscription
 
-      setBillingProfile(prev => ({
-        subscription_status: resumed?.status || 'active',
-        subscription_renews_at: resumed?.renewsAt ?? prev?.subscription_renews_at ?? null,
-        subscription_ends_at: resumed?.endsAt ?? null,
-        subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
-      }))
+      setBillingProfile(prev => {
+        const fallbackRenewal = (() => {
+          if (resumed?.renewsAt) return resumed.renewsAt
+          if (billingPeriod === 'monthly' && prev?.subscription_ends_at) return prev.subscription_ends_at
+          const nextDate = new Date()
+          nextDate.setFullYear(nextDate.getFullYear() + (billingPeriod === 'yearly' ? 1 : 0))
+          nextDate.setMonth(nextDate.getMonth() + (billingPeriod === 'monthly' ? 1 : 0))
+          return nextDate.toISOString()
+        })()
+
+        return {
+          subscription_status: resumed?.status || 'active',
+          subscription_renews_at: fallbackRenewal,
+          subscription_ends_at: resumed?.endsAt ?? null,
+          subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
+        }
+      })
 
       toast.success(language === 'he'
         ? billingPeriod === 'yearly'
