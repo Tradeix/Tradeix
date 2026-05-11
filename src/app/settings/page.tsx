@@ -11,6 +11,12 @@ import Icon from '@/components/Icon'
 export default function SettingsPage() {
   const { theme, language, setTheme, setLanguage, isPro, subscription, cancelSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
+  const [billingProfile, setBillingProfile] = useState<{
+    subscription_status: string | null
+    subscription_renews_at: string | null
+    subscription_ends_at: string | null
+    subscription_trial_ends_at: string | null
+  } | null>(null)
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
@@ -29,6 +35,16 @@ export default function SettingsPage() {
       setUser(user)
       setNickname(user?.user_metadata?.full_name || '')
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
+      if (user) {
+        supabase
+          .from('profiles')
+          .select('subscription_status, subscription_renews_at, subscription_ends_at, subscription_trial_ends_at')
+          .eq('id', user.id)
+          .single()
+          .then(({ data }) => {
+            if (data) setBillingProfile(data)
+          })
+      }
     })
   }, [])
 
@@ -88,6 +104,53 @@ export default function SettingsPage() {
   }
 
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
+  const renewalDate = billingProfile?.subscription_renews_at || null
+  const endsDate = billingProfile?.subscription_ends_at || null
+  const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
+  const isCanceledButActive = billingProfile?.subscription_status === 'cancelled' && Boolean(endsDate)
+  const primaryBillingDate = isCanceledButActive ? endsDate : (renewalDate || trialEndsDate || endsDate)
+  const primaryBillingLabel = isCanceledButActive
+    ? (language === 'he' ? 'גישה פעילה עד' : 'Access active until')
+    : (language === 'he' ? 'החידוש הבא' : 'Next renewal')
+  const remainingLabel = isCanceledButActive
+    ? (language === 'he' ? 'זמן שנותר עד מעבר לחינמי' : 'Time left before moving to Free')
+    : (language === 'he' ? 'זמן שנותר עד החידוש' : 'Time left until renewal')
+
+  function formatBillingDate(value: string | null) {
+    if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
+    return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  function formatRemainingTime(value: string | null) {
+    if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
+    const target = new Date(value).getTime()
+    if (Number.isNaN(target)) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
+    const diff = target - Date.now()
+    if (diff <= 0) return language === 'he' ? 'התקופה הסתיימה' : 'Period ended'
+
+    const totalHours = Math.floor(diff / (1000 * 60 * 60))
+    const days = Math.floor(totalHours / 24)
+    const hours = totalHours % 24
+    const minutes = Math.floor((diff / (1000 * 60)) % 60)
+
+    if (language === 'he') {
+      if (days > 0) return `${days} ימים ו-${hours} שעות`
+      if (hours > 0) return `${hours} שעות ו-${minutes} דקות`
+      return `${minutes} דקות`
+    }
+
+    if (days > 0) return `${days} days and ${hours} hours`
+    if (hours > 0) return `${hours} hours and ${minutes} minutes`
+    return `${minutes} minutes`
+  }
 
   const glass = {
     background: isLight ? '#ffffff' : 'linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012))',
@@ -299,6 +362,51 @@ export default function SettingsPage() {
           </div>
 
           {/* CTA — pinned to bottom for symmetric card heights */}
+          {isPro && (
+            <div style={{ display: 'grid', gap: '10px', marginBottom: '20px' }}>
+              <div style={{
+                background: isLight ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.18)',
+                border: `1px solid ${isCanceledButActive ? 'rgba(239,68,68,0.22)' : 'rgba(245,158,11,0.22)'}`,
+                borderRadius: '14px',
+                padding: '13px 14px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {primaryBillingLabel}
+                  </span>
+                  <Icon name={isCanceledButActive ? 'event_busy' : 'event_repeat'} size={15} color={isCanceledButActive ? '#ef4444' : '#f59e0b'} />
+                </div>
+                <div style={{ fontSize: '15px', color: 'var(--text)', fontWeight: '850', lineHeight: 1.35 }}>
+                  {formatBillingDate(primaryBillingDate)}
+                </div>
+              </div>
+
+              <div style={{
+                background: isLight ? 'rgba(255,255,255,0.56)' : 'rgba(255,255,255,0.035)',
+                border: '1px solid var(--border)',
+                borderRadius: '14px',
+                padding: '13px 14px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {remainingLabel}
+                  </span>
+                  <Icon name="timer" size={15} color="#0f8d63" />
+                </div>
+                <div dir={language === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: '22px', color: '#0f8d63', fontWeight: '950', lineHeight: 1 }}>
+                  {formatRemainingTime(primaryBillingDate)}
+                </div>
+                {isCanceledButActive && (
+                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#ef4444', fontWeight: '700', lineHeight: 1.45 }}>
+                    {language === 'he'
+                      ? 'המנוי בוטל, אבל הגישה ל-PRO נשארת עד סוף התקופה ששולמה.'
+                      : 'Subscription is canceled, but PRO access remains until the paid period ends.'}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {isPro ? (
             <button
               onClick={() => setShowCancelConfirm(true)}
