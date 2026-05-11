@@ -20,11 +20,21 @@ type AppContextType = {
 }
 
 const AppContext = createContext<AppContextType>({
-  theme: 'dark', language: 'he',
+  theme: 'dark', language: 'en',
   setTheme: () => {}, setLanguage: () => {},
   subscription: 'free', isPro: false, subscriptionLoading: true,
   upgradeToPro: async () => {}, cancelSubscription: async () => {},
 })
+
+function isLanguage(value: string | null): value is Language {
+  return value === 'he' || value === 'en'
+}
+
+function detectBrowserLanguage(): Language {
+  if (typeof navigator === 'undefined') return 'en'
+  const languages = navigator.languages?.length ? navigator.languages : [navigator.language]
+  return languages.some(lang => /^he(-|$)/i.test(lang) || /^iw(-|$)/i.test(lang)) ? 'he' : 'en'
+}
 
 function applyTheme(t: Theme) {
   const root = document.documentElement
@@ -101,7 +111,7 @@ function applyLanguage(l: Language) {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
-  const [language, setLanguageState] = useState<Language>('he')
+  const [language, setLanguageState] = useState<Language>('en')
   const [subscription, setSubscription] = useState<SubscriptionTier>('free')
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const supabase = createClient()
@@ -131,9 +141,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setThemeState(savedTheme)
     applyTheme(savedTheme)
 
-    const savedLang = (localStorage.getItem('tradeix-lang') as Language) || 'he'
-    setLanguageState(savedLang)
-    applyLanguage(savedLang)
+    const storedLang = localStorage.getItem('tradeix-lang')
+    const browserLang = detectBrowserLanguage()
+    const initialLang = isLanguage(storedLang) ? storedLang : browserLang
+    setLanguageState(initialLang)
+    applyLanguage(initialLang)
 
     if (!isSupabaseConfigured) {
       setSubscriptionLoading(false)
@@ -147,7 +159,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .eq('id', user.id).single()
         .then(({ data }) => {
           if (!data) { setSubscriptionLoading(false); return }
-          const l = (data.language as Language) || savedLang
+          const profileLang = isLanguage(data.language) ? data.language : null
+          const l = profileLang || initialLang
           setLanguageState(l)
           applyLanguage(l)
           localStorage.setItem('tradeix-lang', l)
