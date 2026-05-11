@@ -141,11 +141,6 @@ export default function SettingsPage() {
         subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
       }))
 
-      if (payload?.url) {
-        window.location.assign(payload.url)
-        return
-      }
-
       toast.success(language === 'he'
         ? billingPeriod === 'yearly'
           ? 'המנוי חודש ועבר לשנתי.'
