@@ -1356,7 +1356,11 @@ export default function AddTradePage() {
           trade={autoEditTrade}
           initialEditing
           onClose={() => setAutoEditTrade(null)}
-          onUpdate={() => router.refresh()}
+          onUpdate={() => {
+            setAutoEditTrade(null)
+            router.push('/trades')
+            router.refresh()
+          }}
         />
       )}
 
