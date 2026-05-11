@@ -8,12 +8,18 @@ function toIso(value: unknown) {
   return typeof value === 'string' && value.length > 0 ? value : null
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   const apiKey = process.env.LEMONSQUEEZY_API_KEY
+  const monthlyVariantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID
+  const yearlyVariantId = process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID
 
-  if (!apiKey || !isSupabaseAdminConfigured) {
+  if (!apiKey || !monthlyVariantId || !yearlyVariantId || !isSupabaseAdminConfigured) {
     return NextResponse.json({ error: 'Billing resume is not configured' }, { status: 500 })
   }
+
+  const body = await request.json().catch(() => null)
+  const billingPeriod = body?.billingPeriod === 'yearly' ? 'yearly' : 'monthly'
+  const targetVariantId = billingPeriod === 'yearly' ? yearlyVariantId : monthlyVariantId
 
   const supabase = createClient()
   const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -46,6 +52,8 @@ export async function POST() {
         id: subscriptionId,
         attributes: {
           cancelled: false,
+          variant_id: Number(targetVariantId),
+          ...(billingPeriod === 'yearly' ? { invoice_immediately: true } : {}),
         },
       },
     }),
@@ -65,6 +73,7 @@ export async function POST() {
   const status = attributes.status || 'active'
   const renewsAt = toIso(attributes.renews_at)
   const trialEndsAt = toIso(attributes.trial_ends_at)
+  const portalUpdateUrl = attributes.urls?.customer_portal_update_subscription || null
 
   const admin = createAdminClient()
   const { error: updateError } = await admin.from('profiles').upsert({
@@ -94,6 +103,10 @@ export async function POST() {
       renewsAt,
       endsAt: null,
       trialEndsAt,
+      billingPeriod,
+      variantId: attributes.variant_id ? String(attributes.variant_id) : String(targetVariantId),
+      portalUpdateUrl,
     },
+    url: portalUpdateUrl,
   })
 }

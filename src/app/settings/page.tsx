@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
-  const [resumingPro, setResumingPro] = useState(false)
+  const [resumingPro, setResumingPro] = useState<'monthly' | 'yearly' | null>(null)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [pendingLang, setPendingLang] = useState(language)
@@ -128,10 +128,10 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleResumePro() {
-    setResumingPro(true)
+  async function handleResumePro(billingPeriod: 'monthly' | 'yearly') {
+    setResumingPro(billingPeriod)
     try {
-      const payload = await resumeSubscription()
+      const payload = await resumeSubscription(billingPeriod)
       const resumed = payload?.subscription
 
       setBillingProfile(prev => ({
@@ -141,13 +141,22 @@ export default function SettingsPage() {
         subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
       }))
 
+      if (payload?.url) {
+        window.location.assign(payload.url)
+        return
+      }
+
       toast.success(language === 'he'
-        ? 'המנוי חודש. החיוב הבא ימשיך לפי תאריך החידוש המקורי.'
-        : 'Subscription resumed. Future billing will continue on the original renewal date.')
+        ? billingPeriod === 'yearly'
+          ? 'המנוי חודש ועבר לשנתי.'
+          : 'המנוי חודש. החיוב הבא ימשיך לפי תאריך החידוש המקורי.'
+        : billingPeriod === 'yearly'
+          ? 'Subscription resumed and switched to yearly.'
+          : 'Subscription resumed. Future billing will continue on the original renewal date.')
     } catch (error: any) {
       toast.error(error?.message || (language === 'he' ? 'שגיאה בחידוש המנוי' : 'Subscription resume failed'))
     } finally {
-      setResumingPro(false)
+      setResumingPro(null)
     }
   }
 
@@ -457,14 +466,28 @@ export default function SettingsPage() {
 
           {isPro ? (
             isCanceledButActive ? (
-              <button
-                onClick={handleResumePro}
-                disabled={resumingPro}
-                style={{ width: '100%', background: '#0f8d63', border: '1px solid rgba(15,141,99,0.5)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '800', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: resumingPro ? 0.65 : 1, marginTop: 'auto' }}
-              >
-                <Icon name="autorenew" size={16} color="#fff" />
-                {resumingPro ? (language === 'he' ? 'מחדש...' : 'Resuming...') : (language === 'he' ? 'חדש מנוי' : 'Resume subscription')}
-              </button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: 'auto' }}>
+                <button
+                  onClick={() => handleResumePro('monthly')}
+                  disabled={Boolean(resumingPro)}
+                  style={{ width: '100%', background: '#0f8d63', border: '1px solid rgba(15,141,99,0.5)', borderRadius: '12px', padding: '11px 8px', fontSize: '13px', fontWeight: '800', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: resumingPro ? 0.65 : 1 }}
+                >
+                  <Icon name="autorenew" size={15} color="#fff" />
+                  {resumingPro === 'monthly'
+                    ? (language === 'he' ? 'מחדש...' : 'Resuming...')
+                    : (language === 'he' ? 'חדש חודשי' : 'Resume monthly')}
+                </button>
+                <button
+                  onClick={() => handleResumePro('yearly')}
+                  disabled={Boolean(resumingPro)}
+                  style={{ width: '100%', background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.38)', borderRadius: '12px', padding: '11px 8px', fontSize: '13px', fontWeight: '800', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: resumingPro ? 0.65 : 1 }}
+                >
+                  <Icon name="calendar_month" size={15} color="#f59e0b" />
+                  {resumingPro === 'yearly'
+                    ? (language === 'he' ? 'מעביר...' : 'Switching...')
+                    : (language === 'he' ? 'חדש שנתי' : 'Resume yearly')}
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => setShowCancelConfirm(true)}

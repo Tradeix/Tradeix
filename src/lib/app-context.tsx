@@ -12,7 +12,11 @@ type CancelSubscriptionResult = {
     renewsAt?: string | null
     endsAt?: string | null
     trialEndsAt?: string | null
+    billingPeriod?: 'monthly' | 'yearly'
+    variantId?: string | null
+    portalUpdateUrl?: string | null
   }
+  url?: string | null
 }
 
 type AppContextType = {
@@ -25,7 +29,7 @@ type AppContextType = {
   subscriptionLoading: boolean
   upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
-  resumeSubscription: () => Promise<CancelSubscriptionResult>
+  resumeSubscription: (billingPeriod?: 'monthly' | 'yearly') => Promise<CancelSubscriptionResult>
 }
 
 const AppContext = createContext<AppContextType>({
@@ -227,10 +231,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return payload || {}
   }
 
-  async function resumeSubscription() {
+  async function resumeSubscription(billingPeriod: 'monthly' | 'yearly' = 'monthly') {
     if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
 
-    const response = await fetch('/api/billing/resume', { method: 'POST' })
+    const response = await fetch('/api/billing/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingPeriod }),
+    })
     const payload = await response.json().catch(() => null)
 
     if (!response.ok) {
