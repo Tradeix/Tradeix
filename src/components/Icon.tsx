@@ -89,6 +89,11 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   screenshot_monitor: Monitor,
   save: Save,
   event_available: CalendarCheck,
+  calendar_month: Calendar,
+  autorenew: RefreshCw,
+  event_repeat: CalendarCheck,
+  event_busy: XCircle,
+  timer: Hourglass,
 }
 
 interface IconProps extends Omit<LucideProps, 'ref'> {
