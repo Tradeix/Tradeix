@@ -505,7 +505,7 @@ export default function PortfoliosPage() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '12px', position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-start', gap: '6px', marginTop: '12px', position: 'relative', zIndex: 1 }}>
                       <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '750' }}>
                         {language === 'he' ? 'הון התחלתי' : 'Initial capital'}
                       </span>
