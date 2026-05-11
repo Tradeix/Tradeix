@@ -103,6 +103,30 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleCancelPro() {
+    setShowCancelConfirm(false)
+    setCancelingPro(true)
+    try {
+      const payload = await cancelSubscription()
+      const cancelled = payload?.subscription
+
+      setBillingProfile(prev => ({
+        subscription_status: cancelled?.status || 'cancelled',
+        subscription_renews_at: cancelled?.renewsAt ?? prev?.subscription_renews_at ?? null,
+        subscription_ends_at: cancelled?.endsAt ?? prev?.subscription_ends_at ?? null,
+        subscription_trial_ends_at: cancelled?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
+      }))
+
+      toast.success(language === 'he'
+        ? 'המנוי בוטל. הגישה ל-PRO תישאר עד סוף התקופה ששולמה.'
+        : 'Subscription canceled. PRO access remains until the paid period ends.')
+    } catch (error: any) {
+      toast.error(error?.message || (language === 'he' ? 'שגיאה בביטול המנוי' : 'Subscription cancellation failed'))
+    } finally {
+      setCancelingPro(false)
+    }
+  }
+
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
   const renewalDate = billingProfile?.subscription_renews_at || null
   const endsDate = billingProfile?.subscription_ends_at || null
@@ -445,12 +469,12 @@ export default function SettingsPage() {
               <Icon name="warning" size={26} color="#ef4444" />
             </div>
             <div style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text)', marginBottom: '12px' }}>
-              {language === 'he' ? 'ניהול מנוי' : 'Manage subscription'}
+              {language === 'he' ? 'ביטול מנוי' : 'Cancel subscription'}
             </div>
             <div style={{ fontSize: '14px', color: 'var(--text3)', lineHeight: 1.7, marginBottom: '28px' }}>
               {language === 'he'
-                ? 'הביטול והשינויים במנוי מתבצעים דרך פורטל החיוב של Lemon Squeezy. הנתונים שלך באתר לא יימחקו.'
-                : 'Subscription changes are handled in the Lemon Squeezy billing portal. Your site data will not be deleted.'}
+                ? 'החיובים העתידיים יבוטלו עכשיו. הגישה שלך ל-PRO תישאר עד סוף התקופה שכבר שולמה, והנתונים שלך באתר לא יימחקו.'
+                : 'Future billing will be canceled now. Your PRO access stays active until the paid period ends, and your site data will not be deleted.'}
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
@@ -460,10 +484,10 @@ export default function SettingsPage() {
                 {language === 'he' ? 'חזור' : 'Go back'}
               </button>
               <button
-                onClick={async () => { setShowCancelConfirm(false); setCancelingPro(true); await cancelSubscription() }}
+                onClick={handleCancelPro}
                 style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
-                {language === 'he' ? 'פתח ניהול חיוב' : 'Open billing portal'}
+                {language === 'he' ? 'אישור ביטול' : 'Confirm cancel'}
               </button>
             </div>
           </div>

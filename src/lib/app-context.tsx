@@ -6,6 +6,14 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
 type SubscriptionTier = 'free' | 'pro'
+type CancelSubscriptionResult = {
+  subscription?: {
+    status?: string | null
+    renewsAt?: string | null
+    endsAt?: string | null
+    trialEndsAt?: string | null
+  }
+}
 
 type AppContextType = {
   theme: Theme
@@ -16,14 +24,14 @@ type AppContextType = {
   isPro: boolean
   subscriptionLoading: boolean
   upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<void>
-  cancelSubscription: () => Promise<void>
+  cancelSubscription: () => Promise<CancelSubscriptionResult>
 }
 
 const AppContext = createContext<AppContextType>({
   theme: 'dark', language: 'en',
   setTheme: () => {}, setLanguage: () => {},
   subscription: 'free', isPro: false, subscriptionLoading: true,
-  upgradeToPro: async () => {}, cancelSubscription: async () => {},
+  upgradeToPro: async () => {}, cancelSubscription: async () => ({}),
 })
 
 function isLanguage(value: string | null): value is Language {
@@ -208,15 +216,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   async function cancelSubscription() {
     if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
 
-    const response = await fetch('/api/billing/portal')
+    const response = await fetch('/api/billing/cancel', { method: 'POST' })
     const payload = await response.json().catch(() => null)
 
-    if (!response.ok || !payload?.url) {
-      throw new Error(payload?.error || 'Could not open billing portal')
+    if (!response.ok) {
+      throw new Error(payload?.error || 'Could not cancel subscription')
     }
 
-    window.location.assign(payload.url)
-    return
+    return payload || {}
   }
 
   const isPro = subscription === 'pro'
