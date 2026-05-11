@@ -36,7 +36,11 @@ export default function UpgradePage() {
   async function handleUpgrade() {
     setLoading(true)
     try {
-      await upgradeToPro(billingPeriod)
+      const result = await upgradeToPro(billingPeriod)
+      if (result?.reusedSubscription) {
+        toast.success(language === 'he' ? 'המנוי חודש על החשבון הקיים שלך' : 'Subscription renewed on your existing account')
+        setLoading(false)
+      }
     } catch {
       toast.error(language === 'he' ? 'לא הצלחנו לפתוח את התשלום' : 'Could not open checkout')
       setLoading(false)

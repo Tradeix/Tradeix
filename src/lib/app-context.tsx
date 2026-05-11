@@ -27,7 +27,7 @@ type AppContextType = {
   subscription: SubscriptionTier
   isPro: boolean
   subscriptionLoading: boolean
-  upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<void>
+  upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<{ reusedSubscription?: boolean } | void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
   resumeSubscription: (billingPeriod?: 'monthly' | 'yearly') => Promise<CancelSubscriptionResult>
 }
@@ -210,7 +210,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
     const payload = await response.json().catch(() => null)
 
-    if (!response.ok || !payload?.url) {
+    if (!response.ok) {
+      throw new Error(payload?.error || 'Could not start checkout')
+    }
+
+    if (payload?.subscription) {
+      setSubscription('pro')
+      return { reusedSubscription: Boolean(payload.reusedSubscription) }
+    }
+
+    if (!payload?.url) {
       throw new Error(payload?.error || 'Could not start checkout')
     }
 
