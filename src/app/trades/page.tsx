@@ -58,6 +58,7 @@ export default function TradesPage() {
     const from = p * PAGE_SIZE
     let query = supabase.from('trades').select('*', { count: 'exact' })
       .eq('portfolio_id', activePortfolio!.id)
+      .order('created_at', { ascending: false })
       .order('traded_at', { ascending: false })
       .range(from, from + PAGE_SIZE - 1)
     if (outcomeFilter !== 'all') query = (query as any).eq('outcome', outcomeFilter)
