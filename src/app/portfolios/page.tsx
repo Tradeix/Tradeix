@@ -401,7 +401,10 @@ export default function PortfoliosPage() {
           {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
             const s = portfolioStats[p.id]
-            const pnlPos = (s?.totalPnl || 0) >= 0
+            const totalPnl = s?.totalPnl || 0
+            const pnlPos = totalPnl >= 0
+            const pnlAccent = pnlPos ? '#22c55e' : '#ef4444'
+            const pnlPercent = p.initial_capital > 0 ? (totalPnl / p.initial_capital) * 100 : null
             return (
               <div
                 key={p.id}
@@ -464,16 +467,52 @@ export default function PortfoliosPage() {
                 {/* P&L block */}
                 {s && (
                   <div style={{
-                    background: pnlPos ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                    border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)'}`,
-                    borderRadius: '12px', padding: '10px 14px',
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: pnlPos
+                      ? 'linear-gradient(135deg, rgba(34,197,94,0.16), rgba(15,141,99,0.06))'
+                      : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(127,29,29,0.05))',
+                    border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.30)' : 'rgba(239,68,68,0.30)'}`,
+                    borderRadius: '14px',
+                    padding: '14px 16px',
                     position: 'relative',
+                    overflow: 'hidden',
+                    minHeight: '82px',
+                    boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 16px 34px ${pnlPos ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)'}`,
                   }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</span>
-                    <span dir="ltr" style={{ fontSize: '19px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
-                      {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
-                    </span>
+                    <div style={{ position: 'absolute', insetInlineEnd: '-22px', top: '-28px', width: '104px', height: '104px', borderRadius: '999px', background: `${pnlAccent}18`, filter: 'blur(2px)' }} />
+                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '3px', background: `linear-gradient(90deg, transparent, ${pnlAccent}, transparent)` }} />
+
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', position: 'relative', zIndex: 1 }}>
+                      <div style={{ textAlign: language === 'he' ? 'right' : 'left' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '8px' }}>
+                          {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
+                        </div>
+                        <div dir="ltr" style={{ fontSize: '29px', fontWeight: '950', color: pnlAccent, letterSpacing: '-0.04em', lineHeight: 1 }}>
+                          {pnlPos ? '+' : '-'}${Math.abs(totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        </div>
+                      </div>
+
+                      <div style={{
+                        borderRadius: '999px',
+                        border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)'}`,
+                        background: pnlPos ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)',
+                        color: pnlAccent,
+                        padding: '6px 9px',
+                        fontSize: '12px',
+                        fontWeight: '900',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {pnlPercent != null ? `${pnlPercent >= 0 ? '+' : '-'}${Math.abs(pnlPercent).toFixed(1)}%` : '—'}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '12px', position: 'relative', zIndex: 1 }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '750' }}>
+                        {language === 'he' ? 'הון התחלתי' : 'Initial capital'}
+                      </span>
+                      <span dir="ltr" style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: '850' }}>
+                        ${Number(p.initial_capital || 0).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 )}
 
