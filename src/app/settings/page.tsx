@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [cancelingPro, setCancelingPro] = useState(false)
   const [resumingPro, setResumingPro] = useState<'monthly' | 'yearly' | null>(null)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [showYearlySwitchConfirm, setShowYearlySwitchConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [pendingLang, setPendingLang] = useState(language)
   const [pendingTheme, setPendingTheme] = useState(theme)
@@ -129,6 +130,7 @@ export default function SettingsPage() {
   }
 
   async function handleResumePro(billingPeriod: 'monthly' | 'yearly') {
+    setShowYearlySwitchConfirm(false)
     setResumingPro(billingPeriod)
     try {
       const payload = await resumeSubscription(billingPeriod)
@@ -505,6 +507,28 @@ export default function SettingsPage() {
                 </button>
               </div>
             ) : (
+              <>
+              <button
+                onClick={() => setShowYearlySwitchConfirm(true)}
+                disabled={Boolean(resumingPro)}
+                style={{ width: '100%', minHeight: '66px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px 14px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.10)', marginTop: 'auto', marginBottom: '10px' }}
+                onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(245,158,11,0.24), inset 0 1px 0 rgba(255,255,255,0.14)' } }}
+                onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.10)' }}
+              >
+                <span style={{ display: 'grid', gap: '4px', textAlign: language === 'he' ? 'right' : 'left' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '950', lineHeight: 1.1 }}>
+                    {resumingPro === 'yearly'
+                      ? (language === 'he' ? 'מעביר לשנתי...' : 'Switching to yearly...')
+                      : (language === 'he' ? 'החלף למנוי שנתי' : 'Switch to yearly')}
+                  </span>
+                  <span style={{ fontSize: '11px', color: isLight ? '#92400e' : 'rgba(245,158,11,0.78)', fontWeight: '750', lineHeight: 1.25 }}>
+                    {language === 'he' ? 'חיוב יחסי עכשיו • $160/שנה בחידוש הבא' : 'Prorated now • $160/yr next renewal'}
+                  </span>
+                </span>
+                <span style={{ minWidth: '34px', height: '34px', borderRadius: '12px', background: 'rgba(245,158,11,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="calendar_month" size={18} color="#f59e0b" />
+                </span>
+              </button>
               <button
                 onClick={() => setShowCancelConfirm(true)}
                 disabled={cancelingPro}
@@ -515,6 +539,7 @@ export default function SettingsPage() {
                 <Icon name="cancel" size={15} />
                 {cancelingPro ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
               </button>
+              </>
             )
           ) : (
             <Link href="/upgrade" style={{
@@ -562,6 +587,47 @@ export default function SettingsPage() {
                 style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '700', color: '#ef4444', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
               >
                 {language === 'he' ? 'אישור ביטול' : 'Confirm cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Switch to yearly confirmation modal */}
+      {showYearlySwitchConfirm && (
+        <div className="app-modal-overlay" onClick={() => setShowYearlySwitchConfirm(false)} style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}>
+          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" style={{ background: 'var(--bg2)', border: '1px solid rgba(245,158,11,0.28)', borderRadius: '24px', padding: '34px 30px', maxWidth: '440px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', textAlign: 'center' }}>
+            <div style={{ width: '58px', height: '58px', borderRadius: '18px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Icon name="calendar_month" size={28} color="#f59e0b" />
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px' }}>
+              {language === 'he' ? 'מעבר למנוי שנתי' : 'Switch to yearly'}
+            </div>
+            <div style={{ fontSize: '14px', color: 'var(--text3)', lineHeight: 1.75, marginBottom: '18px' }}>
+              {language === 'he'
+                ? 'המעבר יתבצע עכשיו. Lemon Squeezy יחשב חיוב יחסי לפי הזמן והקרדיט שנשארו במנוי החודשי. לאחר מכן המנוי יתחדש כמנוי שנתי במחיר $160 לשנה.'
+                : 'The switch will happen now. Lemon Squeezy will calculate the prorated charge based on the time and credit left on the monthly plan. After that, the subscription renews yearly at $160/year.'}
+            </div>
+            <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '14px', padding: '12px 14px', color: '#f59e0b', fontSize: '13px', fontWeight: '800', lineHeight: 1.45, marginBottom: '26px' }}>
+              {language === 'he'
+                ? 'החיוב המדויק מחושב על ידי Lemon Squeezy ויופיע בחשבונית.'
+                : 'The exact amount is calculated by Lemon Squeezy and will appear on the invoice.'}
+            </div>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowYearlySwitchConfirm(false)}
+                style={{ flex: 1, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '750', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}
+              >
+                {language === 'he' ? 'חזור' : 'Go back'}
+              </button>
+              <button
+                onClick={() => handleResumePro('yearly')}
+                disabled={Boolean(resumingPro)}
+                style={{ flex: 1, background: '#f59e0b', border: '1px solid rgba(245,158,11,0.55)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '850', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', opacity: resumingPro ? 0.65 : 1 }}
+              >
+                {resumingPro === 'yearly'
+                  ? (language === 'he' ? 'מעביר...' : 'Switching...')
+                  : (language === 'he' ? 'אשר מעבר' : 'Confirm switch')}
               </button>
             </div>
           </div>
