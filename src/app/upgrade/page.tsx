@@ -54,7 +54,7 @@ export default function UpgradePage() {
   }
 
   const proList = PRO_FEATURES[language]
-  const price = billingPeriod === 'yearly' ? '$160' : '$20'
+  const price = billingPeriod === 'yearly' ? '$199' : '$20'
   const priceSuffix = billingPeriod === 'yearly'
     ? (language === 'he' ? 'שנה' : 'year')
     : (language === 'he' ? 'חודש' : 'month')

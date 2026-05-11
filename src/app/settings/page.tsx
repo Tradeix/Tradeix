@@ -173,6 +173,15 @@ export default function SettingsPage() {
   const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
   const isCanceledButActive = billingProfile?.subscription_status === 'cancelled' && Boolean(endsDate)
   const primaryBillingDate = isCanceledButActive ? endsDate : (renewalDate || trialEndsDate || endsDate)
+  const isYearlyPlan = Boolean(primaryBillingDate && new Date(primaryBillingDate).getTime() - Date.now() > 1000 * 60 * 60 * 24 * 45)
+  const planPeriodLabel = isYearlyPlan
+    ? (language === 'he' ? 'שנתי' : 'Yearly')
+    : (language === 'he' ? 'חודשי' : 'Monthly')
+  const planPriceLabel = isPro
+    ? isYearlyPlan
+      ? (language === 'he' ? '$199 / שנה' : '$199 / year')
+      : (language === 'he' ? '$20 / חודש' : '$20 / month')
+    : (language === 'he' ? 'ללא עלות' : 'No charge')
   const primaryBillingLabel = isCanceledButActive
     ? (language === 'he' ? 'גישה פעילה עד' : 'Access active until')
     : (language === 'he' ? 'החידוש הבא' : 'Next renewal')
@@ -414,10 +423,10 @@ export default function SettingsPage() {
               </div>
               <div style={{ fontSize: '23px', fontWeight: '900', color: isPro ? '#f59e0b' : '#0f8d63', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
-                {isPro && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {language === 'he' ? 'פעיל' : 'Active'}</span>}
+                {isPro && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {planPeriodLabel}</span>}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
-                {isPro ? '$20 / ' + (language === 'he' ? 'חודש' : 'month') : (language === 'he' ? 'ללא עלות' : 'No charge')}
+                {planPriceLabel}
               </div>
             </div>
             <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(15,141,99,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -512,7 +521,7 @@ export default function SettingsPage() {
                       : (language === 'he' ? 'חדש שנתי' : 'Yearly')}
                   </span>
                   <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.78, lineHeight: 1 }}>
-                    {language === 'he' ? '$160 / שנה' : '$160 / yr'}
+                    {language === 'he' ? '$199 / שנה' : '$199 / yr'}
                   </span>
                 </button>
               </div>
@@ -532,7 +541,7 @@ export default function SettingsPage() {
                       : (language === 'he' ? 'החלף למנוי שנתי' : 'Switch to yearly')}
                   </span>
                   <span style={{ fontSize: '11px', color: isLight ? '#92400e' : 'rgba(245,158,11,0.78)', fontWeight: '750', lineHeight: 1.25 }}>
-                    {language === 'he' ? 'חיוב יחסי עכשיו • $160/שנה בחידוש הבא' : 'Prorated now • $160/yr next renewal'}
+                    {language === 'he' ? 'חיוב יחסי עכשיו • $199/שנה בחידוש הבא' : 'Prorated now • $199/yr next renewal'}
                   </span>
                 </span>
                 <span style={{ minWidth: '34px', height: '34px', borderRadius: '12px', background: 'rgba(245,158,11,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -615,8 +624,8 @@ export default function SettingsPage() {
             </div>
             <div style={{ fontSize: '14px', color: 'var(--text3)', lineHeight: 1.75, marginBottom: '18px' }}>
               {language === 'he'
-                ? 'המעבר יתבצע עכשיו. Lemon Squeezy יחשב חיוב יחסי לפי הזמן והקרדיט שנשארו במנוי החודשי. לאחר מכן המנוי יתחדש כמנוי שנתי במחיר $160 לשנה.'
-                : 'The switch will happen now. Lemon Squeezy will calculate the prorated charge based on the time and credit left on the monthly plan. After that, the subscription renews yearly at $160/year.'}
+                ? 'המעבר יתבצע עכשיו. Lemon Squeezy יחשב חיוב יחסי לפי הזמן והקרדיט שנשארו במנוי החודשי. לאחר מכן המנוי יתחדש כמנוי שנתי במחיר $199 לשנה.'
+                : 'The switch will happen now. Lemon Squeezy will calculate the prorated charge based on the time and credit left on the monthly plan. After that, the subscription renews yearly at $199/year.'}
             </div>
             <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '14px', padding: '12px 14px', color: '#f59e0b', fontSize: '13px', fontWeight: '800', lineHeight: 1.45, marginBottom: '26px' }}>
               {language === 'he'
