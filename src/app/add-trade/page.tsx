@@ -40,6 +40,8 @@ type SavedTradeSummary = {
   takeProfit: number | null
   rr: number | null
   date: string
+  strategyName: string
+  notes: string
 }
 
 type PendingAiSave = {
@@ -317,7 +319,13 @@ export default function AddTradePage() {
       toast.error(language === 'he' ? 'נא למלא סכום רווח/הפסד' : 'Please enter trade P&L')
       return
     }
-    const data = { ...pendingAiSave.data, outcome: tradeData.outcome, pnl }
+    const data = {
+      ...pendingAiSave.data,
+      outcome: tradeData.outcome,
+      pnl,
+      notes: tradeData.notes,
+      strategy_id: tradeData.strategy_id,
+    }
     setShowAiPnlPopup(false)
     await saveTrade(data, pendingAiSave.imageFile, { redirect: false, sourceAi: true, aiAnalysis: pendingAiSave.analysis })
     setPendingAiSave(null)
@@ -402,6 +410,8 @@ export default function AddTradePage() {
         takeProfit: tpNum,
         rr: rrRatio,
         date: data.traded_at,
+        strategyName: strategies.find(strategy => strategy.id === data.strategy_id)?.name || tr.noStrategy,
+        notes: data.notes || '',
       })
       setAutoEditTrade(inserted as Trade)
       setShowAiSuccessPopup(true)
@@ -1062,7 +1072,7 @@ export default function AddTradePage() {
           <div
             onClick={e => e.stopPropagation()}
             className="app-modal-card app-modal-card--compact" data-tight="1"
-            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px', maxWidth: '340px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '18px', padding: '18px', maxWidth: '460px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
           >
             <div style={{ fontSize: '16px', fontWeight: 900, color: 'var(--text)', marginBottom: '6px' }}>
               {language === 'he' ? 'כמה הרווחת / הפסדת בעסקה?' : 'How much did you win / lose?'}
@@ -1072,59 +1082,168 @@ export default function AddTradePage() {
                 ? 'בחר אם זו עסקת רווח או הפסד והזן את הסכום.'
                 : 'Choose whether this was a win or loss and enter the amount.'}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px', marginBottom: '10px' }}>
-              {(['win', 'loss'] as const).map(outcome => {
-                const active = tradeData.outcome === outcome
-                const color = outcome === 'win' ? '#22c55e' : '#ef4444'
-                return (
-                  <button
-                    key={outcome}
-                    type="button"
-                    onClick={() => {
-                      setTradeData(p => ({ ...p, outcome }))
-                      if (pendingAiSave) setPendingAiSave({ ...pendingAiSave, data: { ...pendingAiSave.data, outcome } })
-                    }}
-                    style={{
-                      height: '38px',
-                      borderRadius: '10px',
-                      border: `1px solid ${active ? color : 'var(--border)'}`,
-                      background: active ? `${color}18` : 'var(--bg3)',
-                      color: active ? color : 'var(--text2)',
-                      fontFamily: 'Heebo, sans-serif',
-                      fontSize: '13px',
-                      fontWeight: 900,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {outcome.toUpperCase()}
-                  </button>
-                )
-              })}
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '10px', marginBottom: '10px', textAlign: language === 'he' ? 'right' : 'left' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: 'var(--text3)', marginBottom: '6px' }}>
+                  {language === 'he' ? 'תוצאה' : 'Result'}
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px' }}>
+                  {(['win', 'loss'] as const).map(outcome => {
+                    const active = tradeData.outcome === outcome
+                    const color = outcome === 'win' ? '#22c55e' : '#ef4444'
+                    return (
+                      <button
+                        key={outcome}
+                        type="button"
+                        onClick={() => {
+                          setTradeData(p => ({ ...p, outcome }))
+                          if (pendingAiSave) setPendingAiSave({ ...pendingAiSave, data: { ...pendingAiSave.data, outcome } })
+                        }}
+                        style={{
+                          height: '40px',
+                          borderRadius: '10px',
+                          border: `1px solid ${active ? color : 'var(--border)'}`,
+                          background: active ? `${color}18` : 'var(--bg3)',
+                          color: active ? color : 'var(--text2)',
+                          fontFamily: 'Heebo, sans-serif',
+                          fontSize: '13px',
+                          fontWeight: 900,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {outcome.toUpperCase()}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: pnlError ? '#ef4444' : 'var(--text3)', marginBottom: '6px' }}>
+                  {language === 'he' ? 'סכום' : 'Amount'} ($)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  autoFocus
+                  value={tradeData.pnl}
+                  onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); setPnlError(false) }}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmAiPnl() } }}
+                  placeholder="0.00"
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '22px',
+                    fontWeight: 900,
+                    height: '40px',
+                    marginBottom: 0,
+                    borderColor: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
+                    boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
+                  }}
+                />
+              </div>
             </div>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              autoFocus
-              value={tradeData.pnl}
-              onChange={e => { setTradeData(p => ({ ...p, pnl: e.target.value })); setPnlError(false) }}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmAiPnl() } }}
-              placeholder="0.00"
-              style={{
-                textAlign: 'center',
-                fontSize: '24px',
-                fontWeight: 900,
-                height: '48px',
-                marginBottom: pnlError ? '5px' : '12px',
-                borderColor: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
-                boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
-              }}
-            />
             {pnlError && (
               <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>
                 {language === 'he' ? 'שדה חובה' : 'Required field'}
               </div>
             )}
+            {isPro && (
+              <div style={{ position: 'relative', marginBottom: '10px', textAlign: language === 'he' ? 'right' : 'left' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: 'var(--text3)', marginBottom: '6px' }}>
+                  {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => strategies.length > 0 && setStrategyMenuOpen(v => !v)}
+                  disabled={strategies.length === 0}
+                  style={{
+                    width: '100%',
+                    height: '40px',
+                    borderRadius: '11px',
+                    border: strategyMenuOpen ? '1px solid rgba(15,141,99,0.55)' : '1px solid var(--border2)',
+                    background: 'var(--bg3)',
+                    color: strategies.length > 0 ? 'var(--text)' : 'var(--text3)',
+                    padding: '0 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '10px',
+                    cursor: strategies.length > 0 ? 'pointer' : 'not-allowed',
+                    fontFamily: 'Heebo, sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 850,
+                  }}
+                >
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {strategies.length > 0 ? selectedStrategyLabel : (language === 'he' ? 'אין אסטרטגיות' : 'No strategies')}
+                  </span>
+                  <Icon name={strategyMenuOpen ? 'expand_less' : 'expand_more'} size={17} color="var(--text3)" />
+                </button>
+                {strategyMenuOpen && strategies.length > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 6px)',
+                      left: 0,
+                      right: 0,
+                      zIndex: 25,
+                      borderRadius: '14px',
+                      border: '1px solid rgba(15,141,99,0.32)',
+                      background: 'var(--modal-bg)',
+                      boxShadow: '0 22px 55px rgba(0,0,0,0.45)',
+                      padding: '6px',
+                      maxHeight: '170px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {[{ id: '', name: tr.noStrategy }, ...strategies].map(strategy => {
+                      const active = tradeData.strategy_id === strategy.id
+                      return (
+                        <button
+                          key={strategy.id || 'none-ai'}
+                          type="button"
+                          onClick={() => {
+                            setTradeData(p => ({ ...p, strategy_id: strategy.id }))
+                            setStrategyMenuOpen(false)
+                          }}
+                          style={{
+                            width: '100%',
+                            minHeight: '38px',
+                            borderRadius: '10px',
+                            border: '1px solid transparent',
+                            background: active ? 'rgba(15,141,99,0.14)' : 'transparent',
+                            color: active ? '#0f8d63' : 'var(--text2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: language === 'he' ? 'flex-end' : 'flex-start',
+                            textAlign: language === 'he' ? 'right' : 'left',
+                            padding: '0 11px',
+                            fontFamily: 'Heebo, sans-serif',
+                            fontSize: '13px',
+                            fontWeight: active ? 900 : 750,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{strategy.name}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+            <div style={{ marginBottom: '12px', textAlign: language === 'he' ? 'right' : 'left' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: 'var(--text3)', marginBottom: '6px' }}>
+                {language === 'he' ? 'מחשבות על העסקה' : 'Trade thoughts'}
+              </label>
+              <textarea
+                value={tradeData.notes}
+                onChange={e => setTradeData(p => ({ ...p, notes: e.target.value }))}
+                placeholder={language === 'he' ? 'מה עבד, מה לא עבד, ומה לשפר...' : 'What worked, what did not, what to improve...'}
+                rows={2}
+                style={{ width: '100%', minHeight: '58px', resize: 'none', boxSizing: 'border-box', fontSize: '13px', lineHeight: 1.35 }}
+              />
+            </div>
             <button
               onClick={confirmAiPnl}
               disabled={submitting}
@@ -1146,23 +1265,23 @@ export default function AddTradePage() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="app-modal-card" data-tight="1"
-            style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '36px 28px 28px', maxWidth: '400px', width: '100%', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}
+            className="app-modal-card app-modal-card--compact" data-tight="1"
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '20px', padding: '20px', maxWidth: '560px', width: '100%', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}
           >
             {/* Success icon */}
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(15,141,99,0.12)', border: '2px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-              <Icon name="check_circle" size={32} color="#0f8d63" />
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(15,141,99,0.12)', border: '2px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <Icon name="check_circle" size={25} color="#0f8d63" />
             </div>
 
             {/* Title */}
-            <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text)', marginBottom: '16px', lineHeight: 1.4 }}>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text)', marginBottom: '10px', lineHeight: 1.35 }}>
               {language === 'he' ? 'ניתוח העסקה הושלם בהצלחה' : 'Trade Analysis Completed Successfully'}
             </div>
 
             {/* Confidence */}
             {aiConfidence > 0 && (
-              <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#0f8d63' }}>
+              <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '12px', padding: '9px 12px', marginBottom: '10px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63' }}>
                   {language === 'he' ? 'ביטחון לפי קריאת הנתונים' : 'Data reading confidence'}: {aiConfidence}%
                 </div>
               </div>
@@ -1170,7 +1289,7 @@ export default function AddTradePage() {
 
             {/* Disclaimer */}
             {savedTradeSummary && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px', textAlign: 'start' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))', gap: '7px', marginBottom: savedTradeSummary.notes ? '10px' : '12px', textAlign: 'start' }}>
                 {[
                   ['WIN/LOSS', savedTradeSummary.outcome.toUpperCase()],
                   ['PNL', `${savedTradeSummary.pnl >= 0 ? '+' : '-'}$${Math.abs(savedTradeSummary.pnl).toLocaleString()}`],
@@ -1180,40 +1299,54 @@ export default function AddTradePage() {
                   ['RR', savedTradeSummary.rr ? `1 : ${savedTradeSummary.rr.toFixed(2)}` : '-'],
                   ['DATE', savedTradeSummary.date],
                   ['SYMBOL', savedTradeSummary.symbol],
+                  ['STRATEGY', savedTradeSummary.strategyName],
                 ].map(([label, value]) => (
-                  <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px 12px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 800, letterSpacing: '0.08em', marginBottom: '3px' }}>{label}</div>
-                    <div dir="ltr" style={{ fontSize: '14px', color: label === 'WIN/LOSS' ? (String(value) === 'WIN' ? '#22c55e' : '#ef4444') : 'var(--text)', fontWeight: 900 }}>{String(value)}</div>
+                  <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '11px', padding: '8px 9px', minWidth: 0 }}>
+                    <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 850, letterSpacing: '0.06em', marginBottom: '2px' }}>{label}</div>
+                    <div dir={label === 'STRATEGY' ? 'auto' : 'ltr'} style={{ fontSize: '13px', color: label === 'WIN/LOSS' ? (String(value) === 'WIN' ? '#22c55e' : '#ef4444') : 'var(--text)', fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(value)}</div>
                   </div>
                 ))}
               </div>
             )}
 
-            <div style={{ fontSize: '12.5px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '22px', padding: '0 4px' }}>
+            {savedTradeSummary?.notes && (
+              <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '12px', padding: '9px 11px', textAlign: language === 'he' ? 'right' : 'left', marginBottom: '10px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 850, letterSpacing: '0.06em', marginBottom: '3px' }}>
+                  {language === 'he' ? 'מחשבות' : 'THOUGHTS'}
+                </div>
+                <div style={{ fontSize: '12.5px', color: 'var(--text)', fontWeight: 700, lineHeight: 1.45 }}>
+                  {savedTradeSummary.notes}
+                </div>
+              </div>
+            )}
+
+            <div style={{ fontSize: '11.5px', color: 'var(--text3)', lineHeight: 1.45, marginBottom: '12px', padding: '0 4px' }}>
               {language === 'he'
                 ? 'חשוב לוודא שהנתונים שהוזנו נכונים. גם בינה מלאכותית יכולה לטעות לפעמים.'
                 : 'Please verify that the data entered is correct. AI can sometimes make mistakes.'}
             </div>
 
-            {autoEditTrade && (
-              <button
-                onClick={() => setShowAiSuccessPopup(false)}
-                className="btn-ghost"
-                style={{ width: '100%', marginBottom: '10px', padding: '13px', fontSize: '15px', fontWeight: '800' }}
-              >
-                {language === 'he' ? 'ערוך עסקה' : 'Edit Trade'}
-              </button>
-            )}
+            <div style={{ display: 'grid', gridTemplateColumns: autoEditTrade ? '1fr 1fr' : '1fr', gap: '9px' }}>
+              {autoEditTrade && (
+                <button
+                  onClick={() => setShowAiSuccessPopup(false)}
+                  className="btn-ghost"
+                  style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '800' }}
+                >
+                  {language === 'he' ? 'ערוך עסקה' : 'Edit Trade'}
+                </button>
+              )}
 
-            {/* OK button */}
-            <button
-              onClick={() => { setAutoEditTrade(null); setShowAiSuccessPopup(false); router.push('/trades') }}
-              className="btn-primary"
-              style={{ width: '100%', padding: '13px', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-            >
-              <Icon name="check" size={18} color="#fff" />
-              {language === 'he' ? 'אישור' : 'OK'}
-            </button>
+              {/* OK button */}
+              <button
+                onClick={() => { setAutoEditTrade(null); setShowAiSuccessPopup(false); router.push('/trades') }}
+                className="btn-primary"
+                style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <Icon name="check" size={17} color="#fff" />
+                {language === 'he' ? 'אישור' : 'OK'}
+              </button>
+            </div>
           </div>
         </div>
       )}
