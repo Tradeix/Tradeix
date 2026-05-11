@@ -129,7 +129,7 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleResumePro(billingPeriod: 'monthly' | 'yearly') {
+  async function handleResumePro(billingPeriod: 'monthly' | 'yearly', redirectAfterSuccess?: string) {
     setResumingPro(billingPeriod)
     try {
       const payload = await resumeSubscription(billingPeriod)
@@ -160,6 +160,10 @@ export default function SettingsPage() {
         : billingPeriod === 'yearly'
           ? 'Subscription resumed and switched to yearly.'
           : 'Subscription resumed. Future billing will continue on the original renewal date.')
+
+      if (redirectAfterSuccess) {
+        window.location.assign(redirectAfterSuccess)
+      }
     } catch (error: any) {
       toast.error(error?.message || (language === 'he' ? 'שגיאה בחידוש המנוי' : 'Subscription resume failed'))
     } finally {
@@ -642,7 +646,7 @@ export default function SettingsPage() {
                 {language === 'he' ? 'חזור' : 'Go back'}
               </button>
               <button
-                onClick={() => handleResumePro('yearly')}
+                onClick={() => handleResumePro('yearly', 'https://tradeix.vercel.app/settings')}
                 disabled={Boolean(resumingPro)}
                 style={{ flex: 1, background: '#f59e0b', border: '1px solid rgba(245,158,11,0.55)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '850', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', opacity: resumingPro ? 0.65 : 1 }}
               >
