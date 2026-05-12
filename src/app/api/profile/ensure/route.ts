@@ -13,6 +13,19 @@ function profileFromUser(user: any) {
   }
 }
 
+async function upsertProfile(client: ReturnType<typeof createAdminClient> | ReturnType<typeof createClient>, profile: Record<string, unknown>) {
+  const fullResult = await client.from('profiles').upsert(profile, { onConflict: 'id', ignoreDuplicates: true })
+  if (!fullResult.error) return { error: null, fallback: false }
+
+  // If an optional profile column was removed in Supabase, still create the
+  // required profile row so billing/profile lookups have a user record.
+  const minimalResult = await client
+    .from('profiles')
+    .upsert({ id: profile.id }, { onConflict: 'id', ignoreDuplicates: true })
+
+  return { error: minimalResult.error, fallback: true, originalError: fullResult.error.message }
+}
+
 export async function POST() {
   const supabase = createClient()
   const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -25,12 +38,24 @@ export async function POST() {
 
   if (isSupabaseAdminConfigured) {
     const admin = createAdminClient()
-    const { error } = await admin.from('profiles').upsert(profile, { onConflict: 'id', ignoreDuplicates: true })
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  } else {
-    const { error } = await supabase.from('profiles').upsert(profile, { onConflict: 'id', ignoreDuplicates: true })
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  }
+    const result = await upsertProfile(admin, profile)
+    if (result.error) {
+      return NextResponse.json({
+        error: result.error.message,
+        originalError: result.originalError,
+      }, { status: 500 })
+    }
 
-  return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, fallback: result.fallback })
+  } else {
+    const result = await upsertProfile(supabase, profile)
+    if (result.error) {
+      return NextResponse.json({
+        error: result.error.message,
+        originalError: result.originalError,
+      }, { status: 500 })
+    }
+
+    return NextResponse.json({ ok: true, fallback: result.fallback })
+  }
 }
