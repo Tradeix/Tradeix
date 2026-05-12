@@ -430,12 +430,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // placeholder.
   useEffect(() => {
     let alive = true
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!alive) return
       if (!user) {
         router.replace('/auth/login')
         return
       }
+      await fetch('/api/profile/ensure', { method: 'POST' }).catch(() => null)
+      if (!alive) return
       setAuthedUser(user)
       setAuthChecked(true)
     })
