@@ -36,11 +36,11 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('lemon_squeezy_subscription_id')
+    .select('subscription_tier, lemon_squeezy_subscription_id')
     .eq('id', user.id)
     .single()
 
-  if (profile?.lemon_squeezy_subscription_id) {
+  if (profile?.subscription_tier !== 'free' && profile?.lemon_squeezy_subscription_id) {
     if (!monthlyVariantId || !yearlyVariantId || !isSupabaseAdminConfigured) {
       return NextResponse.json({ error: 'Billing renewal is not configured' }, { status: 500 })
     }

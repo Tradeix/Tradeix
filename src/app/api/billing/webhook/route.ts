@@ -70,6 +70,16 @@ export async function POST(request: Request) {
   const tier = hasProAccess(status, endsAt) ? 'pro' : 'free'
 
   const supabase = createAdminClient()
+  const { data: currentProfile } = await supabase
+    .from('profiles')
+    .select('subscription_tier, lemon_squeezy_subscription_id')
+    .eq('id', userId)
+    .single()
+
+  if (currentProfile?.subscription_tier === 'free' && eventName !== 'subscription_created') {
+    return NextResponse.json({ received: true, ignored: 'manual_free_override' })
+  }
+
   const profileUpdate: Record<string, unknown> = {
     id: userId,
     subscription_tier: tier,
