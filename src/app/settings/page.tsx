@@ -14,9 +14,8 @@ type BillingProfile = {
   subscription_renews_at: string | null
   subscription_ends_at: string | null
   subscription_trial_ends_at: string | null
+  subscription_billing_period?: 'monthly' | 'yearly' | null
 }
-
-const BILLING_PROFILE_SELECT = 'subscription_tier, subscription_status, subscription_renews_at, subscription_ends_at, subscription_trial_ends_at'
 
 export default function SettingsPage() {
   const { theme, language, setTheme, setLanguage, isPro: contextIsPro, cancelSubscription, resumeSubscription } = useApp()
@@ -41,15 +40,13 @@ export default function SettingsPage() {
     const profileUserId = targetUserId || user?.id
     if (!profileUserId) return null
 
-    const { data } = await supabase
-      .from('profiles')
-      .select(BILLING_PROFILE_SELECT)
-      .eq('id', profileUserId)
-      .single()
+    const response = await fetch('/api/billing/status', { cache: 'no-store' })
+    const payload = await response.json().catch(() => null)
+    const data = payload?.profile || null
 
     if (data) setBillingProfile(data as BillingProfile)
     return data as BillingProfile | null
-  }, [supabase, user?.id])
+  }, [user?.id])
 
   useEffect(() => {
     let mounted = true
@@ -61,12 +58,9 @@ export default function SettingsPage() {
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
 
       if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select(BILLING_PROFILE_SELECT)
-          .eq('id', user.id)
-          .single()
-        if (mounted && data) setBillingProfile(data as BillingProfile)
+        const response = await fetch('/api/billing/status', { cache: 'no-store' })
+        const payload = await response.json().catch(() => null)
+        if (mounted && payload?.profile) setBillingProfile(payload.profile as BillingProfile)
       }
     })
 
@@ -83,14 +77,7 @@ export default function SettingsPage() {
         { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
         payload => {
           if (payload.new) {
-            const next = payload.new as BillingProfile
-            setBillingProfile({
-              subscription_tier: next.subscription_tier,
-              subscription_status: next.subscription_status,
-              subscription_renews_at: next.subscription_renews_at,
-              subscription_ends_at: next.subscription_ends_at,
-              subscription_trial_ends_at: next.subscription_trial_ends_at,
-            })
+            void refreshBillingProfile(user.id)
           }
         }
       )
@@ -175,6 +162,7 @@ export default function SettingsPage() {
         subscription_renews_at: cancelled?.renewsAt ?? prev?.subscription_renews_at ?? null,
         subscription_ends_at: cancelled?.endsAt ?? prev?.subscription_ends_at ?? null,
         subscription_trial_ends_at: cancelled?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
+        subscription_billing_period: cancelled?.billingPeriod ?? prev?.subscription_billing_period ?? null,
       }))
       await refreshBillingProfile()
 
@@ -210,6 +198,7 @@ export default function SettingsPage() {
           subscription_renews_at: fallbackRenewal,
           subscription_ends_at: resumed?.endsAt ?? null,
           subscription_trial_ends_at: resumed?.trialEndsAt ?? prev?.subscription_trial_ends_at ?? null,
+          subscription_billing_period: billingPeriod,
         }
       })
       await refreshBillingProfile()
@@ -239,7 +228,9 @@ export default function SettingsPage() {
   const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
   const isCanceledButActive = billingProfile?.subscription_status === 'cancelled' && Boolean(endsDate)
   const primaryBillingDate = isCanceledButActive ? endsDate : (renewalDate || trialEndsDate || endsDate)
-  const isYearlyPlan = Boolean(primaryBillingDate && new Date(primaryBillingDate).getTime() - Date.now() > 1000 * 60 * 60 * 24 * 45)
+  const isYearlyPlan = billingProfile?.subscription_billing_period === 'yearly'
+    || Boolean(!billingProfile?.subscription_billing_period && primaryBillingDate && new Date(primaryBillingDate).getTime() - Date.now() > 1000 * 60 * 60 * 24 * 45)
+  const isCanceledYearlyButActive = isCanceledButActive && isYearlyPlan
   const planPeriodLabel = isYearlyPlan
     ? (language === 'he' ? 'שנתי' : 'Yearly')
     : (language === 'he' ? 'חודשי' : 'Monthly')
@@ -548,6 +539,26 @@ export default function SettingsPage() {
 
           {isPro ? (
             isCanceledButActive ? (
+              isCanceledYearlyButActive ? (
+                <div style={{
+                  marginTop: 'auto',
+                  background: isLight ? 'rgba(255,255,255,0.74)' : 'rgba(245,158,11,0.055)',
+                  border: '1px solid rgba(245,158,11,0.26)',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  display: 'grid',
+                  gap: '8px',
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '950', color: '#f59e0b' }}>
+                    {language === 'he' ? 'מנוי שנתי מבוטל' : 'Canceled yearly plan'}
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: 1.6, color: 'var(--text3)', fontWeight: '700' }}>
+                    {language === 'he'
+                      ? 'המנוי השנתי שלך כבר שולם ויישאר פעיל עד סוף התקופה. אפשר לבצע חידוש או מעבר לתוכנית אחרת רק אחרי שהתוקף השנתי יסתיים.'
+                      : 'Your yearly plan is already paid and remains active until the period ends. Renewal or plan changes will be available only after the yearly access expires.'}
+                  </div>
+                </div>
+              ) : (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: 'auto' }}>
                 <button
                   onClick={() => handleResumePro('monthly')}
@@ -591,6 +602,7 @@ export default function SettingsPage() {
                   </span>
                 </button>
               </div>
+              )
             ) : (
               <>
               {!isYearlyPlan && (

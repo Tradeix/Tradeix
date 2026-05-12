@@ -64,6 +64,12 @@ export async function POST() {
   const renewsAt = toIso(attributes.renews_at)
   const trialEndsAt = toIso(attributes.trial_ends_at)
   const tier = hasProAccess(status, endsAt) ? 'pro' : 'free'
+  const variantId = attributes.variant_id ? String(attributes.variant_id) : null
+  const billingPeriod = variantId && process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID && variantId === process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID
+    ? 'yearly'
+    : variantId && process.env.LEMONSQUEEZY_PRO_VARIANT_ID && variantId === process.env.LEMONSQUEEZY_PRO_VARIANT_ID
+      ? 'monthly'
+      : null
 
   const admin = createAdminClient()
   const { error: updateError } = await admin.from('profiles').upsert({
@@ -74,7 +80,7 @@ export async function POST() {
     lemon_squeezy_customer_id: attributes.customer_id ? String(attributes.customer_id) : null,
     lemon_squeezy_order_id: attributes.order_id ? String(attributes.order_id) : null,
     lemon_squeezy_product_id: attributes.product_id ? String(attributes.product_id) : null,
-    lemon_squeezy_variant_id: attributes.variant_id ? String(attributes.variant_id) : null,
+    lemon_squeezy_variant_id: variantId,
     lemon_squeezy_customer_portal_url: attributes.urls?.customer_portal || null,
     lemon_squeezy_update_payment_url: attributes.urls?.update_payment_method || null,
     subscription_renews_at: renewsAt,
@@ -93,6 +99,7 @@ export async function POST() {
       renewsAt,
       endsAt,
       trialEndsAt,
+      billingPeriod,
     },
   })
 }
