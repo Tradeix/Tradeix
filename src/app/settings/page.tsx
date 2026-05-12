@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const [pendingTheme, setPendingTheme] = useState(theme)
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [syncingBilling, setSyncingBilling] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
@@ -93,6 +94,39 @@ export default function SettingsPage() {
       document.removeEventListener('visibilitychange', refreshOnFocus)
     }
   }, [refreshBillingProfile, supabase, user?.id])
+
+  useEffect(() => {
+    if (!user?.id || typeof window === 'undefined') return
+    if (sessionStorage.getItem('tradeix-refresh-billing') !== 'yearly') return
+
+    let cancelled = false
+
+    async function syncYearlyBilling() {
+      setSyncingBilling(true)
+
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        const profile = await refreshBillingProfile(user.id)
+        if (cancelled) return
+        const yearlyRenewalSynced = Boolean(
+          profile?.subscription_billing_period === 'yearly'
+          && profile.subscription_renews_at
+          && new Date(profile.subscription_renews_at).getTime() - Date.now() > 1000 * 60 * 60 * 24 * 45
+        )
+        if (yearlyRenewalSynced) break
+        await new Promise(resolve => setTimeout(resolve, 1200))
+      }
+
+      sessionStorage.removeItem('tradeix-refresh-billing')
+      if (!cancelled) setSyncingBilling(false)
+    }
+
+    void syncYearlyBilling()
+
+    return () => {
+      cancelled = true
+      setSyncingBilling(false)
+    }
+  }, [refreshBillingProfile, user?.id])
 
   useEffect(() => {
     setPendingLang(language)
@@ -212,6 +246,9 @@ export default function SettingsPage() {
           : 'Subscription resumed. Future billing will continue on the original renewal date.')
 
       if (redirectAfterSuccess) {
+        if (billingPeriod === 'yearly') {
+          sessionStorage.setItem('tradeix-refresh-billing', 'yearly')
+        }
         window.location.assign(redirectAfterSuccess)
       }
     } catch (error: any) {
@@ -524,7 +561,9 @@ export default function SettingsPage() {
                   <Icon name="timer" size={15} color="#0f8d63" />
                 </div>
                 <div dir={language === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: '22px', color: '#0f8d63', fontWeight: '950', lineHeight: 1 }}>
-                  {formatRemainingTime(primaryBillingDate)}
+                  {syncingBilling
+                    ? (language === 'he' ? 'מעדכן...' : 'Updating...')
+                    : formatRemainingTime(primaryBillingDate)}
                 </div>
                 {isCanceledButActive && (
                   <div style={{ marginTop: '8px', fontSize: '12px', color: '#ef4444', fontWeight: '700', lineHeight: 1.45 }}>

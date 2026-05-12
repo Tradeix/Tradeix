@@ -4,6 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
 
+function toIso(value: unknown) {
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
 function emptyFreeProfile() {
   return {
     subscription_tier: 'free',
@@ -13,6 +17,15 @@ function emptyFreeProfile() {
     subscription_trial_ends_at: null,
     subscription_billing_period: null,
   }
+}
+
+function getBillingPeriod(variantId: string | null) {
+  const monthlyVariantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID || null
+  const yearlyVariantId = process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID || null
+
+  if (variantId && yearlyVariantId && variantId === yearlyVariantId) return 'yearly'
+  if (variantId && monthlyVariantId && variantId === monthlyVariantId) return 'monthly'
+  return null
 }
 
 export async function GET() {
@@ -70,22 +83,50 @@ export async function GET() {
     return NextResponse.json({ profile: emptyFreeProfile() })
   }
 
-  const variantId = profile.lemon_squeezy_variant_id ? String(profile.lemon_squeezy_variant_id) : null
-  const monthlyVariantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID || null
-  const yearlyVariantId = process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID || null
-  const billingPeriod = variantId && yearlyVariantId && variantId === yearlyVariantId
-    ? 'yearly'
-    : variantId && monthlyVariantId && variantId === monthlyVariantId
-      ? 'monthly'
-      : null
+  let nextProfile = profile
+  const apiKey = process.env.LEMONSQUEEZY_API_KEY
+  const subscriptionId = profile.lemon_squeezy_subscription_id ? String(profile.lemon_squeezy_subscription_id) : null
+
+  if (apiKey && subscriptionId && isSupabaseAdminConfigured) {
+    const response = await fetch(`https://api.lemonsqueezy.com/v1/subscriptions/${subscriptionId}`, {
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/vnd.api+json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+    }).catch(() => null)
+
+    if (response?.ok) {
+      const payload = await response.json().catch(() => null)
+      const attributes = payload?.data?.attributes || {}
+      const variantId = attributes.variant_id ? String(attributes.variant_id) : nextProfile.lemon_squeezy_variant_id
+      const syncedProfile = {
+        subscription_status: attributes.status || nextProfile.subscription_status,
+        subscription_renews_at: toIso(attributes.renews_at),
+        subscription_ends_at: toIso(attributes.ends_at),
+        subscription_trial_ends_at: toIso(attributes.trial_ends_at),
+        lemon_squeezy_variant_id: variantId,
+        lemon_squeezy_customer_portal_url: attributes.urls?.customer_portal || null,
+        lemon_squeezy_update_payment_url: attributes.urls?.update_payment_method || null,
+        subscription_updated_at: toIso(attributes.updated_at) || new Date().toISOString(),
+      }
+
+      const admin = createAdminClient()
+      await admin.from('profiles').update(syncedProfile).eq('id', user.id)
+      nextProfile = { ...nextProfile, ...syncedProfile }
+    }
+  }
+
+  const variantId = nextProfile.lemon_squeezy_variant_id ? String(nextProfile.lemon_squeezy_variant_id) : null
+  const billingPeriod = getBillingPeriod(variantId)
 
   return NextResponse.json({
     profile: {
-      subscription_tier: profile.subscription_tier,
-      subscription_status: profile.subscription_status,
-      subscription_renews_at: profile.subscription_renews_at,
-      subscription_ends_at: profile.subscription_ends_at,
-      subscription_trial_ends_at: profile.subscription_trial_ends_at,
+      subscription_tier: nextProfile.subscription_tier,
+      subscription_status: nextProfile.subscription_status,
+      subscription_renews_at: nextProfile.subscription_renews_at,
+      subscription_ends_at: nextProfile.subscription_ends_at,
+      subscription_trial_ends_at: nextProfile.subscription_trial_ends_at,
       subscription_billing_period: billingPeriod,
     },
   })
