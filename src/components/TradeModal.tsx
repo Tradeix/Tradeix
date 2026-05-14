@@ -43,21 +43,25 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
   const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
   const [lightbox, setLightbox] = useState(false)
-  const { language } = useApp()
+  const { language, isPro } = useApp()
   const tr = t[language]
   const supabase = createClient()
 
-  // Load the strategies for this trade's portfolio so the user can switch
-  // strategy from the edit form. Runs once when the modal mounts.
+  // Load strategies only for PRO users.
   useEffect(() => {
-    if (!trade.portfolio_id) { setStrategiesLoaded(true); return }
+    if (!isPro || !trade.portfolio_id) {
+      setStrategies([])
+      setStrategiesLoaded(true)
+      return
+    }
+    setStrategiesLoaded(false)
     supabase.from('strategies').select('*').eq('portfolio_id', trade.portfolio_id).order('name').then(({ data }) => {
       if (data) setStrategies(data as Strategy[])
       setStrategiesLoaded(true)
     })
-  }, [trade.portfolio_id])
+  }, [isPro, trade.portfolio_id])
 
-  const currentStrategy = strategies.find(s => s.id === (editing ? form.strategy_id : trade.strategy_id))
+  const currentStrategy = isPro ? strategies.find(s => s.id === (editing ? form.strategy_id : trade.strategy_id)) : undefined
   const selectedStrategyLabel = currentStrategy?.name || (language === 'he' ? 'ללא אסטרטגיה' : 'No strategy')
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -113,7 +117,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
         notes: form.notes,
         traded_at: form.traded_at,
         outcome: form.outcome,
-        strategy_id: form.strategy_id || null,
+        strategy_id: isPro ? (form.strategy_id || null) : null,
       }).eq('id', trade.id)
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה עודכנה' : 'Trade updated')
@@ -326,8 +330,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                 )}
               </div>
 
-              {/* Strategy — selectable when strategies exist, info-only otherwise */}
+              {isPro && (
               <div style={{ marginBottom: '12px' }}>
+                {/* Strategy — selectable when strategies exist, info-only otherwise */}
                 <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   {language === 'he' ? 'אסטרטגיה' : 'Strategy'}
                 </label>
@@ -447,6 +452,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                   </div>
                 )}
               </div>
+              )}
 
               {/* Notes */}
               <div style={{ marginBottom: '16px' }}>
@@ -659,7 +665,8 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                   </div>
                 )}
 
-                {/* Strategy (full width row) — always shown */}
+                {/* Strategy (full width row) — PRO only */}
+                {isPro && (
                 <div className="trade-modal-data-cell trade-modal-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px', background: 'var(--bg2)', gridColumn: 'span 2' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <Icon name="psychology" size={13} color="var(--text3)" />
@@ -671,6 +678,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                     {currentStrategy?.name || (language === 'he' ? 'ללא אסטרטגיה' : 'No strategy')}
                   </span>
                 </div>
+                )}
 
                 {/* Row 4 — Notes (only when there is content) */}
                 {trade.notes && (

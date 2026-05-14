@@ -93,6 +93,14 @@ export default function AddTradePage() {
     }
   }, [isPro, activePortfolio])
 
+  useEffect(() => {
+    if (!isPro) {
+      setStrategies([])
+      setStrategyMenuOpen(false)
+      setTradeData(prev => prev.strategy_id ? { ...prev, strategy_id: '' } : prev)
+    }
+  }, [isPro])
+
   // Free users → manual form only, no steps
   useEffect(() => {
     if (!subscriptionLoading && !isPro) {
@@ -324,7 +332,7 @@ export default function AddTradePage() {
       outcome: tradeData.outcome,
       pnl,
       notes: tradeData.notes,
-      strategy_id: tradeData.strategy_id,
+      strategy_id: isPro ? tradeData.strategy_id : '',
     }
     setShowAiPnlPopup(false)
     await saveTrade(data, pendingAiSave.imageFile, { redirect: false, sourceAi: true, aiAnalysis: pendingAiSave.analysis })
@@ -396,7 +404,7 @@ export default function AddTradePage() {
         image_url: imageUrl, ai_analysis: options.sourceAi ? (options.aiAnalysis ?? aiRaw) : null,
         notes: data.notes, traded_at: data.traded_at,
         outcome: data.outcome,
-        strategy_id: data.strategy_id || null,
+        strategy_id: isPro ? (data.strategy_id || null) : null,
       }).select('*').single()
       if (error) throw error
 
@@ -410,7 +418,7 @@ export default function AddTradePage() {
         takeProfit: tpNum,
         rr: rrRatio,
         date: data.traded_at,
-        strategyName: strategies.find(strategy => strategy.id === data.strategy_id)?.name || tr.noStrategy,
+        strategyName: isPro ? (strategies.find(strategy => strategy.id === data.strategy_id)?.name || tr.noStrategy) : '',
         notes: data.notes || '',
       })
       setAutoEditTrade(inserted as Trade)
@@ -499,7 +507,7 @@ export default function AddTradePage() {
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
         notes: tradeData.notes, traded_at: tradeData.traded_at,
         outcome: tradeData.outcome,
-        strategy_id: tradeData.strategy_id || null,
+        strategy_id: isPro ? (tradeData.strategy_id || null) : null,
       })
       if (error) throw error
       toast.success(language === 'he' ? 'העסקה הועלתה!' : 'Trade added!')
@@ -1299,7 +1307,7 @@ export default function AddTradePage() {
                   ['RR', savedTradeSummary.rr ? `1 : ${savedTradeSummary.rr.toFixed(2)}` : '-'],
                   ['DATE', savedTradeSummary.date],
                   ['SYMBOL', savedTradeSummary.symbol],
-                  ['STRATEGY', savedTradeSummary.strategyName],
+                  ...(isPro ? [['STRATEGY', savedTradeSummary.strategyName]] : []),
                 ].map(([label, value]) => (
                   <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '11px', padding: '8px 9px', minWidth: 0 }}>
                     <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 850, letterSpacing: '0.06em', marginBottom: '2px' }}>{label}</div>
