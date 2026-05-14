@@ -383,31 +383,31 @@ export default function DashboardPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, alignItems: 'stretch', borderBlock: '1px solid var(--border)', padding: '18px 0' }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
-                padding: '0 18px',
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                padding: '0 26px',
+                display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
                 minHeight: '92px',
                 borderInlineEnd: '1px solid var(--border)',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name="account_balance_wallet" size={14} color="#0f8d63" />
                   {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
                 </div>
-                <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
                   ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </div>
               </div>
 
               {/* Return (left side in RTL) */}
               <div style={{
-                padding: '0 18px',
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                padding: '0 26px',
+                display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
                 minHeight: '92px',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
                   {language === 'he' ? 'תשואה' : 'Return'}
                 </div>
-                <div dir="ltr" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif' }}>
+                <div dir="ltr" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
                   {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
                 </div>
               </div>
@@ -415,16 +415,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, padding: '0 26px 22px', marginTop: 'auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '0 0 22px', marginTop: 'auto', borderTop: '1px solid var(--border)' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
               { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
               { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
             ].map((t, i) => (
               <div key={i} style={{
-                padding: '12px 10px 0',
+                padding: '18px 10px 0',
                 textAlign: 'center',
                 borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
+                minWidth: 0,
               }}>
                 <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '6px' }}>
                   {t.label}
