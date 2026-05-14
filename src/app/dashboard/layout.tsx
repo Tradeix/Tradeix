@@ -36,7 +36,7 @@ function getPortfolioColor(portfolio: any) {
   return PORTFOLIO_COLOR_MAP[(portfolio as any)?.color || 'green'] || '#0f8d63'
 }
 
-const PORTFOLIO_AGNOSTIC_PATHS = ['/portfolios', '/portfolios/archive', '/gallery', '/settings']
+const PORTFOLIO_AGNOSTIC_PATHS = ['/portfolios', '/portfolios/archive', '/gallery', '/settings', '/upgrade']
 
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()

@@ -97,7 +97,6 @@ export default function UpgradePage() {
           <div className="upgrade-proof">
             {trustItems.map(item => (
               <span key={item}>
-                <Icon name="check" size={14} color="#36cb61" />
                 {item}
               </span>
             ))}
@@ -106,9 +105,7 @@ export default function UpgradePage() {
           <div className="upgrade-features">
             {proList.map(feature => (
               <div key={feature.label}>
-                <span>
-                  <Icon name={feature.icon} size={15} color="#f59e0b" />
-                </span>
+                <Icon name="check" size={15} color="#36cb61" />
                 {feature.label}
               </div>
             ))}
@@ -136,7 +133,7 @@ export default function UpgradePage() {
             })}
           </div>
 
-          <div className="price-box">
+          <div className="price-strip">
             <div className="plan-badge">
               {isYearly
                 ? (language === 'he' ? 'חודשיים מתנה' : '2 months free')
@@ -196,19 +193,19 @@ export default function UpgradePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 10px 0;
+          padding: 8px 0;
           font-family: Heebo, sans-serif;
         }
 
         .upgrade-card {
-          width: min(100%, 1020px);
-          min-height: 500px;
+          width: min(100%, 1080px);
+          min-height: 460px;
           position: relative;
           overflow: hidden;
           display: grid;
-          grid-template-columns: minmax(0, 1.06fr) minmax(340px, 0.72fr);
-          gap: 22px;
-          padding: 24px;
+          grid-template-columns: minmax(0, 1fr) minmax(390px, 0.88fr);
+          gap: 34px;
+          padding: 30px;
           border-radius: 26px;
           border: 1px solid rgba(245,158,11,0.24);
           background:
@@ -252,20 +249,19 @@ export default function UpgradePage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 18px;
+          gap: 16px;
           min-width: 0;
         }
 
         .upgrade-mark {
-          width: 56px;
-          height: 56px;
+          width: 48px;
+          height: 48px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 18px;
-          border: 1px solid rgba(245,158,11,0.32);
-          background: rgba(245,158,11,0.12);
-          box-shadow: 0 18px 42px rgba(245,158,11,0.15);
+          border-radius: 14px;
+          border: 1px solid rgba(245,158,11,0.30);
+          background: rgba(245,158,11,0.10);
         }
 
         .upgrade-eyebrow {
@@ -292,92 +288,84 @@ export default function UpgradePage() {
           margin: 12px 0 0;
           color: var(--text3);
           font-size: 15px;
-          line-height: 1.65;
+          line-height: 1.55;
           font-weight: 650;
         }
 
         .upgrade-proof {
           display: flex;
           flex-wrap: wrap;
-          gap: 9px;
+          gap: 14px;
         }
 
         .upgrade-proof span {
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          min-height: 34px;
-          padding: 7px 11px;
-          border-radius: 999px;
-          border: 1px solid rgba(54,203,97,0.18);
-          background: rgba(54,203,97,0.075);
-          color: var(--text2);
+          min-height: 24px;
+          color: #36cb61;
           font-size: 12px;
-          font-weight: 800;
+          font-weight: 900;
           white-space: nowrap;
+        }
+
+        .upgrade-proof span::before {
+          content: '';
+          width: 6px;
+          height: 6px;
+          border-radius: 999px;
+          background: #36cb61;
+          margin-inline-end: 7px;
         }
 
         .upgrade-features {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
+          gap: 10px 18px;
           max-width: 620px;
+          padding-top: 4px;
         }
 
         .upgrade-features div {
           display: flex;
           align-items: center;
-          gap: 10px;
-          min-height: 44px;
-          padding: 10px 12px;
-          border-radius: 14px;
-          border: 1px solid rgba(255,255,255,0.065);
-          background: rgba(255,255,255,0.035);
+          gap: 8px;
+          min-height: 28px;
+          padding: 0;
+          border: none;
+          background: transparent;
           color: var(--text2);
           font-size: 13px;
           font-weight: 800;
         }
 
-        .upgrade-features span {
-          width: 28px;
-          height: 28px;
-          flex: 0 0 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 10px;
-          background: rgba(245,158,11,0.11);
-        }
-
         .upgrade-panel {
           align-self: center;
-          padding: 18px;
-          border-radius: 22px;
-          border: 1px solid rgba(245,158,11,0.26);
-          background: rgba(5,8,13,0.48);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 22px 48px rgba(0,0,0,0.20);
+          display: grid;
+          gap: 18px;
+          padding-inline-start: 30px;
+          border-inline-start: 1px solid rgba(245,158,11,0.24);
         }
 
         [data-theme="light"] .upgrade-panel {
-          background: rgba(255,255,255,0.78);
+          border-inline-start-color: rgba(245,158,11,0.28);
         }
 
         .billing-toggle {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 10px;
-          padding: 8px;
+          padding: 0;
           border-radius: 18px;
-          border: 1px solid rgba(245,158,11,0.16);
-          background: rgba(0,0,0,0.14);
-          margin-bottom: 16px;
+          border: none;
+          background: transparent;
+          margin-bottom: 0;
         }
 
         .billing-toggle button {
-          min-height: 70px;
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 14px;
-          background: rgba(255,255,255,0.03);
+          min-height: 76px;
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          background: color-mix(in srgb, var(--bg3) 74%, transparent);
           color: var(--text2);
           cursor: pointer;
           font-family: Heebo, sans-serif;
@@ -391,9 +379,9 @@ export default function UpgradePage() {
 
         .billing-toggle button[data-active="1"] {
           border-color: rgba(245,158,11,0.72);
-          background: linear-gradient(135deg, rgba(245,158,11,0.20), rgba(245,158,11,0.075));
+          background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.055));
           color: #f59e0b;
-          box-shadow: 0 14px 34px rgba(245,158,11,0.13), inset 0 1px 0 rgba(255,255,255,0.09);
+          box-shadow: 0 14px 34px rgba(245,158,11,0.11);
         }
 
         .billing-toggle strong,
@@ -413,13 +401,13 @@ export default function UpgradePage() {
           opacity: 0.78;
         }
 
-        .price-box {
-          text-align: center;
-          padding: 20px 12px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.045));
-          border: 1px solid rgba(245,158,11,0.20);
-          margin-bottom: 14px;
+        .price-strip {
+          text-align: start;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          align-items: center;
+          gap: 12px 18px;
+          padding-block: 2px;
         }
 
         .plan-badge {
@@ -434,13 +422,14 @@ export default function UpgradePage() {
           color: #36cb61;
           font-size: 11px;
           font-weight: 950;
-          margin-bottom: 12px;
+          grid-column: 1 / -1;
+          justify-self: start;
         }
 
         .price-row {
           display: flex;
           align-items: flex-end;
-          justify-content: center;
+          justify-content: flex-start;
           gap: 7px;
         }
 
@@ -463,7 +452,8 @@ export default function UpgradePage() {
           color: var(--text3);
           font-size: 12px;
           font-weight: 800;
-          margin-top: 12px;
+          margin-top: 0;
+          align-self: end;
         }
 
         .upgrade-cta,
@@ -527,7 +517,7 @@ export default function UpgradePage() {
         }
 
         .checkout-hint {
-          margin-top: 12px;
+          margin-top: -4px;
           text-align: center;
           color: var(--text3);
           font-size: 11px;
@@ -573,6 +563,11 @@ export default function UpgradePage() {
           .upgrade-features {
             grid-template-columns: 1fr 1fr;
           }
+
+          .upgrade-panel {
+            border-inline-start: 0;
+            padding-inline-start: 0;
+          }
         }
 
         @media (max-width: 560px) {
@@ -592,6 +587,8 @@ export default function UpgradePage() {
           }
 
           .upgrade-panel {
+            border-inline-start: 0;
+            padding-inline-start: 0;
             padding: 14px;
           }
 
