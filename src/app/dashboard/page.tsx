@@ -345,7 +345,7 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ padding: '24px 26px 22px', position: 'relative' }}>
+          <div className="bal-header" style={{ padding: '24px 26px 16px', position: 'relative' }}>
             {/* Name row — glowing dot + portfolio name + market pill */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
               <span style={{
@@ -380,15 +380,13 @@ export default function DashboardPage() {
             {/* Value + Return — symmetric 2-column layout. In RTL the first
                 cell sits on the right, so "Current value" is first and the
                 return cell is second (visually appears on the left). */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'stretch' }} className="bal-value-grid">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, alignItems: 'stretch', borderBlock: '1px solid var(--border)', padding: '18px 0' }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid var(--border)',
-                borderRadius: '14px',
-                padding: '16px 18px',
+                padding: '0 18px',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                minHeight: '110px',
+                minHeight: '92px',
+                borderInlineEnd: '1px solid var(--border)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name="account_balance_wallet" size={14} color="#0f8d63" />
@@ -401,13 +399,9 @@ export default function DashboardPage() {
 
               {/* Return (left side in RTL) */}
               <div style={{
-                background: portfolioPositive ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
-                border: `1px solid ${portfolioPositive ? 'rgba(34,197,94,0.32)' : 'rgba(239,68,68,0.32)'}`,
-                borderRadius: '14px',
-                padding: '16px 18px',
+                padding: '0 18px',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                minHeight: '110px',
-                boxShadow: `0 0 22px ${portfolioPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)'} inset`,
+                minHeight: '92px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
@@ -421,18 +415,16 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', padding: '0 16px 16px', marginTop: 'auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, padding: '0 26px 22px', marginTop: 'auto' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
               { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
               { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
             ].map((t, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid var(--border)',
-                borderRadius: '12px',
-                padding: '14px 10px',
+                padding: '12px 10px 0',
                 textAlign: 'center',
+                borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
               }}>
                 <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '6px' }}>
                   {t.label}
