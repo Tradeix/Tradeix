@@ -7,31 +7,32 @@ import Icon from '@/components/Icon'
 
 const PRO_FEATURES = {
   he: [
-    { label: 'עד 3 תיקים', icon: 'cases' },
+    { label: 'ניתוח AI לגרפים', icon: 'auto_awesome' },
     { label: 'עסקאות ללא הגבלה', icon: 'all_inclusive' },
-    { label: 'דשבורד מתקדם', icon: 'space_dashboard' },
-    { label: 'ניתוח AI לתמונות', icon: 'auto_awesome' },
-    { label: 'עמוד סטטיסטיקות מלא', icon: 'monitoring' },
-    { label: 'ארכיון תיקים', icon: 'inventory_2' },
-    { label: 'עדכונים ותכונות חדשות', icon: 'update' },
-    { label: 'תמיכה מועדפת', icon: 'support_agent' },
+    { label: 'סטטיסטיקות מלאות', icon: 'monitoring' },
+    { label: 'עד 3 תיקי מסחר', icon: 'cases' },
+    { label: 'ניהול אסטרטגיות', icon: 'psychology' },
+    { label: 'ארכיון תיקים מלא', icon: 'inventory_2' },
   ],
   en: [
-    { label: 'Up to 3 portfolios', icon: 'cases' },
-    { label: 'Unlimited trades', icon: 'all_inclusive' },
-    { label: 'Advanced dashboard', icon: 'space_dashboard' },
     { label: 'AI chart analysis', icon: 'auto_awesome' },
-    { label: 'Full statistics page', icon: 'monitoring' },
-    { label: 'Portfolio archive', icon: 'inventory_2' },
-    { label: 'New features & updates', icon: 'update' },
-    { label: 'Priority support', icon: 'support_agent' },
+    { label: 'Unlimited trades', icon: 'all_inclusive' },
+    { label: 'Full statistics', icon: 'monitoring' },
+    { label: 'Up to 3 portfolios', icon: 'cases' },
+    { label: 'Strategy tracking', icon: 'psychology' },
+    { label: 'Full portfolio archive', icon: 'inventory_2' },
   ],
+}
+
+const TRUST_ITEMS = {
+  he: ['תשלום מאובטח', 'הפעלה מיידית', 'ביטול בכל זמן'],
+  en: ['Secure checkout', 'Instant activation', 'Cancel anytime'],
 }
 
 export default function UpgradePage() {
   const { language, isPro, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
   const [loading, setLoading] = useState(false)
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
 
   async function handleUpgrade() {
     setLoading(true)
@@ -60,262 +61,542 @@ export default function UpgradePage() {
   }
 
   const proList = PRO_FEATURES[language]
-  const price = billingPeriod === 'yearly' ? '$199' : '$20'
-  const priceSuffix = billingPeriod === 'yearly'
-    ? (language === 'he' ? 'שנה' : 'year')
-    : (language === 'he' ? 'חודש' : 'month')
+  const trustItems = TRUST_ITEMS[language]
+  const isYearly = billingPeriod === 'yearly'
+  const price = isYearly ? '$199' : '$20'
+  const period = isYearly
+    ? (language === 'he' ? 'לשנה' : 'per year')
+    : (language === 'he' ? 'לחודש' : 'per month')
+  const monthlyEquivalent = language === 'he' ? 'יוצא $16.58 לחודש' : 'Only $16.58/mo'
 
   return (
-    <div style={{ fontFamily: 'Heebo, sans-serif', maxWidth: '920px', margin: '0 auto', padding: '8px 0' }}>
+    <div className="upgrade-shell" dir={language === 'he' ? 'rtl' : 'ltr'}>
+      <section className="upgrade-card">
+        <div className="upgrade-glow upgrade-glow-a" />
+        <div className="upgrade-glow upgrade-glow-b" />
 
-      {/* Hero section */}
-      <div className="section-anim" style={{ textAlign: 'center', marginBottom: '14px' }}>
-        {/* PRO icon */}
-        <div style={{
-          width: '54px', height: '54px', borderRadius: '17px',
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))',
-          border: '1px solid rgba(245,158,11,0.3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 12px',
-          boxShadow: '0 8px 32px rgba(245,158,11,0.15)',
-        }}>
-          <Icon name="bolt" size={27} color="#f59e0b" />
-        </div>
-
-        <h1 style={{
-          fontSize: '28px', fontWeight: '900', color: 'var(--text)',
-          letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1.1,
-        }}>
-          {language === 'he' ? 'שדרג ל' : 'Upgrade to '}
-          <span style={{ color: '#f59e0b' }}>PRO</span>
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600', margin: '0 auto', lineHeight: 1.45, maxWidth: '620px' }}>
-          {language === 'he'
-            ? 'קבל גישה מלאה לכל הכלים שתצטרך לנתח ולשפר את ביצועי המסחר שלך'
-            : 'Get full access to all the tools you need to analyze and improve your trading'}
-        </p>
-      </div>
-
-      {/* Price card */}
-      <div className="section-anim anim-delay-1" style={{
-        background: 'linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(249,115,22,0.03) 100%)',
-        border: '1px solid rgba(245,158,11,0.2)',
-        borderRadius: '24px', padding: '22px', position: 'relative', overflow: 'hidden',
-        marginBottom: '0',
-      }}>
-        {/* Glow effects */}
-        <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', background: 'rgba(245,158,11,0.08)', filter: 'blur(70px)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '120px', height: '120px', background: 'rgba(249,115,22,0.06)', filter: 'blur(50px)', borderRadius: '50%', pointerEvents: 'none' }} />
-
-        {/* Price */}
-        <div style={{ textAlign: 'center', marginBottom: '18px', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '999px', padding: '4px 12px', marginBottom: '12px' }}>
-            <Icon name="workspace_premium" size={14} color="#f59e0b" />
-            <span style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              {language === 'he' ? 'מנוי פרימיום' : 'Premium Plan'}
-            </span>
+        <div className="upgrade-copy">
+          <div className="upgrade-mark">
+            <Icon name="bolt" size={26} color="#f59e0b" />
           </div>
-          {!isPro && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '12px',
-              background: 'rgba(0,0,0,0.12)',
-              border: '1px solid rgba(245,158,11,0.16)',
-              borderRadius: '18px',
-              padding: '10px',
-              marginBottom: '16px',
-            }}>
-              {[
-                { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
-                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'חודשיים מתנה' : '2 months free' },
-              ].map(plan => {
-                const active = billingPeriod === plan.value
-                return (
-                  <button
-                    key={plan.value}
-                    type="button"
-                    onClick={() => setBillingPeriod(plan.value)}
-                    style={{
-                      minHeight: '76px',
-                      border: active ? '1px solid rgba(245,158,11,0.75)' : '1px solid rgba(255,255,255,0.07)',
-                      background: active ? 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08))' : 'rgba(255,255,255,0.025)',
-                      color: active ? '#f59e0b' : 'var(--text3)',
-                      borderRadius: '16px',
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      fontFamily: 'Heebo, sans-serif',
-                      fontWeight: '900',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '6px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textAlign: 'center',
-                      boxShadow: active ? '0 14px 34px rgba(245,158,11,0.12), inset 0 1px 0 rgba(255,255,255,0.08)' : 'none',
-                      transition: 'border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease',
-                    }}
-                    onMouseOver={e => { if (!active) { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.28)'; e.currentTarget.style.transform = 'translateY(-1px)' } }}
-                    onMouseOut={e => { if (!active) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)' } }}
-                  >
-                    {plan.value === 'yearly' && (
-                      <span style={{
-                        fontSize: '10px',
-                        lineHeight: 1,
-                        padding: '4px 10px',
-                        borderRadius: '999px',
-                        background: 'rgba(15,141,99,0.16)',
-                        border: '1px solid rgba(15,141,99,0.28)',
-                        color: '#0f8d63',
-                        fontWeight: '950',
-                      }}>
-                        {language === 'he' ? 'מומלץ' : 'Recommended'}
-                      </span>
-                    )}
-                    {plan.value === 'monthly' && (
-                      <span aria-hidden="true" style={{ height: '20px', pointerEvents: 'none' }} />
-                    )}
-                    <span style={{ fontSize: '15px', lineHeight: 1.1, color: active ? '#f59e0b' : 'var(--text2)' }}>{plan.label}</span>
-                    <span style={{ fontSize: plan.value === 'monthly' ? '14px' : '12px', opacity: active ? 0.92 : 0.78, lineHeight: 1.2, fontWeight: '800' }}>{plan.sub}</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '4px' }}>
-            <span style={{ fontSize: '44px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>{price}</span>
-            <span style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '600', paddingBottom: '10px' }}>
-              / {priceSuffix}
-            </span>
-          </div>
-          {billingPeriod === 'yearly' && !isPro && (
-            <div style={{ marginTop: '10px', fontSize: '12px', color: '#0f8d63', fontWeight: '800' }}>
-              {language === 'he' ? 'חודשיים מתנה ביחס למחיר החודשי' : 'Two months free compared with monthly billing'}
-            </div>
-          )}
-        </div>
 
-        {/* Features grid */}
-        <div className="upgrade-feature-grid" style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '0',
-          background: 'rgba(0,0,0,0.15)', borderRadius: '16px',
-          border: '1px solid rgba(245,158,11,0.1)', overflow: 'hidden',
-          marginBottom: '18px',
-        }}>
-          {proList.map((f, i) => (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '10px 12px',
-              borderBottom: i < proList.length - 4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-              borderInlineEnd: i % 4 !== 3 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-            }}>
-              <div style={{
-                width: '24px', height: '24px', borderRadius: '8px', flexShrink: 0,
-                background: 'rgba(245,158,11,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon name={f.icon} size={13} color="#f59e0b" />
-              </div>
-              <span style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: '700', lineHeight: 1.25 }}>{f.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA button */}
-        {isPro ? (
           <div>
-            <div style={{
-              padding: '14px', borderRadius: '14px',
-              background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
-              textAlign: 'center', marginBottom: '12px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            }}>
-              <Icon name="bolt" size={16} color="#f59e0b" />
-              <span style={{ fontSize: '15px', fontWeight: '800', color: '#f59e0b' }}>
-                {language === 'he' ? 'המנוי הפעיל שלך' : 'Your active plan'}
+            <div className="upgrade-eyebrow">
+              {language === 'he' ? 'UPLOTRADE PRO' : 'UPLOTRADE PRO'}
+            </div>
+            <h1>
+              {language === 'he' ? 'קבל יתרון אמיתי בכל עסקה' : 'Get an edge on every trade'}
+            </h1>
+            <p>
+              {language === 'he'
+                ? 'פתח את כל הכלים שמראים לך מה באמת עובד: AI, סטטיסטיקות, אסטרטגיות ותיקי מסחר מתקדמים.'
+                : 'Unlock the tools that show what really works: AI analysis, advanced statistics, strategies, and portfolios.'}
+            </p>
+          </div>
+
+          <div className="upgrade-proof">
+            {trustItems.map(item => (
+              <span key={item}>
+                <Icon name="check" size={14} color="#36cb61" />
+                {item}
               </span>
+            ))}
+          </div>
+
+          <div className="upgrade-features">
+            {proList.map(feature => (
+              <div key={feature.label}>
+                <span>
+                  <Icon name={feature.icon} size={15} color="#f59e0b" />
+                </span>
+                {feature.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="upgrade-panel">
+          <div className="billing-toggle" aria-label={language === 'he' ? 'בחירת מנוי' : 'Choose billing period'}>
+            {[
+              { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
+              { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'מומלץ' : 'Best value' },
+            ].map(plan => {
+              const active = billingPeriod === plan.value
+              return (
+                <button
+                  key={plan.value}
+                  type="button"
+                  onClick={() => setBillingPeriod(plan.value)}
+                  data-active={active ? '1' : '0'}
+                >
+                  <strong>{plan.label}</strong>
+                  <span>{plan.sub}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="price-box">
+            <div className="plan-badge">
+              {isYearly
+                ? (language === 'he' ? 'חודשיים מתנה' : '2 months free')
+                : (language === 'he' ? 'גמיש חודשי' : 'Flexible monthly')}
             </div>
+
+            <div className="price-row" dir="ltr">
+              <strong>{price}</strong>
+              <span>{period}</span>
+            </div>
+
+            <div className="price-note">
+              {isYearly ? monthlyEquivalent : (language === 'he' ? 'אפשר לבטל בכל זמן' : 'Cancel anytime')}
+            </div>
+          </div>
+
+          {isPro ? (
+            <div className="active-plan">
+              <div>
+                <Icon name="verified" size={19} color="#36cb61" />
+                {language === 'he' ? 'המנוי שלך כבר פעיל' : 'Your plan is already active'}
+              </div>
+              <button onClick={handleCancel} disabled={loading}>
+                {loading
+                  ? (language === 'he' ? 'פותח...' : 'Opening...')
+                  : (language === 'he' ? 'נהל / בטל מנוי' : 'Manage / cancel plan')}
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={handleCancel}
-              disabled={loading}
-              style={{
-                width: '100%', background: 'transparent',
-                border: '1px solid rgba(239,68,68,0.25)', borderRadius: '12px',
-                padding: '10px', fontSize: '13px', fontWeight: '700',
-                color: 'rgba(239,68,68,0.6)', cursor: loading ? 'wait' : 'pointer',
-                fontFamily: 'Heebo, sans-serif', opacity: loading ? 0.7 : 1,
-                transition: 'all 0.2s',
-              }}
-              onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'; e.currentTarget.style.color = '#ef4444' }}
-              onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.25)'; e.currentTarget.style.color = 'rgba(239,68,68,0.6)' }}
+              onClick={handleUpgrade}
+              disabled={loading || subscriptionLoading}
+              className="upgrade-cta"
             >
-              {loading ? (language === 'he' ? 'מבטל...' : 'Canceling...') : (language === 'he' ? 'בטל מנוי' : 'Cancel subscription')}
+              {loading ? (
+                <span className="spinner" />
+              ) : (
+                <>
+                  <Icon name="lock_open" size={19} color="#fff" />
+                  {language === 'he' ? 'פתח PRO עכשיו' : 'Unlock PRO now'}
+                </>
+              )}
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleUpgrade}
-            disabled={loading || subscriptionLoading}
-            className="btn-press"
-            style={{
-              width: '100%',
-              background: loading ? 'rgba(245,158,11,0.5)' : 'linear-gradient(135deg, #f59e0b, #f97316)',
-              border: 'none', borderRadius: '16px', padding: '14px',
-              fontSize: '16px', fontWeight: '900', color: '#fff',
-              cursor: loading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif',
-              boxShadow: '0 8px 32px rgba(245,158,11,0.35)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-              transition: 'all 0.2s', letterSpacing: '-0.01em',
-            }}
-            onMouseOver={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 40px rgba(245,158,11,0.45)' } }}
-            onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(245,158,11,0.35)' }}
-          >
-            {loading ? (
-              <div style={{ width: '20px', height: '20px', border: '2.5px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-            ) : (
-              <>
-                <Icon name="bolt" size={20} />
-                {language === 'he' ? 'שדרג ל PRO עכשיו' : 'Upgrade to PRO Now'}
-              </>
-            )}
-          </button>
-        )}
-      </div>
+          )}
 
-      {/* Trust badges */}
-      <div className="section-anim anim-delay-3" style={{
-        display: 'none', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px',
-      }}>
-        {[
-          { icon: 'shield', label: language === 'he' ? 'מאובטח ובטוח' : 'Secure & Safe', color: '#22c55e' },
-          { icon: 'bolt', label: language === 'he' ? 'הפעלה מיידית' : 'Instant Activation', color: '#f59e0b' },
-          { icon: 'cancel', label: language === 'he' ? 'ביטול בכל עת' : 'Cancel Anytime', color: '#0f8d63' },
-        ].map((badge, i) => (
-          <div key={i} style={{
-            textAlign: 'center', padding: '16px 12px',
-            background: 'var(--bg2)', border: '1px solid var(--border)',
-            borderRadius: '14px',
-          }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '10px',
-              background: `${badge.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 8px',
-            }}>
-              <Icon name={badge.icon} size={18} color={badge.color} />
-            </div>
-            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text2)' }}>{badge.label}</div>
+          <div className="checkout-hint">
+            {language === 'he'
+              ? 'התשלום נפתח בפופאפ מאובטח בתוך האתר.'
+              : 'Secure checkout opens in a popup inside the site.'}
           </div>
-        ))}
-      </div>
-
+        </div>
+      </section>
 
       <style>{`
+        .upgrade-shell {
+          min-height: calc(100vh - 132px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 0;
+          font-family: Heebo, sans-serif;
+        }
+
+        .upgrade-card {
+          width: min(100%, 1020px);
+          min-height: 500px;
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: minmax(0, 1.06fr) minmax(340px, 0.72fr);
+          gap: 22px;
+          padding: 24px;
+          border-radius: 26px;
+          border: 1px solid rgba(245,158,11,0.24);
+          background:
+            radial-gradient(circle at 12% 12%, rgba(0,154,203,0.10), transparent 32%),
+            radial-gradient(circle at 82% 12%, rgba(184,82,255,0.10), transparent 34%),
+            linear-gradient(135deg, rgba(245,158,11,0.075), rgba(255,255,255,0.018));
+          box-shadow: 0 24px 90px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+
+        .upgrade-glow {
+          position: absolute;
+          pointer-events: none;
+          border-radius: 999px;
+          filter: blur(58px);
+          opacity: 0.62;
+        }
+
+        .upgrade-glow-a {
+          width: 220px;
+          height: 220px;
+          background: rgba(245,158,11,0.17);
+          inset-inline-end: -70px;
+          top: -80px;
+        }
+
+        .upgrade-glow-b {
+          width: 180px;
+          height: 180px;
+          background: rgba(54,203,97,0.11);
+          inset-inline-start: -55px;
+          bottom: -70px;
+        }
+
+        .upgrade-copy,
+        .upgrade-panel {
+          position: relative;
+          z-index: 1;
+        }
+
+        .upgrade-copy {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 18px;
+          min-width: 0;
+        }
+
+        .upgrade-mark {
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 18px;
+          border: 1px solid rgba(245,158,11,0.32);
+          background: rgba(245,158,11,0.12);
+          box-shadow: 0 18px 42px rgba(245,158,11,0.15);
+        }
+
+        .upgrade-eyebrow {
+          color: #f59e0b;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+
+        .upgrade-copy h1 {
+          margin: 0;
+          color: var(--text);
+          font-size: clamp(34px, 4.2vw, 54px);
+          line-height: 0.96;
+          font-weight: 950;
+          letter-spacing: 0;
+          max-width: 640px;
+        }
+
+        .upgrade-copy p {
+          max-width: 620px;
+          margin: 12px 0 0;
+          color: var(--text3);
+          font-size: 15px;
+          line-height: 1.65;
+          font-weight: 650;
+        }
+
+        .upgrade-proof {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 9px;
+        }
+
+        .upgrade-proof span {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          min-height: 34px;
+          padding: 7px 11px;
+          border-radius: 999px;
+          border: 1px solid rgba(54,203,97,0.18);
+          background: rgba(54,203,97,0.075);
+          color: var(--text2);
+          font-size: 12px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+
+        .upgrade-features {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+          max-width: 620px;
+        }
+
+        .upgrade-features div {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-height: 44px;
+          padding: 10px 12px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.065);
+          background: rgba(255,255,255,0.035);
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .upgrade-features span {
+          width: 28px;
+          height: 28px;
+          flex: 0 0 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: rgba(245,158,11,0.11);
+        }
+
+        .upgrade-panel {
+          align-self: center;
+          padding: 18px;
+          border-radius: 22px;
+          border: 1px solid rgba(245,158,11,0.26);
+          background: rgba(5,8,13,0.48);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 22px 48px rgba(0,0,0,0.20);
+        }
+
+        [data-theme="light"] .upgrade-panel {
+          background: rgba(255,255,255,0.78);
+        }
+
+        .billing-toggle {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          padding: 8px;
+          border-radius: 18px;
+          border: 1px solid rgba(245,158,11,0.16);
+          background: rgba(0,0,0,0.14);
+          margin-bottom: 16px;
+        }
+
+        .billing-toggle button {
+          min-height: 70px;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 14px;
+          background: rgba(255,255,255,0.03);
+          color: var(--text2);
+          cursor: pointer;
+          font-family: Heebo, sans-serif;
+          transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .billing-toggle button:hover {
+          transform: translateY(-1px);
+          border-color: rgba(245,158,11,0.36);
+        }
+
+        .billing-toggle button[data-active="1"] {
+          border-color: rgba(245,158,11,0.72);
+          background: linear-gradient(135deg, rgba(245,158,11,0.20), rgba(245,158,11,0.075));
+          color: #f59e0b;
+          box-shadow: 0 14px 34px rgba(245,158,11,0.13), inset 0 1px 0 rgba(255,255,255,0.09);
+        }
+
+        .billing-toggle strong,
+        .billing-toggle span {
+          display: block;
+        }
+
+        .billing-toggle strong {
+          font-size: 14px;
+          font-weight: 950;
+          margin-bottom: 5px;
+        }
+
+        .billing-toggle span {
+          font-size: 11px;
+          font-weight: 850;
+          opacity: 0.78;
+        }
+
+        .price-box {
+          text-align: center;
+          padding: 20px 12px;
+          border-radius: 20px;
+          background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.045));
+          border: 1px solid rgba(245,158,11,0.20);
+          margin-bottom: 14px;
+        }
+
+        .plan-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 28px;
+          padding: 5px 12px;
+          border-radius: 999px;
+          background: rgba(54,203,97,0.12);
+          border: 1px solid rgba(54,203,97,0.22);
+          color: #36cb61;
+          font-size: 11px;
+          font-weight: 950;
+          margin-bottom: 12px;
+        }
+
+        .price-row {
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 7px;
+        }
+
+        .price-row strong {
+          color: var(--text);
+          font-size: 54px;
+          font-weight: 950;
+          line-height: 0.9;
+          letter-spacing: 0;
+        }
+
+        .price-row span {
+          color: var(--text3);
+          font-size: 13px;
+          font-weight: 850;
+          padding-bottom: 4px;
+        }
+
+        .price-note {
+          color: var(--text3);
+          font-size: 12px;
+          font-weight: 800;
+          margin-top: 12px;
+        }
+
+        .upgrade-cta,
+        .active-plan button {
+          width: 100%;
+          min-height: 52px;
+          border: none;
+          border-radius: 16px;
+          font-family: Heebo, sans-serif;
+          font-size: 16px;
+          font-weight: 950;
+          cursor: pointer;
+          transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+        }
+
+        .upgrade-cta {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          color: #fff;
+          background: linear-gradient(135deg, #f59e0b, #f97316);
+          box-shadow: 0 16px 42px rgba(245,158,11,0.34);
+        }
+
+        .upgrade-cta:hover,
+        .active-plan button:hover {
+          transform: translateY(-2px);
+        }
+
+        .upgrade-cta:disabled,
+        .active-plan button:disabled {
+          cursor: wait;
+          opacity: 0.68;
+          transform: none;
+        }
+
+        .active-plan {
+          display: grid;
+          gap: 12px;
+        }
+
+        .active-plan > div {
+          min-height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          border-radius: 15px;
+          color: #36cb61;
+          font-size: 14px;
+          font-weight: 900;
+          background: rgba(54,203,97,0.10);
+          border: 1px solid rgba(54,203,97,0.18);
+        }
+
+        .active-plan button {
+          color: #ef4444;
+          background: rgba(239,68,68,0.08);
+          border: 1px solid rgba(239,68,68,0.25);
+        }
+
+        .checkout-hint {
+          margin-top: 12px;
+          text-align: center;
+          color: var(--text3);
+          font-size: 11px;
+          font-weight: 750;
+        }
+
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border-radius: 999px;
+          border: 2.5px solid rgba(255,255,255,0.32);
+          border-top-color: #fff;
+          animation: spin 0.7s linear infinite;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 640px) {
-          .upgrade-feature-grid { grid-template-columns: 1fr 1fr !important; }
-          .upgrade-feature-grid > div {
-            border-inline-end: none !important;
-            border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+
+        @media (max-width: 900px) {
+          .upgrade-shell {
+            min-height: auto;
+            padding: 4px 0 18px;
+          }
+
+          .upgrade-card {
+            grid-template-columns: 1fr;
+            min-height: 0;
+            gap: 16px;
+            padding: 18px;
+          }
+
+          .upgrade-copy {
+            gap: 14px;
+          }
+
+          .upgrade-copy h1 {
+            font-size: 32px;
+          }
+
+          .upgrade-copy p {
+            font-size: 13px;
+          }
+
+          .upgrade-features {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .upgrade-card {
+            padding: 14px;
+            border-radius: 20px;
+          }
+
+          .upgrade-proof {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .upgrade-features {
+            grid-template-columns: 1fr;
+            gap: 8px;
+          }
+
+          .upgrade-panel {
+            padding: 14px;
+          }
+
+          .price-row strong {
+            font-size: 44px;
           }
         }
       `}</style>
