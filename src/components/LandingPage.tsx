@@ -1172,6 +1172,6 @@ function PlanCard({
 
 function LogoMark({ size }: { size: number }) {
   return (
-    <img src="/uplotrade-mark.png" alt="" aria-hidden="true" style={{ width: size, height: size, objectFit: 'contain', flexShrink: 0 }} />
+    <img src="/uplotrade-mark-cropped.png" alt="" aria-hidden="true" style={{ width: size * 1.18, height: size, objectFit: 'contain', flexShrink: 0 }} />
   )
 }

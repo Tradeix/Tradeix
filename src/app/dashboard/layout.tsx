@@ -365,7 +365,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {/* Logo */}
       <div className="sidebar-top" style={{ padding: '24px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/uplotrade-mark.png" alt="" aria-hidden="true" style={{ width: '38px', height: '38px', objectFit: 'contain', flexShrink: 0 }} />
+          <img src="/uplotrade-mark-cropped.png" alt="" aria-hidden="true" style={{ width: '44px', height: '36px', objectFit: 'contain', flexShrink: 0 }} />
           <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '21px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             UPLOTRADE
           </span>

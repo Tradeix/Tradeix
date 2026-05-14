@@ -47,7 +47,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <img
-            src="/uplotrade-mark.png"
+            src="/uplotrade-mark-cropped.png"
             alt="Uplotrade"
             style={{
               width: '82px',
