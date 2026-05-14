@@ -19,7 +19,7 @@ const COPY = {
       titleLead: 'עקוב, נתח,',
       titleAccent: 'השתפר',
       titleTail: '— בכל עסקה.',
-      subtitle: 'TRADEIX מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, ועוזר לך לראות מה באמת עובד בלי טבלאות אקסל ובלי חישובים בראש.',
+      subtitle: 'UPLOTRADE מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, ועוזר לך לראות מה באמת עובד בלי טבלאות אקסל ובלי חישובים בראש.',
       primary: 'התחל בחינם',
       secondary: 'איך זה עובד',
       portfolioValue: 'שווי תיק נוכחי',
@@ -88,11 +88,11 @@ const COPY = {
     },
     faqHeader: { eyebrow: 'שאלות נפוצות', title: 'הכל מה שצריך לדעת' },
     faqs: [
-      ['מה זה TRADEIX?', 'יומן מסחר חכם שמלווה אותך לאורך הקריירה שלך: מנתח גרפים בעזרת AI, מציג סטטיסטיקות מתקדמות ועוזר לזהות מה עובד לך ומה לא.'],
+      ['מה זה UPLOTRADE?', 'יומן מסחר חכם שמלווה אותך לאורך הקריירה שלך: מנתח גרפים בעזרת AI, מציג סטטיסטיקות מתקדמות ועוזר לזהות מה עובד לך ומה לא.'],
       ['איך ה-AI עובד?', 'מודלי vision של Anthropic מזהים מתוך צילום מסך את הצמד, מחיר הכניסה, מחיר היציאה וה-Stop Loss. תמיד אפשר לערוך ידנית לפני שמירה.'],
       ['האם הנתונים שלי בטוחים?', 'כן. הנתונים מאוחסנים ב-Supabase עם הצפנה והרשאות ברמת המשתמש. רק אתה רואה את העסקאות שלך.'],
       ['אפשר לבטל בכל זמן?', 'כן. ביטול המנוי נעשה מתוך הגדרות החשבון, וה-PRO ימשיך לפעול עד סוף תקופת החיוב הנוכחית.'],
-      ['מתאים גם לסוחרים מתחילים?', 'בהחלט. הממשק נקי בכוונה: אתה מעלה עסקאות ו-TRADEIX עושה את עבודת הסטטיסטיקות.'],
+      ['מתאים גם לסוחרים מתחילים?', 'בהחלט. הממשק נקי בכוונה: אתה מעלה עסקאות ו-UPLOTRADE עושה את עבודת הסטטיסטיקות.'],
       ['אפשר להשתמש בנייד?', 'כן. הדשבורד, הוספת עסקה וניתוח גרפים עובדים גם במובייל.'],
     ],
     footer: 'כל הזכויות שמורות.',
@@ -110,7 +110,7 @@ const COPY = {
       titleLead: 'Track, analyze,',
       titleAccent: 'improve',
       titleTail: '— every trade.',
-      subtitle: 'TRADEIX analyzes your charts with AI, collects your stats, and helps you see what actually works without spreadsheets or mental math.',
+      subtitle: 'UPLOTRADE analyzes your charts with AI, collects your stats, and helps you see what actually works without spreadsheets or mental math.',
       primary: 'Start free',
       secondary: 'How it works',
       portfolioValue: 'Current portfolio value',
@@ -179,11 +179,11 @@ const COPY = {
     },
     faqHeader: { eyebrow: 'FAQ', title: 'Everything you need to know' },
     faqs: [
-      ['What is TRADEIX?', 'A smart trading journal that analyzes charts with AI, shows advanced statistics, and helps you understand what is working and what is not.'],
+      ['What is UPLOTRADE?', 'A smart trading journal that analyzes charts with AI, shows advanced statistics, and helps you understand what is working and what is not.'],
       ['How does the AI work?', 'Anthropic vision models detect the symbol, entry, exit, and Stop Loss from a chart screenshot. You can always edit the data before saving.'],
       ['Is my data secure?', 'Yes. Your data is stored in Supabase with encryption and user-level permissions. Only you can access your trades.'],
       ['Can I cancel anytime?', 'Yes. You can cancel from account settings, and PRO stays active until the end of the current billing period.'],
-      ['Is it good for beginners?', 'Absolutely. The interface is intentionally clean: you upload trades and TRADEIX handles the statistics.'],
+      ['Is it good for beginners?', 'Absolutely. The interface is intentionally clean: you upload trades and UPLOTRADE handles the statistics.'],
       ['Can I use it on mobile?', 'Yes. Dashboard, trade entry, and chart analysis all work on mobile.'],
     ],
     footer: 'All rights reserved.',
@@ -237,7 +237,7 @@ export default function LandingPage() {
         <div className="lp-nav-inner">
           <a href="#hero" onClick={e => { e.preventDefault(); scrollTo('hero') }} className="lp-logo">
             <LogoMark size={34} />
-            <span>Trade<span>IX</span></span>
+            <span>UPLOTRADE</span>
           </a>
 
           <div className="lp-nav-links">
@@ -416,9 +416,9 @@ export default function LandingPage() {
         <footer className="lp-footer">
           <div>
             <LogoMark size={26} />
-            <strong>Trade<span>IX</span></strong>
+            <strong>UPLOTRADE</strong>
           </div>
-          <p>© {new Date().getFullYear()} TRADEIX. {copy.footer}</p>
+          <p>© {new Date().getFullYear()} UPLOTRADE. {copy.footer}</p>
         </footer>
       </main>
 
@@ -1172,14 +1172,6 @@ function PlanCard({
 
 function LogoMark({ size }: { size: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 38 38" fill="none" aria-hidden="true">
-      <rect width="38" height="38" rx="8" fill="#0f8d63" />
-      <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-      <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)" />
-      <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" />
-      <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)" />
-      <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
-      <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white" />
-    </svg>
+    <img src="/uplotrade-mark.png" alt="" aria-hidden="true" style={{ width: size, height: size, objectFit: 'contain', flexShrink: 0 }} />
   )
 }

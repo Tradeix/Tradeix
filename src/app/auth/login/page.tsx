@@ -46,22 +46,20 @@ export default function LoginPage() {
       <div style={{ width: '100%', maxWidth: '400px', position: 'relative' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{
-            width: '64px', height: '64px', borderRadius: '16px',
-            background: 'linear-gradient(135deg, #0f8d63, #0f8d63)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '27px', fontWeight: '700', color: '#fff',
-            margin: '0 auto 16px',
-            boxShadow: '0 0 40px #0f8d6333',
-            animation: 'pulse-glow 3s ease-in-out infinite',
-          }}>TX</div>
-          <div style={{ fontSize: '29px', fontWeight: '700', letterSpacing: '2px' }}>
-            <span style={{
-              background: 'linear-gradient(90deg, #0f8d63, #0f8d63)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>TRADE</span>
-            <span style={{ color: 'var(--text)' }}>IX</span>
+          <img
+            src="/uplotrade-mark.png"
+            alt="Uplotrade"
+            style={{
+              width: '82px',
+              height: '82px',
+              objectFit: 'contain',
+              margin: '0 auto 14px',
+              filter: 'drop-shadow(0 0 34px rgba(0,154,203,0.22)) drop-shadow(0 0 28px rgba(184,82,255,0.16))',
+              animation: 'pulse-glow 3s ease-in-out infinite',
+            }}
+          />
+          <div style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '1px', color: 'var(--text)' }}>
+            UPLOTRADE
           </div>
           <div style={{ fontSize: '15px', color: 'var(--text3)', marginTop: '8px' }}>
             יומן מסחר חכם עם ניתוח AI
@@ -133,7 +131,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: 'var(--text3)' }}>
-          TRADEIX © 2024 • כל הזכויות שמורות
+          UPLOTRADE © 2024 • כל הזכויות שמורות
         </div>
       </div>
     </div>

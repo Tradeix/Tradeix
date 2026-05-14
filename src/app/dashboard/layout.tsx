@@ -365,17 +365,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {/* Logo */}
       <div className="sidebar-top" style={{ padding: '24px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
-          <svg width="36" height="36" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="38" height="38" rx="8" fill="#0f8d63"/>
-            <line x1="11" y1="8" x2="11" y2="30" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
-            <rect x="8" y="13" width="6" height="10" rx="1.2" fill="rgba(255,255,255,0.55)"/>
-            <line x1="19" y1="6" x2="19" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
-            <rect x="16" y="10" width="6" height="12" rx="1.2" fill="rgba(255,255,255,0.75)"/>
-            <line x1="27" y1="9" x2="27" y2="31" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
-            <rect x="24" y="14" width="6" height="11" rx="1.2" fill="white"/>
-          </svg>
+          <img src="/uplotrade-mark.png" alt="" aria-hidden="true" style={{ width: '38px', height: '38px', objectFit: 'contain', flexShrink: 0 }} />
           <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '21px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
-            Trade<span style={{ color: '#0f8d63' }}>IX</span>
+            UPLOTRADE
           </span>
         </Link>
       </div>
@@ -577,7 +569,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               <Icon name="sentiment_satisfied" size={34} color="#0f8d63" />
             </div>
             <div style={{ fontSize: '25px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
-              {language === 'he' ? 'ברוכים הבאים ל-Tradeix' : 'Welcome to Tradeix'}
+              {language === 'he' ? 'ברוכים הבאים ל-UPLOTRADE' : 'Welcome to UPLOTRADE'}
             </div>
             <div style={{ fontSize: '14px', color: 'rgba(229,226,225,0.56)', lineHeight: 1.75, marginBottom: '24px' }}>
               {language === 'he'
