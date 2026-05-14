@@ -40,6 +40,8 @@ export default function UpgradePage() {
       if (result?.reusedSubscription) {
         toast.success(language === 'he' ? 'המנוי חודש על החשבון הקיים שלך' : 'Subscription renewed on your existing account')
         setLoading(false)
+      } else if (result?.openedCheckout) {
+        setLoading(false)
       }
     } catch {
       toast.error(language === 'he' ? 'לא הצלחנו לפתוח את התשלום' : 'Could not open checkout')
@@ -64,30 +66,30 @@ export default function UpgradePage() {
     : (language === 'he' ? 'חודש' : 'month')
 
   return (
-    <div style={{ fontFamily: 'Heebo, sans-serif', maxWidth: '580px', margin: '0 auto', padding: '20px 0' }}>
+    <div style={{ fontFamily: 'Heebo, sans-serif', maxWidth: '920px', margin: '0 auto', padding: '8px 0' }}>
 
       {/* Hero section */}
-      <div className="section-anim" style={{ textAlign: 'center', marginBottom: '36px' }}>
+      <div className="section-anim" style={{ textAlign: 'center', marginBottom: '14px' }}>
         {/* PRO icon */}
         <div style={{
-          width: '80px', height: '80px', borderRadius: '24px',
+          width: '54px', height: '54px', borderRadius: '17px',
           background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))',
           border: '1px solid rgba(245,158,11,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 24px',
+          margin: '0 auto 12px',
           boxShadow: '0 8px 32px rgba(245,158,11,0.15)',
         }}>
-          <Icon name="bolt" size={36} color="#f59e0b" />
+          <Icon name="bolt" size={27} color="#f59e0b" />
         </div>
 
         <h1 style={{
-          fontSize: '33px', fontWeight: '900', color: 'var(--text)',
-          letterSpacing: '-0.03em', margin: '0 0 10px', lineHeight: 1.15,
+          fontSize: '28px', fontWeight: '900', color: 'var(--text)',
+          letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1.1,
         }}>
           {language === 'he' ? 'שדרג ל' : 'Upgrade to '}
           <span style={{ color: '#f59e0b' }}>PRO</span>
         </h1>
-        <p style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '500', margin: 0, lineHeight: 1.6 }}>
+        <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600', margin: '0 auto', lineHeight: 1.45, maxWidth: '620px' }}>
           {language === 'he'
             ? 'קבל גישה מלאה לכל הכלים שתצטרך לנתח ולשפר את ביצועי המסחר שלך'
             : 'Get full access to all the tools you need to analyze and improve your trading'}
@@ -98,16 +100,16 @@ export default function UpgradePage() {
       <div className="section-anim anim-delay-1" style={{
         background: 'linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(249,115,22,0.03) 100%)',
         border: '1px solid rgba(245,158,11,0.2)',
-        borderRadius: '24px', padding: '32px', position: 'relative', overflow: 'hidden',
-        marginBottom: '20px',
+        borderRadius: '24px', padding: '22px', position: 'relative', overflow: 'hidden',
+        marginBottom: '0',
       }}>
         {/* Glow effects */}
         <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', background: 'rgba(245,158,11,0.08)', filter: 'blur(70px)', borderRadius: '50%', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '120px', height: '120px', background: 'rgba(249,115,22,0.06)', filter: 'blur(50px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
         {/* Price */}
-        <div style={{ textAlign: 'center', marginBottom: '28px', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '999px', padding: '5px 14px', marginBottom: '16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '18px', position: 'relative' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '999px', padding: '4px 12px', marginBottom: '12px' }}>
             <Icon name="workspace_premium" size={14} color="#f59e0b" />
             <span style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               {language === 'he' ? 'מנוי פרימיום' : 'Premium Plan'}
@@ -122,7 +124,7 @@ export default function UpgradePage() {
               border: '1px solid rgba(245,158,11,0.16)',
               borderRadius: '18px',
               padding: '10px',
-              marginBottom: '22px',
+              marginBottom: '16px',
             }}>
               {[
                 { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
@@ -135,12 +137,12 @@ export default function UpgradePage() {
                     type="button"
                     onClick={() => setBillingPeriod(plan.value)}
                     style={{
-                      minHeight: '96px',
+                      minHeight: '76px',
                       border: active ? '1px solid rgba(245,158,11,0.75)' : '1px solid rgba(255,255,255,0.07)',
                       background: active ? 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08))' : 'rgba(255,255,255,0.025)',
                       color: active ? '#f59e0b' : 'var(--text3)',
                       borderRadius: '16px',
-                      padding: '13px 12px',
+                      padding: '10px 12px',
                       cursor: 'pointer',
                       fontFamily: 'Heebo, sans-serif',
                       fontWeight: '900',
@@ -160,7 +162,7 @@ export default function UpgradePage() {
                       <span style={{
                         fontSize: '10px',
                         lineHeight: 1,
-                        padding: '5px 11px',
+                        padding: '4px 10px',
                         borderRadius: '999px',
                         background: 'rgba(15,141,99,0.16)',
                         border: '1px solid rgba(15,141,99,0.28)',
@@ -171,9 +173,9 @@ export default function UpgradePage() {
                       </span>
                     )}
                     {plan.value === 'monthly' && (
-                      <span aria-hidden="true" style={{ height: '22px', pointerEvents: 'none' }} />
+                      <span aria-hidden="true" style={{ height: '20px', pointerEvents: 'none' }} />
                     )}
-                    <span style={{ fontSize: '16px', lineHeight: 1.1, color: active ? '#f59e0b' : 'var(--text2)' }}>{plan.label}</span>
+                    <span style={{ fontSize: '15px', lineHeight: 1.1, color: active ? '#f59e0b' : 'var(--text2)' }}>{plan.label}</span>
                     <span style={{ fontSize: plan.value === 'monthly' ? '14px' : '12px', opacity: active ? 0.92 : 0.78, lineHeight: 1.2, fontWeight: '800' }}>{plan.sub}</span>
                   </button>
                 )
@@ -181,7 +183,7 @@ export default function UpgradePage() {
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '4px' }}>
-            <span style={{ fontSize: '53px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>{price}</span>
+            <span style={{ fontSize: '44px', fontWeight: '900', color: 'var(--text)', letterSpacing: '-0.04em', lineHeight: 1 }}>{price}</span>
             <span style={{ fontSize: '15px', color: 'var(--text3)', fontWeight: '600', paddingBottom: '10px' }}>
               / {priceSuffix}
             </span>
@@ -194,27 +196,27 @@ export default function UpgradePage() {
         </div>
 
         {/* Features grid */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0',
+        <div className="upgrade-feature-grid" style={{
+          display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '0',
           background: 'rgba(0,0,0,0.15)', borderRadius: '16px',
           border: '1px solid rgba(245,158,11,0.1)', overflow: 'hidden',
-          marginBottom: '28px',
+          marginBottom: '18px',
         }}>
           {proList.map((f, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '13px 16px',
-              borderBottom: i < proList.length - 2 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-              borderInlineEnd: i % 2 === 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+              padding: '10px 12px',
+              borderBottom: i < proList.length - 4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+              borderInlineEnd: i % 4 !== 3 ? '1px solid rgba(255,255,255,0.04)' : 'none',
             }}>
               <div style={{
-                width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0,
+                width: '24px', height: '24px', borderRadius: '8px', flexShrink: 0,
                 background: 'rgba(245,158,11,0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Icon name={f.icon} size={14} color="#f59e0b" />
+                <Icon name={f.icon} size={13} color="#f59e0b" />
               </div>
-              <span style={{ fontSize: '13px', color: 'var(--text2)', fontWeight: '600' }}>{f.label}</span>
+              <span style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: '700', lineHeight: 1.25 }}>{f.label}</span>
             </div>
           ))}
         </div>
@@ -258,8 +260,8 @@ export default function UpgradePage() {
             style={{
               width: '100%',
               background: loading ? 'rgba(245,158,11,0.5)' : 'linear-gradient(135deg, #f59e0b, #f97316)',
-              border: 'none', borderRadius: '16px', padding: '16px',
-              fontSize: '17px', fontWeight: '900', color: '#fff',
+              border: 'none', borderRadius: '16px', padding: '14px',
+              fontSize: '16px', fontWeight: '900', color: '#fff',
               cursor: loading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif',
               boxShadow: '0 8px 32px rgba(245,158,11,0.35)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -282,7 +284,7 @@ export default function UpgradePage() {
 
       {/* Trust badges */}
       <div className="section-anim anim-delay-3" style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px',
+        display: 'none', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px',
       }}>
         {[
           { icon: 'shield', label: language === 'he' ? 'מאובטח ובטוח' : 'Secure & Safe', color: '#22c55e' },
@@ -310,7 +312,11 @@ export default function UpgradePage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 640px) {
-          .trust-grid { grid-template-columns: 1fr !important; }
+          .upgrade-feature-grid { grid-template-columns: 1fr 1fr !important; }
+          .upgrade-feature-grid > div {
+            border-inline-end: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+          }
         }
       `}</style>
     </div>

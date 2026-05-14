@@ -135,8 +135,10 @@ export async function POST(request: Request) {
             redirect_url: `${siteUrl}/dashboard?billing=success`,
           },
           checkout_options: {
+            embed: true,
             media: false,
             logo: true,
+            desc: false,
             button_color: '#0f8d63',
             button_text_color: '#ffffff',
           },

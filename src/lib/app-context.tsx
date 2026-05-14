@@ -18,6 +18,22 @@ type CancelSubscriptionResult = {
   }
   url?: string | null
 }
+type UpgradeSubscriptionResult = {
+  reusedSubscription?: boolean
+  openedCheckout?: boolean
+}
+
+declare global {
+  interface Window {
+    LemonSqueezy?: {
+      Setup?: (options: { eventHandler?: (event: { event?: string; data?: unknown }) => void }) => void
+      Url?: {
+        Open?: (url: string) => void
+      }
+    }
+    createLemonSqueezy?: () => void
+  }
+}
 
 type AppContextType = {
   theme: Theme
@@ -27,7 +43,7 @@ type AppContextType = {
   subscription: SubscriptionTier
   isPro: boolean
   subscriptionLoading: boolean
-  upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<{ reusedSubscription?: boolean } | void>
+  upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<UpgradeSubscriptionResult | void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
   resumeSubscription: (billingPeriod?: 'monthly' | 'yearly') => Promise<CancelSubscriptionResult>
 }
@@ -47,6 +63,45 @@ function detectBrowserLanguage(): Language {
   if (typeof navigator === 'undefined') return 'en'
   const languages = navigator.languages?.length ? navigator.languages : [navigator.language]
   return languages.some(lang => /^he(-|$)/i.test(lang) || /^iw(-|$)/i.test(lang)) ? 'he' : 'en'
+}
+
+function loadLemonSqueezy() {
+  return new Promise<void>((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      resolve()
+      return
+    }
+
+    if (window.LemonSqueezy?.Url?.Open) {
+      resolve()
+      return
+    }
+
+    const existingScript = document.querySelector<HTMLScriptElement>('script[data-lemon-squeezy="true"]')
+    if (existingScript) {
+      if (existingScript.dataset.loaded === 'true') {
+        resolve()
+        return
+      }
+      existingScript.addEventListener('load', () => resolve(), { once: true })
+      existingScript.addEventListener('error', () => reject(new Error('Could not load Lemon Squeezy checkout')), { once: true })
+      window.setTimeout(() => {
+        if (window.LemonSqueezy?.Url?.Open) resolve()
+      }, 1200)
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://app.lemonsqueezy.com/js/lemon.js'
+    script.defer = true
+    script.dataset.lemonSqueezy = 'true'
+    script.onload = () => {
+      script.dataset.loaded = 'true'
+      resolve()
+    }
+    script.onerror = () => reject(new Error('Could not load Lemon Squeezy checkout'))
+    document.body.appendChild(script)
+  })
 }
 
 function applyTheme(t: Theme) {
@@ -223,8 +278,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       throw new Error(payload?.error || 'Could not start checkout')
     }
 
+    await loadLemonSqueezy()
+
+    if (window.LemonSqueezy?.Setup) {
+      window.LemonSqueezy.Setup({
+        eventHandler: event => {
+          if (event.event === 'Checkout.Success') {
+            setSubscription('pro')
+            window.location.assign('/dashboard?billing=success')
+          }
+        },
+      })
+    }
+
+    if (window.createLemonSqueezy) window.createLemonSqueezy()
+
+    if (window.LemonSqueezy?.Url?.Open) {
+      window.LemonSqueezy.Url.Open(payload.url)
+      return { openedCheckout: true }
+    }
+
     window.location.assign(payload.url)
-    return
+    return { openedCheckout: true }
   }
 
   async function cancelSubscription() {
