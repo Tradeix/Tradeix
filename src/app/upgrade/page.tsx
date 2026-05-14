@@ -117,16 +117,16 @@ export default function UpgradePage() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: '8px',
-              background: 'rgba(0,0,0,0.18)',
-              border: '1px solid rgba(245,158,11,0.14)',
-              borderRadius: '14px',
-              padding: '6px',
+              gap: '12px',
+              background: 'rgba(0,0,0,0.12)',
+              border: '1px solid rgba(245,158,11,0.16)',
+              borderRadius: '18px',
+              padding: '10px',
               marginBottom: '22px',
             }}>
               {[
                 { value: 'monthly' as const, label: language === 'he' ? 'חודשי' : 'Monthly', sub: '$20' },
-                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'מומלץ · חודשיים מתנה' : 'Recommended · 2 months free' },
+                { value: 'yearly' as const, label: language === 'he' ? 'שנתי' : 'Yearly', sub: language === 'he' ? 'חודשיים מתנה' : '2 months free' },
               ].map(plan => {
                 const active = billingPeriod === plan.value
                 return (
@@ -135,36 +135,46 @@ export default function UpgradePage() {
                     type="button"
                     onClick={() => setBillingPeriod(plan.value)}
                     style={{
-                      border: active ? '1px solid rgba(245,158,11,0.55)' : '1px solid transparent',
-                      background: active ? 'rgba(245,158,11,0.14)' : 'transparent',
+                      minHeight: '96px',
+                      border: active ? '1px solid rgba(245,158,11,0.75)' : '1px solid rgba(255,255,255,0.07)',
+                      background: active ? 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08))' : 'rgba(255,255,255,0.025)',
                       color: active ? '#f59e0b' : 'var(--text3)',
-                      borderRadius: '10px',
-                      padding: plan.value === 'yearly' ? '9px 8px 10px' : '10px 8px',
+                      borderRadius: '16px',
+                      padding: '13px 12px',
                       cursor: 'pointer',
                       fontFamily: 'Heebo, sans-serif',
-                      fontWeight: '800',
+                      fontWeight: '900',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '2px',
+                      gap: '6px',
                       alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      boxShadow: active ? '0 14px 34px rgba(245,158,11,0.12), inset 0 1px 0 rgba(255,255,255,0.08)' : 'none',
+                      transition: 'border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease',
                     }}
+                    onMouseOver={e => { if (!active) { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.28)'; e.currentTarget.style.transform = 'translateY(-1px)' } }}
+                    onMouseOut={e => { if (!active) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)' } }}
                   >
                     {plan.value === 'yearly' && (
                       <span style={{
                         fontSize: '10px',
                         lineHeight: 1,
-                        padding: '4px 8px',
+                        padding: '5px 11px',
                         borderRadius: '999px',
                         background: 'rgba(15,141,99,0.16)',
                         border: '1px solid rgba(15,141,99,0.28)',
                         color: '#0f8d63',
-                        marginBottom: '3px',
+                        fontWeight: '950',
                       }}>
                         {language === 'he' ? 'מומלץ' : 'Recommended'}
                       </span>
                     )}
-                    <span style={{ fontSize: '14px' }}>{plan.label}</span>
-                    <span style={{ fontSize: '11px', opacity: 0.78 }}>{plan.sub}</span>
+                    {plan.value === 'monthly' && (
+                      <span aria-hidden="true" style={{ height: '22px', pointerEvents: 'none' }} />
+                    )}
+                    <span style={{ fontSize: '16px', lineHeight: 1.1, color: active ? '#f59e0b' : 'var(--text2)' }}>{plan.label}</span>
+                    <span style={{ fontSize: plan.value === 'monthly' ? '14px' : '12px', opacity: active ? 0.92 : 0.78, lineHeight: 1.2, fontWeight: '800' }}>{plan.sub}</span>
                   </button>
                 )
               })}
