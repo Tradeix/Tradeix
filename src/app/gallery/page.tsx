@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
@@ -30,8 +31,9 @@ const CATEGORIES = (lang: 'he' | 'en') => [
 ]
 
 export default function GalleryPage() {
-  const { language } = useApp()
+  const { language, isPro, subscriptionLoading } = useApp()
   const { activePortfolio, portfolios } = usePortfolio()
+  const router = useRouter()
   const isRTL = language === 'he'
   const supabase = createClient()
   const cats = CATEGORIES(language)
@@ -49,7 +51,15 @@ export default function GalleryPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    if (!subscriptionLoading && !isPro) {
+      router.replace('/upgrade')
+    }
+  }, [subscriptionLoading, isPro, router])
+
+  useEffect(() => {
+    if (!subscriptionLoading && isPro) load()
+  }, [subscriptionLoading, isPro])
 
   async function load() {
     setLoading(true)
@@ -154,6 +164,15 @@ export default function GalleryPage() {
   const card: React.CSSProperties = {
     background: 'var(--bg2)', border: '1px solid var(--border)',
     borderRadius: 'var(--radius)', overflow: 'hidden',
+  }
+
+  if (!subscriptionLoading && !isPro) {
+    return (
+      <div style={{ padding: '64px', textAlign: 'center', fontFamily: 'Heebo, sans-serif' }}>
+        <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
   }
 
   return (

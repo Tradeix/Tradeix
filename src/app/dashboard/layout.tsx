@@ -327,6 +327,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     { href: '/settings', icon: 'settings', label: language === 'he' ? 'הגדרות' : 'Settings' },
   ]
 
+  const VISIBLE_BOTTOM_NAV = isPro ? BOTTOM_NAV : BOTTOM_NAV.filter(item => item.href !== '/gallery')
+
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
@@ -376,7 +378,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       <nav style={{ flex: 1, padding: '0 8px' }}>
         {NAV_ITEMS.map(item => <NavLink key={item.href} {...item} />)}
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
-        {BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
+        {VISIBLE_BOTTOM_NAV.map(item => <NavLink key={item.href} {...item} />)}
         <div style={{ height: '1px', background: 'var(--border)', margin: '12px 12px' }} />
         <button onClick={handleSignOut} className="sidebar-link" title={tr.logout} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
