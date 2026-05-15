@@ -230,8 +230,6 @@ export default function LandingPage() {
   return (
     <div dir={isHe ? 'rtl' : 'ltr'} style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, Manrope, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
       <div className="lp-grid-bg" />
-      <div className="lp-glow lp-glow-a" />
-      <div className="lp-glow lp-glow-b" />
 
       <nav className={`lp-nav ${scrolled ? 'lp-nav-scrolled' : ''}`}>
         <div className="lp-nav-inner">
@@ -256,6 +254,11 @@ export default function LandingPage() {
 
       <main>
         <section id="hero" className="lp-hero">
+          <div className="lp-hero-orbit" aria-hidden="true">
+            <div className="lp-market-tape">
+              {['XAUUSD +2.8%', 'NQ +1.4%', 'EURUSD +0.6%', 'BTC +3.1%', 'ES -0.4%'].map(item => <span key={item}>{item}</span>)}
+            </div>
+          </div>
           <div className="lp-hero-inner">
             <div data-animate className="lp-chip">
               <Icon name="auto_awesome" size={14} color="#0f8d63" />
@@ -300,6 +303,13 @@ export default function LandingPage() {
                     <strong style={{ color }}>{value}</strong>
                   </div>
                 ))}
+              </div>
+              <div className="lp-equity-line" dir="ltr">
+                <span />
+                <svg viewBox="0 0 680 170" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M0 128 C80 116 90 88 160 96 C230 104 240 48 315 62 C410 78 420 28 505 40 C590 52 600 20 680 26" />
+                  <path d="M0 128 C80 116 90 88 160 96 C230 104 240 48 315 62 C410 78 420 28 505 40 C590 52 600 20 680 26 L680 170 L0 170 Z" />
+                </svg>
               </div>
             </div>
           </div>
@@ -428,34 +438,28 @@ export default function LandingPage() {
           inset: 0;
           pointer-events: none;
           z-index: 0;
-          background: var(--bg);
-          background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-          background-size: 50px 50px;
-          animation: gridDrift 90s linear infinite;
+          background:
+            linear-gradient(180deg, rgba(0,0,0,0.22), transparent 28%),
+            linear-gradient(90deg, rgba(20,184,166,0.06), transparent 25%, transparent 75%, rgba(168,85,247,0.07)),
+            var(--bg);
+          background-image:
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+          background-size: 64px 64px;
         }
-        .lp-glow {
-          position: fixed;
-          border-radius: 50%;
-          background: rgba(15,141,99,0.1);
-          filter: blur(110px);
-          pointer-events: none;
-          z-index: 0;
-        }
-        .lp-glow-a { top: 10%; inset-inline-end: 15%; width: 460px; height: 460px; }
-        .lp-glow-b { top: 50%; inset-inline-start: 12%; width: 380px; height: 380px; opacity: 0.7; }
         .lp-nav {
           position: fixed;
           top: 0;
           inset-inline: 0;
-          height: 70px;
+          height: 78px;
           z-index: 50;
           transition: all 0.25s ease;
           border-bottom: 1px solid transparent;
         }
         .lp-nav-scrolled {
-          background: rgba(11,13,19,0.85);
-          backdrop-filter: blur(14px);
-          border-bottom-color: rgba(255,255,255,0.06);
+          background: rgba(7,10,15,0.82);
+          backdrop-filter: blur(18px);
+          border-bottom-color: rgba(255,255,255,0.08);
         }
         .lp-nav-inner {
           max-width: 1280px;
@@ -482,11 +486,15 @@ export default function LandingPage() {
         .lp-nav-links {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 2px;
+          padding: 5px;
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 999px;
+          background: rgba(255,255,255,0.035);
         }
         .lp-nav-links a {
-          padding: 8px 14px;
-          border-radius: 10px;
+          padding: 8px 15px;
+          border-radius: 999px;
           color: var(--text2);
           text-decoration: none;
           font-size: 14px;
@@ -495,23 +503,72 @@ export default function LandingPage() {
         }
         .lp-nav-links a:hover {
           color: var(--text);
-          background: rgba(255,255,255,0.04);
+          background: rgba(255,255,255,0.07);
         }
         main {
           position: relative;
           z-index: 1;
         }
         .lp-hero {
-          min-height: 100vh;
+          min-height: 100svh;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 120px 24px 80px;
+          padding: 118px 24px 74px;
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
+        }
+        .lp-hero::before {
+          content: '';
+          position: absolute;
+          inset: 82px 24px 58px;
+          z-index: -2;
+          border-radius: 34px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background:
+            linear-gradient(135deg, rgba(14,165,233,0.12), transparent 28%),
+            linear-gradient(225deg, rgba(168,85,247,0.12), transparent 30%),
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.38);
+        }
+        .lp-hero::after {
+          content: '';
+          position: absolute;
+          inset: auto 0 0;
+          height: 26%;
+          z-index: -1;
+          background: linear-gradient(180deg, transparent, var(--bg));
+        }
+        .lp-hero-orbit {
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+        }
+        .lp-market-tape {
+          position: absolute;
+          top: 114px;
+          inset-inline: 58px;
+          display: flex;
+          justify-content: space-between;
+          gap: 14px;
+          opacity: 0.62;
+        }
+        .lp-market-tape span {
+          color: var(--text3);
+          font: 800 11px Manrope, Heebo, sans-serif;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          white-space: nowrap;
         }
         .lp-hero-inner {
           width: 100%;
-          max-width: 900px;
+          max-width: 1120px;
           text-align: center;
+          display: grid;
+          justify-items: center;
+          position: relative;
         }
         .lp-chip {
           display: inline-flex;
@@ -519,34 +576,36 @@ export default function LandingPage() {
           gap: 8px;
           padding: 6px 14px;
           border-radius: 999px;
-          background: rgba(15,141,99,0.08);
-          border: 1px solid rgba(15,141,99,0.25);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
           font-size: 12px;
           font-weight: 800;
           color: #0f8d63;
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          margin-bottom: 24px;
+          margin-bottom: 18px;
+          backdrop-filter: blur(14px);
         }
         .lp-hero h1 {
-          margin: 0 0 22px;
+          margin: 0 0 18px;
           color: var(--text);
-          font-size: 64px;
+          font-size: clamp(44px, 7vw, 86px);
           font-weight: 900;
-          line-height: 1.05;
+          line-height: 0.96;
           letter-spacing: 0;
+          max-width: 920px;
         }
         .lp-hero h1 span, .lp-ai-head h2 span {
-          background: linear-gradient(90deg, #0f8d63 0%, #14b886 100%);
+          background: linear-gradient(90deg, #38bdf8 0%, #a855f7 45%, #36cb61 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
         .lp-subtitle {
           max-width: 640px;
-          margin: 0 auto 36px;
+          margin: 0 auto 30px;
           color: var(--text2);
-          font-size: 19px;
+          font-size: 18px;
           font-weight: 500;
           line-height: 1.6;
         }
@@ -556,7 +615,7 @@ export default function LandingPage() {
           justify-content: center;
           gap: 12px;
           flex-wrap: wrap;
-          margin-bottom: 40px;
+          margin-bottom: 34px;
         }
         .lp-primary, .lp-secondary {
           display: inline-flex;
@@ -597,24 +656,37 @@ export default function LandingPage() {
           border-color: rgba(255,255,255,0.3);
         }
         .lp-preview, .lp-ai-card {
-          background: linear-gradient(135deg, var(--bg2), var(--bg3));
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 20px;
-          box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+          background: rgba(7,10,15,0.78);
+          border: 1px solid rgba(255,255,255,0.10);
+          border-radius: 22px;
+          box-shadow: 0 32px 90px rgba(0,0,0,0.46);
           overflow: hidden;
           position: relative;
+          backdrop-filter: blur(18px);
         }
         .lp-preview {
-          max-width: 760px;
-          margin: 20px auto 0;
-          padding: 24px;
+          width: min(100%, 900px);
+          margin: 16px auto 0;
+          padding: 22px;
+          text-align: start;
+        }
+        .lp-preview::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(90deg, rgba(56,189,248,0.10), transparent 30%),
+            linear-gradient(270deg, rgba(168,85,247,0.10), transparent 30%);
+          pointer-events: none;
         }
         .lp-preview-head {
           display: flex;
           justify-content: space-between;
           align-items: center;
           gap: 18px;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
         }
         .lp-kicker {
           color: var(--text3);
@@ -626,7 +698,7 @@ export default function LandingPage() {
         }
         .lp-money {
           color: #22c55e;
-          font-size: 38px;
+          font-size: 42px;
           font-weight: 900;
           line-height: 1;
           letter-spacing: 0;
@@ -634,7 +706,7 @@ export default function LandingPage() {
         .lp-growth {
           padding: 8px 16px;
           border-radius: 10px;
-          background: rgba(34,197,94,0.1);
+          background: rgba(34,197,94,0.12);
           border: 1px solid rgba(34,197,94,0.3);
           color: #22c55e;
           font-size: 14px;
@@ -643,16 +715,24 @@ export default function LandingPage() {
         .lp-preview-stats {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
+          gap: 0;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          position: relative;
+          z-index: 1;
         }
         .lp-preview-stats div, .lp-card, .lp-faq, .lp-steps div {
-          background: var(--bg2);
-          border: 1px solid var(--border);
-          border-radius: 14px;
+          background: transparent;
+          border: 0;
+          border-radius: 0;
         }
         .lp-preview-stats div {
-          padding: 14px 16px;
-          text-align: start;
+          padding: 14px 18px;
+          text-align: center;
+          border-inline-start: 1px solid rgba(255,255,255,0.08);
+        }
+        .lp-preview-stats div:first-child {
+          border-inline-start: 0;
         }
         .lp-preview-stats small {
           display: block;
@@ -666,20 +746,57 @@ export default function LandingPage() {
           font-size: 22px;
           font-weight: 900;
         }
+        .lp-equity-line {
+          height: 142px;
+          margin-top: 18px;
+          position: relative;
+          z-index: 1;
+          border-radius: 18px;
+          background:
+            linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+          background-size: 42px 42px;
+          overflow: hidden;
+        }
+        .lp-equity-line span {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(56,189,248,0.08), rgba(168,85,247,0.08), rgba(54,203,97,0.08));
+        }
+        .lp-equity-line svg {
+          position: absolute;
+          inset: 14px 18px 10px;
+          width: calc(100% - 36px);
+          height: calc(100% - 24px);
+        }
+        .lp-equity-line path:first-child {
+          fill: none;
+          stroke: #36cb61;
+          stroke-width: 4;
+          stroke-linecap: round;
+        }
+        .lp-equity-line path:last-child {
+          fill: rgba(54,203,97,0.13);
+          stroke: none;
+        }
         .lp-section {
           max-width: 1180px;
           margin: 0 auto;
-          padding: 80px 24px;
+          padding: 96px 24px;
         }
         .lp-section.narrow { max-width: 960px; }
         .lp-section.faq { max-width: 780px; }
         .lp-section-title {
-          text-align: center;
-          margin-bottom: 60px;
+          text-align: start;
+          margin-bottom: 46px;
+          display: grid;
+          grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.62fr);
+          gap: 32px;
+          align-items: end;
         }
         .lp-section-title small {
           display: block;
-          color: #0f8d63;
+          color: #36cb61;
           font-size: 12px;
           font-weight: 900;
           letter-spacing: 0.12em;
@@ -688,38 +805,42 @@ export default function LandingPage() {
         }
         .lp-section-title h2, .lp-ai-head h2 {
           margin: 0 0 14px;
-          font-size: 44px;
+          font-size: clamp(32px, 4vw, 54px);
           font-weight: 900;
           line-height: 1.1;
           letter-spacing: 0;
         }
         .lp-section-title p, .lp-ai-head p {
-          max-width: 620px;
-          margin: 0 auto;
+          max-width: 520px;
+          margin: 0;
           color: var(--text2);
           font-size: 17px;
-          line-height: 1.65;
+          line-height: 1.6;
         }
         .lp-feature-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
+          gap: 0;
+          border-top: 1px solid rgba(255,255,255,0.09);
+          border-inline-start: 1px solid rgba(255,255,255,0.09);
         }
         .lp-card {
-          padding: 28px;
-          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+          padding: 30px;
+          min-height: 238px;
+          border-inline-end: 1px solid rgba(255,255,255,0.09);
+          border-bottom: 1px solid rgba(255,255,255,0.09);
+          transition: background 0.25s ease, transform 0.25s ease;
         }
         .lp-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(15,141,99,0.45);
-          box-shadow: 0 18px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(15,141,99,0.15);
+          transform: translateY(-3px);
+          background: rgba(255,255,255,0.035);
         }
         .lp-card-icon {
-          width: 52px;
-          height: 52px;
-          border-radius: 14px;
-          background: rgba(15,141,99,0.12);
-          border: 1px solid rgba(15,141,99,0.3);
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
+          background: rgba(54,203,97,0.10);
+          border: 1px solid rgba(54,203,97,0.24);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -727,7 +848,7 @@ export default function LandingPage() {
         }
         .lp-card h3 {
           margin: 0 0 8px;
-          font-size: 19px;
+          font-size: 20px;
           font-weight: 900;
         }
         .lp-card p {
@@ -739,6 +860,8 @@ export default function LandingPage() {
         .lp-ai-head {
           text-align: center;
           margin-bottom: 50px;
+          display: grid;
+          justify-items: center;
         }
         .lp-chip.pulse span, .lp-analyzing span {
           width: 7px;
@@ -752,15 +875,18 @@ export default function LandingPage() {
           display: grid;
           grid-template-columns: 1.25fr 1fr;
           gap: 28px;
-          padding: 32px;
-          border-color: rgba(15,141,99,0.32);
-          background: linear-gradient(135deg, var(--bg2), rgba(15,141,99,0.05));
+          padding: 18px;
+          border-color: rgba(255,255,255,0.12);
+          background:
+            linear-gradient(135deg, rgba(56,189,248,0.08), transparent 36%),
+            linear-gradient(225deg, rgba(168,85,247,0.08), transparent 36%),
+            rgba(7,10,15,0.74);
         }
         .lp-chart {
           min-height: 340px;
-          background: #0a0c12;
-          border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 16px;
+          background: #06080d;
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 18px;
           position: relative;
           overflow: hidden;
           background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
@@ -845,10 +971,11 @@ export default function LandingPage() {
           align-items: center;
           justify-content: space-between;
           gap: 14px;
-          background: rgba(0,0,0,0.25);
-          border: 1px solid rgba(15,141,99,0.18);
-          border-radius: 10px;
-          padding: 10px 14px;
+          background: transparent;
+          border: 0;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          border-radius: 0;
+          padding: 12px 2px;
           animation: lpFieldFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
         .lp-field span {
@@ -876,7 +1003,7 @@ export default function LandingPage() {
           grid-template-columns: repeat(3, 1fr);
           gap: 14px;
           padding-top: 24px;
-          border-top: 1px solid rgba(15,141,99,0.18);
+          border-top: 1px solid rgba(255,255,255,0.10);
         }
         .lp-ai-stats div {
           text-align: center;
@@ -923,20 +1050,27 @@ export default function LandingPage() {
         }
         .lp-pricing-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 20px;
+          grid-template-columns: 0.85fr 1fr;
+          gap: 0;
+          border: 1px solid rgba(255,255,255,0.10);
+          border-radius: 26px;
+          overflow: hidden;
+          background: rgba(255,255,255,0.025);
         }
         .lp-plan {
           position: relative;
-          padding: 32px;
-          border-radius: 20px;
-          background: var(--bg2);
-          border: 1px solid var(--border);
+          padding: 36px;
+          border-radius: 0;
+          background: transparent;
+          border: 0;
         }
         .lp-plan.pro {
-          background: linear-gradient(180deg, rgba(15,141,99,0.08), var(--bg2));
-          border-color: rgba(15,141,99,0.45);
-          box-shadow: 0 24px 60px rgba(15,141,99,0.18), 0 0 0 1px rgba(15,141,99,0.2);
+          background:
+            linear-gradient(135deg, rgba(56,189,248,0.08), transparent 34%),
+            linear-gradient(225deg, rgba(168,85,247,0.10), transparent 32%),
+            rgba(54,203,97,0.055);
+          border-inline-start: 1px solid rgba(255,255,255,0.10);
+          box-shadow: none;
           overflow: hidden;
         }
         .lp-badge {
@@ -1003,11 +1137,13 @@ export default function LandingPage() {
         .lp-faq-list {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 0;
+          border-top: 1px solid rgba(255,255,255,0.09);
         }
         .lp-faq {
           overflow: hidden;
           transition: border-color 0.2s ease;
+          border-bottom: 1px solid rgba(255,255,255,0.09);
         }
         .lp-faq.open { border-color: rgba(15,141,99,0.35); }
         .lp-faq button {
@@ -1068,6 +1204,10 @@ export default function LandingPage() {
           transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
         }
         [data-animate][data-visible="true"] {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .lp-hero [data-animate] {
           opacity: 1;
           transform: translateY(0);
         }
