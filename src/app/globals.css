@@ -1505,3 +1505,235 @@ body:has(.app-modal-overlay) .page-header-row {
   .lp-feature-grid { grid-template-columns: 1fr; }
   .lp-equity-line { height: 108px; }
 }
+
+@media (max-width: 640px) {
+  .lp-grid-bg {
+    background-size: 42px 42px;
+  }
+  .lp-nav {
+    height: 66px;
+    background: rgba(7,10,15,0.86);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .lp-nav-inner {
+    padding: 0 14px;
+    gap: 10px;
+  }
+  .lp-logo {
+    gap: 8px;
+    min-width: 0;
+  }
+  .lp-logo svg {
+    width: 30px;
+    height: 30px;
+  }
+  .lp-logo > span {
+    font-size: 16px;
+    line-height: 1;
+  }
+  .lp-primary.small {
+    min-height: 40px;
+    padding: 9px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .lp-hero {
+    min-height: auto;
+    padding: 92px 12px 42px;
+    align-items: flex-start;
+  }
+  .lp-hero::before {
+    inset: 76px 8px 22px;
+    border-radius: 22px;
+  }
+  .lp-hero::after {
+    height: 18%;
+  }
+  .lp-hero-inner {
+    max-width: 100%;
+  }
+  .lp-chip {
+    max-width: calc(100vw - 44px);
+    justify-content: center;
+    padding: 6px 11px;
+    margin-bottom: 14px;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+  .lp-hero h1 {
+    max-width: 350px;
+    margin-bottom: 14px;
+    font-size: clamp(34px, 10vw, 42px);
+    line-height: 1.03;
+  }
+  .lp-subtitle {
+    max-width: 330px;
+    margin-bottom: 22px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .lp-cta-row {
+    width: min(100%, 330px);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .lp-primary,
+  .lp-secondary {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+  }
+  .lp-preview {
+    width: min(100%, 342px);
+    margin-top: 4px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+  .lp-preview-head {
+    align-items: center;
+    flex-direction: row;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .lp-kicker {
+    font-size: 10px;
+  }
+  .lp-money {
+    font-size: 32px;
+  }
+  .lp-growth {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  .lp-preview-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .lp-preview-stats div {
+    border-top: 0;
+    border-inline-start: 1px solid rgba(255,255,255,0.08);
+    padding: 11px 6px;
+  }
+  .lp-preview-stats div:first-child {
+    border-inline-start: 0;
+  }
+  .lp-preview-stats small {
+    font-size: 9px;
+  }
+  .lp-preview-stats strong {
+    font-size: 18px;
+  }
+  .lp-equity-line {
+    height: 92px;
+    margin-top: 12px;
+    border-radius: 14px;
+  }
+  .lp-section {
+    padding: 58px 16px;
+  }
+  .lp-section-title,
+  .lp-ai-head {
+    max-width: 340px;
+    margin-bottom: 28px;
+    gap: 8px;
+  }
+  .lp-section-title h2,
+  .lp-ai-head h2 {
+    margin-bottom: 8px;
+    font-size: clamp(28px, 8.2vw, 34px);
+    line-height: 1.12;
+  }
+  .lp-section-title p,
+  .lp-ai-head p {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .lp-feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-bottom: 0;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .lp-card {
+    min-height: auto;
+    padding: 24px 18px;
+    border-inline-end: 0;
+  }
+  .lp-card h3 {
+    font-size: 18px;
+  }
+  .lp-card p {
+    max-width: 292px;
+  }
+  .lp-ai-card {
+    padding: 14px;
+    gap: 18px;
+    border-radius: 20px;
+  }
+  .lp-chart {
+    min-height: 210px;
+    border-radius: 15px;
+  }
+  .lp-fields {
+    gap: 0;
+  }
+  .lp-field {
+    padding: 11px 0;
+  }
+  .lp-ai-stats {
+    gap: 0;
+    padding-top: 14px;
+  }
+  .lp-ai-stats div {
+    padding: 12px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .lp-ai-stats div:first-child {
+    border-top: 0;
+  }
+  .lp-steps {
+    width: min(100%, 340px);
+    margin: 20px auto 0;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .lp-steps div {
+    justify-content: center;
+    min-height: 42px;
+  }
+  .lp-pricing-grid {
+    border-radius: 20px;
+  }
+  .lp-plan {
+    padding: 30px 20px;
+  }
+  .lp-plan.pro {
+    border-top: 1px solid rgba(255,255,255,0.10);
+  }
+  .lp-price-row strong {
+    font-size: 40px;
+  }
+  .lp-plan-list {
+    width: 100%;
+  }
+  .lp-faq-list {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-bottom: 0;
+  }
+  .lp-faq button {
+    padding: 18px 16px;
+    font-size: 15px;
+  }
+  .lp-footer {
+    justify-content: center;
+    text-align: center;
+    padding: 28px 18px 34px;
+  }
+}
