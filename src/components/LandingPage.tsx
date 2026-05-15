@@ -564,7 +564,7 @@ export default function LandingPage() {
         }
         .lp-hero-inner {
           width: 100%;
-          max-width: 1120px;
+          max-width: 1060px;
           text-align: center;
           display: grid;
           justify-items: center;
@@ -589,11 +589,12 @@ export default function LandingPage() {
         .lp-hero h1 {
           margin: 0 0 18px;
           color: var(--text);
-          font-size: clamp(44px, 7vw, 86px);
+          font-size: clamp(44px, 6.4vw, 82px);
           font-weight: 900;
-          line-height: 0.96;
+          line-height: 1;
           letter-spacing: 0;
-          max-width: 920px;
+          max-width: 980px;
+          text-wrap: balance;
         }
         .lp-hero h1 span, .lp-ai-head h2 span {
           background: linear-gradient(90deg, #38bdf8 0%, #a855f7 45%, #36cb61 100%);
@@ -787,12 +788,12 @@ export default function LandingPage() {
         .lp-section.narrow { max-width: 960px; }
         .lp-section.faq { max-width: 780px; }
         .lp-section-title {
-          text-align: start;
-          margin-bottom: 46px;
+          text-align: center;
+          margin: 0 auto 46px;
           display: grid;
-          grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.62fr);
-          gap: 32px;
-          align-items: end;
+          justify-items: center;
+          gap: 10px;
+          max-width: 780px;
         }
         .lp-section-title small {
           display: block;
@@ -809,13 +810,15 @@ export default function LandingPage() {
           font-weight: 900;
           line-height: 1.1;
           letter-spacing: 0;
+          text-wrap: balance;
         }
         .lp-section-title p, .lp-ai-head p {
-          max-width: 520px;
+          max-width: 620px;
           margin: 0;
           color: var(--text2);
           font-size: 17px;
           line-height: 1.6;
+          text-wrap: balance;
         }
         .lp-feature-grid {
           display: grid;
@@ -827,6 +830,10 @@ export default function LandingPage() {
         .lp-card {
           padding: 30px;
           min-height: 238px;
+          display: grid;
+          align-content: start;
+          justify-items: center;
+          text-align: center;
           border-inline-end: 1px solid rgba(255,255,255,0.09);
           border-bottom: 1px solid rgba(255,255,255,0.09);
           transition: background 0.25s ease, transform 0.25s ease;
@@ -844,7 +851,7 @@ export default function LandingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 18px;
+          margin: 0 auto 18px;
         }
         .lp-card h3 {
           margin: 0 0 8px;
@@ -859,9 +866,10 @@ export default function LandingPage() {
         }
         .lp-ai-head {
           text-align: center;
-          margin-bottom: 50px;
+          margin: 0 auto 50px;
           display: grid;
           justify-items: center;
+          max-width: 780px;
         }
         .lp-chip.pulse span, .lp-analyzing span {
           width: 7px;
@@ -1050,7 +1058,7 @@ export default function LandingPage() {
         }
         .lp-pricing-grid {
           display: grid;
-          grid-template-columns: 0.85fr 1fr;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0;
           border: 1px solid rgba(255,255,255,0.10);
           border-radius: 26px;
@@ -1063,6 +1071,9 @@ export default function LandingPage() {
           border-radius: 0;
           background: transparent;
           border: 0;
+          display: grid;
+          justify-items: center;
+          text-align: center;
         }
         .lp-plan.pro {
           background:
@@ -1098,6 +1109,7 @@ export default function LandingPage() {
         .lp-price-row {
           display: flex;
           align-items: baseline;
+          justify-content: center;
           gap: 6px;
           margin-bottom: 6px;
         }
@@ -1124,10 +1136,12 @@ export default function LandingPage() {
         .lp-plan-list div {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 10px;
           color: var(--text2);
           font-size: 14px;
           font-weight: 700;
+          text-align: center;
         }
         .lp-plan.pro .lp-plan-list div { color: var(--text); }
         .lp-plan-list div.locked {
@@ -1199,8 +1213,8 @@ export default function LandingPage() {
           font-weight: 600;
         }
         [data-animate] {
-          opacity: 0;
-          transform: translateY(28px);
+          opacity: 1;
+          transform: translateY(0);
           transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
         }
         [data-animate][data-visible="true"] {
