@@ -285,12 +285,10 @@ export default function DashboardPage() {
               <div className="welcome-quote-wrap" style={{
                 width: 'min(42%, 520px)',
                 minWidth: '320px',
-                padding: '18px 20px',
-                borderRadius: '18px',
-                background: 'rgba(2,4,7,0.48)',
-                border: '1px solid rgba(255,255,255,0.055)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035), 0 10px 28px rgba(0,0,0,0.16)',
-                backdropFilter: 'blur(10px)',
+                padding: language === 'he' ? '4px 22px 4px 0' : '4px 0 4px 22px',
+                borderInlineStart: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.75)',
+                borderInlineEnd: language === 'he' ? '2px solid rgba(15,141,99,0.75)' : 'none',
+                position: 'relative',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
@@ -314,6 +312,12 @@ export default function DashboardPage() {
           OVERVIEW + PERFORMANCE — side-by-side on desktop,
           stacked on tablet/mobile
           ══════════════════════════════════════════════ */}
+      <div className="welcome-stat-divider section-anim anim-delay-1" aria-hidden="true">
+        <span />
+        <i />
+        <span />
+      </div>
+
       <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'stretch' }}>
 
       <div className="overview-col" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -612,6 +616,34 @@ export default function DashboardPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .welcome-stat-divider {
+          display: grid;
+          grid-template-columns: minmax(60px, 1fr) auto minmax(60px, 1fr);
+          align-items: center;
+          gap: 14px;
+          margin: -8px 0 30px;
+          padding-inline: 10px;
+          opacity: 0.92;
+        }
+        .welcome-stat-divider span {
+          height: 1px;
+          background:
+            linear-gradient(90deg, transparent, rgba(15,141,99,0.36), rgba(255,255,255,0.08), transparent);
+        }
+        .welcome-stat-divider i {
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: #0f8d63;
+          box-shadow: 0 0 0 6px rgba(15,141,99,0.10), 0 0 28px rgba(15,141,99,0.75);
+          transform: rotate(45deg);
+          animation: dividerPulse 2.8s ease-in-out infinite;
+        }
+        @keyframes dividerPulse {
+          0%, 100% { opacity: 0.62; transform: rotate(45deg) scale(0.86); }
+          50% { opacity: 1; transform: rotate(45deg) scale(1.12); }
+        }
+
         @media (max-width: 1024px) {
           .overview-perf-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
@@ -647,8 +679,13 @@ export default function DashboardPage() {
           .welcome-title { font-size: 22px !important; }
           .welcome-date { font-size: 12px !important; }
           .welcome-meta-row { margin-bottom: 7px !important; }
-          .welcome-quote-wrap { width: 100% !important; min-width: 0 !important; padding: 14px 15px !important; border-radius: 14px !important; }
+          .welcome-quote-wrap { width: 100% !important; min-width: 0 !important; padding: 2px 15px !important; }
           .welcome-quote { font-size: 13.5px !important; }
+          .welcome-stat-divider {
+            gap: 10px !important;
+            margin: -4px 0 22px !important;
+            padding-inline: 4px !important;
+          }
           .section-title { font-size: 19px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }

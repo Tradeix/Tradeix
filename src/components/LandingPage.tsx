@@ -80,7 +80,7 @@ const COPY = {
         perks: ['עד 3 תיקים פעילים', 'עסקאות ללא הגבלה', 'ניתוח AI מלא של גרפים', 'עמוד סטטיסטיקות מתקדם', 'מערכת אסטרטגיות', 'ארכיון תיקים שלם', 'גלריית הוכחות', 'תמיכת PRO'],
       },
     },
-    faqHeader: { eyebrow: 'שאלות נפוצות', title: 'הכל מה שצריך לדעת' },
+    faqHeader: { eyebrow: 'שאלות נפוצות', title: 'כל מה שצריך לדעת' },
     faqs: [
       ['מה זה UPLOTRADE?', 'יומן מסחר חכם שמלווה אותך לאורך הקריירה שלך: מנתח גרפים בעזרת AI, מציג סטטיסטיקות מתקדמות ועוזר לזהות מה עובד לך ומה לא.'],
       ['איך ה-AI עובד?', 'מודלי vision של Anthropic מזהים מתוך צילום מסך את הצמד, מחיר הכניסה, מחיר היציאה וה-Stop Loss. תמיד אפשר לערוך ידנית לפני שמירה.'],
@@ -252,31 +252,123 @@ export default function LandingPage() {
             <p data-animate className="lp-subtitle">{copy.hero.subtitle}</p>
 
             <div data-animate className="lp-preview">
-              <div className="lp-preview-head">
-                <div>
-                  <div className="lp-kicker">{copy.hero.portfolioValue}</div>
-                  <div dir="ltr" className="lp-money">$254,890</div>
-                </div>
-                <div dir="ltr" className="lp-growth">+12.4%</div>
-              </div>
-              <div className="lp-preview-stats">
-                {[
-                  ['WIN RATE', '67%', '#0f8d63'],
-                  ['PROFIT FACTOR', '2.34', '#0f8d63'],
-                  ['TRADES', '142', 'var(--text)'],
-                ].map(([label, value, color]) => (
-                  <div key={label}>
-                    <small>{label}</small>
-                    <strong style={{ color }}>{value}</strong>
+              <div className="lp-shot-shadow" aria-hidden="true" />
+              <div className="lp-dashboard-frame">
+                <div className="lp-dashboard-shot">
+                  <aside className="lp-shot-sidebar" aria-hidden="true">
+                    <LogoMark size={30} />
+                    {['space_dashboard', 'add_chart', 'monitoring', 'photo_library', 'settings'].map((icon, index) => (
+                      <span key={icon} className={index === 0 ? 'active' : ''}>
+                        <Icon name={icon} size={15} color={index === 0 ? '#22c55e' : 'var(--text3)'} />
+                      </span>
+                    ))}
+                  </aside>
+
+                  <div className="lp-shot-main">
+                    <header className="lp-shot-header">
+                      <div>
+                        <small>UPLOTRADE</small>
+                        <h3>{isHe ? 'דשבורד מסחר' : 'Trading dashboard'}</h3>
+                      </div>
+                      <div className="lp-shot-tabs" dir="ltr">
+                        <span className="active">1M</span>
+                        <span>3M</span>
+                        <span>ALL</span>
+                      </div>
+                    </header>
+
+                    <div className="lp-shot-grid">
+                      <section className="lp-shot-panel balance">
+                        <div className="lp-shot-section-title">
+                          <span>
+                            <Icon name="space_dashboard" size={14} color="#0f8d63" />
+                            {isHe ? 'סקירה כללית' : 'Overview'}
+                          </span>
+                          <strong>Forex</strong>
+                        </div>
+
+                        <div className="lp-shot-balance-row">
+                          <div>
+                            <small>{copy.hero.portfolioValue}</small>
+                            <b dir="ltr">$254,890</b>
+                          </div>
+                          <div>
+                            <small>{isHe ? 'תשואה' : 'Return'}</small>
+                            <b dir="ltr">+12.4%</b>
+                          </div>
+                        </div>
+
+                        <div className="lp-shot-stat-row">
+                          {[
+                            ['TRADES', '142'],
+                            ['PROFIT FACTOR', '2.34'],
+                            ['WIN RATE', '67%'],
+                          ].map(([label, value]) => (
+                            <div key={label}>
+                              <small>{label}</small>
+                              <strong dir="ltr">{value}</strong>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+
+                      <section className="lp-shot-panel performance">
+                        <div className="lp-shot-section-title">
+                          <span>
+                            <Icon name="monitoring" size={14} color="#0f8d63" />
+                            {isHe ? 'נתוני ביצועים' : 'Performance'}
+                          </span>
+                        </div>
+                        <div className="lp-shot-winrate">
+                          <svg viewBox="0 0 184 104" aria-hidden="true">
+                            <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} />
+                            <path d="M 20 88 A 72 72 0 0 1 164 88" pathLength={100} />
+                          </svg>
+                          <strong dir="ltr">67%</strong>
+                        </div>
+                        <div className="lp-shot-metric-pair">
+                          <span dir="ltr">+$8,240</span>
+                          <span dir="ltr">2.34 PF</span>
+                        </div>
+                      </section>
+
+                      <section className="lp-shot-panel chart">
+                        <div className="lp-shot-chart-title">
+                          <span>{isHe ? 'עקומת הון' : 'Equity curve'}</span>
+                          <strong dir="ltr">+$24,890</strong>
+                        </div>
+                        <div className="lp-shot-chart" dir="ltr">
+                          <span />
+                          <svg viewBox="0 0 680 170" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0 128 C70 120 98 86 150 92 C215 99 230 52 300 62 C372 72 398 34 466 44 C548 56 592 22 680 28" />
+                            <path d="M0 128 C70 120 98 86 150 92 C215 99 230 52 300 62 C372 72 398 34 466 44 C548 56 592 22 680 28 L680 170 L0 170 Z" />
+                          </svg>
+                        </div>
+                      </section>
+
+                      <section className="lp-shot-panel trades">
+                        <div className="lp-shot-section-title">
+                          <span>
+                            <Icon name="show_chart" size={14} color="#0f8d63" />
+                            {isHe ? 'עסקאות אחרונות' : 'Recent trades'}
+                          </span>
+                          <strong>LIVE</strong>
+                        </div>
+                        {[
+                          ['EUR/USD', 'LONG', '+$420'],
+                          ['NASDAQ', 'BUY', '+$310'],
+                          ['BTC/USD', 'SHORT', '-$95'],
+                        ].map(([symbol, side, pnl]) => (
+                          <div key={symbol} className="lp-shot-trade">
+                            <span>{symbol}</span>
+                            <small>{side}</small>
+                            <strong dir="ltr" className={pnl.startsWith('-') ? 'loss' : ''}>{pnl}</strong>
+                          </div>
+                        ))}
+                      </section>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="lp-equity-line" dir="ltr">
-                <span />
-                <svg viewBox="0 0 680 170" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M0 128 C80 116 90 88 160 96 C230 104 240 48 315 62 C410 78 420 28 505 40 C590 52 600 20 680 26" />
-                  <path d="M0 128 C80 116 90 88 160 96 C230 104 240 48 315 62 C410 78 420 28 505 40 C590 52 600 20 680 26 L680 170 L0 170 Z" />
-                </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -651,28 +743,388 @@ export default function LandingPage() {
           backdrop-filter: blur(18px);
         }
         .lp-preview {
-          width: min(100%, 900px);
+          width: min(100%, 980px);
           margin: 16px auto 0;
-          padding: 22px;
+          padding: 0;
           text-align: start;
+          display: block;
+          overflow: visible;
+          border: 0;
+          background: transparent;
+          box-shadow: none;
+          backdrop-filter: none;
+          perspective: 1200px;
         }
         .lp-preview::before {
+          display: none;
+        }
+        .lp-shot-shadow {
+          position: absolute;
+          inset: 14% 8% -8% 10%;
+          background: radial-gradient(closest-side, rgba(34,197,94,0.22), transparent 72%);
+          filter: blur(34px);
+          transform: rotate(-3deg) skewX(-10deg);
+          pointer-events: none;
+        }
+        .lp-dashboard-frame {
+          position: relative;
+          transform: rotateX(8deg) rotateZ(-2.5deg) skewX(-5deg);
+          transform-origin: 50% 50%;
+          clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.14);
+          box-shadow: 0 34px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(34,197,94,0.08);
+          overflow: hidden;
+          background: #070a0f;
+        }
+        .lp-dashboard-frame::before {
           content: '';
           position: absolute;
           inset: 0;
-          background:
-            linear-gradient(90deg, rgba(56,189,248,0.10), transparent 30%),
-            linear-gradient(270deg, rgba(168,85,247,0.10), transparent 30%);
+          z-index: 3;
           pointer-events: none;
+          background:
+            linear-gradient(90deg, rgba(56,189,248,0.10), transparent 24%),
+            linear-gradient(270deg, rgba(168,85,247,0.12), transparent 26%),
+            linear-gradient(180deg, rgba(255,255,255,0.09), transparent 22%);
         }
-        .lp-preview-head {
+        .lp-dashboard-shot {
+          min-height: 334px;
+          display: grid;
+          grid-template-columns: 70px minmax(0, 1fr);
+          background:
+            radial-gradient(circle at 12% 5%, rgba(15,141,99,0.16), transparent 28%),
+            linear-gradient(135deg, rgba(9,18,25,0.98), rgba(7,10,15,0.98) 48%, rgba(20,13,35,0.98));
+          transform: skewX(5deg);
+          transform-origin: center;
+          margin-inline: -28px;
+          padding-inline: 28px;
+        }
+        .lp-shot-sidebar {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 13px;
+          padding: 22px 0;
+          border-inline-end: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.025);
+        }
+        .lp-shot-sidebar > svg {
+          margin-bottom: 10px;
+        }
+        .lp-shot-sidebar span {
+          width: 34px;
+          height: 34px;
+          display: grid;
+          place-items: center;
+          border-radius: 10px;
+          border: 1px solid transparent;
+        }
+        .lp-shot-sidebar span.active {
+          background: rgba(34,197,94,0.12);
+          border-color: rgba(34,197,94,0.28);
+        }
+        .lp-shot-main {
+          min-width: 0;
+          padding: 20px;
+        }
+        .lp-shot-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 18px;
+        }
+        .lp-shot-header small {
+          display: block;
+          color: var(--text3);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          margin-bottom: 4px;
+        }
+        .lp-shot-header h3 {
+          margin: 0;
+          color: var(--text);
+          font-size: 25px;
+          font-weight: 900;
+          letter-spacing: 0;
+          line-height: 1.1;
+        }
+        .lp-shot-tabs {
+          display: inline-flex;
+          gap: 3px;
+          padding: 4px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.045);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .lp-shot-tabs span {
+          min-width: 38px;
+          padding: 7px 10px;
+          border-radius: 9px;
+          color: var(--text3);
+          text-align: center;
+          font-size: 11px;
+          font-weight: 900;
+        }
+        .lp-shot-tabs span.active {
+          background: #0f8d63;
+          color: #fff;
+        }
+        .lp-shot-grid {
+          display: grid;
+          grid-template-columns: 1.05fr 0.95fr;
+          grid-template-rows: 134px 142px;
+          gap: 14px;
+        }
+        .lp-shot-panel {
+          min-width: 0;
+          overflow: hidden;
+          border-radius: 15px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.10);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .lp-shot-panel.balance {
+          padding: 14px 16px;
+        }
+        .lp-shot-panel.performance {
+          padding: 14px 16px;
+        }
+        .lp-shot-panel.chart {
+          padding: 13px 15px;
+        }
+        .lp-shot-panel.trades {
+          padding: 14px 16px;
+        }
+        .lp-shot-section-title, .lp-shot-chart-title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          color: var(--text2);
+          font-size: 12px;
+          font-weight: 900;
+          margin-bottom: 10px;
+        }
+        .lp-shot-section-title span {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+        }
+        .lp-shot-section-title strong, .lp-shot-chart-title strong {
+          color: #0f8d63;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+        }
+        .lp-shot-balance-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          border-block: 1px solid rgba(255,255,255,0.09);
+          margin-bottom: 10px;
+        }
+        .lp-shot-balance-row div {
+          min-width: 0;
+          padding: 10px 14px;
+          text-align: center;
+        }
+        .lp-shot-balance-row div + div {
+          border-inline-start: 1px solid rgba(255,255,255,0.09);
+        }
+        .lp-shot-balance-row small, .lp-shot-stat-row small {
+          display: block;
+          color: var(--text3);
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+        .lp-shot-balance-row b {
+          color: #22c55e;
+          font-size: 23px;
+          font-weight: 900;
+          line-height: 1;
+        }
+        .lp-shot-stat-row {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 10px;
+        }
+        .lp-shot-stat-row div {
+          text-align: center;
+        }
+        .lp-shot-stat-row strong {
+          color: var(--text);
+          font-size: 18px;
+          font-weight: 900;
+          line-height: 1;
+        }
+        .lp-shot-winrate {
+          position: relative;
+          height: 68px;
+          max-width: 168px;
+          margin: 0 auto 7px;
+        }
+        .lp-shot-winrate svg {
+          width: 100%;
+          height: 100%;
+          overflow: visible;
+        }
+        .lp-shot-winrate path:first-child {
+          fill: none;
+          stroke: rgba(255,255,255,0.09);
+          stroke-width: 8;
+          stroke-linecap: round;
+        }
+        .lp-shot-winrate path:last-child {
+          fill: none;
+          stroke: #22c55e;
+          stroke-width: 9;
+          stroke-linecap: round;
+          stroke-dasharray: 67 100;
+        }
+        .lp-shot-winrate strong {
+          position: absolute;
+          inset-inline: 0;
+          top: 27px;
+          color: var(--text);
+          text-align: center;
+          font-size: 28px;
+          font-weight: 900;
+          line-height: 1;
+        }
+        .lp-shot-metric-pair {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .lp-shot-metric-pair span {
+          padding: 8px 10px;
+          border-radius: 9px;
+          background: rgba(34,197,94,0.10);
+          border: 1px solid rgba(34,197,94,0.18);
+          color: #22c55e;
+          font-size: 14px;
+          font-weight: 900;
+          text-align: center;
+        }
+        .lp-shot-panel.chart {
+          grid-column: 1 / 2;
+        }
+        .lp-shot-panel.trades {
+          grid-column: 2 / 3;
+        }
+        .lp-shot-chart-title span {
+          color: var(--text2);
+          font-weight: 900;
+        }
+        .lp-shot-chart {
+          height: 92px;
+          position: relative;
+          overflow: hidden;
+          border-radius: 13px;
+          background:
+            linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+          background-size: 38px 38px;
+        }
+        .lp-shot-chart span {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(56,189,248,0.08), rgba(168,85,247,0.08), rgba(34,197,94,0.08));
+        }
+        .lp-shot-chart svg {
+          position: absolute;
+          inset: 12px 14px 8px;
+          width: calc(100% - 28px);
+          height: calc(100% - 20px);
+        }
+        .lp-shot-chart path:first-child {
+          fill: none;
+          stroke: #36cb61;
+          stroke-width: 4;
+          stroke-linecap: round;
+        }
+        .lp-shot-chart path:last-child {
+          fill: rgba(54,203,97,0.14);
+          stroke: none;
+        }
+        .lp-shot-trade {
+          display: grid;
+          grid-template-columns: minmax(72px, 1fr) auto auto;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 0;
+          border-top: 1px solid rgba(255,255,255,0.075);
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 900;
+        }
+        .lp-shot-trade small {
+          color: var(--text3);
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+        }
+        .lp-shot-trade strong {
+          color: #22c55e;
+          font-size: 13px;
+          font-weight: 900;
+        }
+        .lp-shot-trade strong.loss {
+          color: #ef4444;
+        }
+        .lp-dashboard-rail {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          padding: 16px 0;
+          border-radius: 16px;
+          background: rgba(255,255,255,0.035);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .lp-dashboard-rail span {
+          width: 36px;
+          height: 36px;
+          border-radius: 11px;
+          display: grid;
+          place-items: center;
+          background: transparent;
+          border: 1px solid transparent;
+        }
+        .lp-dashboard-rail span.active {
+          background: rgba(34,197,94,0.12);
+          border-color: rgba(34,197,94,0.28);
+          box-shadow: 0 10px 28px rgba(34,197,94,0.14);
+        }
+        .lp-dashboard-shell {
+          position: relative;
+          z-index: 1;
+          min-width: 0;
+          display: grid;
+          gap: 12px;
+        }
+        .lp-dashboard-top {
           display: flex;
           justify-content: space-between;
           align-items: center;
           gap: 18px;
-          margin-bottom: 16px;
-          position: relative;
-          z-index: 1;
+          padding: 4px 4px 0;
+        }
+        .lp-dashboard-top h3 {
+          margin: 0;
+          color: var(--text);
+          font-size: 24px;
+          font-weight: 900;
+          line-height: 1.1;
+          letter-spacing: 0;
         }
         .lp-kicker {
           color: var(--text3);
@@ -682,30 +1134,74 @@ export default function LandingPage() {
           letter-spacing: 0.08em;
           margin-bottom: 6px;
         }
+        .lp-dashboard-period {
+          display: inline-flex;
+          gap: 3px;
+          padding: 4px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.045);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .lp-dashboard-period span {
+          min-width: 36px;
+          padding: 7px 9px;
+          border-radius: 9px;
+          color: var(--text3);
+          text-align: center;
+          font-size: 11px;
+          font-weight: 900;
+        }
+        .lp-dashboard-period span.active {
+          color: #fff;
+          background: #0f8d63;
+        }
+        .lp-dashboard-grid {
+          display: grid;
+          grid-template-columns: 1.35fr 0.75fr 0.75fr;
+          gap: 12px;
+        }
+        .lp-balance-card, .lp-performance-card, .lp-trades-card {
+          min-width: 0;
+          background: rgba(255,255,255,0.035);
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 16px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .lp-balance-card {
+          grid-row: span 2;
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+        }
+        .lp-balance-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+        .lp-balance-head span {
+          color: var(--text3);
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .lp-balance-head strong {
+          padding: 7px 11px;
+          border-radius: 9px;
+          background: rgba(34,197,94,0.12);
+          border: 1px solid rgba(34,197,94,0.3);
+          color: #22c55e;
+          font-size: 13px;
+          font-weight: 900;
+        }
         .lp-money {
           color: #22c55e;
           font-size: 42px;
           font-weight: 900;
           line-height: 1;
           letter-spacing: 0;
-        }
-        .lp-growth {
-          padding: 8px 16px;
-          border-radius: 10px;
-          background: rgba(34,197,94,0.12);
-          border: 1px solid rgba(34,197,94,0.3);
-          color: #22c55e;
-          font-size: 14px;
-          font-weight: 800;
-        }
-        .lp-preview-stats {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 0;
-          border-top: 1px solid rgba(255,255,255,0.08);
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          position: relative;
-          z-index: 1;
         }
         .lp-preview-stats div, .lp-card, .lp-faq, .lp-steps div {
           background: transparent;
@@ -733,11 +1229,11 @@ export default function LandingPage() {
           font-weight: 900;
         }
         .lp-equity-line {
-          height: 142px;
-          margin-top: 18px;
+          flex: 1;
+          min-height: 152px;
+          margin-top: 16px;
           position: relative;
-          z-index: 1;
-          border-radius: 18px;
+          border-radius: 14px;
           background:
             linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
@@ -765,44 +1261,147 @@ export default function LandingPage() {
           fill: rgba(54,203,97,0.13);
           stroke: none;
         }
+        .lp-performance-card {
+          min-height: 126px;
+          padding: 16px;
+          display: grid;
+          align-content: space-between;
+          gap: 12px;
+        }
+        .lp-card-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+          color: var(--text3);
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+        .lp-performance-card > strong {
+          color: var(--text);
+          font-size: 31px;
+          font-weight: 900;
+          line-height: 1;
+        }
+        .lp-mini-meter {
+          height: 8px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.08);
+          overflow: hidden;
+        }
+        .lp-mini-meter span {
+          display: block;
+          width: 67%;
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, #ef4444 0 24%, #22c55e 24% 100%);
+        }
+        .lp-mini-bars {
+          height: 36px;
+          display: flex;
+          align-items: end;
+          gap: 6px;
+        }
+        .lp-mini-bars span {
+          flex: 1;
+          min-width: 6px;
+          border-radius: 6px 6px 0 0;
+          background: linear-gradient(180deg, #22c55e, rgba(34,197,94,0.18));
+        }
+        .lp-trades-card {
+          grid-column: span 2;
+          padding: 15px 16px;
+        }
+        .lp-trades-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 10px;
+        }
+        .lp-trades-head span {
+          color: var(--text2);
+          font-size: 14px;
+          font-weight: 900;
+        }
+        .lp-trades-head strong {
+          color: var(--text);
+          font-size: 20px;
+          font-weight: 900;
+        }
+        .lp-trade-row {
+          display: grid;
+          grid-template-columns: minmax(74px, 1fr) auto auto;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 0;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 800;
+        }
+        .lp-trade-row small {
+          color: var(--text3);
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+        }
+        .lp-trade-row strong {
+          color: #22c55e;
+          font-size: 13px;
+          font-weight: 900;
+        }
+        .lp-trade-row strong.loss { color: #ef4444; }
         .lp-section {
           max-width: 1180px;
           margin: 0 auto;
-          padding: 96px 24px;
+          padding: 92px 24px;
+          scroll-margin-top: 96px;
         }
         .lp-section.narrow { max-width: 960px; }
         .lp-section.faq { max-width: 780px; }
-        .lp-section-title {
+        .lp-section-title, .lp-ai-head {
           text-align: center;
-          margin: 0 auto 46px;
+          margin: 0 auto 40px;
           display: grid;
           justify-items: center;
-          gap: 10px;
+          gap: 12px;
           max-width: 780px;
         }
-        .lp-section-title small {
-          display: block;
+        .lp-section-title small, .lp-chip {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 30px;
+          padding: 6px 13px;
+          border-radius: 999px;
+          background: rgba(54,203,97,0.10);
+          border: 1px solid rgba(54,203,97,0.22);
           color: #36cb61;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 900;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.10em;
           text-transform: uppercase;
-          margin-bottom: 12px;
+          line-height: 1;
         }
         .lp-section-title h2, .lp-ai-head h2 {
-          margin: 0 0 14px;
-          font-size: clamp(32px, 4vw, 54px);
+          max-width: 760px;
+          margin: 0;
+          font-size: clamp(34px, 4vw, 48px);
           font-weight: 900;
-          line-height: 1.1;
+          line-height: 1.12;
           letter-spacing: 0;
           text-wrap: balance;
         }
         .lp-section-title p, .lp-ai-head p {
-          max-width: 620px;
+          max-width: 660px;
           margin: 0;
           color: var(--text2);
-          font-size: 17px;
-          line-height: 1.6;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.65;
           text-wrap: balance;
         }
         .lp-feature-grid {
@@ -849,13 +1448,7 @@ export default function LandingPage() {
           font-size: 14px;
           line-height: 1.6;
         }
-        .lp-ai-head {
-          text-align: center;
-          margin: 0 auto 50px;
-          display: grid;
-          justify-items: center;
-          max-width: 780px;
-        }
+        .lp-ai-head { margin-bottom: 44px; }
         .lp-chip.pulse span, .lp-analyzing span {
           width: 7px;
           height: 7px;
@@ -1236,17 +1829,45 @@ export default function LandingPage() {
           .lp-nav-inner { padding: 0 18px; }
           .lp-hero h1 { font-size: 44px; }
           .lp-subtitle { font-size: 16px; }
-          .lp-section-title h2, .lp-ai-head h2 { font-size: 32px; }
+          .lp-section-title h2, .lp-ai-head h2 { font-size: clamp(31px, 5.4vw, 40px); }
           .lp-feature-grid, .lp-pricing-grid { grid-template-columns: 1fr; }
           .lp-ai-card { grid-template-columns: 1fr; padding: 24px; }
           .lp-chart { min-height: 250px; }
           .lp-ai-stats { grid-template-columns: 1fr; }
+          .lp-preview { width: min(100%, 780px); }
+          .lp-dashboard-frame {
+            transform: rotateX(7deg) rotateZ(-1.8deg) skewX(-3deg);
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+          }
+          .lp-dashboard-shot {
+            min-height: 520px;
+            grid-template-columns: 58px minmax(0, 1fr);
+            transform: skewX(3deg);
+            margin-inline: -18px;
+            padding-inline: 18px;
+          }
+          .lp-shot-main { padding: 18px; }
+          .lp-shot-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+          }
+          .lp-shot-panel.chart, .lp-shot-panel.trades { grid-column: auto; }
+          .lp-dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .lp-balance-card {
+            grid-column: 1 / -1;
+            grid-row: auto;
+          }
+          .lp-trades-card { grid-column: 1 / -1; }
         }
         @media (max-width: 560px) {
           .lp-primary, .lp-secondary { width: 100%; padding-inline: 20px; }
           .lp-hero h1 { font-size: 36px; }
-          .lp-preview-head, .lp-footer { align-items: flex-start; flex-direction: column; }
-          .lp-preview-stats { grid-template-columns: 1fr; }
+          .lp-footer { align-items: flex-start; flex-direction: column; }
+          .lp-dashboard-top {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px;
+          }
         }
         @media (max-width: 640px) {
           .lp-grid-bg { background-size: auto, auto, auto, auto, auto, 42px 42px, 42px 42px, auto, auto; }
@@ -1283,7 +1904,6 @@ export default function LandingPage() {
             max-width: calc(100vw - 44px);
             justify-content: center;
             padding: 6px 11px;
-            margin-bottom: 14px;
             font-size: 10px;
             line-height: 1.2;
           }
@@ -1312,48 +1932,150 @@ export default function LandingPage() {
             font-size: 15px;
           }
           .lp-preview {
-            width: min(100%, 342px);
-            margin-top: 4px;
-            padding: 16px;
+            width: min(100%, 360px);
+            margin-top: 14px;
+            padding: 0;
             border-radius: 18px;
           }
-          .lp-preview-head {
-            align-items: center;
+          .lp-shot-shadow { inset: 18% 0 -6%; }
+          .lp-dashboard-frame {
+            border-radius: 18px;
+            transform: rotateX(0deg) rotateZ(-1.2deg) skewX(-2deg);
+            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+          }
+          .lp-dashboard-shot {
+            min-height: 560px;
+            grid-template-columns: 1fr;
+            transform: skewX(2deg);
+            margin-inline: -10px;
+            padding-inline: 10px;
+          }
+          .lp-shot-sidebar {
             flex-direction: row;
-            gap: 12px;
+            justify-content: center;
+            gap: 9px;
+            padding: 9px 14px;
+            border-inline-end: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+          }
+          .lp-shot-sidebar > svg { display: none; }
+          .lp-shot-sidebar span {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+          }
+          .lp-shot-main { padding: 14px; }
+          .lp-shot-header {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 12px;
           }
+          .lp-shot-header h3 { font-size: 20px; }
+          .lp-shot-tabs span {
+            min-width: 32px;
+            padding: 6px 8px;
+            font-size: 10px;
+          }
+          .lp-shot-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            gap: 10px;
+          }
+          .lp-shot-panel.balance, .lp-shot-panel.performance, .lp-shot-panel.chart, .lp-shot-panel.trades {
+            grid-column: auto;
+            padding: 12px;
+          }
+          .lp-shot-balance-row { margin-bottom: 10px; }
+          .lp-shot-balance-row div { padding: 11px 8px; }
+          .lp-shot-balance-row b { font-size: 22px; }
+          .lp-shot-stat-row { gap: 6px; }
+          .lp-shot-stat-row small { font-size: 8px; }
+          .lp-shot-stat-row strong { font-size: 15px; }
+          .lp-shot-winrate {
+            height: 68px;
+            max-width: 142px;
+          }
+          .lp-shot-winrate strong {
+            top: 27px;
+            font-size: 26px;
+          }
+          .lp-shot-chart { height: 96px; }
+          .lp-shot-trade {
+            grid-template-columns: minmax(66px, 1fr) auto auto;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 12px;
+          }
+          .lp-dashboard-rail {
+            flex-direction: row;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 14px;
+          }
+          .lp-dashboard-rail span { width: 32px; height: 32px; border-radius: 10px; }
+          .lp-dashboard-shell { gap: 10px; }
+          .lp-dashboard-top { padding: 0; }
+          .lp-dashboard-top h3 { font-size: 19px; }
           .lp-kicker { font-size: 10px; }
           .lp-money { font-size: 32px; }
-          .lp-growth { padding: 7px 10px; font-size: 12px; }
-          .lp-preview-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-          .lp-preview-stats div {
-            border-top: 0;
-            border-inline-start: 1px solid rgba(255,255,255,0.08);
-            padding: 11px 6px;
+          .lp-dashboard-period span {
+            min-width: 32px;
+            padding: 6px 8px;
+            font-size: 10px;
           }
-          .lp-preview-stats div:first-child { border-inline-start: 0; }
-          .lp-preview-stats small { font-size: 9px; }
-          .lp-preview-stats strong { font-size: 18px; }
+          .lp-dashboard-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+          }
+          .lp-balance-card {
+            grid-column: 1 / -1;
+            grid-row: auto;
+            padding: 14px;
+          }
+          .lp-balance-head { margin-bottom: 8px; }
+          .lp-balance-head span { font-size: 10px; }
+          .lp-balance-head strong { padding: 6px 9px; font-size: 12px; }
           .lp-equity-line {
             height: 92px;
             margin-top: 12px;
             border-radius: 14px;
           }
+          .lp-performance-card {
+            min-height: 112px;
+            padding: 12px;
+            gap: 8px;
+          }
+          .lp-card-label { font-size: 9px; gap: 6px; }
+          .lp-performance-card > strong { font-size: 25px; }
+          .lp-mini-bars { height: 28px; gap: 4px; }
+          .lp-trades-card {
+            grid-column: 1 / -1;
+            padding: 12px;
+          }
+          .lp-trade-row {
+            grid-template-columns: minmax(68px, 1fr) auto auto;
+            gap: 8px;
+            font-size: 12px;
+          }
           .lp-section { padding: 58px 16px; }
           .lp-section-title, .lp-ai-head {
             max-width: 340px;
-            margin-bottom: 28px;
-            gap: 8px;
+            margin-bottom: 30px;
+            gap: 10px;
+          }
+          .lp-section-title small, .lp-chip {
+            min-height: 28px;
+            padding: 6px 11px;
+            font-size: 10px;
           }
           .lp-section-title h2, .lp-ai-head h2 {
-            margin-bottom: 8px;
-            font-size: clamp(28px, 8.2vw, 34px);
+            font-size: clamp(27px, 8vw, 34px);
             line-height: 1.12;
           }
           .lp-section-title p, .lp-ai-head p {
-            font-size: 15px;
-            line-height: 1.55;
+            font-size: 14px;
+            line-height: 1.6;
           }
           .lp-feature-grid {
             display: grid;
