@@ -734,6 +734,14 @@ body:has(.app-modal-overlay) .page-header-row {
   color: var(--text);
   background: rgba(255,255,255,0.07);
 }
+.lp-nav-note {
+  min-width: 184px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: end;
+  white-space: nowrap;
+}
 .lp-hero {
   min-height: 100svh;
   display: flex;
@@ -1531,6 +1539,14 @@ body:has(.app-modal-overlay) .page-header-row {
   .lp-logo > span {
     font-size: 16px;
     line-height: 1;
+  }
+  .lp-nav-note {
+    min-width: 0;
+    max-width: 130px;
+    color: var(--text3);
+    font-size: 10px;
+    line-height: 1.25;
+    white-space: normal;
   }
   .lp-primary.small {
     min-height: 40px;

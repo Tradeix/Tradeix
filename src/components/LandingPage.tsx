@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 import { useApp } from '@/lib/app-context'
 
@@ -14,14 +13,11 @@ const COPY = {
       { id: 'faq', label: 'שאלות נפוצות' },
     ],
     hero: {
-      login: 'התחבר',
       eyebrow: 'יומן מסחר חכם עם AI',
       titleLead: 'עקוב, נתח,',
       titleAccent: 'השתפר',
       titleTail: '— בכל עסקה.',
       subtitle: 'UPLOTRADE מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, ועוזר לך לראות מה באמת עובד בלי טבלאות אקסל ובלי חישובים בראש.',
-      primary: 'התחל בחינם',
-      secondary: 'איך זה עובד',
       portfolioValue: 'שווי תיק נוכחי',
     },
     featuresHeader: {
@@ -72,7 +68,6 @@ const COPY = {
         name: 'חינמי',
         price: '$0',
         period: 'לתמיד',
-        cta: 'התחל בחינם',
         desc: 'בשביל להתחיל לבנות שגרה',
         perks: ['תיק מסחר אחד', 'עד 20 עסקאות', 'דשבורד בסיסי', 'הוספה ידנית של עסקאות'],
         locked: ['ניתוח AI של גרפים', 'עמוד סטטיסטיקות מתקדם', 'אסטרטגיות', 'ארכיון תיקים'],
@@ -81,7 +76,6 @@ const COPY = {
         name: 'PRO',
         price: '$20',
         period: 'לחודש',
-        cta: 'שדרג עכשיו',
         desc: 'הכל פתוח. בלי הגבלות.',
         perks: ['עד 3 תיקים פעילים', 'עסקאות ללא הגבלה', 'ניתוח AI מלא של גרפים', 'עמוד סטטיסטיקות מתקדם', 'מערכת אסטרטגיות', 'ארכיון תיקים שלם', 'גלריית הוכחות', 'תמיכת PRO'],
       },
@@ -105,14 +99,11 @@ const COPY = {
       { id: 'faq', label: 'FAQ' },
     ],
     hero: {
-      login: 'Log in',
       eyebrow: 'Smart trading journal with AI',
       titleLead: 'Track, analyze,',
       titleAccent: 'improve',
       titleTail: '— every trade.',
       subtitle: 'UPLOTRADE analyzes your charts with AI, collects your stats, and helps you see what actually works without spreadsheets or mental math.',
-      primary: 'Start free',
-      secondary: 'How it works',
       portfolioValue: 'Current portfolio value',
     },
     featuresHeader: {
@@ -156,14 +147,13 @@ const COPY = {
     },
     pricing: {
       eyebrow: 'Pricing',
-      title: 'Simple plans. No middle tiers.',
-      subtitle: 'Start free. Upgrade to PRO when you want every tool unlocked.',
+      title: 'Start free. Grow into PRO.',
+      subtitle: 'UPLOTRADE is built so every trader can begin journaling first. When you need advanced tools, the PRO upgrade waits inside the dashboard.',
       popular: 'Recommended',
       free: {
         name: 'Free',
         price: '$0',
         period: 'forever',
-        cta: 'Start free',
         desc: 'For building your first routine',
         perks: ['One trading portfolio', 'Up to 20 trades', 'Basic dashboard', 'Manual trade entry'],
         locked: ['AI chart analysis', 'Advanced statistics page', 'Strategies', 'Portfolio archive'],
@@ -172,7 +162,6 @@ const COPY = {
         name: 'PRO',
         price: '$20',
         period: 'per month',
-        cta: 'Upgrade now',
         desc: 'Everything unlocked. No limits.',
         perks: ['Up to 3 active portfolios', 'Unlimited trades', 'Full AI chart analysis', 'Advanced statistics page', 'Strategy system', 'Full portfolio archive', 'Proof gallery', 'PRO support'],
       },
@@ -193,7 +182,6 @@ const COPY = {
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
-  const router = useRouter()
   const { language } = useApp()
   const copy = COPY[language]
   const isHe = language === 'he'
@@ -225,8 +213,6 @@ export default function LandingPage() {
     window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' })
   }
 
-  const goLogin = () => router.push('/auth/login')
-
   return (
     <div dir={isHe ? 'rtl' : 'ltr'} style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, Manrope, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
       <div className="lp-grid-bg" />
@@ -246,9 +232,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <button onClick={goLogin} className="lp-primary small">
-            {copy.hero.login}
-          </button>
+          <div className="lp-nav-note">{isHe ? 'מתחילים בחינם, משדרגים כשצריך' : 'Start free, upgrade when needed'}</div>
         </div>
       </nav>
 
@@ -272,17 +256,6 @@ export default function LandingPage() {
             </h1>
 
             <p data-animate className="lp-subtitle">{copy.hero.subtitle}</p>
-
-            <div data-animate className="lp-cta-row">
-              <button onClick={goLogin} className="lp-primary">
-                <Icon name="rocket_launch" size={18} color="#fff" />
-                {copy.hero.primary}
-              </button>
-              <button onClick={() => scrollTo('how')} className="lp-secondary">
-                {copy.hero.secondary}
-                <Icon name={isHe ? 'arrow_back' : 'arrow_forward'} size={17} color="currentColor" />
-              </button>
-            </div>
 
             <div data-animate className="lp-preview">
               <div className="lp-preview-head">
@@ -400,8 +373,8 @@ export default function LandingPage() {
         <section id="pricing" className="lp-section narrow">
           <SectionTitle eyebrow={copy.pricing.eyebrow} title={copy.pricing.title} subtitle={copy.pricing.subtitle} />
           <div className="lp-pricing-grid">
-            <PlanCard plan={copy.pricing.free} isPro={false} onClick={goLogin} />
-            <PlanCard plan={copy.pricing.pro} isPro popular={copy.pricing.popular} onClick={goLogin} />
+            <PlanCard plan={copy.pricing.free} isPro={false} />
+            <PlanCard plan={copy.pricing.pro} isPro popular={copy.pricing.popular} />
           </div>
         </section>
 
@@ -504,6 +477,14 @@ export default function LandingPage() {
         .lp-nav-links a:hover {
           color: var(--text);
           background: rgba(255,255,255,0.07);
+        }
+        .lp-nav-note {
+          min-width: 184px;
+          color: var(--text2);
+          font-size: 13px;
+          font-weight: 800;
+          text-align: end;
+          white-space: nowrap;
         }
         main {
           position: relative;
@@ -1272,6 +1253,14 @@ export default function LandingPage() {
           .lp-logo { gap: 8px; min-width: 0; }
           .lp-logo svg { width: 30px; height: 30px; }
           .lp-logo > span { font-size: 16px; line-height: 1; }
+          .lp-nav-note {
+            min-width: 0;
+            max-width: 130px;
+            color: var(--text3);
+            font-size: 10px;
+            line-height: 1.25;
+            white-space: normal;
+          }
           .lp-primary.small {
             min-height: 40px;
             padding: 9px 15px;
@@ -1451,20 +1440,17 @@ function PlanCard({
   plan,
   isPro,
   popular,
-  onClick,
 }: {
   plan: {
     name: string
     price: string
     period: string
-    cta: string
     desc: string
     perks: readonly string[]
     locked?: readonly string[]
   }
   isPro: boolean
   popular?: string
-  onClick: () => void
 }) {
   return (
     <article data-animate className={`lp-plan ${isPro ? 'pro' : ''}`}>
@@ -1475,9 +1461,6 @@ function PlanCard({
         <span>{plan.period}</span>
       </div>
       <div className="lp-plan-desc">{plan.desc}</div>
-      <button onClick={onClick} className={isPro ? 'lp-primary' : 'lp-secondary'}>
-        {plan.cta}
-      </button>
       <div className="lp-plan-list">
         {plan.perks.map(perk => (
           <div key={perk}>
