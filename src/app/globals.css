@@ -797,19 +797,6 @@ body:has(.app-modal-overlay) .page-header-row {
   isolation: isolate;
   overflow: hidden;
 }
-.lp-hero::before {
-  content: '';
-  position: absolute;
-  inset: 82px 24px 58px;
-  z-index: -2;
-  border-radius: 34px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background:
-    linear-gradient(135deg, rgba(56,189,248,0.13), transparent 28%),
-    linear-gradient(225deg, rgba(168,85,247,0.13), transparent 30%),
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.38);
-}
 .lp-hero::after {
   content: '';
   position: absolute;
@@ -817,28 +804,6 @@ body:has(.app-modal-overlay) .page-header-row {
   height: 26%;
   z-index: -1;
   background: linear-gradient(180deg, transparent, rgba(7,10,15,0.18));
-}
-.lp-hero-orbit {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-.lp-market-tape {
-  position: absolute;
-  top: 114px;
-  inset-inline: 58px;
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  opacity: 0.62;
-}
-.lp-market-tape span {
-  color: var(--text3);
-  font: 800 11px Manrope, Heebo, sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 .lp-hero-inner {
   width: 100%;
@@ -1529,8 +1494,6 @@ body:has(.app-modal-overlay) .page-header-row {
   .lp-nav-links { display: none; }
   .lp-nav-inner { padding: 0 18px; }
   .lp-hero { padding: 104px 14px 56px; }
-  .lp-hero::before { inset: 84px 10px 36px; border-radius: 24px; }
-  .lp-market-tape { display: none; }
   .lp-subtitle { font-size: 16px; }
   .lp-section-title {
     grid-template-columns: 1fr;
@@ -1604,10 +1567,6 @@ body:has(.app-modal-overlay) .page-header-row {
     min-height: auto;
     padding: 92px 12px 42px;
     align-items: flex-start;
-  }
-  .lp-hero::before {
-    inset: 76px 8px 22px;
-    border-radius: 22px;
   }
   .lp-hero::after {
     height: 18%;

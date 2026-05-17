@@ -14,7 +14,6 @@ const COPY = {
       { id: 'faq', label: 'שאלות נפוצות' },
     ],
     hero: {
-      eyebrow: 'יומן מסחר חכם עם AI',
       titleLead: 'עקוב, נתח,',
       titleAccent: 'השתפר',
       titleTail: '— בכל עסקה.',
@@ -100,7 +99,6 @@ const COPY = {
       { id: 'faq', label: 'FAQ' },
     ],
     hero: {
-      eyebrow: 'Smart trading journal with AI',
       titleLead: 'Track, analyze,',
       titleAccent: 'improve',
       titleTail: '— every trade.',
@@ -244,17 +242,7 @@ export default function LandingPage() {
 
       <main>
         <section id="hero" className="lp-hero">
-          <div className="lp-hero-orbit" aria-hidden="true">
-            <div className="lp-market-tape">
-              {['XAUUSD +2.8%', 'NQ +1.4%', 'EURUSD +0.6%', 'BTC +3.1%', 'ES -0.4%'].map(item => <span key={item}>{item}</span>)}
-            </div>
-          </div>
           <div className="lp-hero-inner">
-            <div data-animate className="lp-chip">
-              <Icon name="auto_awesome" size={14} color="#0f8d63" />
-              {copy.hero.eyebrow}
-            </div>
-
             <h1 data-animate>
               {copy.hero.titleLead}{' '}
               <span>{copy.hero.titleAccent}</span>
@@ -551,19 +539,6 @@ export default function LandingPage() {
           isolation: isolate;
           overflow: hidden;
         }
-        .lp-hero::before {
-          content: '';
-          position: absolute;
-          inset: 82px 24px 58px;
-          z-index: -2;
-          border-radius: 34px;
-          border: 1px solid rgba(255,255,255,0.08);
-          background:
-            linear-gradient(135deg, rgba(14,165,233,0.12), transparent 28%),
-            linear-gradient(225deg, rgba(168,85,247,0.12), transparent 30%),
-            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.38);
-        }
         .lp-hero::after {
           content: '';
           position: absolute;
@@ -571,28 +546,6 @@ export default function LandingPage() {
           height: 26%;
           z-index: -1;
           background: linear-gradient(180deg, transparent, rgba(7,10,15,0.18));
-        }
-        .lp-hero-orbit {
-          position: absolute;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-        }
-        .lp-market-tape {
-          position: absolute;
-          top: 114px;
-          inset-inline: 58px;
-          display: flex;
-          justify-content: space-between;
-          gap: 14px;
-          opacity: 0.62;
-        }
-        .lp-market-tape span {
-          color: var(--text3);
-          font: 800 11px Manrope, Heebo, sans-serif;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          white-space: nowrap;
         }
         .lp-hero-inner {
           width: 100%;
@@ -1323,10 +1276,6 @@ export default function LandingPage() {
             min-height: auto;
             padding: 92px 12px 42px;
             align-items: flex-start;
-          }
-          .lp-hero::before {
-            inset: 76px 8px 22px;
-            border-radius: 22px;
           }
           .lp-hero::after { height: 18%; }
           .lp-hero-inner { max-width: 100%; }
