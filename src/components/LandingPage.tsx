@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 import { useApp } from '@/lib/app-context'
 
@@ -182,6 +183,7 @@ const COPY = {
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
+  const router = useRouter()
   const { language } = useApp()
   const copy = COPY[language]
   const isHe = language === 'he'
@@ -213,6 +215,8 @@ export default function LandingPage() {
     window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' })
   }
 
+  const goLogin = () => router.push('/auth/login')
+
   return (
     <div dir={isHe ? 'rtl' : 'ltr'} style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Heebo, Manrope, sans-serif', minHeight: '100vh', overflow: 'hidden' }}>
       <div className="lp-grid-bg" />
@@ -232,7 +236,9 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="lp-nav-note">{isHe ? 'מתחילים בחינם, משדרגים כשצריך' : 'Start free, upgrade when needed'}</div>
+          <button onClick={goLogin} className="lp-nav-cta">
+            {isHe ? 'הרשם עכשיו בחינם' : 'Join free now'}
+          </button>
         </div>
       </nav>
 
@@ -481,13 +487,55 @@ export default function LandingPage() {
           color: var(--text);
           background: rgba(255,255,255,0.07);
         }
-        .lp-nav-note {
-          min-width: 184px;
-          color: var(--text2);
-          font-size: 13px;
-          font-weight: 800;
-          text-align: end;
+        .lp-nav-cta {
+          position: relative;
+          isolation: isolate;
+          min-height: 42px;
+          padding: 0 20px;
+          border: 1px solid rgba(54,203,97,0.38);
+          border-radius: 999px;
+          background: linear-gradient(135deg, rgba(54,203,97,0.95), rgba(15,141,99,0.92));
+          color: #fff;
+          font: 900 14px Heebo, Manrope, sans-serif;
+          cursor: pointer;
+          overflow: hidden;
+          box-shadow: 0 12px 34px rgba(15,141,99,0.36), 0 0 0 1px rgba(255,255,255,0.08) inset;
+          transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
           white-space: nowrap;
+        }
+        .lp-nav-cta::before {
+          content: '';
+          position: absolute;
+          inset: -2px;
+          z-index: -1;
+          background: linear-gradient(90deg, #38bdf8, #a855f7, #36cb61, #38bdf8);
+          background-size: 220% 100%;
+          opacity: 0;
+          transition: opacity 0.18s ease;
+        }
+        .lp-nav-cta::after {
+          content: '';
+          position: absolute;
+          top: -40%;
+          bottom: -40%;
+          width: 34px;
+          inset-inline-start: -44px;
+          transform: rotate(18deg);
+          background: rgba(255,255,255,0.34);
+          filter: blur(2px);
+          transition: inset-inline-start 0.45s ease;
+        }
+        .lp-nav-cta:hover {
+          transform: translateY(-2px);
+          border-color: rgba(255,255,255,0.34);
+          box-shadow: 0 18px 46px rgba(54,203,97,0.42), 0 0 28px rgba(168,85,247,0.22);
+        }
+        .lp-nav-cta:hover::before {
+          opacity: 1;
+          animation: lpCtaGlow 2.6s linear infinite;
+        }
+        .lp-nav-cta:hover::after {
+          inset-inline-start: calc(100% + 44px);
         }
         main {
           position: relative;
@@ -1227,6 +1275,9 @@ export default function LandingPage() {
           from { opacity: 0; transform: translateX(-10px); }
           to { opacity: 1; transform: translateX(0); }
         }
+        @keyframes lpCtaGlow {
+          to { background-position: 220% 0; }
+        }
         @media (max-width: 900px) {
           .lp-nav-links { display: none; }
           .lp-nav-inner { padding: 0 18px; }
@@ -1256,13 +1307,10 @@ export default function LandingPage() {
           .lp-logo { gap: 8px; min-width: 0; }
           .lp-logo svg { width: 30px; height: 30px; }
           .lp-logo > span { font-size: 16px; line-height: 1; }
-          .lp-nav-note {
-            min-width: 0;
-            max-width: 130px;
-            color: var(--text3);
-            font-size: 10px;
-            line-height: 1.25;
-            white-space: normal;
+          .lp-nav-cta {
+            min-height: 38px;
+            padding: 0 13px;
+            font-size: 12px;
           }
           .lp-primary.small {
             min-height: 40px;
