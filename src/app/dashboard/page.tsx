@@ -288,10 +288,11 @@ export default function DashboardPage() {
             </div>
 
               <div className="welcome-quote-wrap" style={{
-                width: 'min(100%, 560px)',
-                minWidth: '320px',
+                width: '100%',
+                maxWidth: '560px',
+                minWidth: 0,
                 marginLeft: 0,
-                marginRight: language === 'he' ? 'auto' : 0,
+                marginRight: 0,
                 gridColumn: language === 'he' ? '1' : '2',
                 justifySelf: language === 'he' ? 'start' : 'end',
                 direction: language === 'he' ? 'rtl' : 'ltr',
@@ -711,18 +712,18 @@ export default function DashboardPage() {
           .balance-card .bal-mini-val { font-size: 14px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 20px !important; }
           .section-anim.anim-delay-8 { margin-top: 10px !important; }
-          .welcome-section { padding: 14px 0 12px !important; margin-bottom: 20px !important; min-height: 84px !important; }
-          .welcome-inner { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; }
-          .welcome-profile { flex: 0 1 48% !important; min-width: 0 !important; gap: 12px !important; }
+          .welcome-section { padding: 16px 0 14px !important; margin-bottom: 22px !important; min-height: 102px !important; }
+          .welcome-inner { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 14px !important; direction: ltr !important; }
+          .welcome-profile { order: 2 !important; flex: 0 1 50% !important; min-width: 0 !important; justify-content: flex-end !important; gap: 12px !important; direction: rtl !important; text-align: right !important; }
           .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
           .welcome-tile > span { font-size: 23px !important; }
-          .welcome-title { font-size: 18px !important; line-height: 1.12 !important; }
-          .welcome-date { font-size: 12px !important; }
+          .welcome-title { font-size: clamp(20px, 5vw, 24px) !important; line-height: 1.12 !important; }
+          .welcome-date { font-size: 12.5px !important; }
           .welcome-meta-row { margin-bottom: 7px !important; }
-          .welcome-quote-wrap { flex: 1 1 46% !important; width: auto !important; min-width: 0 !important; margin-left: 0 !important; margin-right: auto !important; padding: 2px 12px 2px 0 !important; }
-          .welcome-quote-wrap > div { font-size: 10px !important; margin-bottom: 5px !important; gap: 5px !important; }
+          .welcome-quote-wrap { order: 1 !important; flex: 0 1 50% !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; }
+          .welcome-quote-wrap > div { font-size: 10.5px !important; margin-bottom: 6px !important; gap: 5px !important; }
           .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }
-          .welcome-quote { font-size: 12px !important; line-height: 1.45 !important; }
+          .welcome-quote { font-size: clamp(12px, 3.2vw, 13.5px) !important; line-height: 1.45 !important; }
           .welcome-stat-divider {
             height: 24px !important;
             margin: 4px 0 30px !important;
