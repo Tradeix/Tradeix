@@ -209,7 +209,7 @@ export default function TradesPage() {
               <FilterGroup title={language === 'he' ? 'זמן' : 'Time'} icon="calendar_today">
                 <div className="filter-chip-grid">
                   {TIME_LABELS.map((label, i) => (
-                    <FilterChip key={i} active={timeFilter === i} onClick={() => { setTimeFilter(i); setPage(0) }}>
+                    <FilterChip key={i} active={timeFilter === i} onClick={() => { setTimeFilter(timeFilter === i ? 0 : i); setPage(0) }}>
                       {label}
                     </FilterChip>
                   ))}
@@ -222,7 +222,7 @@ export default function TradesPage() {
                     {language === 'he' ? 'הכל' : 'All'}
                   </FilterChip>
                   {OUTCOME_FILTERS.map(({ key, label, icon }) => (
-                    <FilterChip key={key} active={filter === key} onClick={() => { setFilter(key as 'win' | 'loss'); setPage(0) }} icon={icon}>
+                    <FilterChip key={key} active={filter === key} onClick={() => { setFilter(filter === key ? 'all' : key as 'win' | 'loss'); setPage(0) }} icon={icon}>
                       {label}
                     </FilterChip>
                   ))}
@@ -232,11 +232,8 @@ export default function TradesPage() {
               <FilterGroup title={language === 'he' ? 'אסטרטגיית מסחר' : 'Trading strategy'} icon="psychology">
                 {strategies.length > 0 ? (
                   <div className="filter-chip-grid strategy-filter-grid">
-                    <FilterChip active={strategyFilter === 'all'} onClick={() => { setStrategyFilter('all'); setPage(0) }}>
-                      {language === 'he' ? 'כל האסטרטגיות' : 'All strategies'}
-                    </FilterChip>
                     {strategies.map(strategy => (
-                      <FilterChip key={strategy.id} active={strategyFilter === strategy.id} onClick={() => { setStrategyFilter(strategy.id); setPage(0) }}>
+                      <FilterChip key={strategy.id} active={strategyFilter === strategy.id} onClick={() => { setStrategyFilter(strategyFilter === strategy.id ? 'all' : strategy.id); setPage(0) }}>
                         {strategy.name}
                       </FilterChip>
                     ))}
