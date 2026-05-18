@@ -314,7 +314,7 @@ export default function DashboardPage() {
 
       <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'stretch' }}>
 
-      <div className="overview-col" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="overview-col" style={{ display: 'flex', flexDirection: 'column', alignSelf: 'start', width: '100%' }}>
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -331,19 +331,19 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance Card
           ══════════════════════════════════════════════ */}
-      <div className="top-row section-anim anim-delay-1" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="top-row section-anim anim-delay-1" style={{ display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Total Balance Card — redesigned ──
             Glowing portfolio-color dot next to the name (no full border),
             big "current value" headline with a +X.X% return pill,
             small "principal" hint under the headline, and a 3-tile row
             (Trades / Profit Factor / Win Rate) at the bottom. */}
-        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+        <div className="card-hover balance-card" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
           {/* Soft glow keyed to portfolio color in the top corner */}
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ padding: '20px 24px 12px', position: 'relative' }}>
+          <div className="bal-header" style={{ padding: '20px 24px 10px', position: 'relative' }}>
             {/* Name row — glowing dot + portfolio name + market pill */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
               <span style={{
@@ -378,7 +378,16 @@ export default function DashboardPage() {
             {/* Value + Return — symmetric 2-column layout. In RTL the first
                 cell sits on the right, so "Current value" is first and the
                 return cell is second (visually appears on the left). */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, alignItems: 'stretch', padding: '10px 0 8px' }} className="bal-value-grid">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 0,
+              alignItems: 'stretch',
+              padding: '8px 0 6px',
+              borderRadius: '18px',
+              background: 'linear-gradient(135deg, rgba(15,141,99,0.08), rgba(255,255,255,0.025))',
+              border: '1px solid rgba(255,255,255,0.045)',
+            }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
                 padding: '0 26px',
@@ -413,7 +422,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div className="bal-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '10px 0 18px', marginTop: 'auto' }}>
+          <div className="bal-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '10px 0 18px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.012)' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
               { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
