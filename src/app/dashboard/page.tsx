@@ -656,7 +656,8 @@ export default function DashboardPage() {
         }
 
         @media (max-width: 1024px) {
-          .overview-perf-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .overview-perf-grid { grid-template-columns: 1fr !important; gap: 36px !important; align-items: start !important; }
+          .overview-col, .perf-col { min-width: 0 !important; }
           .stats-hero { grid-template-columns: 1fr 1fr !important; }
           .time-filter-bar { flex: 1 !important; justify-content: flex-end !important; }
           .time-filter-bar button { flex: 1 !important; }
@@ -665,7 +666,15 @@ export default function DashboardPage() {
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
-          .overview-perf-grid { gap: 42px !important; margin-bottom: 56px !important; }
+          .overview-perf-grid { gap: 58px !important; margin-bottom: 64px !important; }
+          .overview-col { margin-bottom: 0 !important; }
+          .overview-col .top-row,
+          .overview-col .balance-card {
+            flex: initial !important;
+            min-height: 0 !important;
+            height: auto !important;
+          }
+          .perf-col { padding-top: 2px !important; }
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
@@ -682,7 +691,6 @@ export default function DashboardPage() {
           .balance-card .bal-value-grid > div { min-height: 86px !important; padding: 13px 10px !important; gap: 9px !important; border-radius: 13px !important; }
           .balance-card .bal-stats-grid { min-height: 92px !important; padding: 10px 0 !important; }
           .overview-col, .perf-col { align-self: stretch !important; }
-          .overview-col .top-row, .overview-col .balance-card { min-height: 100% !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 17px !important; }
