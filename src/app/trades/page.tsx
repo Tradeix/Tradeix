@@ -212,7 +212,7 @@ export default function TradesPage() {
 
           {filterMenuOpen && (
             <div className="trades-filter-popover" style={{
-              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 3200,
+              position: 'absolute', top: 'calc(100% + 10px)', right: 0, zIndex: 3200,
               width: 'min(100vw - 32px, 430px)', padding: '16px',
               borderRadius: '18px', border: '1px solid var(--border2)',
               background: 'var(--modal-bg)', backgroundColor: 'var(--modal-bg)',
