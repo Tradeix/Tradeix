@@ -121,12 +121,24 @@ export default function DashboardPage() {
 
   const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
 
-  function getStartDate(filter: number): string {
+  function getDateRange(filter: number): { start: string; end?: string } {
     const now = new Date()
-    if (filter === 0) { const d = new Date(now); d.setHours(0, 0, 0, 0); return d.toISOString() }
-    else if (filter === 1) { const d = new Date(now); d.setDate(d.getDate() - 7); d.setHours(0, 0, 0, 0); return d.toISOString() }
-    else if (filter === 2) { return new Date(now.getFullYear(), now.getMonth(), 1).toISOString() }
-    else { return new Date(now.getFullYear(), 0, 1).toISOString() }
+    if (filter === 0) {
+      const d = new Date(now)
+      d.setHours(0, 0, 0, 0)
+      return { start: d.toISOString() }
+    }
+    if (filter === 1) {
+      const start = new Date(now)
+      start.setDate(now.getDate() - now.getDay())
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6)
+      end.setHours(23, 59, 59, 999)
+      return { start: start.toISOString(), end: end.toISOString() }
+    }
+    if (filter === 2) return { start: new Date(now.getFullYear(), now.getMonth(), 1).toISOString() }
+    return { start: new Date(now.getFullYear(), 0, 1).toISOString() }
   }
 
   useEffect(() => {
@@ -174,8 +186,10 @@ export default function DashboardPage() {
   async function loadStats(portfolioId = activePortfolio?.id, filter = timeFilter) {
     if (!portfolioId) return
     try {
-      const startDate = getStartDate(filter)
-      const { data: all } = await supabase.from('trades').select('pnl, outcome').eq('portfolio_id', portfolioId).gte('traded_at', startDate)
+      const range = getDateRange(filter)
+      let query = supabase.from('trades').select('pnl, outcome').eq('portfolio_id', portfolioId).gte('traded_at', range.start)
+      if (range.end) query = query.lte('traded_at', range.end)
+      const { data: all } = await query
       if (activePortfolioIdRef.current !== portfolioId) return
       setStats(calculateStats(all || []))
       const { data: allTimeTrades } = await supabase.from('trades').select('pnl, outcome, traded_at').eq('portfolio_id', portfolioId).order('traded_at', { ascending: true })
