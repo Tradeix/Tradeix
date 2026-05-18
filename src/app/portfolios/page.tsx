@@ -478,7 +478,6 @@ export default function PortfoliosPage() {
                     minHeight: '82px',
                     boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 16px 34px ${pnlPos ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)'}`,
                   }}>
-                    <div style={{ position: 'absolute', insetInlineEnd: '-22px', top: '-28px', width: '104px', height: '104px', borderRadius: '999px', background: `${pnlAccent}18`, filter: 'blur(2px)' }} />
                     <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '3px', background: `linear-gradient(90deg, transparent, ${pnlAccent}, transparent)` }} />
 
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', position: 'relative', zIndex: 1 }}>
