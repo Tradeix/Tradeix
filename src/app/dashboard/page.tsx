@@ -241,25 +241,16 @@ export default function DashboardPage() {
         const dateLabel = now.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })
         return (
         <div className="welcome-section section-anim" style={{
-          marginBottom: '28px',
-          padding: '24px',
-          borderRadius: '22px',
-          background: `
-            linear-gradient(135deg, rgba(255,255,255,0.028) 0%, rgba(255,255,255,0.008) 44%, rgba(15,141,99,0.055) 100%),
-            radial-gradient(circle at 8% 12%, rgba(15,141,99,0.11), transparent 31%),
-            var(--bg2)
-          `,
-          border: '1px solid rgba(255,255,255,0.065)',
+          marginBottom: '18px',
+          padding: '18px 8px 10px',
+          borderRadius: 0,
+          background: 'transparent',
+          border: 'none',
           position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 18px 55px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.045)',
-          minHeight: '148px',
+          overflow: 'visible',
+          boxShadow: 'none',
+          minHeight: '104px',
         }}>
-          {/* Decorative glow */}
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px)', backgroundSize: '34px 34px', maskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', top: '-90px', insetInlineEnd: '-70px', width: '290px', height: '290px', background: 'radial-gradient(circle, rgba(15,141,99,0.14) 0%, rgba(15,141,99,0.045) 34%, transparent 68%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '8%', width: '300px', height: '220px', background: 'radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 62%)', pointerEvents: 'none' }} />
-
           <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
             <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
             <div style={{ minWidth: 0 }}>
@@ -285,12 +276,13 @@ export default function DashboardPage() {
               <div className="welcome-quote-wrap" style={{
                 width: 'min(42%, 520px)',
                 minWidth: '320px',
-                padding: language === 'he' ? '4px 22px 4px 0' : '4px 0 4px 22px',
-                borderInlineStart: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.75)',
-                borderInlineEnd: language === 'he' ? '2px solid rgba(15,141,99,0.75)' : 'none',
+                padding: language === 'he' ? '4px 18px 4px 0' : '4px 0 4px 18px',
+                borderRight: language === 'he' ? '2px solid rgba(15,141,99,0.8)' : 'none',
+                borderLeft: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.8)',
                 position: 'relative',
+                textAlign: language === 'he' ? 'right' : 'left',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: language === 'he' ? 'flex-start' : 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
                   FOCUS
                 </div>

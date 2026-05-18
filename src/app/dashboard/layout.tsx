@@ -57,7 +57,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   }, [])
 
   useEffect(() => {
-    const updateScrolled = () => setHasScrolled(window.scrollY > 8)
+    const updateScrolled = () => setHasScrolled(window.scrollY > 30)
     updateScrolled()
     window.addEventListener('scroll', updateScrolled, { passive: true })
     return () => window.removeEventListener('scroll', updateScrolled)
@@ -66,17 +66,19 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#0f8d63'
 
   return (
-    <header style={{
+    <header className={`dashboard-header ${hasScrolled ? 'dashboard-header-scrolled' : ''}`} style={{
       height: '72px',
-      background: 'var(--chrome-bg)',
-      borderBottom: '1px solid var(--border2)',
-      position: hasScrolled ? 'sticky' : 'relative',
-      top: hasScrolled ? 0 : undefined,
-      zIndex: 50,
+      background: hasScrolled ? 'rgba(7,10,15,0.82)' : 'transparent',
+      borderBottom: hasScrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+      position: 'fixed',
+      top: 0,
+      [isRTL ? 'right' : 'left']: '72px',
+      [isRTL ? 'left' : 'right']: 0,
+      zIndex: 90,
       backdropFilter: hasScrolled ? 'blur(18px)' : 'none',
       WebkitBackdropFilter: hasScrolled ? 'blur(18px)' : 'none',
       boxShadow: hasScrolled ? '0 10px 30px rgba(0,0,0,0.22)' : 'none',
-      transition: 'box-shadow 0.18s ease, backdrop-filter 0.18s ease',
+      transition: 'background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease',
     }}>
     <div className="header-inner" style={{
       height: '100%',
@@ -549,7 +551,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleSignOut={handleSignOut} />
         <div
           key={pageKey}
-          style={{ padding: '32px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}
+          style={{ padding: '104px 40px 32px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}
           className="page-content page-ready"
         >
           {children}
@@ -806,13 +808,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .sidebar-el { width: 210px !important; transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .sidebar-rail-handle { display: none !important; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
+          .dashboard-header { left: 0 !important; right: 0 !important; }
           .hamburger-btn { display: flex !important; }
-          .page-content { padding: 24px 20px !important; }
+          .page-content { padding: 96px 20px 24px !important; }
           .header-inner { padding: 0 20px !important; }
           .upgrade-btn span:last-child { display: none; }
         }
         @media (max-width: 640px) {
-          .page-content { padding: 16px 14px !important; }
+          .page-content { padding: 88px 14px 16px !important; }
           .header-inner { padding: 0 14px !important; gap: 8px !important; }
           .user-name-block { display: none !important; }
           .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 10px !important; }
