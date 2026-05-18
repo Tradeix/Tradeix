@@ -186,11 +186,11 @@ export default function TradesPage() {
         icon="swap_horiz"
       />
 
-      <div className="trades-top-controls section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px', direction: 'ltr' }}>
+      <div className="trades-top-controls section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px', direction: 'ltr', position: 'relative', zIndex: 3000, overflow: 'visible' }}>
         {paginationArrows}
         <div className="trades-filter-slot" style={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0, direction: isRTL ? 'rtl' : 'ltr' }}>
       {isPro && (
-        <div className="trades-filter-shell" style={{ position: 'relative', zIndex: 120, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
+        <div className="trades-filter-shell" style={{ position: 'relative', zIndex: 3100, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
           <button onClick={() => setFilterMenuOpen(v => !v)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '10px 15px', borderRadius: '12px',
@@ -212,7 +212,7 @@ export default function TradesPage() {
 
           {filterMenuOpen && (
             <div className="trades-filter-popover" style={{
-              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 140,
+              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 3200,
               width: 'min(100vw - 32px, 430px)', padding: '16px',
               borderRadius: '18px', border: '1px solid var(--border2)',
               background: 'var(--modal-bg)', backgroundColor: 'var(--modal-bg)',
@@ -317,7 +317,7 @@ export default function TradesPage() {
       </div>
 
       {/* Trades list */}
-      <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+      <div className="section-anim anim-delay-2 trades-list-shell" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', position: 'relative', zIndex: 1 }}>
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <div style={{ width: '32px', height: '32px', border: '2px solid var(--border)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
