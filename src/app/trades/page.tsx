@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Trade } from '@/types'
+import { Strategy, Trade } from '@/types'
 import Link from 'next/link'
 import TradeModal from '@/components/TradeModal'
 import PageHeader from '@/components/PageHeader'
@@ -14,22 +15,66 @@ import Icon from '@/components/Icon'
 
 const PAGE_SIZE = 6
 
+function FilterGroup({ title, icon, children }: { title: string; icon: string; children: ReactNode }) {
+  return (
+    <div style={{ marginBottom: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '9px', color: 'var(--text2)', fontSize: '12px', fontWeight: '900', letterSpacing: '0.05em' }}>
+        <Icon name={icon} size={14} color="#0f8d63" />
+        {title}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function FilterChip({ active, onClick, icon, children }: { active: boolean; onClick: () => void; icon?: string; children: ReactNode }) {
+  return (
+    <button onClick={onClick} style={{
+      minWidth: 0,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+      padding: '8px 11px', borderRadius: '10px',
+      border: active ? '1px solid rgba(15,141,99,0.42)' : '1px solid var(--border)',
+      background: active ? 'rgba(15,141,99,0.14)' : 'var(--bg3)',
+      color: active ? '#0f8d63' : 'var(--text3)',
+      fontFamily: 'Heebo, sans-serif', fontSize: '12px', fontWeight: '800',
+      cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    }}>
+      {icon && <Icon name={icon} size={13} />}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{children}</span>
+    </button>
+  )
+}
+
 export default function TradesPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language } = useApp()
+  const { language, isPro } = useApp()
   const router = useRouter()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss'>('all')
   const [timeFilter, setTimeFilter] = useState(0) // 0=all 1=daily 2=weekly 3=monthly
+  const [strategyFilter, setStrategyFilter] = useState('all')
+  const [strategies, setStrategies] = useState<Strategy[]>([])
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false)
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
   const supabase = createClient()
   const isRTL = language === 'he'
 
-  useEffect(() => { if (activePortfolio) { setPage(0); loadTrades(0, filter, timeFilter) } }, [activePortfolio, filter, timeFilter])
+  useEffect(() => { if (activePortfolio) { setPage(0); loadTrades(0, filter, timeFilter, strategyFilter) } }, [activePortfolio, filter, timeFilter, strategyFilter])
+
+  useEffect(() => {
+    if (!activePortfolio || !isPro) {
+      setStrategies([])
+      setStrategyFilter('all')
+      return
+    }
+    supabase.from('strategies').select('*').eq('portfolio_id', activePortfolio.id).order('name').then(({ data }) => {
+      setStrategies(data || [])
+    })
+  }, [activePortfolio, isPro])
 
   // Realtime subscription
   useEffect(() => {
@@ -37,11 +82,11 @@ export default function TradesPage() {
     const channel = supabase
       .channel('trades-page-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `portfolio_id=eq.${activePortfolio.id}` }, () => {
-        loadTrades(page, filter, timeFilter)
+        loadTrades(page, filter, timeFilter, strategyFilter)
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [activePortfolio, page])
+  }, [activePortfolio, page, filter, timeFilter, strategyFilter])
 
   function getStartDate(f: number): string | null {
     if (f === 0) return null
@@ -51,7 +96,7 @@ export default function TradesPage() {
     return new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
   }
 
-  async function loadTrades(p: number, outcomeFilter = filter, tf = timeFilter) {
+  async function loadTrades(p: number, outcomeFilter = filter, tf = timeFilter, sf = strategyFilter) {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
@@ -64,6 +109,7 @@ export default function TradesPage() {
     if (outcomeFilter !== 'all') query = (query as any).eq('outcome', outcomeFilter)
     const startDate = getStartDate(tf)
     if (startDate) query = (query as any).gte('traded_at', startDate)
+    if (isPro && sf !== 'all') query = (query as any).eq('strategy_id', sf)
     const { data, count } = await query
     if (data) setTrades(data)
     if (count !== null) setTotal(count)
@@ -73,7 +119,7 @@ export default function TradesPage() {
   function changePage(delta: number) {
     const next = page + delta
     setPage(next)
-    loadTrades(next)
+    loadTrades(next, filter, timeFilter, strategyFilter)
   }
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
@@ -90,6 +136,8 @@ export default function TradesPage() {
     language === 'he' ? 'הכל' : 'All',
     tr.daily, tr.weekly, tr.monthly,
   ]
+
+  const activeFilterCount = (filter !== 'all' ? 1 : 0) + (timeFilter > 0 ? 1 : 0) + (strategyFilter !== 'all' ? 1 : 0)
 
   const isLong = (d: string) => d === 'long'
 
@@ -127,8 +175,94 @@ export default function TradesPage() {
         icon="swap_horiz"
       />
 
+      {isPro && (
+        <div className="trades-filter-shell section-anim anim-delay-1" style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+          <button onClick={() => setFilterMenuOpen(v => !v)} style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            padding: '10px 15px', borderRadius: '12px',
+            background: filterMenuOpen ? 'rgba(15,141,99,0.14)' : 'var(--bg3)',
+            border: filterMenuOpen ? '1px solid rgba(15,141,99,0.38)' : '1px solid var(--border)',
+            color: filterMenuOpen ? '#0f8d63' : 'var(--text2)',
+            fontSize: '13px', fontWeight: '800', cursor: 'pointer',
+            fontFamily: 'Heebo, sans-serif', transition: 'all 0.18s',
+          }}>
+            <Icon name="tune" size={16} />
+            {language === 'he' ? 'פילטרים' : 'Filters'}
+            {activeFilterCount > 0 && (
+              <span style={{ minWidth: '20px', height: '20px', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#0f8d63', color: '#fff', fontSize: '11px', fontWeight: '900' }}>
+                {activeFilterCount}
+              </span>
+            )}
+            <Icon name={filterMenuOpen ? 'expand_less' : 'expand_more'} size={16} />
+          </button>
+
+          {filterMenuOpen && (
+            <div className="trades-filter-popover" style={{
+              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 30,
+              width: 'min(100vw - 32px, 430px)', padding: '16px',
+              borderRadius: '18px', border: '1px solid var(--border2)',
+              background: 'var(--modal-bg)', boxShadow: '0 22px 60px rgba(0,0,0,0.42)',
+            }}>
+              <FilterGroup title={language === 'he' ? 'זמן' : 'Time'} icon="calendar_today">
+                <div className="filter-chip-grid">
+                  {TIME_LABELS.map((label, i) => (
+                    <FilterChip key={i} active={timeFilter === i} onClick={() => { setTimeFilter(i); setPage(0) }}>
+                      {label}
+                    </FilterChip>
+                  ))}
+                </div>
+              </FilterGroup>
+
+              <FilterGroup title={language === 'he' ? 'תוצאה' : 'Outcome'} icon="trending_up">
+                <div className="filter-chip-grid">
+                  <FilterChip active={filter === 'all'} onClick={() => { setFilter('all'); setPage(0) }}>
+                    {language === 'he' ? 'הכל' : 'All'}
+                  </FilterChip>
+                  {OUTCOME_FILTERS.map(({ key, label, icon }) => (
+                    <FilterChip key={key} active={filter === key} onClick={() => { setFilter(key as 'win' | 'loss'); setPage(0) }} icon={icon}>
+                      {label}
+                    </FilterChip>
+                  ))}
+                </div>
+              </FilterGroup>
+
+              <FilterGroup title={language === 'he' ? 'אסטרטגיית מסחר' : 'Trading strategy'} icon="psychology">
+                {strategies.length > 0 ? (
+                  <div className="filter-chip-grid strategy-filter-grid">
+                    <FilterChip active={strategyFilter === 'all'} onClick={() => { setStrategyFilter('all'); setPage(0) }}>
+                      {language === 'he' ? 'כל האסטרטגיות' : 'All strategies'}
+                    </FilterChip>
+                    {strategies.map(strategy => (
+                      <FilterChip key={strategy.id} active={strategyFilter === strategy.id} onClick={() => { setStrategyFilter(strategy.id); setPage(0) }}>
+                        {strategy.name}
+                      </FilterChip>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: '12px 14px', borderRadius: '12px', border: '1px dashed var(--border2)', color: 'var(--text3)', fontSize: '13px', fontWeight: '700', textAlign: 'center' }}>
+                    {language === 'he' ? 'אין כרגע אסטרטגיות קיימות' : 'No strategies exist yet'}
+                  </div>
+                )}
+              </FilterGroup>
+
+              {activeFilterCount > 0 && (
+                <button onClick={() => { setFilter('all'); setTimeFilter(0); setStrategyFilter('all'); setPage(0) }} style={{
+                  width: '100%', marginTop: '2px', padding: '10px 12px',
+                  borderRadius: '12px', border: '1px solid var(--border)',
+                  background: 'var(--bg3)', color: 'var(--text2)',
+                  fontFamily: 'Heebo, sans-serif', fontSize: '13px', fontWeight: '800',
+                  cursor: 'pointer',
+                }}>
+                  {language === 'he' ? 'נקה פילטרים' : 'Clear filters'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filters — always visible */}
-      <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+      {!isPro && <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
         {/* Outcome — WIN/LOSS */}
         <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
@@ -165,7 +299,7 @@ export default function TradesPage() {
           ))}
         </div>
         </div>
-      </div>
+      </div>}
 
       {/* Trades list */}
       <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
@@ -260,14 +394,30 @@ export default function TradesPage() {
         </div>
       )}
 
-      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
+      {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page, filter, timeFilter, strategyFilter); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        .filter-chip-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 8px;
+        }
+        .strategy-filter-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          max-height: 180px;
+          overflow: auto;
+          padding-inline-end: 2px;
+        }
         @media (max-width: 1024px) {
           .trade-row { grid-template-columns: minmax(0, 1fr) 100px 100px 110px !important; gap: 8px !important; }
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
+          .trades-filter-shell { justify-content: stretch !important; }
+          .trades-filter-shell > button { width: 100%; justify-content: center !important; }
+          .trades-filter-popover { inset-inline: 0 !important; width: 100% !important; }
+          .filter-chip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+          .strategy-filter-grid { grid-template-columns: 1fr !important; }
           .trade-row { grid-template-columns: minmax(0, 1.2fr) 80px 80px 90px !important; gap: 6px !important; padding: 10px 6px !important; }
           .trade-row .trade-col-symbol { gap: 8px !important; min-width: 0 !important; overflow: hidden !important; }
           .trade-row .trade-col-symbol > div:first-child { width: 32px !important; height: 32px !important; border-radius: 10px !important; flex-shrink: 0 !important; }
