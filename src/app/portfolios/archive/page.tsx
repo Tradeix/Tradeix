@@ -312,6 +312,7 @@ export default function ArchivePage() {
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button
+                              className="archive-arrow-btn app-arrow-btn"
                               onClick={() => changePage(p.id, 1)}
                               disabled={!canOlder}
                               style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.3, transition: 'all 0.2s' }}
@@ -319,6 +320,7 @@ export default function ArchivePage() {
                               <Icon name={olderIcon} size={16} />
                             </button>
                             <button
+                              className="archive-arrow-btn app-arrow-btn"
                               onClick={() => changePage(p.id, -1)}
                               disabled={!canNewer}
                               style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.3, transition: 'all 0.2s' }}

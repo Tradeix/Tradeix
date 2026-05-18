@@ -587,13 +587,13 @@ export default function StatsPage() {
           </div>
           <div className="cal-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-              className="cal-nav-btn"
+              className="cal-nav-btn app-arrow-btn"
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={language === 'he' ? 'chevron_right' : 'chevron_left'} size={18} />
             </button>
             <div className="cal-month-label" style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', minWidth: '110px', textAlign: 'center' }}>{format(currentMonth, 'MMMM yyyy')}</div>
             <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-              className="cal-nav-btn"
+              className="cal-nav-btn app-arrow-btn"
               style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={language === 'he' ? 'chevron_left' : 'chevron_right'} size={18} />
             </button>

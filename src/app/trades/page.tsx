@@ -126,8 +126,8 @@ export default function TradesPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE)
   const canOlder   = page < totalPages - 1
   const canNewer   = page > 0
-  const olderIcon  = isRTL ? 'chevron_right' : 'chevron_left'
-  const newerIcon  = isRTL ? 'chevron_left'  : 'chevron_right'
+  const olderIcon  = 'chevron_left'
+  const newerIcon  = 'chevron_right'
 
   const OUTCOME_FILTERS = [
     { key: 'win', label: 'WIN', icon: 'trending_up' },
@@ -143,10 +143,10 @@ export default function TradesPage() {
   const isLong = (d: string) => d === 'long'
   const paginationArrows = total > PAGE_SIZE ? (
     <div className="trades-page-arrows" aria-label={language === 'he' ? 'דפדוף עסקאות' : 'Trade pagination'}>
-      <button className="trades-page-btn" onClick={() => changePage(1)} disabled={!canOlder} aria-label={language === 'he' ? 'עסקאות ישנות יותר' : 'Older trades'}>
+      <button className="trades-page-btn app-arrow-btn" onClick={() => changePage(1)} disabled={!canOlder} aria-label={language === 'he' ? 'עסקאות ישנות יותר' : 'Older trades'}>
         <Icon name={olderIcon} size={18} />
       </button>
-      <button className="trades-page-btn" onClick={() => changePage(-1)} disabled={!canNewer} aria-label={language === 'he' ? 'עסקאות חדשות יותר' : 'Newer trades'}>
+      <button className="trades-page-btn app-arrow-btn" onClick={() => changePage(-1)} disabled={!canNewer} aria-label={language === 'he' ? 'עסקאות חדשות יותר' : 'Newer trades'}>
         <Icon name={newerIcon} size={18} />
       </button>
     </div>
