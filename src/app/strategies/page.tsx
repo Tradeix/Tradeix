@@ -447,7 +447,7 @@ export default function StrategiesPage() {
                         }}
                       >
                         <Icon name="edit" size={12} color="currentColor" />
-                        {language === 'he' ? 'ערוך פירוט' : 'Edit details'}
+                        {language === 'he' ? 'ערוך' : 'Edit'}
                       </button>
                     </div>
                     <div style={{
