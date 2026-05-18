@@ -33,8 +33,9 @@ function FilterChip({ active, onClick, icon, children }: { active: boolean; onCl
       minWidth: 0,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
       padding: '8px 11px', borderRadius: '10px',
-      border: active ? '1px solid rgba(15,141,99,0.42)' : '1px solid var(--border)',
-      background: active ? 'rgba(15,141,99,0.14)' : 'var(--bg3)',
+      border: active ? '1px solid rgba(15,141,99,0.48)' : '1px solid var(--border2)',
+      background: active ? 'rgba(15,141,99,0.22)' : 'var(--modal-bg)',
+      backgroundColor: active ? 'rgba(15,141,99,0.22)' : 'var(--modal-bg)',
       color: active ? '#0f8d63' : 'var(--text3)',
       fontFamily: 'Heebo, sans-serif', fontSize: '12px', fontWeight: '800',
       cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -176,7 +177,7 @@ export default function TradesPage() {
       />
 
       {isPro && (
-        <div className="trades-filter-shell section-anim anim-delay-1" style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        <div className="trades-filter-shell section-anim anim-delay-1" style={{ position: 'relative', zIndex: 120, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
           <button onClick={() => setFilterMenuOpen(v => !v)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '10px 15px', borderRadius: '12px',
@@ -198,10 +199,12 @@ export default function TradesPage() {
 
           {filterMenuOpen && (
             <div className="trades-filter-popover" style={{
-              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 30,
+              position: 'absolute', top: 'calc(100% + 10px)', insetInlineEnd: 0, zIndex: 140,
               width: 'min(100vw - 32px, 430px)', padding: '16px',
               borderRadius: '18px', border: '1px solid var(--border2)',
-              background: 'var(--modal-bg)', boxShadow: '0 22px 60px rgba(0,0,0,0.42)',
+              background: 'var(--modal-bg)', backgroundColor: 'var(--modal-bg)',
+              boxShadow: '0 22px 60px rgba(0,0,0,0.62), 0 0 0 1px rgba(255,255,255,0.04) inset',
+              pointerEvents: 'auto',
             }}>
               <FilterGroup title={language === 'he' ? 'זמן' : 'Time'} icon="calendar_today">
                 <div className="filter-chip-grid">
