@@ -284,7 +284,7 @@ export default function DashboardPage() {
                 position: 'relative',
                 textAlign: language === 'he' ? 'right' : 'left',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: language === 'he' ? 'flex-start' : 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: language === 'he' ? 'flex-end' : 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
                   FOCUS
                 </div>
