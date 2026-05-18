@@ -251,8 +251,8 @@ export default function DashboardPage() {
           boxShadow: 'none',
           minHeight: '104px',
         }}>
-          <div className="welcome-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
-            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+          <div className="welcome-inner" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'center', gap: '24px' }}>
+            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0, gridColumn: language === 'he' ? '2' : '1', justifySelf: language === 'he' ? 'end' : 'start' }}>
             <div style={{ minWidth: 0 }}>
               <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
                 <span className="welcome-date" style={{
@@ -274,17 +274,19 @@ export default function DashboardPage() {
             </div>
 
               <div className="welcome-quote-wrap" style={{
-                width: 'min(46%, 560px)',
+                width: 'min(100%, 560px)',
                 minWidth: '320px',
-                marginLeft: language === 'he' ? 0 : 'auto',
+                marginLeft: 0,
                 marginRight: language === 'he' ? 'auto' : 0,
+                gridColumn: language === 'he' ? '1' : '2',
+                justifySelf: language === 'he' ? 'start' : 'end',
                 padding: language === 'he' ? '4px 18px 4px 0' : '4px 0 4px 18px',
                 borderRight: language === 'he' ? '2px solid rgba(15,141,99,0.8)' : 'none',
                 borderLeft: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.8)',
                 position: 'relative',
                 textAlign: language === 'he' ? 'right' : 'left',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: language === 'he' ? 'flex-end' : 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
                   FOCUS
                 </div>
@@ -686,7 +688,7 @@ export default function DashboardPage() {
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 20px !important; }
           .section-anim.anim-delay-8 { margin-top: 10px !important; }
           .welcome-section { padding: 14px 0 12px !important; margin-bottom: 20px !important; min-height: 84px !important; }
-          .welcome-inner { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; }
+          .welcome-inner { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; }
           .welcome-profile { flex: 0 1 48% !important; min-width: 0 !important; gap: 12px !important; }
           .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
           .welcome-tile > span { font-size: 23px !important; }
