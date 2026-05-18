@@ -141,6 +141,16 @@ export default function TradesPage() {
   const activeFilterCount = (filter !== 'all' ? 1 : 0) + (timeFilter > 0 ? 1 : 0) + (strategyFilter !== 'all' ? 1 : 0)
 
   const isLong = (d: string) => d === 'long'
+  const paginationArrows = total > PAGE_SIZE ? (
+    <div className="trades-page-arrows" aria-label={language === 'he' ? 'דפדוף עסקאות' : 'Trade pagination'}>
+      <button className="trades-page-btn" onClick={() => changePage(1)} disabled={!canOlder} aria-label={language === 'he' ? 'עסקאות ישנות יותר' : 'Older trades'}>
+        <Icon name={olderIcon} size={18} />
+      </button>
+      <button className="trades-page-btn" onClick={() => changePage(-1)} disabled={!canNewer} aria-label={language === 'he' ? 'עסקאות חדשות יותר' : 'Newer trades'}>
+        <Icon name={newerIcon} size={18} />
+      </button>
+    </div>
+  ) : <div className="trades-page-arrows-placeholder" />
 
   if (portfoliosLoaded && !activePortfolio) {
     return (
@@ -176,8 +186,11 @@ export default function TradesPage() {
         icon="swap_horiz"
       />
 
+      <div className="trades-top-controls section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px', direction: 'ltr' }}>
+        {paginationArrows}
+        <div className="trades-filter-slot" style={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0, direction: isRTL ? 'rtl' : 'ltr' }}>
       {isPro && (
-        <div className="trades-filter-shell section-anim anim-delay-1" style={{ position: 'relative', zIndex: 120, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        <div className="trades-filter-shell" style={{ position: 'relative', zIndex: 120, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
           <button onClick={() => setFilterMenuOpen(v => !v)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '10px 15px', borderRadius: '12px',
@@ -262,7 +275,7 @@ export default function TradesPage() {
       )}
 
       {/* Filters — always visible */}
-      {!isPro && <div className="trades-filter-row section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', gap: '8px' }}>
+      {!isPro && <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 0, gap: '8px' }}>
         {/* Outcome — WIN/LOSS */}
         <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {OUTCOME_FILTERS.map(({ key, label, icon }) => (
@@ -300,6 +313,8 @@ export default function TradesPage() {
         </div>
         </div>
       </div>}
+        </div>
+      </div>
 
       {/* Trades list */}
       <div className="section-anim anim-delay-2" style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
@@ -377,26 +392,41 @@ export default function TradesPage() {
         )}
       </div>
 
-      {/* Bottom pagination */}
-      {total > PAGE_SIZE && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px 0' }}>
-          <button onClick={() => changePage(1)} disabled={!canOlder}
-            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canOlder ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canOlder ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <Icon name={olderIcon} size={18} />
-          </button>
-          <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text3)' }}>
-            {page + 1} / {totalPages}
-          </span>
-          <button onClick={() => changePage(-1)} disabled={!canNewer}
-            style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: canNewer ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNewer ? 1 : 0.25, transition: 'all 0.2s' }}>
-            <Icon name={newerIcon} size={18} />
-          </button>
-        </div>
-      )}
-
       {selectedTrade && <TradeModal trade={selectedTrade} onClose={() => setSelectedTrade(null)} onUpdate={() => { setSelectedTrade(null); loadTrades(page, filter, timeFilter, strategyFilter); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        .trades-page-arrows,
+        .trades-page-arrows-placeholder {
+          min-width: 84px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          direction: ltr;
+        }
+        .trades-page-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 11px;
+          background: var(--bg3);
+          border: 1px solid var(--border);
+          color: var(--text2);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s, opacity 0.18s;
+        }
+        .trades-page-btn:not(:disabled):hover {
+          background: rgba(15,141,99,0.16);
+          border-color: rgba(15,141,99,0.45);
+          color: #0f8d63;
+          transform: translateY(-1px);
+        }
+        .trades-page-btn:disabled {
+          opacity: 0.25;
+          cursor: default;
+        }
         .filter-chip-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -413,6 +443,9 @@ export default function TradesPage() {
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
+          .trades-top-controls { align-items: stretch !important; gap: 10px !important; }
+          .trades-page-arrows,
+          .trades-page-arrows-placeholder { min-width: 82px !important; }
           .trades-filter-shell { justify-content: stretch !important; }
           .trades-filter-shell > button { width: 100%; justify-content: center !important; }
           .trades-filter-popover { inset-inline: 0 !important; width: 100% !important; }
