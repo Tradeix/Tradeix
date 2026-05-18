@@ -242,7 +242,7 @@ export default function DashboardPage() {
         return (
         <div className="welcome-section section-anim" style={{
           marginBottom: '18px',
-          padding: '18px 8px 10px',
+          padding: '18px 0 10px',
           borderRadius: 0,
           background: 'transparent',
           border: 'none',
@@ -274,8 +274,10 @@ export default function DashboardPage() {
             </div>
 
               <div className="welcome-quote-wrap" style={{
-                width: 'min(42%, 520px)',
+                width: 'min(46%, 560px)',
                 minWidth: '320px',
+                marginLeft: language === 'he' ? 0 : 'auto',
+                marginRight: language === 'he' ? 'auto' : 0,
                 padding: language === 'he' ? '4px 18px 4px 0' : '4px 0 4px 18px',
                 borderRight: language === 'he' ? '2px solid rgba(15,141,99,0.8)' : 'none',
                 borderLeft: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.8)',
@@ -610,30 +612,46 @@ export default function DashboardPage() {
 
         .welcome-stat-divider {
           display: grid;
-          grid-template-columns: minmax(60px, 1fr) auto minmax(60px, 1fr);
+          grid-template-columns: minmax(60px, 1fr) 76px minmax(60px, 1fr);
           align-items: center;
-          gap: 14px;
-          margin: -8px 0 30px;
-          padding-inline: 10px;
-          opacity: 0.92;
+          gap: 12px;
+          margin: -4px 0 30px;
+          opacity: 0.88;
         }
         .welcome-stat-divider span {
-          height: 1px;
+          height: 11px;
+          transform: skewX(-24deg);
           background:
-            linear-gradient(90deg, transparent, rgba(15,141,99,0.36), rgba(255,255,255,0.08), transparent);
+            repeating-linear-gradient(90deg, rgba(15,141,99,0.42) 0 18px, transparent 18px 32px);
+          mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+          opacity: 0.62;
+          animation: dividerFlow 5s linear infinite;
         }
         .welcome-stat-divider i {
-          width: 8px;
-          height: 8px;
+          position: relative;
+          width: 76px;
+          height: 2px;
           border-radius: 999px;
-          background: #0f8d63;
-          box-shadow: 0 0 0 6px rgba(15,141,99,0.10), 0 0 28px rgba(15,141,99,0.75);
-          transform: rotate(45deg);
-          animation: dividerPulse 2.8s ease-in-out infinite;
+          background: linear-gradient(90deg, transparent, #0f8d63, transparent);
+          box-shadow: 0 0 26px rgba(15,141,99,0.62);
         }
-        @keyframes dividerPulse {
-          0%, 100% { opacity: 0.62; transform: rotate(45deg) scale(0.86); }
-          50% { opacity: 1; transform: rotate(45deg) scale(1.12); }
+        .welcome-stat-divider i::before,
+        .welcome-stat-divider i::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 9px;
+          height: 9px;
+          border-radius: 2px;
+          background: rgba(15,141,99,0.92);
+          box-shadow: 0 0 18px rgba(15,141,99,0.78);
+          transform: translateY(-50%) rotate(45deg);
+        }
+        .welcome-stat-divider i::before { left: 16px; }
+        .welcome-stat-divider i::after { right: 16px; }
+        @keyframes dividerFlow {
+          0% { background-position: 0 0; }
+          100% { background-position: 64px 0; }
         }
 
         @media (max-width: 1024px) {
@@ -663,21 +681,27 @@ export default function DashboardPage() {
           .balance-card .bal-name { font-size: 17px !important; }
           .balance-card .bal-mini-val { font-size: 14px !important; }
           .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
-          .welcome-section { padding: 18px 16px !important; margin-bottom: 20px !important; }
-          .welcome-inner { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
-          .welcome-profile { gap: 12px !important; }
+          .welcome-section { padding: 14px 0 8px !important; margin-bottom: 16px !important; min-height: 84px !important; }
+          .welcome-inner { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; }
+          .welcome-profile { flex: 0 1 48% !important; min-width: 0 !important; gap: 12px !important; }
           .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
           .welcome-tile > span { font-size: 23px !important; }
-          .welcome-title { font-size: 22px !important; }
+          .welcome-title { font-size: 18px !important; line-height: 1.12 !important; }
           .welcome-date { font-size: 12px !important; }
           .welcome-meta-row { margin-bottom: 7px !important; }
-          .welcome-quote-wrap { width: 100% !important; min-width: 0 !important; padding: 2px 15px !important; }
-          .welcome-quote { font-size: 13.5px !important; }
+          .welcome-quote-wrap { flex: 1 1 46% !important; width: auto !important; min-width: 0 !important; margin-left: 0 !important; margin-right: auto !important; padding: 2px 12px 2px 0 !important; }
+          .welcome-quote-wrap > div { font-size: 10px !important; margin-bottom: 5px !important; gap: 5px !important; }
+          .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }
+          .welcome-quote { font-size: 12px !important; line-height: 1.45 !important; }
           .welcome-stat-divider {
-            gap: 10px !important;
-            margin: -4px 0 22px !important;
-            padding-inline: 4px !important;
+            grid-template-columns: minmax(34px, 1fr) 54px minmax(34px, 1fr) !important;
+            gap: 8px !important;
+            margin: 0 0 20px !important;
           }
+          .welcome-stat-divider span { height: 8px !important; }
+          .welcome-stat-divider i { width: 54px !important; }
+          .welcome-stat-divider i::before { left: 10px !important; }
+          .welcome-stat-divider i::after { right: 10px !important; }
           .section-title { font-size: 19px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
