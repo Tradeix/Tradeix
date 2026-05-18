@@ -343,9 +343,9 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ padding: '24px 26px 16px', position: 'relative' }}>
+          <div className="bal-header" style={{ padding: '20px 24px 12px', position: 'relative' }}>
             {/* Name row — glowing dot + portfolio name + market pill */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
               <span style={{
                 width: '12px', height: '12px', borderRadius: '50%',
                 background: portfolioColor,
@@ -378,12 +378,12 @@ export default function DashboardPage() {
             {/* Value + Return — symmetric 2-column layout. In RTL the first
                 cell sits on the right, so "Current value" is first and the
                 return cell is second (visually appears on the left). */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, alignItems: 'stretch', borderBlock: '1px solid var(--border)', padding: '18px 0' }} className="bal-value-grid">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, alignItems: 'stretch', padding: '10px 0 8px' }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
                 padding: '0 26px',
                 display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
-                minHeight: '92px',
+                minHeight: '74px',
                 borderInlineEnd: '1px solid var(--border)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -399,7 +399,7 @@ export default function DashboardPage() {
               <div style={{
                 padding: '0 26px',
                 display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
-                minHeight: '92px',
+                minHeight: '74px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
@@ -413,14 +413,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '0 0 22px', marginTop: 'auto', borderTop: '1px solid var(--border)' }}>
+          <div className="bal-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '10px 0 18px', marginTop: 'auto' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
               { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
               { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
             ].map((t, i) => (
               <div key={i} style={{
-                padding: '18px 10px 0',
+                padding: '10px 10px 0',
                 textAlign: 'center',
                 borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
                 minWidth: 0,
@@ -659,7 +659,10 @@ export default function DashboardPage() {
           .view-all-trades-btn { padding: 6px 11px !important; gap: 4px !important; font-size: 12px !important; border-radius: 9px !important; white-space: nowrap !important; }
           .view-all-trades-btn svg { width: 13px !important; height: 13px !important; }
           .balance-card .bal-amount { font-size: 29px !important; }
-          .balance-card .bal-header { padding: 14px 16px 12px !important; }
+          .balance-card .bal-header { padding: 14px 16px 10px !important; }
+          .balance-card .bal-value-grid { padding: 6px 0 4px !important; }
+          .balance-card .bal-value-grid > div { min-height: 64px !important; padding-inline: 12px !important; }
+          .balance-card .bal-stats-grid { padding: 8px 0 14px !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 17px !important; }
