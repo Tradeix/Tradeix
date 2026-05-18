@@ -120,6 +120,12 @@ export default function StatsPage() {
     const count = days.reduce((sum, day) => sum + (monthlyCount[day] || 0), 0)
     return { pnl, count }
   }
+  const formatSignedPnl = (value: number) => {
+    if (value === 0) return '$0'
+    const abs = Math.abs(value)
+    const display = abs >= 1000 ? `${(abs / 1000).toFixed(1)}k` : abs.toFixed(0)
+    return `${value > 0 ? '+' : '-'}$${display}`
+  }
 
   const DAY_NAMES = language === 'he'
     ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
@@ -633,7 +639,7 @@ export default function StatsPage() {
                   borderColor: weekGreen ? 'rgba(34,197,94,0.2)' : weekRed ? 'rgba(239,68,68,0.2)' : 'var(--border)',
                 }}>
                   <div className="cal-week-pnl" style={{ color: weekGreen ? '#22c55e' : weekRed ? '#ef4444' : 'var(--text3)' }}>
-                    {hasWeekData ? (weekZero ? '$0' : `${summary.pnl > 0 ? '+' : ''}$${Math.abs(summary.pnl) >= 1000 ? (Math.abs(summary.pnl) / 1000).toFixed(1) + 'k' : Math.abs(summary.pnl).toFixed(0)}`) : '-'}
+                    {hasWeekData ? formatSignedPnl(summary.pnl) : '-'}
                   </div>
                   <div className="cal-week-count">{summary.count} {summary.count === 1 ? 'TRADE' : 'TRADES'}</div>
                 </div>
@@ -645,7 +651,6 @@ export default function StatsPage() {
                     const hasData = pnl !== undefined
                     const isGreen = hasData && pnl > 0
                     const isRed = hasData && pnl < 0
-                    const isZero = hasData && pnl === 0
                     return (
                       <div key={day} className="cal-cell" style={{
                         background: isGreen ? 'rgba(34,197,94,0.06)' : isRed ? 'rgba(239,68,68,0.06)' : 'var(--bg3)',
@@ -655,7 +660,7 @@ export default function StatsPage() {
                         {hasData && (
                           <div className="cal-body">
                             <div className="cal-pnl" style={{ color: isGreen ? '#22c55e' : isRed ? '#ef4444' : 'var(--text3)' }}>
-                              {isZero ? '$0' : `${pnl > 0 ? '+' : ''}$${Math.abs(pnl) >= 1000 ? (Math.abs(pnl) / 1000).toFixed(1) + 'k' : Math.abs(pnl).toFixed(0)}`}
+                              {formatSignedPnl(pnl)}
                             </div>
                             <div className="cal-wr" style={{ color: 'var(--text3)' }}>{count} TRADE{count !== 1 ? 'S' : ''}</div>
                           </div>
