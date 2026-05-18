@@ -343,7 +343,7 @@ export default function DashboardPage() {
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ flex: 1, padding: '20px 24px 10px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+          <div className="bal-header" style={{ padding: '20px 24px 14px', position: 'relative' }}>
             {/* Name row — glowing dot + portfolio name + market pill */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
               <span style={{
@@ -381,20 +381,18 @@ export default function DashboardPage() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: 0,
+              gap: '12px',
               alignItems: 'stretch',
-              padding: '8px 0 6px',
-              borderRadius: '18px',
-              background: 'linear-gradient(135deg, rgba(15,141,99,0.08), rgba(255,255,255,0.025))',
-              border: '1px solid rgba(255,255,255,0.045)',
-              flex: 1,
+              padding: 0,
             }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
-                padding: '0 26px',
-                display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
-                minHeight: '74px',
-                borderInlineEnd: '1px solid var(--border)',
+                padding: '18px 20px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '14px',
+                minHeight: '116px',
+                borderRadius: '16px',
+                background: 'linear-gradient(145deg, rgba(15,141,99,0.13), rgba(255,255,255,0.025))',
+                border: '1px solid rgba(15,141,99,0.16)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name="account_balance_wallet" size={14} color="#0f8d63" />
@@ -407,9 +405,12 @@ export default function DashboardPage() {
 
               {/* Return (left side in RTL) */}
               <div style={{
-                padding: '0 26px',
-                display: 'grid', gridTemplateRows: '24px 1fr', alignItems: 'center',
-                minHeight: '74px',
+                padding: '18px 20px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '14px',
+                minHeight: '116px',
+                borderRadius: '16px',
+                background: 'linear-gradient(145deg, rgba(34,197,94,0.1), rgba(255,255,255,0.025))',
+                border: '1px solid rgba(255,255,255,0.065)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
@@ -423,14 +424,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div className="bal-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '10px 0 18px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.012)' }}>
+          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(15,141,99,0.035))', minHeight: '124px' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
               { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
               { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
             ].map((t, i) => (
               <div key={i} style={{
-                padding: '10px 10px 0',
+                padding: '16px 10px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
                 textAlign: 'center',
                 borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
                 minWidth: 0,
@@ -670,9 +674,9 @@ export default function DashboardPage() {
           .view-all-trades-btn svg { width: 13px !important; height: 13px !important; }
           .balance-card .bal-amount { font-size: 29px !important; }
           .balance-card .bal-header { padding: 14px 16px 10px !important; }
-          .balance-card .bal-value-grid { padding: 6px 0 4px !important; }
-          .balance-card .bal-value-grid > div { min-height: 64px !important; padding-inline: 12px !important; }
-          .balance-card .bal-stats-grid { padding: 8px 0 14px !important; }
+          .balance-card .bal-value-grid { gap: 8px !important; }
+          .balance-card .bal-value-grid > div { min-height: 86px !important; padding: 13px 10px !important; gap: 9px !important; border-radius: 13px !important; }
+          .balance-card .bal-stats-grid { min-height: 92px !important; padding: 10px 0 !important; }
           .overview-col, .perf-col { align-self: stretch !important; }
           .overview-col .top-row, .overview-col .balance-card { min-height: 100% !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
