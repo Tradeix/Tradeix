@@ -611,47 +611,30 @@ export default function DashboardPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .welcome-stat-divider {
-          display: grid;
-          grid-template-columns: minmax(60px, 1fr) 76px minmax(60px, 1fr);
-          align-items: center;
-          gap: 12px;
-          margin: -4px 0 30px;
-          opacity: 0.88;
+          position: relative;
+          height: 28px;
+          margin: 0 0 34px;
+          opacity: 0.9;
         }
         .welcome-stat-divider span {
-          height: 11px;
-          transform: skewX(-24deg);
-          background:
-            repeating-linear-gradient(90deg, rgba(15,141,99,0.42) 0 18px, transparent 18px 32px);
-          mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
-          opacity: 0.62;
-          animation: dividerFlow 5s linear infinite;
-        }
-        .welcome-stat-divider i {
-          position: relative;
-          width: 76px;
-          height: 2px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, transparent, #0f8d63, transparent);
-          box-shadow: 0 0 26px rgba(15,141,99,0.62);
-        }
-        .welcome-stat-divider i::before,
-        .welcome-stat-divider i::after {
-          content: '';
           position: absolute;
+          inset-inline: 0;
           top: 50%;
-          width: 9px;
-          height: 9px;
-          border-radius: 2px;
-          background: rgba(15,141,99,0.92);
-          box-shadow: 0 0 18px rgba(15,141,99,0.78);
-          transform: translateY(-50%) rotate(45deg);
+          height: 1px;
+          background:
+            linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 16%, rgba(15,141,99,0.42) 50%, rgba(255,255,255,0.08) 84%, transparent 100%);
+          transform: translateY(-50%);
         }
-        .welcome-stat-divider i::before { left: 16px; }
-        .welcome-stat-divider i::after { right: 16px; }
-        @keyframes dividerFlow {
-          0% { background-position: 0 0; }
-          100% { background-position: 64px 0; }
+        .welcome-stat-divider span:last-child { display: none; }
+        .welcome-stat-divider i {
+          position: absolute;
+          inset-inline: 18%;
+          top: 50%;
+          height: 18px;
+          border-radius: 999px;
+          background: radial-gradient(ellipse at center, rgba(15,141,99,0.18), transparent 72%);
+          filter: blur(8px);
+          transform: translateY(-50%);
         }
 
         @media (max-width: 1024px) {
@@ -664,6 +647,7 @@ export default function DashboardPage() {
           .trade-col-rr { display: none !important; }
         }
         @media (max-width: 640px) {
+          .overview-perf-grid { gap: 42px !important; margin-bottom: 56px !important; }
           .stats-hero { gap: 8px !important; }
           .stat-card { padding: 14px !important; }
           .stat-card > div:first-child > div { width: 28px !important; height: 28px !important; }
@@ -680,8 +664,9 @@ export default function DashboardPage() {
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 17px !important; }
           .balance-card .bal-mini-val { font-size: 14px !important; }
-          .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 10px !important; }
-          .welcome-section { padding: 14px 0 8px !important; margin-bottom: 16px !important; min-height: 84px !important; }
+          .section-anim.anim-delay-3 { flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 20px !important; }
+          .section-anim.anim-delay-8 { margin-top: 10px !important; }
+          .welcome-section { padding: 14px 0 12px !important; margin-bottom: 20px !important; min-height: 84px !important; }
           .welcome-inner { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; }
           .welcome-profile { flex: 0 1 48% !important; min-width: 0 !important; gap: 12px !important; }
           .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
@@ -694,14 +679,10 @@ export default function DashboardPage() {
           .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }
           .welcome-quote { font-size: 12px !important; line-height: 1.45 !important; }
           .welcome-stat-divider {
-            grid-template-columns: minmax(34px, 1fr) 54px minmax(34px, 1fr) !important;
-            gap: 8px !important;
-            margin: 0 0 20px !important;
+            height: 24px !important;
+            margin: 4px 0 30px !important;
           }
-          .welcome-stat-divider span { height: 8px !important; }
-          .welcome-stat-divider i { width: 54px !important; }
-          .welcome-stat-divider i::before { left: 10px !important; }
-          .welcome-stat-divider i::after { right: 10px !important; }
+          .welcome-stat-divider i { inset-inline: 10% !important; }
           .section-title { font-size: 19px !important; }
           .section-subtitle { display: none !important; }
           .section-icon { width: 36px !important; height: 36px !important; }
