@@ -314,7 +314,7 @@ export default function DashboardPage() {
 
       <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'stretch' }}>
 
-      <div className="overview-col" style={{ display: 'flex', flexDirection: 'column', alignSelf: 'start', width: '100%' }}>
+      <div className="overview-col" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       {/* ── OVERVIEW TITLE ── */}
       <div className="section-anim" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
         <div className="section-icon" style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -331,19 +331,19 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════
           TOP ROW — Balance Card
           ══════════════════════════════════════════════ */}
-      <div className="top-row section-anim anim-delay-1" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="top-row section-anim anim-delay-1" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Total Balance Card — redesigned ──
             Glowing portfolio-color dot next to the name (no full border),
             big "current value" headline with a +X.X% return pill,
             small "principal" hint under the headline, and a 3-tile row
             (Trades / Profit Factor / Win Rate) at the bottom. */}
-        <div className="card-hover balance-card" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+        <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
           {/* Soft glow keyed to portfolio color in the top corner */}
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
 
           {/* Top — name + capital + value + return badge */}
-          <div className="bal-header" style={{ padding: '20px 24px 10px', position: 'relative' }}>
+          <div className="bal-header" style={{ flex: 1, padding: '20px 24px 10px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
             {/* Name row — glowing dot + portfolio name + market pill */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
               <span style={{
@@ -387,6 +387,7 @@ export default function DashboardPage() {
               borderRadius: '18px',
               background: 'linear-gradient(135deg, rgba(15,141,99,0.08), rgba(255,255,255,0.025))',
               border: '1px solid rgba(255,255,255,0.045)',
+              flex: 1,
             }} className="bal-value-grid">
               {/* Current value (right side in RTL) */}
               <div style={{
@@ -672,6 +673,8 @@ export default function DashboardPage() {
           .balance-card .bal-value-grid { padding: 6px 0 4px !important; }
           .balance-card .bal-value-grid > div { min-height: 64px !important; padding-inline: 12px !important; }
           .balance-card .bal-stats-grid { padding: 8px 0 14px !important; }
+          .overview-col, .perf-col { align-self: stretch !important; }
+          .overview-col .top-row, .overview-col .balance-card { min-height: 100% !important; }
           .balance-card .bal-section { padding: 14px 16px !important; text-align: center !important; }
           .balance-card .bal-icon { width: 36px !important; height: 36px !important; }
           .balance-card .bal-name { font-size: 17px !important; }
