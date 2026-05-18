@@ -251,8 +251,8 @@ export default function DashboardPage() {
           boxShadow: 'none',
           minHeight: '104px',
         }}>
-          <div className="welcome-inner" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'center', gap: '24px' }}>
-            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0, gridColumn: language === 'he' ? '2' : '1', justifySelf: language === 'he' ? 'end' : 'start' }}>
+          <div className="welcome-inner" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'center', gap: '24px', direction: 'ltr' }}>
+            <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0, gridColumn: language === 'he' ? '2' : '1', justifySelf: language === 'he' ? 'end' : 'start', direction: language === 'he' ? 'rtl' : 'ltr', order: language === 'he' ? 2 : 1 }}>
             <div style={{ minWidth: 0 }}>
               <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
                 <span className="welcome-date" style={{
@@ -280,6 +280,8 @@ export default function DashboardPage() {
                 marginRight: language === 'he' ? 'auto' : 0,
                 gridColumn: language === 'he' ? '1' : '2',
                 justifySelf: language === 'he' ? 'start' : 'end',
+                direction: language === 'he' ? 'rtl' : 'ltr',
+                order: language === 'he' ? 1 : 2,
                 padding: language === 'he' ? '4px 18px 4px 0' : '4px 0 4px 18px',
                 borderRight: language === 'he' ? '2px solid rgba(15,141,99,0.8)' : 'none',
                 borderLeft: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.8)',
