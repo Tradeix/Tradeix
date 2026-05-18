@@ -52,7 +52,7 @@ export default function StrategiesPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [strategyStats, setStrategyStats] = useState<Record<string, StrategyStats>>({})
-  const [loadingStats, setLoadingStats] = useState<string | null>(null)
+  const [loadingStats] = useState<string | null>(null)
   const [form, setForm] = useState({
     name: '', plan: '', details: '', color: 'blue',
   })
@@ -104,49 +104,6 @@ export default function StrategiesPage() {
       setStrategyStats(statsMap)
     }
     setLoading(false)
-  }
-
-  async function loadStrategyStats(strategyId: string) {
-    if (strategyStats[strategyId]) return
-    setLoadingStats(strategyId)
-    const { data: trades } = await supabase
-      .from('trades')
-      .select('pnl, outcome')
-      .eq('portfolio_id', activePortfolio!.id)
-      .eq('strategy_id', strategyId)
-
-    if (trades && trades.length > 0) {
-      const wins = trades.filter((x: any) => x.outcome === 'win')
-      const losses = trades.filter((x: any) => x.outcome === 'loss')
-      const breakevens = trades.filter((x: any) => x.outcome === 'breakeven')
-      const totalPnl = trades.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
-      const grossProfit = wins.reduce((s: number, x: any) => s + (x.pnl || 0), 0)
-      const grossLoss = Math.abs(losses.reduce((s: number, x: any) => s + (x.pnl || 0), 0))
-      setStrategyStats(prev => ({
-        ...prev,
-        [strategyId]: {
-          totalTrades: trades.length,
-          wins: wins.length,
-          losses: losses.length,
-          breakevens: breakevens.length,
-          winRate: (wins.length / trades.length) * 100,
-          totalPnl,
-          profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
-          bestTrade: Math.max(...trades.map((x: any) => x.pnl || 0)),
-          worstTrade: Math.min(...trades.map((x: any) => x.pnl || 0)),
-          avgPnl: totalPnl / trades.length,
-        },
-      }))
-    } else {
-      setStrategyStats(prev => ({ ...prev, [strategyId]: EMPTY_STATS }))
-    }
-    setLoadingStats(null)
-  }
-
-  function handleExpand(id: string) {
-    const next = expandedId === id ? null : id
-    setExpandedId(next)
-    if (next) loadStrategyStats(next)
   }
 
   function openNew() {
@@ -322,7 +279,6 @@ export default function StrategiesPage() {
               <div
                 key={s.id}
                 className="strat-card"
-                onClick={() => handleExpand(s.id)}
                 style={{
                   flex: '1 1 280px',
                   maxWidth: '340px',
@@ -332,7 +288,7 @@ export default function StrategiesPage() {
                   border: '1px solid var(--border)',
                   transition: 'border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
                   position: 'relative',
-                  cursor: 'pointer',
+                  cursor: 'default',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-2px)'
@@ -445,6 +401,68 @@ export default function StrategiesPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="strat-hover-details">
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '10px',
+                      marginBottom: '10px',
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        fontSize: '11px',
+                        fontWeight: '900',
+                        color: accentColor,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.1em',
+                      }}>
+                        <Icon name="info" size={13} color={accentColor} />
+                        {language === 'he' ? 'פירוט אסטרטגיה' : 'Strategy details'}
+                      </div>
+                      <button
+                        className="strat-hover-edit"
+                        onClick={e => {
+                          e.stopPropagation()
+                          startEdit(s)
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          background: 'rgba(15,141,99,0.12)',
+                          border: '1px solid rgba(15,141,99,0.28)',
+                          color: '#2dd997',
+                          borderRadius: '9px',
+                          padding: '7px 10px',
+                          fontSize: '12px',
+                          fontWeight: '800',
+                          fontFamily: 'Heebo, sans-serif',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <Icon name="edit" size={12} color="currentColor" />
+                        {language === 'he' ? 'ערוך פירוט' : 'Edit details'}
+                      </button>
+                    </div>
+                    <div style={{
+                      color: s.details ? 'var(--text2)' : 'var(--text3)',
+                      fontSize: '13px',
+                      fontWeight: s.details ? 500 : 700,
+                      lineHeight: 1.65,
+                      whiteSpace: 'pre-wrap',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}>
+                      {s.details || (language === 'he' ? 'אין פירוט אסטרטגיה עדיין' : 'No strategy details yet')}
+                    </div>
                   </div>
 
                 </div>
@@ -697,14 +715,6 @@ export default function StrategiesPage() {
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={tr.strategyNamePlaceholder} />
               </div>
 
-              {/* Plan */}
-              <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                  {tr.strategyPlan}
-                </label>
-                <textarea value={form.plan} onChange={e => setForm(p => ({ ...p, plan: e.target.value }))} placeholder={tr.strategyPlanPlaceholder} rows={3} style={{ resize: 'vertical' }} />
-              </div>
-
               {/* Details */}
               <div style={{ marginBottom: '18px' }}>
                 <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
@@ -731,6 +741,55 @@ export default function StrategiesPage() {
       )}
 
       <style>{`
+        .strat-hover-details {
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transform: translateY(-6px);
+          pointer-events: none;
+          margin-top: 0;
+          padding: 0 14px;
+          border: 1px solid transparent;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.025);
+          transition:
+            max-height 0.28s ease,
+            opacity 0.2s ease,
+            transform 0.24s ease,
+            margin-top 0.24s ease,
+            padding 0.24s ease,
+            border-color 0.24s ease,
+            background 0.24s ease;
+        }
+
+        .strat-card:hover .strat-hover-details {
+          max-height: 150px;
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+          margin-top: 14px;
+          padding: 13px 14px;
+          border-color: rgba(15, 141, 99, 0.18);
+          background: linear-gradient(135deg, rgba(15, 141, 99, 0.08), rgba(255, 255, 255, 0.02));
+        }
+
+        .strat-hover-edit {
+          opacity: 0;
+          transform: translateY(-2px);
+          transition: opacity 0.18s ease, transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .strat-card:hover .strat-hover-edit,
+        .strat-hover-edit:focus-visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .strat-hover-edit:hover {
+          background: rgba(15, 141, 99, 0.2) !important;
+          border-color: rgba(45, 217, 151, 0.45) !important;
+        }
+
         @media (max-width: 768px) {
           .strat-grid {
             display: grid !important;
@@ -756,6 +815,20 @@ export default function StrategiesPage() {
           .strat-expanded .strat-pnl-big { font-size: 21px !important; }
           .strat-expanded .strat-detail-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .strat-expanded .strat-plan-details { grid-template-columns: 1fr !important; }
+          .strat-hover-details {
+            max-height: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+            pointer-events: auto !important;
+            margin-top: 14px !important;
+            padding: 13px 14px !important;
+            border-color: rgba(15, 141, 99, 0.18) !important;
+            background: linear-gradient(135deg, rgba(15, 141, 99, 0.08), rgba(255, 255, 255, 0.02)) !important;
+          }
+          .strat-hover-edit {
+            opacity: 1 !important;
+            transform: none !important;
+          }
         }
       `}</style>
     </div>
