@@ -702,24 +702,27 @@ export default function SettingsPage() {
               <>
               {!isYearlyPlan && (
               <button
+                className="yearly-switch-cta"
                 onClick={() => setShowYearlySwitchConfirm(true)}
                 disabled={Boolean(resumingPro)}
                 style={{ width: '100%', minHeight: '66px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px 14px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.10)', marginTop: 'auto', marginBottom: '10px' }}
-                onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(245,158,11,0.24), inset 0 1px 0 rgba(255,255,255,0.14)' } }}
-                onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.10)' }}
               >
-                <span style={{ display: 'grid', gap: '4px', textAlign: language === 'he' ? 'right' : 'left' }}>
-                  <span style={{ fontSize: '14px', fontWeight: '950', lineHeight: 1.1 }}>
+                <span className="yearly-switch-sheen" />
+                <span className="yearly-switch-icon">
+                  <Icon name="calendar_month" size={20} color="#fff" />
+                </span>
+                <span className="yearly-switch-copy" style={{ textAlign: language === 'he' ? 'right' : 'left' }}>
+                  <span className="yearly-switch-title">
                     {resumingPro === 'yearly'
                       ? (language === 'he' ? 'מעביר לשנתי...' : 'Switching to yearly...')
-                      : (language === 'he' ? 'החלף למנוי שנתי' : 'Switch to yearly')}
+                      : (language === 'he' ? 'עבור לשנתי וחסוך' : 'Switch yearly and save')}
                   </span>
-                  <span style={{ fontSize: '11px', color: isLight ? '#92400e' : 'rgba(245,158,11,0.78)', fontWeight: '750', lineHeight: 1.25 }}>
-                    {language === 'he' ? 'חיוב יחסי עכשיו • $199/שנה בחידוש הבא' : 'Prorated now • $199/yr next renewal'}
+                  <span className="yearly-switch-subtitle">
+                    {language === 'he' ? 'חיוב יחסי עכשיו • $199 לשנה בחידוש הבא' : 'Prorated now • $199/year next renewal'}
                   </span>
                 </span>
-                <span style={{ minWidth: '34px', height: '34px', borderRadius: '12px', background: 'rgba(245,158,11,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="calendar_month" size={18} color="#f59e0b" />
+                <span className="yearly-switch-badge">
+                  {language === 'he' ? 'חסוך $41' : 'Save $41'}
                 </span>
               </button>
               )}
@@ -921,9 +924,110 @@ export default function SettingsPage() {
           color: #fff !important;
           text-shadow: 0 2px 10px rgba(0,0,0,0.22);
         }
+        .yearly-switch-cta {
+          position: relative !important;
+          isolation: isolate;
+          overflow: hidden !important;
+          min-height: 92px !important;
+          border-radius: 22px !important;
+          padding: 18px 18px !important;
+          background:
+            radial-gradient(circle at 18% 0%, rgba(255,255,255,0.34), transparent 26%),
+            radial-gradient(circle at 92% 110%, rgba(251,191,36,0.42), transparent 34%),
+            linear-gradient(135deg, #7a4a08 0%, #b86f05 42%, #f59e0b 100%) !important;
+          border: 1px solid rgba(251,191,36,0.82) !important;
+          color: #fff !important;
+          box-shadow:
+            0 20px 42px rgba(245,158,11,0.28),
+            0 0 0 1px rgba(255,255,255,0.05) inset,
+            inset 0 1px 0 rgba(255,255,255,0.26) !important;
+          transform: translateY(0);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+        }
+        .yearly-switch-cta:hover:not(:disabled) {
+          transform: translateY(-4px) scale(1.012) !important;
+          filter: saturate(1.12) brightness(1.05);
+          box-shadow:
+            0 28px 54px rgba(245,158,11,0.38),
+            0 0 0 1px rgba(255,255,255,0.09) inset,
+            inset 0 1px 0 rgba(255,255,255,0.32) !important;
+        }
+        .yearly-switch-cta:disabled {
+          cursor: wait !important;
+          opacity: 0.68 !important;
+          transform: none !important;
+        }
+        .yearly-switch-sheen {
+          position: absolute;
+          inset: -1px auto -1px -46%;
+          width: 38%;
+          transform: skewX(-18deg);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+          opacity: 0;
+          pointer-events: none;
+        }
+        .yearly-switch-cta:hover:not(:disabled) .yearly-switch-sheen {
+          animation: yearlySheen 0.78s ease forwards;
+        }
+        .yearly-switch-icon {
+          flex: 0 0 auto;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          background: rgba(255,255,255,0.18);
+          border: 1px solid rgba(255,255,255,0.22);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+        }
+        .yearly-switch-icon svg {
+          stroke: #fff !important;
+          filter: drop-shadow(0 8px 14px rgba(0,0,0,0.24));
+        }
+        .yearly-switch-copy {
+          display: grid;
+          gap: 5px;
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .yearly-switch-title {
+          color: #fff;
+          font-size: 16px;
+          font-weight: 950;
+          line-height: 1.05;
+          text-shadow: 0 2px 12px rgba(0,0,0,0.22);
+        }
+        .yearly-switch-subtitle {
+          color: rgba(255,255,255,0.82);
+          font-size: 11.5px;
+          font-weight: 850;
+          line-height: 1.25;
+        }
+        .yearly-switch-badge {
+          flex: 0 0 auto;
+          border-radius: 999px;
+          padding: 6px 10px;
+          color: #78350f;
+          background: rgba(255,255,255,0.88);
+          border: 1px solid rgba(255,255,255,0.62);
+          font-size: 10.5px;
+          font-weight: 950;
+          box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+          white-space: nowrap;
+        }
         @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
-        @media (max-width: 520px) { .plan-choice-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 520px) {
+          .plan-choice-grid { grid-template-columns: 1fr; }
+          .yearly-switch-cta { align-items: stretch !important; }
+          .yearly-switch-badge { align-self: center; }
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes yearlySheen {
+          0% { left: -46%; opacity: 0; }
+          18% { opacity: 1; }
+          100% { left: 118%; opacity: 0; }
+        }
       `}</style>
     </div>
   )
