@@ -515,7 +515,7 @@ export default function SettingsPage() {
             ? isTemporaryPlan ? (isLight ? '#fff1f2' : 'rgba(239,68,68,0.04)') : (isLight ? '#fffbeb' : 'rgba(245,158,11,0.04)')
             : glass.background,
         }}>
-          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isTemporaryPlan ? 'rgba(239,68,68,0.09)' : isPro ? 'rgba(245,158,11,0.08)' : 'rgba(15,141,99,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: 0, insetInlineStart: 0, insetInlineEnd: 0, height: '1px', background: isTemporaryPlan ? 'rgba(239,68,68,0.34)' : isPro ? 'rgba(245,158,11,0.34)' : 'rgba(15,141,99,0.24)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isTemporaryPlan ? 'rgba(239,68,68,0.15)' : isPro ? 'rgba(245,158,11,0.15)' : 'rgba(15,141,99,0.15)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.3)' : isPro ? 'rgba(245,158,11,0.3)' : 'rgba(15,141,99,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -532,13 +532,13 @@ export default function SettingsPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)',
             border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.26)' : isPro ? 'rgba(245,158,11,0.25)' : 'rgba(15,141,99,0.2)'}`,
-            borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
+            borderRadius: '12px', padding: '12px 14px', marginBottom: '14px',
           }}>
             <div>
               <div style={{ fontSize: '12px', color: isTemporaryPlan ? '#ef4444' : isPro ? 'rgba(245,158,11,0.7)' : 'rgba(15,141,99,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
-              <div style={{ fontSize: '23px', fontWeight: '900', color: displayPlanAccent, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '22px', fontWeight: '900', color: displayPlanAccent, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {displayPlanNameLabel}
                 {isPro && !isTemporaryPlan && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {planPeriodLabel}</span>}
               </div>
@@ -546,27 +546,27 @@ export default function SettingsPage() {
                 {displayPlanPriceLabel}
               </div>
             </div>
-            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isTemporaryPlan ? 'rgba(239,68,68,0.12)' : isPro ? 'rgba(245,158,11,0.12)' : 'rgba(15,141,99,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={displayPlanAccent} />
+            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.18)' : isPro ? 'rgba(245,158,11,0.18)' : 'rgba(15,141,99,0.14)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={isPro ? 'bolt' : 'verified'} size={19} color={displayPlanAccent} />
             </div>
           </div>
 
           {/* CTA — pinned to bottom for symmetric card heights */}
           {isPro && (
-            <div style={{ display: 'grid', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gap: '8px', marginBottom: '14px' }}>
               <div style={{
                 background: isLight ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.18)',
                 border: `1px solid ${isCanceledButActive ? 'rgba(239,68,68,0.22)' : 'rgba(245,158,11,0.22)'}`,
-                borderRadius: '14px',
-                padding: '13px 14px',
+                borderRadius: '12px',
+                padding: '10px 12px',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {displayPrimaryBillingLabel}
                   </span>
                   <Icon name={isCanceledButActive ? 'event_busy' : 'event_repeat'} size={15} color={isCanceledButActive ? '#ef4444' : '#f59e0b'} />
                 </div>
-                <div style={{ fontSize: '15px', color: 'var(--text)', fontWeight: '850', lineHeight: 1.35 }}>
+                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '850', lineHeight: 1.35 }}>
                   {formatBillingDate(primaryBillingDate)}
                 </div>
               </div>
@@ -574,16 +574,16 @@ export default function SettingsPage() {
               <div style={{
                 background: isLight ? 'rgba(255,255,255,0.56)' : 'rgba(255,255,255,0.035)',
                 border: '1px solid var(--border)',
-                borderRadius: '14px',
-                padding: '13px 14px',
+                borderRadius: '12px',
+                padding: '10px 12px',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {displayRemainingLabel}
                   </span>
                   <Icon name="timer" size={15} color="#0f8d63" />
                 </div>
-                <div dir={language === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: '22px', color: '#0f8d63', fontWeight: '950', lineHeight: 1 }}>
+                <div dir={language === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: '20px', color: '#0f8d63', fontWeight: '950', lineHeight: 1 }}>
                   {syncingBilling
                     ? (language === 'he' ? 'מעדכן...' : 'Updating...')
                     : formatRemainingTime(primaryBillingDate)}
@@ -928,29 +928,38 @@ export default function SettingsPage() {
           position: relative !important;
           isolation: isolate;
           overflow: hidden !important;
-          min-height: 92px !important;
-          border-radius: 22px !important;
-          padding: 18px 18px !important;
+          min-height: 76px !important;
+          border-radius: 16px !important;
+          padding: 14px 16px !important;
           background:
-            radial-gradient(circle at 18% 0%, rgba(255,255,255,0.34), transparent 26%),
-            radial-gradient(circle at 92% 110%, rgba(251,191,36,0.42), transparent 34%),
-            linear-gradient(135deg, #7a4a08 0%, #b86f05 42%, #f59e0b 100%) !important;
-          border: 1px solid rgba(251,191,36,0.82) !important;
+            linear-gradient(90deg, rgba(255,255,255,0.13), transparent 28%),
+            linear-gradient(135deg, #8a560a 0%, #c27803 56%, #e99a0a 100%) !important;
+          border: 1px solid rgba(251,191,36,0.62) !important;
           color: #fff !important;
           box-shadow:
-            0 20px 42px rgba(245,158,11,0.28),
+            0 14px 30px rgba(245,158,11,0.2),
             0 0 0 1px rgba(255,255,255,0.05) inset,
-            inset 0 1px 0 rgba(255,255,255,0.26) !important;
+            inset 0 1px 0 rgba(255,255,255,0.18) !important;
           transform: translateY(0);
           transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
         }
+        .yearly-switch-cta::before {
+          content: "";
+          position: absolute;
+          inset-inline-start: 0;
+          top: 0;
+          bottom: 0;
+          width: 5px;
+          background: rgba(255,255,255,0.58);
+          opacity: 0.86;
+        }
         .yearly-switch-cta:hover:not(:disabled) {
-          transform: translateY(-4px) scale(1.012) !important;
-          filter: saturate(1.12) brightness(1.05);
+          transform: translateY(-2px) !important;
+          filter: saturate(1.06) brightness(1.03);
           box-shadow:
-            0 28px 54px rgba(245,158,11,0.38),
+            0 20px 38px rgba(245,158,11,0.28),
             0 0 0 1px rgba(255,255,255,0.09) inset,
-            inset 0 1px 0 rgba(255,255,255,0.32) !important;
+            inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }
         .yearly-switch-cta:disabled {
           cursor: wait !important;
@@ -959,10 +968,10 @@ export default function SettingsPage() {
         }
         .yearly-switch-sheen {
           position: absolute;
-          inset: -1px auto -1px -46%;
-          width: 38%;
-          transform: skewX(-18deg);
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+          inset: 0 auto 0 -34%;
+          width: 24%;
+          transform: skewX(-14deg);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
           opacity: 0;
           pointer-events: none;
         }
@@ -971,11 +980,11 @@ export default function SettingsPage() {
         }
         .yearly-switch-icon {
           flex: 0 0 auto;
-          width: 48px;
-          height: 48px;
-          border-radius: 16px;
-          background: rgba(255,255,255,0.18);
-          border: 1px solid rgba(255,255,255,0.22);
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.13);
+          border: 1px solid rgba(255,255,255,0.16);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -993,27 +1002,26 @@ export default function SettingsPage() {
         }
         .yearly-switch-title {
           color: #fff;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 950;
           line-height: 1.05;
           text-shadow: 0 2px 12px rgba(0,0,0,0.22);
         }
         .yearly-switch-subtitle {
           color: rgba(255,255,255,0.82);
-          font-size: 11.5px;
+          font-size: 11px;
           font-weight: 850;
           line-height: 1.25;
         }
         .yearly-switch-badge {
           flex: 0 0 auto;
-          border-radius: 999px;
-          padding: 6px 10px;
-          color: #78350f;
-          background: rgba(255,255,255,0.88);
-          border: 1px solid rgba(255,255,255,0.62);
-          font-size: 10.5px;
+          border-radius: 10px;
+          padding: 5px 8px;
+          color: #fff;
+          background: rgba(255,255,255,0.12);
+          border: 1px solid rgba(255,255,255,0.2);
+          font-size: 10px;
           font-weight: 950;
-          box-shadow: 0 10px 24px rgba(0,0,0,0.16);
           white-space: nowrap;
         }
         @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
