@@ -410,9 +410,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
+  const [trialChoiceLoading, setTrialChoiceLoading] = useState<'pro' | 'free' | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [authedUser, setAuthedUser] = useState<any>(null)
-  const { language, subscriptionLoading } = useApp()
+  const { language, subscriptionLoading, isTemporaryPro, trialExpired, subscriptionTrialEndsAt, upgradeToPro, chooseFreePlan } = useApp()
   const { portfoliosLoaded } = usePortfolio()
   const router = useRouter()
   const pathname = usePathname()
@@ -508,10 +509,33 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [ready, authedUser?.id, authedUser?.created_at])
 
   const sidebarWidth = sidebarCollapsed ? '72px' : '210px'
+  const trialEndsLabel = subscriptionTrialEndsAt
+    ? new Date(subscriptionTrialEndsAt).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: 'numeric', month: 'long' })
+    : null
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/auth/login')
+  }
+
+  const handleTrialUpgrade = async () => {
+    setTrialChoiceLoading('pro')
+    try {
+      await upgradeToPro('yearly')
+    } finally {
+      setTrialChoiceLoading(null)
+    }
+  }
+
+  const handleChooseFree = async () => {
+    setTrialChoiceLoading('free')
+    try {
+      await chooseFreePlan()
+      localStorage.setItem('tradeix-show-downgrade', '1')
+      router.replace('/dashboard')
+    } finally {
+      setTrialChoiceLoading(null)
+    }
   }
 
   if (!ready) {
@@ -522,6 +546,46 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           <div style={{ width: '44px', height: '44px', border: '3px solid rgba(15,141,99,0.15)', borderTopColor: '#0f8d63', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
+
+  if (trialExpired) {
+    return (
+      <div dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px', fontFamily: 'Heebo, sans-serif', position: 'relative', overflow: 'hidden' }}>
+        <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
+        <div style={{ width: '100%', maxWidth: '760px', position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))', border: '1px solid rgba(245,158,11,0.24)', borderRadius: '28px', padding: '34px', boxShadow: '0 34px 90px rgba(0,0,0,0.44)', textAlign: 'center' }}>
+          <div style={{ width: '74px', height: '74px', borderRadius: '24px', background: 'rgba(245,158,11,0.13)', border: '1px solid rgba(245,158,11,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="workspace_premium" size={36} color="#f59e0b" />
+          </div>
+          <div style={{ fontSize: '12px', fontWeight: 900, color: '#f59e0b', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '10px' }}>
+            {language === 'he' ? 'תקופת ניסיון הסתיימה' : 'Trial ended'}
+          </div>
+          <h1 style={{ margin: '0 0 12px', fontSize: 'clamp(28px, 5vw, 44px)', lineHeight: 1.05, letterSpacing: '-0.03em', fontWeight: 950 }}>
+            {language === 'he' ? 'רוצה להמשיך עם PRO?' : 'Want to keep PRO?'}
+          </h1>
+          <p style={{ margin: '0 auto 26px', maxWidth: '560px', color: 'var(--text2)', fontSize: '15px', lineHeight: 1.7, fontWeight: 650 }}>
+            {language === 'he'
+              ? 'קיבלת 5 ימים של גישה מלאה ל-PRO. כדי להמשיך להשתמש במערכת, בחר אם להשתדרג ל-PRO או לחזור למנוי החינמי.'
+              : 'You had 5 days of full PRO access. To continue using the app, choose whether to upgrade to PRO or switch back to the free plan.'}
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
+            <button onClick={handleTrialUpgrade} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)' }}>
+              <Icon name="rocket_launch" size={24} color="#fff" />
+              <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'pro' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'שדרג ל-PRO' : 'Upgrade to PRO')}</span>
+              <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? 'כל הכלים נשארים פתוחים' : 'Keep every tool unlocked'}</span>
+            </button>
+            <button onClick={handleChooseFree} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px' }}>
+              <Icon name="verified" size={24} color="#0f8d63" />
+              <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'free' ? (language === 'he' ? 'מעביר לחינמי...' : 'Switching...') : (language === 'he' ? 'חזור לחינמי' : 'Switch to Free')}</span>
+              <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 800 }}>{language === 'he' ? 'ממשיך עם הגבלות החבילה החינמית' : 'Continue with free-plan limits'}</span>
+            </button>
+          </div>
+          <button onClick={handleSignOut} style={{ background: 'transparent', border: 'none', color: 'var(--text3)', fontFamily: 'Heebo, sans-serif', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
+            {language === 'he' ? 'התנתק' : 'Sign out'}
+          </button>
+        </div>
+        <style>{`@keyframes gridDrift { from { background-position: 0 0; } to { background-position: 120px 80px; } }`}</style>
       </div>
     )
   }
@@ -576,7 +640,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               {language === 'he' ? 'ברוכים הבאים ל-UPLOTRADE' : 'Welcome to UPLOTRADE'}
             </div>
             <div style={{ fontSize: '14px', color: 'rgba(229,226,225,0.56)', lineHeight: 1.75, marginBottom: '24px' }}>
-              {language === 'he'
+              {isTemporaryPro ? (language === 'he'
+                ? `ברוך הבא. פתחנו לך PRO זמני ל-5 ימים${trialEndsLabel ? `, עד ${trialEndsLabel}` : ''}, כדי שתרגיש את כל היכולות לפני ההחלטה.`
+                : `Welcome. You have temporary PRO access for 5 days${trialEndsLabel ? `, until ${trialEndsLabel}` : ''}, so you can feel the full product before deciding.`) : language === 'he'
                 ? 'בהצלחה במסע המסחר שלך. כרגע אתה במנוי החינמי, ואפשר להתחיל לעבוד מיד.'
                 : 'Good luck on your trading journey. You are currently on the free plan and can start right away.'}
             </div>

@@ -263,6 +263,7 @@ export default function SettingsPage() {
   const renewalDate = billingProfile?.subscription_renews_at || null
   const endsDate = billingProfile?.subscription_ends_at || null
   const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
+  const isTemporaryPlan = billingProfile?.subscription_status === 'temporary_trial'
   const isCanceledButActive = billingProfile?.subscription_status === 'cancelled' && Boolean(endsDate)
   const primaryBillingDate = isCanceledButActive ? endsDate : (renewalDate || trialEndsDate || endsDate)
   const isYearlyPlan = billingProfile?.subscription_billing_period === 'yearly'

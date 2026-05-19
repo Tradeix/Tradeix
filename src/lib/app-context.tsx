@@ -6,13 +6,14 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
 type SubscriptionTier = 'free' | 'pro'
+type BillingPeriod = 'monthly' | 'yearly'
 type CancelSubscriptionResult = {
   subscription?: {
     status?: string | null
     renewsAt?: string | null
     endsAt?: string | null
     trialEndsAt?: string | null
-    billingPeriod?: 'monthly' | 'yearly'
+    billingPeriod?: BillingPeriod
     variantId?: string | null
     portalUpdateUrl?: string | null
   }
@@ -42,8 +43,13 @@ type AppContextType = {
   setLanguage: (l: Language) => void
   subscription: SubscriptionTier
   isPro: boolean
+  isTemporaryPro: boolean
+  trialExpired: boolean
+  subscriptionStatus: string | null
+  subscriptionTrialEndsAt: string | null
   subscriptionLoading: boolean
   upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<UpgradeSubscriptionResult | void>
+  chooseFreePlan: () => Promise<void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
   resumeSubscription: (billingPeriod?: 'monthly' | 'yearly') => Promise<CancelSubscriptionResult>
 }
@@ -51,8 +57,9 @@ type AppContextType = {
 const AppContext = createContext<AppContextType>({
   theme: 'dark', language: 'en',
   setTheme: () => {}, setLanguage: () => {},
-  subscription: 'free', isPro: false, subscriptionLoading: true,
-  upgradeToPro: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
+  subscription: 'free', isPro: false, isTemporaryPro: false, trialExpired: false,
+  subscriptionStatus: null, subscriptionTrialEndsAt: null, subscriptionLoading: true,
+  upgradeToPro: async () => {}, chooseFreePlan: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
 })
 
 function isLanguage(value: string | null): value is Language {
@@ -181,8 +188,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [language, setLanguageState] = useState<Language>('en')
   const [subscription, setSubscription] = useState<SubscriptionTier>('free')
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
+  const [subscriptionTrialEndsAt, setSubscriptionTrialEndsAt] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const supabase = createClient()
+
+  function applySubscriptionProfile(profile: any) {
+    const tier = (profile?.subscription_tier as SubscriptionTier) || 'free'
+    setSubscription(tier)
+    setSubscriptionStatus(profile?.subscription_status || null)
+    setSubscriptionTrialEndsAt(profile?.subscription_trial_ends_at || null)
+  }
 
   // Global ESC-to-close handler for every modal in the app. Modals already
   // attach their close action to the overlay's onClick, so we just synthesize
@@ -220,22 +236,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { setSubscriptionLoading(false); return }
-      supabase.from('profiles')
-        .select('language, subscription_tier, subscription_status')
+      await fetch('/api/profile/ensure', { method: 'POST' }).catch(() => null)
+
+      const { data } = await supabase.from('profiles')
+        .select('language, subscription_tier, subscription_status, subscription_trial_ends_at')
         .eq('id', user.id).single()
-        .then(({ data }) => {
-          if (!data) { setSubscriptionLoading(false); return }
-          const profileLang = isLanguage(data.language) ? data.language : null
-          const l = profileLang || initialLang
-          setLanguageState(l)
-          applyLanguage(l)
-          localStorage.setItem('tradeix-lang', l)
-          const tier = (data.subscription_tier as SubscriptionTier) || 'free'
-          setSubscription(tier)
-          setSubscriptionLoading(false)
-        })
+
+      if (data) {
+        const profileLang = isLanguage(data.language) ? data.language : null
+        const l = profileLang || initialLang
+        setLanguageState(l)
+        applyLanguage(l)
+        localStorage.setItem('tradeix-lang', l)
+        applySubscriptionProfile(data)
+      }
+
+      const response = await fetch('/api/billing/status', { cache: 'no-store' }).catch(() => null)
+      const payload = response ? await response.json().catch(() => null) : null
+      if (payload?.profile) applySubscriptionProfile(payload.profile)
+      setSubscriptionLoading(false)
     })
   }, [])
 
@@ -271,6 +292,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     if (payload?.subscription) {
       setSubscription('pro')
+      setSubscriptionStatus(payload.subscription.status || 'active')
+      setSubscriptionTrialEndsAt(payload.subscription.trialEndsAt || null)
       return { reusedSubscription: Boolean(payload.reusedSubscription) }
     }
 
@@ -285,6 +308,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         eventHandler: event => {
           if (event.event === 'Checkout.Success') {
             setSubscription('pro')
+            setSubscriptionStatus('active')
+            setSubscriptionTrialEndsAt(null)
             window.location.assign('/dashboard?billing=success')
           }
         },
@@ -315,6 +340,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return payload || {}
   }
 
+  async function chooseFreePlan() {
+    if (!isSupabaseConfigured) {
+      setSubscription('free')
+      setSubscriptionStatus(null)
+      setSubscriptionTrialEndsAt(null)
+      return
+    }
+
+    const response = await fetch('/api/billing/choose-free', { method: 'POST' })
+    const payload = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new Error(payload?.error || 'Could not switch to free plan')
+    }
+
+    applySubscriptionProfile(payload?.profile || { subscription_tier: 'free' })
+  }
+
   async function resumeSubscription(billingPeriod: 'monthly' | 'yearly' = 'monthly') {
     if (!isSupabaseConfigured) throw new Error('Supabase is not configured')
 
@@ -330,16 +373,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     setSubscription('pro')
+    setSubscriptionStatus(payload?.subscription?.status || 'active')
+    setSubscriptionTrialEndsAt(payload?.subscription?.trialEndsAt || null)
     return payload || {}
   }
 
-  const isPro = subscription === 'pro'
+  const trialEndsTime = subscriptionTrialEndsAt ? new Date(subscriptionTrialEndsAt).getTime() : NaN
+  const isTemporaryPro = subscription === 'pro'
+    && subscriptionStatus === 'temporary_trial'
+    && Number.isFinite(trialEndsTime)
+    && trialEndsTime > Date.now()
+  const trialExpired = subscriptionStatus === 'trial_expired'
+    || (subscription === 'pro' && subscriptionStatus === 'temporary_trial' && (!Number.isFinite(trialEndsTime) || trialEndsTime <= Date.now()))
+  const isPro = subscription === 'pro' && !trialExpired
 
   return (
     <AppContext.Provider value={{
       theme, language, setTheme, setLanguage,
-      subscription, isPro, subscriptionLoading,
-      upgradeToPro, cancelSubscription, resumeSubscription,
+      subscription, isPro, isTemporaryPro, trialExpired, subscriptionStatus, subscriptionTrialEndsAt, subscriptionLoading,
+      upgradeToPro, chooseFreePlan, cancelSubscription, resumeSubscription,
     }}>
       {children}
     </AppContext.Provider>

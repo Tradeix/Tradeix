@@ -4,24 +4,55 @@ import { createClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
 
-function profileFromUser(user: any) {
-  return {
+const TRIAL_DAYS = 5
+const NEW_USER_GRACE_MS = 24 * 60 * 60 * 1000
+
+function trialEndsAt() {
+  return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
+}
+
+function isRecentTimestamp(value: unknown) {
+  const createdAt = typeof value === 'string' ? new Date(value).getTime() : NaN
+  return Number.isFinite(createdAt) && Date.now() - createdAt <= NEW_USER_GRACE_MS
+}
+
+function canGrantSignupTrial(profile: any, user: any) {
+  if (!isRecentTimestamp(user.created_at) && !isRecentTimestamp(profile?.created_at)) return false
+  if (!profile) return true
+  if (profile.lemon_squeezy_subscription_id) return false
+  if (profile.subscription_trial_ends_at) return false
+  const tier = profile.subscription_tier || 'free'
+  const status = profile.subscription_status || 'free'
+  return tier === 'free' && (status === 'free' || status === null)
+}
+
+function profileFromUser(user: any, grantTrial: boolean) {
+  const profile: Record<string, unknown> = {
     id: user.id,
     email: user.email || null,
     full_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || null,
     avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
   }
+
+  if (grantTrial) {
+    profile.subscription_tier = 'pro'
+    profile.subscription_status = 'temporary_trial'
+    profile.subscription_trial_ends_at = trialEndsAt()
+    profile.subscription_updated_at = new Date().toISOString()
+  }
+
+  return profile
 }
 
 async function upsertProfile(client: ReturnType<typeof createAdminClient> | ReturnType<typeof createClient>, profile: Record<string, unknown>) {
-  const fullResult = await client.from('profiles').upsert(profile, { onConflict: 'id', ignoreDuplicates: true })
+  const fullResult = await client.from('profiles').upsert(profile, { onConflict: 'id' })
   if (!fullResult.error) return { error: null, fallback: false }
 
   // If an optional profile column was removed in Supabase, still create the
   // required profile row so billing/profile lookups have a user record.
   const minimalResult = await client
     .from('profiles')
-    .upsert({ id: profile.id }, { onConflict: 'id', ignoreDuplicates: true })
+    .upsert({ id: profile.id }, { onConflict: 'id' })
 
   return { error: minimalResult.error, fallback: true, originalError: fullResult.error.message }
 }
@@ -34,28 +65,23 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const profile = profileFromUser(user)
+  const client = isSupabaseAdminConfigured ? createAdminClient() : supabase
+  const { data: existingProfile } = await client
+    .from('profiles')
+    .select('created_at, subscription_tier, subscription_status, subscription_trial_ends_at, lemon_squeezy_subscription_id')
+    .eq('id', user.id)
+    .maybeSingle()
 
-  if (isSupabaseAdminConfigured) {
-    const admin = createAdminClient()
-    const result = await upsertProfile(admin, profile)
-    if (result.error) {
-      return NextResponse.json({
-        error: result.error.message,
-        originalError: result.originalError,
-      }, { status: 500 })
-    }
+  const grantTrial = canGrantSignupTrial(existingProfile, user)
+  const profile = profileFromUser(user, grantTrial)
+  const result = await upsertProfile(client, profile)
 
-    return NextResponse.json({ ok: true, fallback: result.fallback })
-  } else {
-    const result = await upsertProfile(supabase, profile)
-    if (result.error) {
-      return NextResponse.json({
-        error: result.error.message,
-        originalError: result.originalError,
-      }, { status: 500 })
-    }
-
-    return NextResponse.json({ ok: true, fallback: result.fallback })
+  if (result.error) {
+    return NextResponse.json({
+      error: result.error.message,
+      originalError: result.originalError,
+    }, { status: 500 })
   }
+
+  return NextResponse.json({ ok: true, fallback: result.fallback, trialGranted: grantTrial })
 }

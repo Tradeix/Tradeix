@@ -28,6 +28,10 @@ function getBillingPeriod(variantId: string | null) {
   return null
 }
 
+function isTemporaryTrial(profile: any) {
+  return profile.subscription_status === 'temporary_trial' && !profile.lemon_squeezy_subscription_id
+}
+
 export async function GET() {
   const supabase = createClient()
   const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -86,6 +90,20 @@ export async function GET() {
   let nextProfile = profile
   const apiKey = process.env.LEMONSQUEEZY_API_KEY
   const subscriptionId = profile.lemon_squeezy_subscription_id ? String(profile.lemon_squeezy_subscription_id) : null
+
+  if (isTemporaryTrial(profile)) {
+    const trialEndsAt = profile.subscription_trial_ends_at ? new Date(profile.subscription_trial_ends_at).getTime() : NaN
+    const trialExpired = !Number.isFinite(trialEndsAt) || trialEndsAt <= Date.now()
+
+    if (trialExpired && isSupabaseAdminConfigured) {
+      const admin = createAdminClient()
+      await admin.from('profiles').update({
+        subscription_status: 'trial_expired',
+        subscription_updated_at: new Date().toISOString(),
+      }).eq('id', user.id)
+      nextProfile = { ...nextProfile, subscription_status: 'trial_expired' }
+    }
+  }
 
   if (apiKey && subscriptionId && isSupabaseAdminConfigured) {
     const response = await fetch(`https://api.lemonsqueezy.com/v1/subscriptions/${subscriptionId}`, {
