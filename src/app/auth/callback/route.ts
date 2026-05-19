@@ -3,19 +3,12 @@ import { createAdminClient, isSupabaseAdminConfigured } from '@/lib/supabase/adm
 import { NextResponse } from 'next/server'
 
 const TRIAL_DAYS = 5
-const NEW_USER_GRACE_MS = 24 * 60 * 60 * 1000
 
 function getTrialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function isRecentTimestamp(value: unknown) {
-  const createdAt = typeof value === 'string' ? new Date(value).getTime() : NaN
-  return Number.isFinite(createdAt) && Date.now() - createdAt <= NEW_USER_GRACE_MS
-}
-
-function canGrantSignupTrial(profile: any, user: any) {
-  if (!isRecentTimestamp(user.created_at) && !isRecentTimestamp(profile?.created_at)) return false
+function canGrantSignupTrial(profile: any) {
   if (!profile) return true
   if (profile.lemon_squeezy_subscription_id) return false
   if (profile.subscription_trial_ends_at) return false
@@ -51,7 +44,7 @@ export async function GET(request: Request) {
 
         const profile = {
           ...baseProfile,
-          ...(canGrantSignupTrial(existingProfile, user) ? {
+          ...(canGrantSignupTrial(existingProfile) ? {
             subscription_tier: 'pro',
             subscription_status: 'temporary_trial',
             subscription_trial_ends_at: getTrialEndsAt(),
