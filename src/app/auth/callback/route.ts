@@ -10,7 +10,6 @@ function getTrialEndsAt() {
 
 function hasPaidSubscription(profile: any) {
   if (!profile) return false
-  if (profile.lemon_squeezy_subscription_id) return true
   return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
 }
 

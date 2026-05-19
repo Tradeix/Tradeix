@@ -35,12 +35,25 @@ create policy "Users can insert own profile"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url)
+  insert into public.profiles (
+    id,
+    email,
+    full_name,
+    avatar_url,
+    subscription_tier,
+    subscription_status,
+    subscription_trial_ends_at,
+    subscription_updated_at
+  )
   values (
     new.id,
     new.email,
     new.raw_user_meta_data->>'full_name',
-    new.raw_user_meta_data->>'avatar_url'
+    new.raw_user_meta_data->>'avatar_url',
+    'pro',
+    'temporary_trial',
+    now() + interval '5 days',
+    now()
   );
   return new;
 end;

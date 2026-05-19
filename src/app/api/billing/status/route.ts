@@ -45,7 +45,6 @@ function isTemporaryTrial(profile: any) {
 
 function hasPaidSubscription(profile: any) {
   if (!profile) return false
-  if (profile.lemon_squeezy_subscription_id) return true
   return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
 }
 
@@ -56,10 +55,10 @@ function trialEndsAt() {
 function shouldGrantSignupTrial(profile: any) {
   if (hasPaidSubscription(profile)) return false
   if (!profile) return true
-  if (profile.subscription_trial_ends_at) return false
   const tier = profile.subscription_tier || 'free'
   const status = profile.subscription_status || 'free'
-  return tier === 'free' && (status === 'free' || status === 'trial_declined' || status === null)
+  if (status === 'temporary_trial' || status === 'trial_expired' || status === 'free_after_trial') return false
+  return tier === 'free' || status === 'free' || status === 'trial_declined' || status === null
 }
 
 export async function GET() {

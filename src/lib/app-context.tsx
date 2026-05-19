@@ -241,7 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await fetch('/api/profile/ensure', { method: 'POST' }).catch(() => null)
 
       const { data } = await supabase.from('profiles')
-        .select('language, subscription_tier, subscription_status, subscription_trial_ends_at')
+        .select('language')
         .eq('id', user.id).single()
 
       if (data) {
@@ -250,7 +250,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLanguageState(l)
         applyLanguage(l)
         localStorage.setItem('tradeix-lang', l)
-        applySubscriptionProfile(data)
       }
 
       const response = await fetch('/api/billing/status', { cache: 'no-store' }).catch(() => null)
