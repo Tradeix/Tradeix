@@ -605,7 +605,7 @@ export default function SettingsPage() {
                 <button
                   onClick={() => handleTrialUpgrade('monthly')}
                   disabled={Boolean(upgradingTrial)}
-                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', border: '1px solid rgba(248,113,113,0.65)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(239,68,68,0.26)' }}
+                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, #0f8d63 0%, #12a875 100%)', border: '1px solid rgba(31,210,145,0.55)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.28)' }}
                 >
                   <Icon name="bolt" size={18} color="#fff" />
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
