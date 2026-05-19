@@ -17,7 +17,7 @@ export async function POST() {
     subscription_status: 'trial_declined',
     subscription_renews_at: null,
     subscription_ends_at: null,
-    subscription_trial_ends_at: null,
+    subscription_trial_ends_at: new Date().toISOString(),
     subscription_updated_at: new Date().toISOString(),
   }
 

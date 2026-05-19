@@ -21,6 +21,15 @@ function emptyFreeProfile() {
   }
 }
 
+function profileFromUser(user: any) {
+  return {
+    id: user.id,
+    email: user.email || null,
+    full_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || null,
+    avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+  }
+}
+
 function getBillingPeriod(variantId: string | null) {
   const monthlyVariantId = process.env.LEMONSQUEEZY_PRO_VARIANT_ID || null
   const yearlyVariantId = process.env.LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID || null
@@ -34,17 +43,23 @@ function isTemporaryTrial(profile: any) {
   return profile.subscription_status === 'temporary_trial' && !profile.lemon_squeezy_subscription_id
 }
 
+function hasPaidSubscription(profile: any) {
+  if (!profile) return false
+  if (profile.lemon_squeezy_subscription_id) return true
+  return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
+}
+
 function trialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function canGrantSignupTrial(profile: any) {
+function shouldGrantSignupTrial(profile: any) {
+  if (hasPaidSubscription(profile)) return false
   if (!profile) return true
-  if (profile.lemon_squeezy_subscription_id) return false
   if (profile.subscription_trial_ends_at) return false
   const tier = profile.subscription_tier || 'free'
   const status = profile.subscription_status || 'free'
-  return tier === 'free' && (status === 'free' || status === null)
+  return tier === 'free' && (status === 'free' || status === 'trial_declined' || status === null)
 }
 
 export async function GET() {
@@ -59,21 +74,26 @@ export async function GET() {
     .from('profiles')
     .select('created_at, subscription_tier, subscription_status, subscription_renews_at, subscription_ends_at, subscription_trial_ends_at, lemon_squeezy_subscription_id, lemon_squeezy_variant_id')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
-  if (profileError || !profile) {
+  if (profileError) {
     return NextResponse.json({ error: 'Billing profile not found' }, { status: 404 })
   }
 
-  if (canGrantSignupTrial(profile)) {
+  if (shouldGrantSignupTrial(profile)) {
     const trialProfile = {
+      ...profileFromUser(user),
       subscription_tier: 'pro',
       subscription_status: 'temporary_trial',
       subscription_trial_ends_at: trialEndsAt(),
       subscription_updated_at: new Date().toISOString(),
     }
     const client = isSupabaseAdminConfigured ? createAdminClient() : supabase
-    await client.from('profiles').update(trialProfile).eq('id', user.id)
+    const { error: trialError } = await client.from('profiles').upsert(trialProfile, { onConflict: 'id' })
+
+    if (trialError) {
+      return NextResponse.json({ error: trialError.message }, { status: 500 })
+    }
 
     return NextResponse.json({
       profile: {
@@ -83,6 +103,10 @@ export async function GET() {
         subscription_billing_period: null,
       },
     })
+  }
+
+  if (!profile) {
+    return NextResponse.json({ error: 'Billing profile not found' }, { status: 404 })
   }
 
   if (profile.subscription_tier === 'free') {

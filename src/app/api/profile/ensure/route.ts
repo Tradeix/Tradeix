@@ -10,8 +10,17 @@ function trialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function canGrantSignupTrial(profile: any) {
+function hasPaidSubscription(profile: any) {
+  if (!profile) return false
+  if (profile.lemon_squeezy_subscription_id) return true
+  return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
+}
+
+function shouldGrantSignupTrial(profile: any) {
+  if (hasPaidSubscription(profile)) return false
   if (!profile) return true
+  if (profile.subscription_status === 'trial_expired') return false
+  if (profile.subscription_status === 'temporary_trial') return false
   if (profile.lemon_squeezy_subscription_id) return false
   if (profile.subscription_trial_ends_at) return false
   const tier = profile.subscription_tier || 'free'
@@ -65,7 +74,7 @@ export async function POST() {
     .eq('id', user.id)
     .maybeSingle()
 
-  const grantTrial = canGrantSignupTrial(existingProfile)
+  const grantTrial = shouldGrantSignupTrial(existingProfile)
   const profile = profileFromUser(user, grantTrial)
   const result = await upsertProfile(client, profile)
 

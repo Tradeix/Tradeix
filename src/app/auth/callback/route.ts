@@ -8,13 +8,14 @@ function getTrialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function canGrantSignupTrial(profile: any) {
-  if (!profile) return true
-  if (profile.lemon_squeezy_subscription_id) return false
-  if (profile.subscription_trial_ends_at) return false
-  const tier = profile.subscription_tier || 'free'
-  const status = profile.subscription_status || 'free'
-  return tier === 'free' && (status === 'free' || status === null)
+function hasPaidSubscription(profile: any) {
+  if (!profile) return false
+  if (profile.lemon_squeezy_subscription_id) return true
+  return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
+}
+
+function shouldGrantSignupTrial(profile: any) {
+  return !hasPaidSubscription(profile)
 }
 
 export async function GET(request: Request) {
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
 
         const profile = {
           ...baseProfile,
-          ...(canGrantSignupTrial(existingProfile) ? {
+          ...(shouldGrantSignupTrial(existingProfile) ? {
             subscription_tier: 'pro',
             subscription_status: 'temporary_trial',
             subscription_trial_ends_at: getTrialEndsAt(),
