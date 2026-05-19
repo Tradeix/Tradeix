@@ -601,31 +601,33 @@ export default function SettingsPage() {
 
           {isPro ? (
             isTemporaryPlan ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: 'auto' }}>
+              <div className="plan-choice-grid">
                 <button
+                  className="plan-choice-btn plan-choice-btn--monthly"
                   onClick={() => handleTrialUpgrade('monthly')}
                   disabled={Boolean(upgradingTrial)}
                   style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, #0f8d63 0%, #12a875 100%)', border: '1px solid rgba(31,210,145,0.55)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.28)' }}
                 >
                   <Icon name="bolt" size={18} color="#fff" />
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
-                    {upgradingTrial === 'monthly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'שדרוג חודשי' : 'Monthly upgrade')}
+                    {upgradingTrial === 'monthly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'התחל חודשי' : 'Start monthly')}
                   </span>
                   <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
-                    {language === 'he' ? '$20 / חודש' : '$20 / mo'}
+                    {language === 'he' ? 'גמיש • $20 לחודש' : 'Flexible • $20/month'}
                   </span>
                 </button>
                 <button
+                  className="plan-choice-btn plan-choice-btn--yearly"
                   onClick={() => handleTrialUpgrade('yearly')}
                   disabled={Boolean(upgradingTrial)}
                   style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.09) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16)' }}
                 >
                   <Icon name="calendar_month" size={18} color="#f59e0b" />
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
-                    {upgradingTrial === 'yearly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'שדרוג שנתי' : 'Yearly upgrade')}
+                    {upgradingTrial === 'yearly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'קח שנתי וחסוך' : 'Go yearly and save')}
                   </span>
                   <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
-                    {language === 'he' ? '$199 / שנה' : '$199 / yr'}
+                    {language === 'he' ? 'חסוך $41 • $199 לשנה' : 'Save $41 • $199/year'}
                   </span>
                 </button>
               </div>
@@ -650,8 +652,9 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: 'auto' }}>
+              <div className="plan-choice-grid">
                 <button
+                  className="plan-choice-btn plan-choice-btn--monthly"
                   onClick={() => handleResumePro('monthly')}
                   disabled={Boolean(resumingPro)}
                   style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, #0f8d63 0%, #12a875 100%)', border: '1px solid rgba(31,210,145,0.55)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.28), inset 0 1px 0 rgba(255,255,255,0.18)' }}
@@ -664,13 +667,14 @@ export default function SettingsPage() {
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
                     {resumingPro === 'monthly'
                       ? (language === 'he' ? 'מחדש...' : 'Resuming...')
-                      : (language === 'he' ? 'חדש חודשי' : 'Monthly')}
+                      : (language === 'he' ? 'חדש חודשי' : 'Resume monthly')}
                   </span>
                   <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.78, lineHeight: 1 }}>
-                    {language === 'he' ? '$20 / חודש' : '$20 / mo'}
+                    {language === 'he' ? 'המשך גמיש • $20 לחודש' : 'Flexible • $20/month'}
                   </span>
                 </button>
                 <button
+                  className="plan-choice-btn plan-choice-btn--yearly"
                   onClick={() => handleResumePro('yearly')}
                   disabled={Boolean(resumingPro)}
                   style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.10)', position: 'relative', overflow: 'hidden' }}
@@ -686,10 +690,10 @@ export default function SettingsPage() {
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
                     {resumingPro === 'yearly'
                       ? (language === 'he' ? 'מעביר...' : 'Switching...')
-                      : (language === 'he' ? 'חדש שנתי' : 'Yearly')}
+                      : (language === 'he' ? 'חדש שנתי וחסוך' : 'Resume yearly and save')}
                   </span>
                   <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.78, lineHeight: 1 }}>
-                    {language === 'he' ? '$199 / שנה' : '$199 / yr'}
+                    {language === 'he' ? 'חסוך $41 • $199 לשנה' : 'Save $41 • $199/year'}
                   </span>
                 </button>
               </div>
@@ -826,7 +830,99 @@ export default function SettingsPage() {
 
       <style>{`
         .settings-grid > div { min-width: 0; }
+        .plan-choice-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+          margin-top: auto;
+        }
+        .plan-choice-btn {
+          position: relative !important;
+          isolation: isolate;
+          overflow: hidden !important;
+          min-height: 104px !important;
+          border-radius: 20px !important;
+          padding: 16px 12px !important;
+          border-width: 1px !important;
+          border-style: solid !important;
+          color: #fff !important;
+          font-family: Heebo, sans-serif !important;
+          cursor: pointer !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 7px !important;
+          transform: translateY(0);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, opacity 0.18s ease !important;
+        }
+        .plan-choice-btn::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+          opacity: 1;
+        }
+        .plan-choice-btn::after {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          z-index: -1;
+          border-radius: 19px;
+          background:
+            radial-gradient(circle at 22% 8%, rgba(255,255,255,0.34), transparent 28%),
+            linear-gradient(180deg, rgba(255,255,255,0.16), transparent 56%);
+          pointer-events: none;
+        }
+        .plan-choice-btn--monthly {
+          border-color: rgba(52,211,153,0.72) !important;
+          background:
+            radial-gradient(circle at 50% -24%, rgba(187,247,208,0.42), transparent 44%),
+            linear-gradient(135deg, #0f8d63 0%, #16a873 48%, #35c287 100%) !important;
+          box-shadow: 0 18px 38px rgba(15,141,99,0.34), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+        }
+        .plan-choice-btn--yearly {
+          border-color: rgba(251,191,36,0.78) !important;
+          background:
+            radial-gradient(circle at 48% -26%, rgba(253,224,71,0.48), transparent 44%),
+            linear-gradient(135deg, #7a4a08 0%, #c27803 48%, #f59e0b 100%) !important;
+          box-shadow: 0 18px 38px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+        }
+        .plan-choice-btn:hover:not(:disabled) {
+          transform: translateY(-3px) scale(1.015);
+          filter: saturate(1.08) brightness(1.04);
+        }
+        .plan-choice-btn:disabled {
+          opacity: 0.65 !important;
+          cursor: wait !important;
+          transform: none;
+        }
+        .plan-choice-btn svg {
+          width: 23px;
+          height: 23px;
+          color: #fff !important;
+          stroke: #fff !important;
+          filter: drop-shadow(0 7px 14px rgba(0,0,0,0.24));
+        }
+        .plan-choice-btn > svg {
+          padding: 8px;
+          width: 40px;
+          height: 40px;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.17);
+          border: 1px solid rgba(255,255,255,0.22);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+        }
+        .plan-choice-btn span {
+          position: relative;
+          z-index: 1;
+        }
+        .plan-choice-btn > span {
+          color: #fff !important;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.22);
+        }
         @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 520px) { .plan-choice-grid { grid-template-columns: 1fr; } }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
