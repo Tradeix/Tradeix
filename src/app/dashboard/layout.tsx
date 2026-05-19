@@ -568,8 +568,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           </h1>
           <p style={{ margin: '0 auto 26px', maxWidth: '560px', color: 'var(--text2)', fontSize: '15px', lineHeight: 1.7, fontWeight: 650 }}>
             {language === 'he'
-              ? 'קיבלת 5 ימים של גישה מלאה ל-PRO. כדי להמשיך להשתמש במערכת, בחר אם להשתדרג ל-PRO או לחזור למנוי החינמי.'
-              : 'You had 5 days of full PRO access. To continue using the app, choose whether to upgrade to PRO or switch back to the free plan.'}
+              ? 'תקופת הניסיון של PRO הסתיימה. כל התוכן, התיקים, העסקאות והנתונים שיצרת נשמרים וימשיכו איתך בכל בחירה: שדרוג ל-PRO או מעבר למנוי החינמי.'
+              : 'Your PRO trial has ended. Everything you created, including portfolios, trades, and data, is saved and will continue with whichever option you choose: upgrade to PRO or switch to Free.'}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
             <button onClick={handleTrialUpgrade} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)' }}>
@@ -643,12 +643,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             </div>
             <div style={{ fontSize: '14px', color: 'rgba(229,226,225,0.56)', lineHeight: 1.75, marginBottom: '24px' }}>
               {isTemporaryPro ? (language === 'he'
-                ? `ברוך הבא. פתחנו לך PRO זמני ל-5 ימים${trialEndsLabel ? `, עד ${trialEndsLabel}` : ''}, כדי שתרגיש את כל היכולות לפני ההחלטה.`
-                : `Welcome. You have temporary PRO access for 5 days${trialEndsLabel ? `, until ${trialEndsLabel}` : ''}, so you can feel the full product before deciding.`) : language === 'he'
+                ? `אתה כרגע על PRO-Trial: פתחנו לך 5 ימי ניסיון מלאים ב-PRO${trialEndsLabel ? `, עד ${trialEndsLabel}` : ''}. בסיום התקופה תוכל לבחור אם לשדרג ל-PRO או להמשיך במנוי החינמי.`
+                : `You are currently on PRO-Trial: you have 5 full days of PRO access${trialEndsLabel ? `, until ${trialEndsLabel}` : ''}. When the trial ends, you can choose whether to upgrade to PRO or continue on the free plan.`) : language === 'he'
                 ? 'בהצלחה במסע המסחר שלך. כרגע אתה במנוי החינמי, ואפשר להתחיל לעבוד מיד.'
                 : 'Good luck on your trading journey. You are currently on the free plan and can start right away.'}
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', textAlign: isRTL ? 'right' : 'left' }}>
+            {isTemporaryPro && (
+              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.24)', borderRadius: '16px', padding: '16px 18px', marginBottom: '24px', color: 'rgba(229,226,225,0.74)', fontSize: '13.5px', lineHeight: 1.7, fontWeight: 750 }}>
+                {language === 'he'
+                  ? 'חשוב לדעת: כל מה שתיצור בתקופת הניסיון נשמר וימשיך איתך גם אם תשדרג וגם אם תבחר להמשיך בחינמי.'
+                  : 'Everything you create during the trial is saved and will continue with you whether you upgrade or stay on Free.'}
+              </div>
+            )}
+            {!isTemporaryPro && (
+              <div style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', textAlign: isRTL ? 'right' : 'left' }}>
               <div style={{ fontSize: '11px', fontWeight: '900', color: '#0f8d63', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '12px', textAlign: 'center' }}>
                 {language === 'he' ? 'מה כלול בחינם' : 'Free plan includes'}
               </div>
@@ -664,11 +672,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: '12.5px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.6, marginBottom: '18px' }}>
+            )}
+            {!isTemporaryPro && (
+              <div style={{ fontSize: '12.5px', color: 'rgba(229,226,225,0.4)', lineHeight: 1.6, marginBottom: '18px' }}>
               {language === 'he'
                 ? 'כשתרצה לפתוח את כל היכולות, כפתור שדרג ל-PRO מחכה בראש האתר מצד שמאל.'
                 : 'When you are ready to unlock everything, the Upgrade to PRO button is waiting in the top bar.'}
             </div>
+            )}
             <button onClick={() => setShowWelcomePopup(false)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               width: '100%', background: '#0f8d63', border: 'none',
