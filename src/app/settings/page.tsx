@@ -18,13 +18,14 @@ type BillingProfile = {
 }
 
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
   const [resumingPro, setResumingPro] = useState<'monthly' | 'yearly' | null>(null)
+  const [upgradingTrial, setUpgradingTrial] = useState<'monthly' | 'yearly' | null>(null)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [showYearlySwitchConfirm, setShowYearlySwitchConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -258,6 +259,17 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleTrialUpgrade(billingPeriod: 'monthly' | 'yearly') {
+    setUpgradingTrial(billingPeriod)
+    try {
+      await upgradeToPro(billingPeriod)
+    } catch (error: any) {
+      toast.error(error?.message || (language === 'he' ? 'שדרוג המנוי נכשל' : 'Subscription upgrade failed'))
+    } finally {
+      setUpgradingTrial(null)
+    }
+  }
+
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
   const isPro = billingProfile?.subscription_tier ? billingProfile.subscription_tier === 'pro' : contextIsPro
   const renewalDate = billingProfile?.subscription_renews_at || null
@@ -283,6 +295,16 @@ export default function SettingsPage() {
   const remainingLabel = isCanceledButActive
     ? (language === 'he' ? 'זמן שנותר עד מעבר לחינמי' : 'Time left before moving to Free')
     : (language === 'he' ? 'זמן שנותר עד החידוש' : 'Time left until renewal')
+
+  const displayPlanNameLabel = isTemporaryPlan
+    ? 'PRO-Trial'
+    : isPro
+      ? 'PRO'
+      : (language === 'he' ? 'חינמי' : 'Free')
+  const displayPlanAccent = isTemporaryPlan ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63'
+  const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'חינם' : 'Free') : planPriceLabel
+  const displayPrimaryBillingLabel = isTemporaryPlan ? (language === 'he' ? 'סיום ניסיון' : 'Trial ends') : primaryBillingLabel
+  const displayRemainingLabel = isTemporaryPlan ? (language === 'he' ? 'זמן שנותר לניסיון' : 'Trial time left') : remainingLabel
 
   function formatBillingDate(value: string | null) {
     if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
@@ -488,16 +510,16 @@ export default function SettingsPage() {
         {/* ── CARD 3: Subscription ── */}
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
-          border: isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(15,141,99,0.15)',
+          border: isTemporaryPlan ? '1px solid rgba(239,68,68,0.32)' : isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(15,141,99,0.15)',
           background: isPro
-            ? (isLight ? '#fffbeb' : 'rgba(245,158,11,0.04)')
+            ? isTemporaryPlan ? (isLight ? '#fff1f2' : 'rgba(239,68,68,0.04)') : (isLight ? '#fffbeb' : 'rgba(245,158,11,0.04)')
             : glass.background,
         }}>
-          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isPro ? 'rgba(245,158,11,0.08)' : 'rgba(15,141,99,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-40px', [language === 'he' ? 'left' : 'right']: '-40px', width: '150px', height: '150px', background: isTemporaryPlan ? 'rgba(239,68,68,0.09)' : isPro ? 'rgba(245,158,11,0.08)' : 'rgba(15,141,99,0.06)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(15,141,99,0.15)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.3)' : 'rgba(15,141,99,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="workspace_premium" size={16} color={isPro ? '#f59e0b' : '#0f8d63'} />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isTemporaryPlan ? 'rgba(239,68,68,0.15)' : isPro ? 'rgba(245,158,11,0.15)' : 'rgba(15,141,99,0.15)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.3)' : isPro ? 'rgba(245,158,11,0.3)' : 'rgba(15,141,99,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="workspace_premium" size={16} color={displayPlanAccent} />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
@@ -508,24 +530,24 @@ export default function SettingsPage() {
           {/* Current plan badge */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)',
-            border: `1px solid ${isPro ? 'rgba(245,158,11,0.25)' : 'rgba(15,141,99,0.2)'}`,
+            background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)',
+            border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.26)' : isPro ? 'rgba(245,158,11,0.25)' : 'rgba(15,141,99,0.2)'}`,
             borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
           }}>
             <div>
-              <div style={{ fontSize: '12px', color: isPro ? 'rgba(245,158,11,0.7)' : 'rgba(15,141,99,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: isTemporaryPlan ? '#ef4444' : isPro ? 'rgba(245,158,11,0.7)' : 'rgba(15,141,99,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
-              <div style={{ fontSize: '23px', fontWeight: '900', color: isPro ? '#f59e0b' : '#0f8d63', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {isPro ? 'PRO' : (language === 'he' ? 'חינמי' : 'Free')}
-                {isPro && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {planPeriodLabel}</span>}
+              <div style={{ fontSize: '23px', fontWeight: '900', color: displayPlanAccent, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {displayPlanNameLabel}
+                {isPro && !isTemporaryPlan && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {planPeriodLabel}</span>}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
-                {planPriceLabel}
+                {displayPlanPriceLabel}
               </div>
             </div>
-            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isPro ? 'rgba(245,158,11,0.12)' : 'rgba(15,141,99,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={isPro ? '#f59e0b' : '#0f8d63'} />
+            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isTemporaryPlan ? 'rgba(239,68,68,0.12)' : isPro ? 'rgba(245,158,11,0.12)' : 'rgba(15,141,99,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={isPro ? 'bolt' : 'verified'} size={22} color={displayPlanAccent} />
             </div>
           </div>
 
@@ -540,7 +562,7 @@ export default function SettingsPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {primaryBillingLabel}
+                    {displayPrimaryBillingLabel}
                   </span>
                   <Icon name={isCanceledButActive ? 'event_busy' : 'event_repeat'} size={15} color={isCanceledButActive ? '#ef4444' : '#f59e0b'} />
                 </div>
@@ -557,7 +579,7 @@ export default function SettingsPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {remainingLabel}
+                    {displayRemainingLabel}
                   </span>
                   <Icon name="timer" size={15} color="#0f8d63" />
                 </div>
@@ -578,7 +600,36 @@ export default function SettingsPage() {
           )}
 
           {isPro ? (
-            isCanceledButActive ? (
+            isTemporaryPlan ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: 'auto' }}>
+                <button
+                  onClick={() => handleTrialUpgrade('monthly')}
+                  disabled={Boolean(upgradingTrial)}
+                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', border: '1px solid rgba(248,113,113,0.65)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(239,68,68,0.26)' }}
+                >
+                  <Icon name="bolt" size={18} color="#fff" />
+                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
+                    {upgradingTrial === 'monthly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'שדרוג חודשי' : 'Monthly upgrade')}
+                  </span>
+                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
+                    {language === 'he' ? '$20 / חודש' : '$20 / mo'}
+                  </span>
+                </button>
+                <button
+                  onClick={() => handleTrialUpgrade('yearly')}
+                  disabled={Boolean(upgradingTrial)}
+                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.09) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16)' }}
+                >
+                  <Icon name="calendar_month" size={18} color="#f59e0b" />
+                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
+                    {upgradingTrial === 'yearly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'שדרוג שנתי' : 'Yearly upgrade')}
+                  </span>
+                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
+                    {language === 'he' ? '$199 / שנה' : '$199 / yr'}
+                  </span>
+                </button>
+              </div>
+            ) : isCanceledButActive ? (
               isCanceledYearlyButActive ? (
                 <div style={{
                   marginTop: 'auto',
