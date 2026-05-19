@@ -14,7 +14,7 @@ export async function POST() {
 
   const update = {
     subscription_tier: 'free',
-    subscription_status: null,
+    subscription_status: 'trial_declined',
     subscription_renews_at: null,
     subscription_ends_at: null,
     subscription_trial_ends_at: null,
