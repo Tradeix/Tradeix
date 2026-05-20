@@ -291,9 +291,6 @@ export default function SettingsPage() {
       ? (language === 'he' ? '$199 / שנה' : '$199 / year')
       : (language === 'he' ? '$20 / חודש' : '$20 / month')
     : (language === 'he' ? 'ללא עלות' : 'No charge')
-  const primaryBillingLabel = isCanceledButActive
-    ? (language === 'he' ? 'גישה פעילה עד' : 'Access active until')
-    : (language === 'he' ? 'החידוש הבא' : 'Next renewal')
   const remainingLabel = isCanceledButActive
     ? (language === 'he' ? 'זמן שנותר עד מעבר לחינמי' : 'Time left before moving to Free')
     : (language === 'he' ? 'זמן שנותר עד החידוש' : 'Time left until renewal')
@@ -305,21 +302,7 @@ export default function SettingsPage() {
       : (language === 'he' ? 'חינמי' : 'Free')
   const displayPlanAccent = isTemporaryPlan ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63'
   const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'חינם' : 'Free') : planPriceLabel
-  const displayPrimaryBillingLabel = isTemporaryPlan ? (language === 'he' ? 'סיום ניסיון' : 'Trial ends') : primaryBillingLabel
   const displayRemainingLabel = isTemporaryPlan ? (language === 'he' ? 'זמן שנותר לניסיון' : 'Trial time left') : remainingLabel
-
-  function formatBillingDate(value: string | null) {
-    if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
-    return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
 
   function formatRemainingTime(value: string | null) {
     if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
@@ -557,23 +540,6 @@ export default function SettingsPage() {
           {/* CTA — pinned to bottom for symmetric card heights */}
           {isPro && (
             <div style={{ display: 'grid', gap: '8px', marginBottom: '14px' }}>
-              <div style={{
-                background: isLight ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.18)',
-                border: `1px solid ${isCanceledButActive ? 'rgba(239,68,68,0.22)' : 'rgba(245,158,11,0.22)'}`,
-                borderRadius: '12px',
-                padding: '10px 12px',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {displayPrimaryBillingLabel}
-                  </span>
-                  <Icon name={isCanceledButActive ? 'event_busy' : 'event_repeat'} size={15} color={isCanceledButActive ? '#ef4444' : '#f59e0b'} />
-                </div>
-                <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '850', lineHeight: 1.35 }}>
-                  {formatBillingDate(primaryBillingDate)}
-                </div>
-              </div>
-
               <div style={{
                 background: isLight ? 'rgba(255,255,255,0.56)' : 'rgba(255,255,255,0.035)',
                 border: '1px solid var(--border)',
