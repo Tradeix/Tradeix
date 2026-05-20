@@ -816,16 +816,16 @@ export default function SettingsPage() {
         .plan-choice-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
+          gap: 10px;
           margin-top: auto;
         }
         .plan-choice-btn {
           position: relative !important;
           isolation: isolate;
           overflow: hidden !important;
-          min-height: 104px !important;
-          border-radius: 20px !important;
-          padding: 16px 12px !important;
+          min-height: 70px !important;
+          border-radius: 16px !important;
+          padding: 10px 9px !important;
           border-width: 1px !important;
           border-style: solid !important;
           color: #fff !important;
@@ -835,7 +835,7 @@ export default function SettingsPage() {
           flex-direction: column !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 7px !important;
+          gap: 4px !important;
           transform: translateY(0);
           transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, opacity 0.18s ease !important;
         }
@@ -851,7 +851,7 @@ export default function SettingsPage() {
           position: absolute;
           inset: 1px;
           z-index: -1;
-          border-radius: 19px;
+          border-radius: 15px;
           background:
             radial-gradient(circle at 22% 8%, rgba(255,255,255,0.34), transparent 28%),
             linear-gradient(180deg, rgba(255,255,255,0.16), transparent 56%);
@@ -881,17 +881,17 @@ export default function SettingsPage() {
           transform: none;
         }
         .plan-choice-btn svg {
-          width: 23px;
-          height: 23px;
+          width: 18px;
+          height: 18px;
           color: #fff !important;
           stroke: #fff !important;
           filter: drop-shadow(0 7px 14px rgba(0,0,0,0.24));
         }
         .plan-choice-btn > svg {
-          padding: 8px;
-          width: 40px;
-          height: 40px;
-          border-radius: 14px;
+          padding: 6px;
+          width: 32px;
+          height: 32px;
+          border-radius: 11px;
           background: rgba(255,255,255,0.17);
           border: 1px solid rgba(255,255,255,0.22);
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
@@ -903,6 +903,12 @@ export default function SettingsPage() {
         .plan-choice-btn > span {
           color: #fff !important;
           text-shadow: 0 2px 10px rgba(0,0,0,0.22);
+        }
+        .plan-choice-btn:has(> svg) > span:nth-of-type(1) {
+          font-size: 12px !important;
+        }
+        .plan-choice-btn:has(> svg) > span:nth-of-type(2) {
+          font-size: 9.5px !important;
         }
         .yearly-switch-cta {
           position: relative !important;
@@ -1006,7 +1012,11 @@ export default function SettingsPage() {
         }
         @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
         @media (max-width: 520px) {
-          .plan-choice-grid { grid-template-columns: 1fr; }
+          .plan-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+          .plan-choice-btn { min-height: 66px !important; padding: 9px 7px !important; }
+          .plan-choice-btn > svg { width: 30px; height: 30px; }
+          .plan-choice-btn:has(> svg) > span:nth-of-type(1) { font-size: 11px !important; }
+          .plan-choice-btn:has(> svg) > span:nth-of-type(2) { font-size: 8.5px !important; }
           .yearly-switch-cta { align-items: stretch !important; }
           .yearly-switch-badge { align-self: center; }
         }
