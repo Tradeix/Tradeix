@@ -8,13 +8,8 @@ function getTrialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function hasPaidSubscription(profile: any) {
-  if (!profile) return false
-  return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
-}
-
 function shouldGrantSignupTrial(profile: any) {
-  return !hasPaidSubscription(profile)
+  return !profile
 }
 
 export async function GET(request: Request) {

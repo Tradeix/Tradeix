@@ -10,20 +10,8 @@ function trialEndsAt() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-function hasPaidSubscription(profile: any) {
-  if (!profile) return false
-  return profile.subscription_status === 'active' || profile.subscription_status === 'on_trial'
-}
-
 function shouldGrantSignupTrial(profile: any) {
-  if (hasPaidSubscription(profile)) return false
-  if (!profile) return true
-  if (profile.subscription_status === 'temporary_trial') return false
-  if (profile.subscription_status === 'trial_expired') return false
-  if (profile.subscription_status === 'free_after_trial') return false
-  const tier = profile.subscription_tier || 'free'
-  const status = profile.subscription_status || 'free'
-  return tier === 'free' || status === 'free' || status === 'trial_declined' || status === null
+  return !profile
 }
 
 function profileFromUser(user: any, grantTrial: boolean) {
