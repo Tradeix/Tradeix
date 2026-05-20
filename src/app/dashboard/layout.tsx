@@ -579,22 +579,89 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               : 'Your PRO trial has ended. Everything you created, including portfolios, trades, and data, is saved and will continue with whichever option you choose: upgrade to PRO or switch to Free.'}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
-            <button onClick={handleTrialUpgrade} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)' }}>
+            <button className="trial-choice-button trial-choice-pro" onClick={handleTrialUpgrade} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)', position: 'relative', overflow: 'hidden' }}>
               <Icon name="rocket_launch" size={24} color="#fff" />
               <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'pro' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'שדרג ל-PRO' : 'Upgrade to PRO')}</span>
               <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? 'כל הכלים נשארים פתוחים' : 'Keep every tool unlocked'}</span>
             </button>
-            <button onClick={handleChooseFree} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px' }}>
+            <button className="trial-choice-button trial-choice-free" onClick={handleChooseFree} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', position: 'relative', overflow: 'hidden' }}>
               <Icon name="verified" size={24} color="#0f8d63" />
               <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'free' ? (language === 'he' ? 'מעביר לחינמי...' : 'Switching...') : (language === 'he' ? 'חזור לחינמי' : 'Switch to Free')}</span>
               <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 800 }}>{language === 'he' ? 'ממשיך עם הגבלות החבילה החינמית' : 'Continue with free-plan limits'}</span>
             </button>
           </div>
-          <button onClick={handleSignOut} style={{ background: 'transparent', border: 'none', color: 'var(--text3)', fontFamily: 'Heebo, sans-serif', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
-            {language === 'he' ? 'התנתק' : 'Sign out'}
-          </button>
         </div>
-        <style>{`@keyframes gridDrift { from { background-position: 0 0; } to { background-position: 120px 80px; } }`}</style>
+        <style>{`
+          @keyframes gridDrift { from { background-position: 0 0; } to { background-position: 120px 80px; } }
+          .trial-choice-button {
+            isolation: isolate;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+          }
+          .trial-choice-button > * {
+            position: relative;
+            z-index: 1;
+            transition: transform 0.22s ease, color 0.22s ease, opacity 0.22s ease;
+          }
+          .trial-choice-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            opacity: 0;
+            transform: translateX(34%) skewX(-18deg);
+            transition: opacity 0.22s ease, transform 0.55s ease;
+            pointer-events: none;
+          }
+          .trial-choice-button::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            border-radius: 17px;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            pointer-events: none;
+          }
+          .trial-choice-button:not(:disabled):hover {
+            transform: translateY(-4px) scale(1.012);
+          }
+          .trial-choice-button:not(:disabled):hover::before {
+            opacity: 1;
+            transform: translateX(-34%) skewX(-18deg);
+          }
+          .trial-choice-button:not(:disabled):hover::after {
+            opacity: 1;
+          }
+          .trial-choice-button:not(:disabled):hover > :first-child {
+            transform: translateY(-2px) scale(1.08);
+          }
+          .trial-choice-button:not(:disabled):active {
+            transform: translateY(-1px) scale(0.995);
+          }
+          .trial-choice-button:disabled {
+            opacity: 0.78;
+          }
+          .trial-choice-pro:not(:disabled):hover {
+            border-color: rgba(255,255,255,0.42);
+            box-shadow: 0 24px 58px rgba(249,115,22,0.38), 0 0 0 1px rgba(255,255,255,0.08) inset;
+            filter: saturate(1.08);
+          }
+          .trial-choice-pro::before {
+            background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,0.34) 48%, transparent 72%);
+          }
+          .trial-choice-pro::after {
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 56%);
+          }
+          .trial-choice-free:not(:disabled):hover {
+            border-color: rgba(16,185,129,0.55);
+            box-shadow: 0 20px 46px rgba(16,185,129,0.18), 0 0 0 1px rgba(16,185,129,0.16) inset;
+          }
+          .trial-choice-free::before {
+            background: linear-gradient(100deg, transparent 18%, rgba(16,185,129,0.17) 48%, transparent 72%);
+          }
+          .trial-choice-free::after {
+            background: linear-gradient(135deg, rgba(16,185,129,0.13), transparent 62%);
+          }
+        `}</style>
       </div>
     )
   }
