@@ -506,16 +506,10 @@ export default function SettingsPage() {
         {!isAdmin && (
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
-          border: isTemporaryPlan ? '1px solid rgba(239,68,68,0.32)' : isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(15,141,99,0.15)',
-          background: isPro
-            ? isTemporaryPlan ? (isLight ? '#fff1f2' : 'rgba(239,68,68,0.04)') : (isLight ? '#fffbeb' : 'rgba(245,158,11,0.04)')
-            : glass.background,
         }}>
-          <div style={{ position: 'absolute', top: 0, insetInlineStart: 0, insetInlineEnd: 0, height: '1px', background: isTemporaryPlan ? 'rgba(239,68,68,0.34)' : isPro ? 'rgba(245,158,11,0.34)' : 'rgba(15,141,99,0.24)', pointerEvents: 'none' }} />
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isTemporaryPlan ? 'rgba(239,68,68,0.15)' : isPro ? 'rgba(245,158,11,0.15)' : 'rgba(15,141,99,0.15)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.3)' : isPro ? 'rgba(245,158,11,0.3)' : 'rgba(15,141,99,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="workspace_premium" size={16} color={displayPlanAccent} />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="workspace_premium" size={16} color="#0f8d63" />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות מנוי' : 'Subscription'}</div>
