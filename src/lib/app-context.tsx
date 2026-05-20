@@ -48,6 +48,7 @@ type AppContextType = {
   subscriptionStatus: string | null
   subscriptionTrialEndsAt: string | null
   subscriptionLoading: boolean
+  isAdmin: boolean
   upgradeToPro: (billingPeriod?: 'monthly' | 'yearly') => Promise<UpgradeSubscriptionResult | void>
   chooseFreePlan: () => Promise<void>
   cancelSubscription: () => Promise<CancelSubscriptionResult>
@@ -58,7 +59,7 @@ const AppContext = createContext<AppContextType>({
   theme: 'dark', language: 'en',
   setTheme: () => {}, setLanguage: () => {},
   subscription: 'free', isPro: false, isTemporaryPro: false, trialExpired: false,
-  subscriptionStatus: null, subscriptionTrialEndsAt: null, subscriptionLoading: true,
+  subscriptionStatus: null, subscriptionTrialEndsAt: null, subscriptionLoading: true, isAdmin: false,
   upgradeToPro: async () => {}, chooseFreePlan: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
 })
 
@@ -191,6 +192,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionTrialEndsAt, setSubscriptionTrialEndsAt] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
 
   function applySubscriptionProfile(profile: any) {
@@ -198,6 +200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSubscription(tier)
     setSubscriptionStatus(profile?.subscription_status || null)
     setSubscriptionTrialEndsAt(profile?.subscription_trial_ends_at || null)
+    setIsAdmin(profile?.is_admin === true)
   }
 
   // Global ESC-to-close handler for every modal in the app. Modals already
@@ -233,6 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     if (!isSupabaseConfigured) {
       setSubscriptionLoading(false)
+      setIsAdmin(false)
       return
     }
 
@@ -344,6 +348,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSubscription('free')
       setSubscriptionStatus(null)
       setSubscriptionTrialEndsAt(null)
+      setIsAdmin(false)
       return
     }
 
@@ -378,18 +383,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   const trialEndsTime = subscriptionTrialEndsAt ? new Date(subscriptionTrialEndsAt).getTime() : NaN
-  const isTemporaryPro = subscription === 'pro'
+  const isTemporaryPro = !isAdmin
+    && subscription === 'pro'
     && subscriptionStatus === 'temporary_trial'
     && Number.isFinite(trialEndsTime)
     && trialEndsTime > Date.now()
-  const trialExpired = subscriptionStatus === 'trial_expired'
+  const trialExpired = !isAdmin && (subscriptionStatus === 'trial_expired'
     || (subscription === 'pro' && subscriptionStatus === 'temporary_trial' && (!Number.isFinite(trialEndsTime) || trialEndsTime <= Date.now()))
-  const isPro = subscription === 'pro' && !trialExpired
+  )
+  const isPro = isAdmin || (subscription === 'pro' && !trialExpired)
 
   return (
     <AppContext.Provider value={{
       theme, language, setTheme, setLanguage,
-      subscription, isPro, isTemporaryPro, trialExpired, subscriptionStatus, subscriptionTrialEndsAt, subscriptionLoading,
+      subscription, isPro, isTemporaryPro, trialExpired, subscriptionStatus, subscriptionTrialEndsAt, subscriptionLoading, isAdmin,
       upgradeToPro, chooseFreePlan, cancelSubscription, resumeSubscription,
     }}>
       {children}

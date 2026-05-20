@@ -30,7 +30,7 @@ const TRUST_ITEMS = {
 }
 
 export default function UpgradePage() {
-  const { language, isPro, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
+  const { language, isPro, isAdmin, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
   const [loading, setLoading] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
 
@@ -154,13 +154,17 @@ export default function UpgradePage() {
             <div className="active-plan">
               <div>
                 <Icon name="verified" size={19} color="#36cb61" />
-                {language === 'he' ? 'המנוי שלך כבר פעיל' : 'Your plan is already active'}
+                {isAdmin
+                  ? (language === 'he' ? 'גישת ADMIN פעילה' : 'ADMIN access is active')
+                  : (language === 'he' ? 'המנוי שלך כבר פעיל' : 'Your plan is already active')}
               </div>
-              <button onClick={handleCancel} disabled={loading}>
-                {loading
-                  ? (language === 'he' ? 'פותח...' : 'Opening...')
-                  : (language === 'he' ? 'נהל / בטל מנוי' : 'Manage / cancel plan')}
-              </button>
+              {!isAdmin && (
+                <button onClick={handleCancel} disabled={loading}>
+                  {loading
+                    ? (language === 'he' ? 'פותח...' : 'Opening...')
+                    : (language === 'he' ? 'נהל / בטל מנוי' : 'Manage / cancel plan')}
+                </button>
+              )}
             </div>
           ) : (
             <button

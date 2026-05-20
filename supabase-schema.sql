@@ -174,4 +174,30 @@ alter table public.profiles
   add column if not exists subscription_renews_at timestamptz,
   add column if not exists subscription_ends_at timestamptz,
   add column if not exists subscription_trial_ends_at timestamptz,
-  add column if not exists subscription_updated_at timestamptz;
+  add column if not exists subscription_updated_at timestamptz,
+  add column if not exists is_admin boolean not null default false;
+
+-- Admin users are configured manually in Supabase by setting
+-- public.profiles.is_admin = true. Authenticated users must not be able to
+-- promote themselves through the client-side profile update policy.
+create or replace function public.prevent_client_admin_changes()
+returns trigger as $$
+begin
+  if auth.role() in ('anon', 'authenticated') then
+    if tg_op = 'INSERT' and coalesce(new.is_admin, false) then
+      raise exception 'is_admin can only be set from Supabase admin tools';
+    end if;
+
+    if tg_op = 'UPDATE' and new.is_admin is distinct from old.is_admin then
+      raise exception 'is_admin can only be changed from Supabase admin tools';
+    end if;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists prevent_client_admin_changes on public.profiles;
+create trigger prevent_client_admin_changes
+  before insert or update on public.profiles
+  for each row execute procedure public.prevent_client_admin_changes();

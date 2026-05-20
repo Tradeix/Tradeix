@@ -18,6 +18,7 @@ function emptyFreeProfile() {
     subscription_ends_at: null,
     subscription_trial_ends_at: null,
     subscription_billing_period: null,
+    is_admin: false,
   }
 }
 
@@ -51,6 +52,17 @@ function shouldGrantSignupTrial(profile: any) {
   return !profile
 }
 
+async function getAdminFlag(client: ReturnType<typeof createAdminClient> | ReturnType<typeof createClient>, userId: string) {
+  const { data, error } = await client
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (error) return false
+  return data?.is_admin === true
+}
+
 export async function GET() {
   const supabase = createClient()
   const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -68,6 +80,9 @@ export async function GET() {
   if (profileError) {
     return NextResponse.json({ error: 'Billing profile not found' }, { status: 404 })
   }
+
+  const profileClient = isSupabaseAdminConfigured ? createAdminClient() : supabase
+  const isAdmin = profile ? await getAdminFlag(profileClient, user.id) : false
 
   if (shouldGrantSignupTrial(profile)) {
     const trialProfile = {
@@ -90,12 +105,29 @@ export async function GET() {
         subscription_renews_at: null,
         subscription_ends_at: null,
         subscription_billing_period: null,
+        is_admin: false,
       },
     })
   }
 
   if (!profile) {
     return NextResponse.json({ error: 'Billing profile not found' }, { status: 404 })
+  }
+
+  if (isAdmin) {
+    const variantId = profile.lemon_squeezy_variant_id ? String(profile.lemon_squeezy_variant_id) : null
+
+    return NextResponse.json({
+      profile: {
+        subscription_tier: profile.subscription_tier,
+        subscription_status: profile.subscription_status,
+        subscription_renews_at: profile.subscription_renews_at,
+        subscription_ends_at: profile.subscription_ends_at,
+        subscription_trial_ends_at: profile.subscription_trial_ends_at,
+        subscription_billing_period: getBillingPeriod(variantId),
+        is_admin: true,
+      },
+    })
   }
 
   if (profile.subscription_tier === 'free') {
@@ -194,6 +226,7 @@ export async function GET() {
       subscription_ends_at: nextProfile.subscription_ends_at,
       subscription_trial_ends_at: nextProfile.subscription_trial_ends_at,
       subscription_billing_period: billingPeriod,
+      is_admin: false,
     },
   })
 }

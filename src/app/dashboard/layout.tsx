@@ -40,7 +40,7 @@ const PORTFOLIO_AGNOSTIC_PATHS = ['/portfolios', '/portfolios/archive', '/galler
 
 function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const { activePortfolio, portfolios, setActivePortfolio } = usePortfolio()
-  const { language, isPro, isTemporaryPro, subscriptionLoading } = useApp()
+  const { language, isPro, isTemporaryPro, subscriptionLoading, isAdmin } = useApp()
   const router = useRouter()
   const pathname = usePathname()
   const tr = t[language]
@@ -227,7 +227,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <div style={{ position: 'relative' }}>
             <div style={{
               width: '38px', height: '38px', borderRadius: '50%',
-              background: isTemporaryPro ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63',
+              background: isAdmin ? '#0ea5e9' : isTemporaryPro ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63',
               border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '15px', fontWeight: '700', color: '#fff', overflow: 'hidden',
@@ -243,7 +243,14 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               {user ? (user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '') : ''}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
-              {isPro ? (
+              {isAdmin ? (
+                <>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#38bdf8' }} />
+                  <span style={{ fontSize: '10px', color: '#38bdf8', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    ADMIN
+                  </span>
+                </>
+              ) : isPro ? (
                 <>
                   <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: isTemporaryPro ? '#ef4444' : '#f59e0b' }} />
                   <span style={{ fontSize: '10px', color: isTemporaryPro ? '#ef4444' : '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>

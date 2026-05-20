@@ -15,10 +15,11 @@ type BillingProfile = {
   subscription_ends_at: string | null
   subscription_trial_ends_at: string | null
   subscription_billing_period?: 'monthly' | 'yearly' | null
+  is_admin?: boolean | null
 }
 
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, isAdmin: contextIsAdmin, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
@@ -271,7 +272,8 @@ export default function SettingsPage() {
   }
 
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
-  const isPro = billingProfile?.subscription_tier ? billingProfile.subscription_tier === 'pro' : contextIsPro
+  const isAdmin = billingProfile?.is_admin === true || contextIsAdmin
+  const isPro = isAdmin || (billingProfile?.subscription_tier ? billingProfile.subscription_tier === 'pro' : contextIsPro)
   const renewalDate = billingProfile?.subscription_renews_at || null
   const endsDate = billingProfile?.subscription_ends_at || null
   const trialEndsDate = billingProfile?.subscription_trial_ends_at || null
@@ -382,7 +384,7 @@ export default function SettingsPage() {
       />
 
       {/* 3 cards side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '20px', marginBottom: '20px', alignItems: 'stretch' }} className="settings-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: isAdmin ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))', gap: '20px', marginBottom: '20px', alignItems: 'stretch' }} className="settings-grid">
 
         {/* ── CARD 1: Profile ── */}
         <div style={{ ...glass }}>
@@ -508,6 +510,7 @@ export default function SettingsPage() {
         </div>
 
         {/* ── CARD 3: Subscription ── */}
+        {!isAdmin && (
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
           border: isTemporaryPlan ? '1px solid rgba(239,68,68,0.32)' : isPro ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(15,141,99,0.15)',
@@ -755,6 +758,7 @@ export default function SettingsPage() {
             </Link>
           )}
         </div>
+        )}
       </div>
 
       {/* Cancel subscription confirmation modal */}
