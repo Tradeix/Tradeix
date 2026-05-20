@@ -23,6 +23,7 @@ export default function SettingsPage() {
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
+  const [savedNickname, setSavedNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
   const [resumingPro, setResumingPro] = useState<'monthly' | 'yearly' | null>(null)
@@ -38,6 +39,8 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
+  const hasAccountChanges = nickname !== savedNickname
+  const hasPreferenceChanges = pendingLang !== language || pendingTheme !== theme
 
   const refreshBillingProfile = useCallback(async (targetUserId?: string) => {
     const profileUserId = targetUserId || user?.id
@@ -57,7 +60,9 @@ export default function SettingsPage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!mounted) return
       setUser(user)
-      setNickname(user?.user_metadata?.full_name || '')
+      const currentNickname = user?.user_metadata?.full_name || ''
+      setNickname(currentNickname)
+      setSavedNickname(currentNickname)
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
 
       if (user) {
@@ -161,6 +166,7 @@ export default function SettingsPage() {
     try {
       await supabase.auth.updateUser({ data: { full_name: nickname } })
       await supabase.from('profiles').update({ full_name: nickname }).eq('id', user.id)
+      setSavedNickname(nickname)
       toast.success(language === 'he' ? 'הפרטים נשמרו' : 'Details saved')
     } catch {
       toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Save failed')
@@ -420,6 +426,7 @@ export default function SettingsPage() {
             <input value={user?.email || ''} disabled style={{ opacity: 0.4, cursor: 'not-allowed' }} />
           </div>
 
+          {hasAccountChanges && (
           <button onClick={handleSave} disabled={saving} style={{
             width: '100%', background: '#0f8d63',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
@@ -431,6 +438,7 @@ export default function SettingsPage() {
             <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
+          )}
         </div>
 
         {/* ── CARD 2: Preferences ── */}
@@ -477,6 +485,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {hasPreferenceChanges && (
           <button onClick={handleSavePreferences} disabled={savingPrefs} style={{
             width: '100%', background: '#0f8d63',
             color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
@@ -490,6 +499,7 @@ export default function SettingsPage() {
             <Icon name="check" size={16} color="#fff" strokeWidth={2.5} />
             {savingPrefs ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}
           </button>
+          )}
         </div>
 
         {/* ── CARD 3: Subscription ── */}
