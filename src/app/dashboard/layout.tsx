@@ -419,7 +419,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const [showDowngradePopup, setShowDowngradePopup] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [pageKey, setPageKey] = useState(0)
-  const [trialChoiceLoading, setTrialChoiceLoading] = useState<'pro' | 'free' | null>(null)
+  const [trialChoiceLoading, setTrialChoiceLoading] = useState<'monthly' | 'yearly' | 'free' | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [authedUser, setAuthedUser] = useState<any>(null)
   const { language, subscriptionLoading, isTemporaryPro, trialExpired, subscriptionTrialEndsAt, upgradeToPro, chooseFreePlan } = useApp()
@@ -527,10 +527,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/auth/login')
   }
 
-  const handleTrialUpgrade = async () => {
-    setTrialChoiceLoading('pro')
+  const handleTrialUpgrade = async (billingPeriod: 'monthly' | 'yearly') => {
+    setTrialChoiceLoading(billingPeriod)
     try {
-      await upgradeToPro('yearly')
+      await upgradeToPro(billingPeriod)
     } finally {
       setTrialChoiceLoading(null)
     }
@@ -563,7 +563,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     return (
       <div dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px', fontFamily: 'Heebo, sans-serif', position: 'relative', overflow: 'hidden' }}>
         <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
-        <div style={{ width: '100%', maxWidth: '760px', position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))', border: '1px solid rgba(245,158,11,0.24)', borderRadius: '28px', padding: '34px', boxShadow: '0 34px 90px rgba(0,0,0,0.44)', textAlign: 'center' }}>
+        <div style={{ width: '100%', maxWidth: '880px', position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))', border: '1px solid rgba(245,158,11,0.24)', borderRadius: '28px', padding: '34px', boxShadow: '0 34px 90px rgba(0,0,0,0.44)', textAlign: 'center' }}>
           <div style={{ width: '74px', height: '74px', borderRadius: '24px', background: 'rgba(245,158,11,0.13)', border: '1px solid rgba(245,158,11,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <Icon name="workspace_premium" size={36} color="#f59e0b" />
           </div>
@@ -578,15 +578,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               ? 'תקופת הניסיון של PRO הסתיימה. כל התוכן, התיקים, העסקאות והנתונים שיצרת נשמרים וימשיכו איתך בכל בחירה: שדרוג ל-PRO או מעבר למנוי החינמי.'
               : 'Your PRO trial has ended. Everything you created, including portfolios, trades, and data, is saved and will continue with whichever option you choose: upgrade to PRO or switch to Free.'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
-            <button className="trial-choice-button trial-choice-pro" onClick={handleTrialUpgrade} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)', position: 'relative', overflow: 'hidden' }}>
-              <Icon name="rocket_launch" size={24} color="#fff" />
-              <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'pro' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'שדרג ל-PRO' : 'Upgrade to PRO')}</span>
-              <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? 'כל הכלים נשארים פתוחים' : 'Keep every tool unlocked'}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', marginBottom: '18px' }}>
+            <button className="trial-choice-button trial-choice-pro trial-choice-monthly" onClick={() => handleTrialUpgrade('monthly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(16,185,129,0.48)', borderRadius: '18px', background: 'linear-gradient(135deg, #0f8d63, #16a873)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(15,141,99,0.24)', position: 'relative', overflow: 'hidden' }}>
+              <Icon name="bolt" size={24} color="#fff" />
+              <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'monthly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO חודשי' : 'Start monthly PRO')}</span>
+              <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$20 לחודש • גמיש' : '$20/month • flexible'}</span>
             </button>
-            <button className="trial-choice-button trial-choice-free" onClick={handleChooseFree} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '116px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '16px', position: 'relative', overflow: 'hidden' }}>
+            <button className="trial-choice-button trial-choice-pro trial-choice-yearly" onClick={() => handleTrialUpgrade('yearly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)', position: 'relative', overflow: 'hidden' }}>
+              <Icon name="rocket_launch" size={24} color="#fff" />
+              <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'yearly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO שנתי' : 'Start yearly PRO')}</span>
+              <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$199 לשנה • חסוך $41' : '$199/year • save $41'}</span>
+            </button>
+            <button className="trial-choice-button trial-choice-free" onClick={handleChooseFree} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', position: 'relative', overflow: 'hidden' }}>
               <Icon name="verified" size={24} color="#0f8d63" />
-              <span style={{ fontSize: '18px', fontWeight: 950 }}>{trialChoiceLoading === 'free' ? (language === 'he' ? 'מעביר לחינמי...' : 'Switching...') : (language === 'he' ? 'חזור לחינמי' : 'Switch to Free')}</span>
+              <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'free' ? (language === 'he' ? 'מעביר לחינמי...' : 'Switching...') : (language === 'he' ? 'המשך בחינמי' : 'Continue Free')}</span>
               <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 800 }}>{language === 'he' ? 'ממשיך עם הגבלות החבילה החינמית' : 'Continue with free-plan limits'}</span>
             </button>
           </div>
@@ -644,6 +649,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             border-color: rgba(255,255,255,0.42);
             box-shadow: 0 24px 58px rgba(249,115,22,0.38), 0 0 0 1px rgba(255,255,255,0.08) inset;
             filter: saturate(1.08);
+          }
+          .trial-choice-monthly:not(:disabled):hover {
+            border-color: rgba(255,255,255,0.42);
+            box-shadow: 0 24px 58px rgba(16,185,129,0.32), 0 0 0 1px rgba(255,255,255,0.08) inset;
           }
           .trial-choice-pro::before {
             background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,0.34) 48%, transparent 72%);
