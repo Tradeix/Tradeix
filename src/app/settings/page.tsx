@@ -306,7 +306,7 @@ export default function SettingsPage() {
     : isPro
       ? 'PRO'
       : (language === 'he' ? 'חינמי' : 'Free')
-  const displayPlanAccent = isTemporaryPlan ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63'
+  const displayPlanAccent = isTemporaryPlan ? '#ef4444' : '#0f8d63'
   const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'חינם' : 'Free') : planPriceLabel
   const displayRemainingLabel = isTemporaryPlan ? (language === 'he' ? 'זמן שנותר לניסיון' : 'Trial time left') : remainingLabel
 
@@ -520,23 +520,23 @@ export default function SettingsPage() {
           {/* Current plan badge */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)',
-            border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.26)' : isPro ? 'rgba(245,158,11,0.25)' : 'rgba(15,141,99,0.2)'}`,
+            background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : 'rgba(15,141,99,0.08)',
+            border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.26)' : 'rgba(15,141,99,0.2)'}`,
             borderRadius: '12px', padding: '12px 14px', marginBottom: '14px',
           }}>
             <div>
-              <div style={{ fontSize: '12px', color: isTemporaryPlan ? '#ef4444' : isPro ? 'rgba(245,158,11,0.7)' : 'rgba(15,141,99,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', color: isTemporaryPlan ? '#ef4444' : 'rgba(15,141,99,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
                 {language === 'he' ? 'תוכנית נוכחית' : 'Current plan'}
               </div>
               <div style={{ fontSize: '22px', fontWeight: '900', color: displayPlanAccent, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {displayPlanNameLabel}
-                {isPro && !isTemporaryPlan && <span style={{ fontSize: '13px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Icon name="bolt" size={12} color="#f59e0b" /> {planPeriodLabel}</span>}
+                {isPro && !isTemporaryPlan && <span style={{ fontSize: '13px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.3)', borderRadius: '999px', padding: '2px 8px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#0f8d63' }}><Icon name="bolt" size={12} color="#0f8d63" /> {planPeriodLabel}</span>}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>
                 {displayPlanPriceLabel}
               </div>
             </div>
-            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : isPro ? 'rgba(245,158,11,0.1)' : 'rgba(15,141,99,0.08)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.18)' : isPro ? 'rgba(245,158,11,0.18)' : 'rgba(15,141,99,0.14)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isTemporaryPlan ? 'rgba(239,68,68,0.1)' : 'rgba(15,141,99,0.08)', border: `1px solid ${isTemporaryPlan ? 'rgba(239,68,68,0.18)' : 'rgba(15,141,99,0.14)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={isPro ? 'bolt' : 'verified'} size={19} color={displayPlanAccent} />
             </div>
           </div>
@@ -593,9 +593,9 @@ export default function SettingsPage() {
                   className="plan-choice-btn plan-choice-btn--yearly"
                   onClick={() => handleTrialUpgrade('yearly')}
                   disabled={Boolean(upgradingTrial)}
-                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.09) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16)' }}
+                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, rgba(15,141,99,0.22) 0%, rgba(15,141,99,0.09) 100%)', border: '1px solid rgba(16,185,129,0.52)', borderRadius: '16px', padding: '12px', color: '#0f8d63', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.16)' }}
                 >
-                  <Icon name="calendar_month" size={18} color="#f59e0b" />
+                  <Icon name="calendar_month" size={18} color="#0f8d63" />
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
                     {upgradingTrial === 'yearly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'קח שנתי וחסוך' : 'Go yearly and save')}
                   </span>
@@ -608,14 +608,14 @@ export default function SettingsPage() {
               isCanceledYearlyButActive ? (
                 <div style={{
                   marginTop: 'auto',
-                  background: isLight ? 'rgba(255,255,255,0.74)' : 'rgba(245,158,11,0.055)',
-                  border: '1px solid rgba(245,158,11,0.26)',
+                  background: isLight ? 'rgba(255,255,255,0.74)' : 'rgba(15,141,99,0.055)',
+                  border: '1px solid rgba(15,141,99,0.26)',
                   borderRadius: '16px',
                   padding: '16px',
                   display: 'grid',
                   gap: '8px',
                 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '950', color: '#f59e0b' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '950', color: '#0f8d63' }}>
                     {language === 'he' ? 'מנוי שנתי מבוטל' : 'Canceled yearly plan'}
                   </div>
                   <div style={{ fontSize: '12px', lineHeight: 1.6, color: 'var(--text3)', fontWeight: '700' }}>
@@ -650,15 +650,15 @@ export default function SettingsPage() {
                   className="plan-choice-btn plan-choice-btn--yearly"
                   onClick={() => handleResumePro('yearly')}
                   disabled={Boolean(resumingPro)}
-                  style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.10)', position: 'relative', overflow: 'hidden' }}
-                  onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(245,158,11,0.24), inset 0 1px 0 rgba(255,255,255,0.14)' } }}
-                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.10)' }}
+                  style={{ width: '100%', minHeight: '70px', background: 'linear-gradient(135deg, rgba(15,141,99,0.20) 0%, rgba(15,141,99,0.08) 100%)', border: '1px solid rgba(16,185,129,0.52)', borderRadius: '16px', padding: '12px', color: '#0f8d63', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.16), inset 0 1px 0 rgba(255,255,255,0.10)', position: 'relative', overflow: 'hidden' }}
+                  onMouseOver={e => { if (!resumingPro) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 34px rgba(15,141,99,0.24), inset 0 1px 0 rgba(255,255,255,0.14)' } }}
+                  onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(15,141,99,0.16), inset 0 1px 0 rgba(255,255,255,0.10)' }}
                 >
-                  <span style={{ position: 'absolute', top: '7px', insetInlineEnd: '7px', padding: '2px 6px', borderRadius: '999px', background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.28)', fontSize: '9px', fontWeight: '900', lineHeight: 1 }}>
+                  <span style={{ position: 'absolute', top: '7px', insetInlineEnd: '7px', padding: '2px 6px', borderRadius: '999px', background: 'rgba(15,141,99,0.18)', border: '1px solid rgba(15,141,99,0.28)', fontSize: '9px', fontWeight: '900', lineHeight: 1 }}>
                     {language === 'he' ? 'חסכון' : 'Save'}
                   </span>
-                  <span style={{ width: '28px', height: '28px', borderRadius: '10px', background: 'rgba(245,158,11,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name="calendar_month" size={16} color="#f59e0b" />
+                  <span style={{ width: '28px', height: '28px', borderRadius: '10px', background: 'rgba(15,141,99,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="calendar_month" size={16} color="#0f8d63" />
                   </span>
                   <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
                     {resumingPro === 'yearly'
@@ -678,7 +678,7 @@ export default function SettingsPage() {
                 className="yearly-switch-cta"
                 onClick={() => setShowYearlySwitchConfirm(true)}
                 disabled={Boolean(resumingPro)}
-                style={{ width: '100%', minHeight: '66px', background: 'linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.08) 100%)', border: '1px solid rgba(245,158,11,0.52)', borderRadius: '16px', padding: '12px 14px', color: '#f59e0b', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.10)', marginTop: 'auto', marginBottom: '10px' }}
+                style={{ width: '100%', minHeight: '66px', background: 'linear-gradient(135deg, rgba(15,141,99,0.20) 0%, rgba(15,141,99,0.08) 100%)', border: '1px solid rgba(16,185,129,0.52)', borderRadius: '16px', padding: '12px 14px', color: '#0f8d63', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.15), inset 0 1px 0 rgba(255,255,255,0.10)', marginTop: 'auto', marginBottom: '10px' }}
               >
                 <span className="yearly-switch-sheen" />
                 <span className="yearly-switch-icon">
@@ -714,7 +714,7 @@ export default function SettingsPage() {
           ) : (
             <Link href="/upgrade" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              width: '100%', background: '#f59e0b',
+              width: '100%', background: '#0f8d63',
               color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
               fontSize: '14px', fontWeight: '800', textDecoration: 'none',
               transition: 'all 0.15s',
@@ -767,9 +767,9 @@ export default function SettingsPage() {
       {/* Switch to yearly confirmation modal */}
       {showYearlySwitchConfirm && (
         <div className="app-modal-overlay" onClick={() => setShowYearlySwitchConfirm(false)} style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}>
-          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" style={{ background: 'var(--bg2)', border: '1px solid rgba(245,158,11,0.28)', borderRadius: '24px', padding: '34px 30px', maxWidth: '440px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', textAlign: 'center' }}>
-            <div style={{ width: '58px', height: '58px', borderRadius: '18px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <Icon name="calendar_month" size={28} color="#f59e0b" />
+          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.28)', borderRadius: '24px', padding: '34px 30px', maxWidth: '440px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', textAlign: 'center' }}>
+            <div style={{ width: '58px', height: '58px', borderRadius: '18px', background: 'rgba(15,141,99,0.12)', border: '1px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Icon name="calendar_month" size={28} color="#0f8d63" />
             </div>
             <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px' }}>
               {language === 'he' ? 'מעבר למנוי שנתי' : 'Switch to yearly'}
@@ -779,7 +779,7 @@ export default function SettingsPage() {
                 ? 'המעבר יתבצע עכשיו. Lemon Squeezy יחשב חיוב יחסי לפי הזמן והקרדיט שנשארו במנוי החודשי. לאחר מכן המנוי יתחדש כמנוי שנתי במחיר $199 לשנה.'
                 : 'The switch will happen now. Lemon Squeezy will calculate the prorated charge based on the time and credit left on the monthly plan. After that, the subscription renews yearly at $199/year.'}
             </div>
-            <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '14px', padding: '12px 14px', color: '#f59e0b', fontSize: '13px', fontWeight: '800', lineHeight: 1.45, marginBottom: '26px' }}>
+            <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '14px', padding: '12px 14px', color: '#0f8d63', fontSize: '13px', fontWeight: '800', lineHeight: 1.45, marginBottom: '26px' }}>
               {language === 'he'
                 ? 'החיוב המדויק מחושב על ידי Lemon Squeezy ויופיע בחשבונית.'
                 : 'The exact amount is calculated by Lemon Squeezy and will appear on the invoice.'}
@@ -794,7 +794,7 @@ export default function SettingsPage() {
               <button
                 onClick={() => handleResumePro('yearly', 'https://tradeix.vercel.app/settings')}
                 disabled={Boolean(resumingPro)}
-                style={{ flex: 1, background: '#f59e0b', border: '1px solid rgba(245,158,11,0.55)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '850', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', opacity: resumingPro ? 0.65 : 1 }}
+                style={{ flex: 1, background: '#0f8d63', border: '1px solid rgba(16,185,129,0.55)', borderRadius: '12px', padding: '11px', fontSize: '14px', fontWeight: '850', color: '#fff', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', opacity: resumingPro ? 0.65 : 1 }}
               >
                 {resumingPro === 'yearly'
                   ? (language === 'he' ? 'מעביר...' : 'Switching...')
@@ -859,11 +859,11 @@ export default function SettingsPage() {
           box-shadow: 0 18px 38px rgba(15,141,99,0.34), inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }
         .plan-choice-btn--yearly {
-          border-color: rgba(251,191,36,0.78) !important;
+          border-color: rgba(16,185,129,0.78) !important;
           background:
-            radial-gradient(circle at 48% -26%, rgba(253,224,71,0.48), transparent 44%),
-            linear-gradient(135deg, #7a4a08 0%, #c27803 48%, #f59e0b 100%) !important;
-          box-shadow: 0 18px 38px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+            radial-gradient(circle at 48% -26%, rgba(187,247,208,0.42), transparent 44%),
+            linear-gradient(135deg, #0b7a56 0%, #0f8d63 48%, #35c287 100%) !important;
+          box-shadow: 0 18px 38px rgba(15,141,99,0.3), inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }
         .plan-choice-btn:hover:not(:disabled) {
           transform: translateY(-3px) scale(1.015);
@@ -914,10 +914,10 @@ export default function SettingsPage() {
           background:
             linear-gradient(90deg, rgba(255,255,255,0.13), transparent 28%),
             linear-gradient(135deg, #8a560a 0%, #c27803 56%, #e99a0a 100%) !important;
-          border: 1px solid rgba(251,191,36,0.62) !important;
+          border: 1px solid rgba(16,185,129,0.62) !important;
           color: #fff !important;
           box-shadow:
-            0 14px 30px rgba(245,158,11,0.2),
+            0 14px 30px rgba(15,141,99,0.2),
             0 0 0 1px rgba(255,255,255,0.05) inset,
             inset 0 1px 0 rgba(255,255,255,0.18) !important;
           transform: translateY(0);
@@ -937,7 +937,7 @@ export default function SettingsPage() {
           transform: translateY(-2px) !important;
           filter: saturate(1.06) brightness(1.03);
           box-shadow:
-            0 20px 38px rgba(245,158,11,0.28),
+            0 20px 38px rgba(15,141,99,0.28),
             0 0 0 1px rgba(255,255,255,0.09) inset,
             inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }

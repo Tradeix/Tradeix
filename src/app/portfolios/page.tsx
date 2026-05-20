@@ -192,11 +192,11 @@ export default function PortfoliosPage() {
       {/* ── MAX-LIMIT BANNER ── */}
       {atMaxPortfolios && !loading && !maxBannerDismissed && (
         <div style={{
-          background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
+          background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.25)',
           borderRadius: '12px', padding: '14px 18px', marginBottom: '20px',
           display: 'flex', alignItems: 'center', gap: '12px',
         }}>
-          <Icon name="info" size={18} color="#f59e0b" />
+          <Icon name="info" size={18} color="#0f8d63" />
           <div style={{ flex: 1, fontSize: '13px', fontWeight: '700', color: 'var(--text2)', lineHeight: 1.5 }}>
             {isPro
               ? (language === 'he' ? 'הגעת למקסימום של 3 תיקים פעילים. כדי להוסיף תיק חדש, מחק או העבר לארכיון אחד מהקיימים.' : 'You have reached the maximum of 3 active portfolios. Delete or archive one to add a new one.')

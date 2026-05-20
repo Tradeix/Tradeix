@@ -77,7 +77,7 @@ export default function UpgradePage() {
 
         <div className="upgrade-copy">
           <div className="upgrade-mark">
-            <Icon name="bolt" size={26} color="#f59e0b" />
+            <Icon name="bolt" size={26} color="#0f8d63" />
           </div>
 
           <div>
@@ -211,11 +211,11 @@ export default function UpgradePage() {
           gap: 34px;
           padding: 30px;
           border-radius: 26px;
-          border: 1px solid rgba(245,158,11,0.24);
+          border: 1px solid rgba(15,141,99,0.24);
           background:
             radial-gradient(circle at 12% 12%, rgba(0,154,203,0.10), transparent 32%),
             radial-gradient(circle at 82% 12%, rgba(184,82,255,0.10), transparent 34%),
-            linear-gradient(135deg, rgba(245,158,11,0.075), rgba(255,255,255,0.018));
+            linear-gradient(135deg, rgba(15,141,99,0.075), rgba(255,255,255,0.018));
           box-shadow: 0 24px 90px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.07);
         }
 
@@ -230,7 +230,7 @@ export default function UpgradePage() {
         .upgrade-glow-a {
           width: 220px;
           height: 220px;
-          background: rgba(245,158,11,0.17);
+          background: rgba(15,141,99,0.17);
           inset-inline-end: -70px;
           top: -80px;
         }
@@ -264,12 +264,12 @@ export default function UpgradePage() {
           align-items: center;
           justify-content: center;
           border-radius: 14px;
-          border: 1px solid rgba(245,158,11,0.30);
-          background: rgba(245,158,11,0.10);
+          border: 1px solid rgba(15,141,99,0.30);
+          background: rgba(15,141,99,0.10);
         }
 
         .upgrade-eyebrow {
-          color: #f59e0b;
+          color: #0f8d63;
           font-size: 12px;
           font-weight: 950;
           letter-spacing: 0.14em;
@@ -347,11 +347,11 @@ export default function UpgradePage() {
           display: grid;
           gap: 18px;
           padding-inline-start: 30px;
-          border-inline-start: 1px solid rgba(245,158,11,0.24);
+          border-inline-start: 1px solid rgba(15,141,99,0.24);
         }
 
         [data-theme="light"] .upgrade-panel {
-          border-inline-start-color: rgba(245,158,11,0.28);
+          border-inline-start-color: rgba(15,141,99,0.28);
         }
 
         .billing-toggle {
@@ -378,14 +378,14 @@ export default function UpgradePage() {
 
         .billing-toggle button:hover {
           transform: translateY(-1px);
-          border-color: rgba(245,158,11,0.36);
+          border-color: rgba(15,141,99,0.36);
         }
 
         .billing-toggle button[data-active="1"] {
-          border-color: rgba(245,158,11,0.72);
-          background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.055));
-          color: #f59e0b;
-          box-shadow: 0 14px 34px rgba(245,158,11,0.11);
+          border-color: rgba(15,141,99,0.72);
+          background: linear-gradient(135deg, rgba(15,141,99,0.18), rgba(15,141,99,0.055));
+          color: #0f8d63;
+          box-shadow: 0 14px 34px rgba(15,141,99,0.11);
         }
 
         .billing-toggle strong,
@@ -479,8 +479,8 @@ export default function UpgradePage() {
           justify-content: center;
           gap: 9px;
           color: #fff;
-          background: linear-gradient(135deg, #f59e0b, #f97316);
-          box-shadow: 0 16px 42px rgba(245,158,11,0.34);
+          background: linear-gradient(135deg, #0f8d63, #12a875);
+          box-shadow: 0 16px 42px rgba(15,141,99,0.34);
         }
 
         .upgrade-cta:hover,

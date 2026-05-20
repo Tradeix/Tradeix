@@ -203,7 +203,7 @@ export default function StatsPage() {
         <PageHeader title={tr.statsTitle} subtitle={language === 'he' ? 'ניתוח ביצועים מעמיק' : 'Deep performance analysis'} icon="monitoring" />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', marginBottom: '24px' }}>
-            <Icon name="lock" size={32} color="#f59e0b" />
+            <Icon name="lock" size={32} color="#0f8d63" />
           </div>
           <div style={{ fontSize: '23px', fontWeight: '600', color: 'var(--text)', marginBottom: '12px' }}>
             {language === 'he' ? 'עמוד הסטטיסטיקות זמין ל PRO בלבד' : 'Statistics page is PRO only'}
@@ -211,7 +211,7 @@ export default function StatsPage() {
           <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
             {language === 'he' ? 'שדרג למנוי PRO כדי לגשת לניתוחים מעמיקים, גרפים ולוח שנה חודשי' : 'Upgrade to PRO to access deep analytics, charts and monthly calendar'}
           </div>
-          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f59e0b', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px', fontWeight: '600' }}>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px', fontWeight: '600' }}>
             <Icon name="bolt" size={16} />
             {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
           </Link>

@@ -142,8 +142,8 @@ export default function ArchivePage() {
       <div style={{ fontFamily: 'Heebo, sans-serif' }}>
         <PageHeader title={language === 'he' ? 'ארכיון תיקים' : 'Portfolio Archive'} subtitle={language === 'he' ? 'תיקים מועברים לארכיון' : 'Archived portfolios'} icon="inventory_2" />
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '24px' }}>
-            <Icon name="lock" size={40} color="#f59e0b" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(15,141,99,0.1)', border: '1px solid rgba(15,141,99,0.2)', marginBottom: '24px' }}>
+            <Icon name="lock" size={40} color="#0f8d63" />
           </div>
           <div style={{ fontSize: '25px', fontWeight: '900', color: 'var(--text)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
             {language === 'he' ? 'ארכיון תיקים זמין ל PRO בלבד' : 'Portfolio archive is PRO only'}
@@ -153,7 +153,7 @@ export default function ArchivePage() {
               ? 'שדרג למנוי PRO כדי לגשת לארכיון התיקים ולנהל היסטוריית מסחר מלאה'
               : 'Upgrade to PRO to access the portfolio archive and manage full trading history'}
           </div>
-          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '15px', fontWeight: '800', boxShadow: '0 8px 24px rgba(245,158,11,0.35)' }}>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #0f8d63, #12a875)', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontSize: '15px', fontWeight: '800', boxShadow: '0 8px 24px rgba(15,141,99,0.35)' }}>
             <Icon name="bolt" size={18} />
             {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
           </Link>

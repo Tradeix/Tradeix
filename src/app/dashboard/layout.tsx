@@ -206,8 +206,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {!subscriptionLoading && !isPro && (
         <Link href="/upgrade" style={{
           display: 'flex', alignItems: 'center', gap: '6px',
-          background: '#f59e0b',
-          border: '1px solid rgba(180,83,9,0.35)',
+          background: '#0f8d63',
+          border: '1px solid rgba(16,185,129,0.35)',
           borderRadius: '8px', padding: '7px 14px',
           fontSize: '12px', fontWeight: '700', color: '#fff',
           textDecoration: 'none', letterSpacing: '0.03em',
@@ -227,7 +227,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
           <div style={{ position: 'relative' }}>
             <div style={{
               width: '38px', height: '38px', borderRadius: '50%',
-              background: isAdmin ? '#0ea5e9' : isTemporaryPro ? '#ef4444' : isPro ? '#f59e0b' : '#0f8d63',
+              background: isAdmin ? '#0ea5e9' : isTemporaryPro ? '#ef4444' : '#0f8d63',
               border: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '15px', fontWeight: '700', color: '#fff', overflow: 'hidden',
@@ -252,8 +252,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 </>
               ) : isPro ? (
                 <>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: isTemporaryPro ? '#ef4444' : '#f59e0b' }} />
-                  <span style={{ fontSize: '10px', color: isTemporaryPro ? '#ef4444' : '#f59e0b', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: isTemporaryPro ? '#ef4444' : '#0f8d63' }} />
+                  <span style={{ fontSize: '10px', color: isTemporaryPro ? '#ef4444' : '#0f8d63', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {isTemporaryPro ? 'PRO-Trial' : 'PRO'}
                   </span>
                 </>
@@ -563,11 +563,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     return (
       <div dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px', fontFamily: 'Heebo, sans-serif', position: 'relative', overflow: 'hidden' }}>
         <div className="grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, background: 'var(--bg)', backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'gridDrift 90s linear infinite' }} />
-        <div style={{ width: '100%', maxWidth: '880px', position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))', border: '1px solid rgba(245,158,11,0.24)', borderRadius: '28px', padding: '34px', boxShadow: '0 34px 90px rgba(0,0,0,0.44)', textAlign: 'center' }}>
-          <div style={{ width: '74px', height: '74px', borderRadius: '24px', background: 'rgba(245,158,11,0.13)', border: '1px solid rgba(245,158,11,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            <Icon name="workspace_premium" size={36} color="#f59e0b" />
+        <div style={{ width: '100%', maxWidth: '880px', position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))', border: '1px solid rgba(16,185,129,0.24)', borderRadius: '28px', padding: '34px', boxShadow: '0 34px 90px rgba(0,0,0,0.44)', textAlign: 'center' }}>
+          <div style={{ width: '74px', height: '74px', borderRadius: '24px', background: 'rgba(15,141,99,0.13)', border: '1px solid rgba(16,185,129,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="workspace_premium" size={36} color="#0f8d63" />
           </div>
-          <div style={{ fontSize: '12px', fontWeight: 900, color: '#f59e0b', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '10px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 900, color: '#0f8d63', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '10px' }}>
             {language === 'he' ? 'תקופת ניסיון הסתיימה' : 'Trial ended'}
           </div>
           <h1 style={{ margin: '0 0 12px', fontSize: 'clamp(28px, 5vw, 44px)', lineHeight: 1.05, letterSpacing: '-0.03em', fontWeight: 950 }}>
@@ -584,7 +584,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'monthly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO חודשי' : 'Start monthly PRO')}</span>
               <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$20 לחודש • גמיש' : '$20/month • flexible'}</span>
             </button>
-            <button className="trial-choice-button trial-choice-pro trial-choice-yearly" onClick={() => handleTrialUpgrade('yearly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(245,158,11,0.42)', borderRadius: '18px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(245,158,11,0.28)', position: 'relative', overflow: 'hidden' }}>
+            <button className="trial-choice-button trial-choice-pro trial-choice-yearly" onClick={() => handleTrialUpgrade('yearly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(16,185,129,0.48)', borderRadius: '18px', background: 'linear-gradient(135deg, #0b7a56, #12a875)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(15,141,99,0.28)', position: 'relative', overflow: 'hidden' }}>
               <Icon name="rocket_launch" size={24} color="#fff" />
               <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'yearly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO שנתי' : 'Start yearly PRO')}</span>
               <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$199 לשנה • חסוך $41' : '$199/year • save $41'}</span>
@@ -647,7 +647,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           }
           .trial-choice-pro:not(:disabled):hover {
             border-color: rgba(255,255,255,0.42);
-            box-shadow: 0 24px 58px rgba(249,115,22,0.38), 0 0 0 1px rgba(255,255,255,0.08) inset;
+            box-shadow: 0 24px 58px rgba(16,185,129,0.32), 0 0 0 1px rgba(255,255,255,0.08) inset;
             filter: saturate(1.08);
           }
           .trial-choice-monthly:not(:disabled):hover {
@@ -830,18 +830,18 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       {/* ── UPGRADE / WELCOME PRO POPUP ── */}
       {showUpgradePopup && (
         <div className="app-modal-overlay" onClick={() => setShowUpgradePopup(false)} style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
-          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" dir={isRTL ? 'rtl' : 'ltr'} style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
+          <div onClick={e => e.stopPropagation()} className="app-modal-card" data-tight="1" dir={isRTL ? 'rtl' : 'ltr'} style={{ background: 'linear-gradient(135deg, #0f1117, #13151f)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '28px', padding: '40px 36px', maxWidth: '440px', width: '100%', textAlign: 'center', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative', overflow: 'hidden' }}>
             <button onClick={() => setShowUpgradePopup(false)} style={{ position: 'absolute', top: '16px', insetInlineEnd: '16px', width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(229,226,225,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
               onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text)' }}
               onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(229,226,225,0.3)' }}
             >
               <Icon name="close" size={18} color="currentColor" />
             </button>
-            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '220px', height: '220px', background: 'rgba(245,158,11,0.1)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
-            <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.1))', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <Icon name="bolt" size={36} color="#f59e0b" />
+            <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '220px', height: '220px', background: 'rgba(15,141,99,0.1)', filter: 'blur(60px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(15,141,99,0.15), rgba(18,168,117,0.1))', border: '1px solid rgba(15,141,99,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Icon name="bolt" size={36} color="#0f8d63" />
             </div>
-            <div style={{ fontSize: '12px', fontWeight: '800', color: '#f59e0b', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
+            <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f8d63', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '10px' }}>PRO</div>
             <div style={{ fontSize: '25px', fontWeight: '900', color: 'var(--text)', marginBottom: '10px', letterSpacing: '-0.02em' }}>
               {language === 'he' ? 'ברוכים הבאים למועדון!' : 'Welcome to PRO!'}
             </div>
@@ -861,17 +861,17 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
                 { icon: 'inventory_2', text: language === 'he' ? 'ארכיון תיקים' : 'Portfolio archive' },
               ].map((item, i, arr) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                  <Icon name={item.icon} size={15} color="#f59e0b" />
+                  <Icon name={item.icon} size={15} color="#0f8d63" />
                   <span style={{ fontSize: '14px', color: 'rgba(229,226,225,0.6)', fontWeight: '600' }}>{item.text}</span>
                 </div>
               ))}
             </div>
             <button onClick={() => setShowUpgradePopup(false)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%',
-              background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              background: 'linear-gradient(135deg, #0f8d63, #12a875)',
               color: '#fff', borderRadius: '14px', padding: '13px',
               fontSize: '15px', fontWeight: '800', border: 'none', cursor: 'pointer',
-              boxShadow: '0 0 28px rgba(245,158,11,0.4)',
+              boxShadow: '0 0 28px rgba(15,141,99,0.4)',
             }}>
               <Icon name="rocket_launch" size={18} color="#fff" />
               {language === 'he' ? 'בואו נתחיל!' : "Let's go!"}
