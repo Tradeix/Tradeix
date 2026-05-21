@@ -340,7 +340,7 @@ export default function DashboardPage() {
         <span />
       </div>
 
-      <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px', alignItems: 'stretch' }}>
+      <div className="overview-perf-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px', alignItems: 'stretch' }}>
 
       <div className="overview-col" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       {/* ── OVERVIEW TITLE ── */}
