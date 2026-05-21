@@ -297,13 +297,13 @@ export default function DashboardPage() {
                 justifySelf: language === 'he' ? 'start' : 'end',
                 direction: language === 'he' ? 'rtl' : 'ltr',
                 order: language === 'he' ? 1 : 2,
-                padding: '4px 0 4px 18px',
-                borderRight: 'none',
-                borderLeft: '2px solid rgba(15,141,99,0.8)',
+                padding: language === 'he' ? '4px 18px 4px 0' : '4px 0 4px 18px',
+                borderRight: language === 'he' ? '2px solid rgba(15,141,99,0.8)' : 'none',
+                borderLeft: language === 'he' ? 'none' : '2px solid rgba(15,141,99,0.8)',
                 position: 'relative',
-                textAlign: 'left',
+                textAlign: language === 'he' ? 'right' : 'left',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexDirection: language === 'he' ? 'row-reverse' : 'row', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
                   FOCUS
                 </div>
@@ -715,13 +715,14 @@ export default function DashboardPage() {
           .section-anim.anim-delay-8 { margin-top: 10px !important; }
           .welcome-section { padding: 16px 0 14px !important; margin-bottom: 22px !important; min-height: 102px !important; }
           .welcome-inner { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 14px !important; direction: ltr !important; }
-          .welcome-profile { order: 2 !important; flex: 0 1 50% !important; min-width: 0 !important; justify-content: flex-end !important; gap: 12px !important; direction: rtl !important; text-align: right !important; }
+          .welcome-profile { order: 2 !important; flex: 0 1 50% !important; min-width: 0 !important; justify-content: flex-end !important; justify-self: flex-end !important; gap: 12px !important; direction: rtl !important; text-align: right !important; margin-left: auto !important; margin-right: 0 !important; }
+          .welcome-profile > div { text-align: right !important; }
           .welcome-tile { width: 54px !important; height: 54px !important; border-radius: 15px !important; }
           .welcome-tile > span { font-size: 23px !important; }
           .welcome-title { font-size: clamp(20px, 5vw, 24px) !important; line-height: 1.12 !important; }
           .welcome-date { font-size: 12.5px !important; }
-          .welcome-meta-row { margin-bottom: 7px !important; }
-          .welcome-quote-wrap { order: 1 !important; flex: 0 1 50% !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding: 3px 0 3px 12px !important; direction: rtl !important; text-align: left !important; border-right: none !important; border-left: 2px solid rgba(15,141,99,0.8) !important; }
+          .welcome-meta-row { margin-bottom: 7px !important; justify-content: flex-end !important; }
+          .welcome-quote-wrap { order: 1 !important; flex: 0 1 50% !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; border-right: 2px solid rgba(15,141,99,0.8) !important; border-left: none !important; }
           .welcome-quote-wrap > div { font-size: 10.5px !important; margin-bottom: 6px !important; gap: 5px !important; }
           .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }
           .welcome-quote { font-size: clamp(12px, 3.2vw, 13.5px) !important; line-height: 1.45 !important; }
