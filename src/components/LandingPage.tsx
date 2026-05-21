@@ -14,10 +14,10 @@ const COPY = {
       { id: 'faq', label: 'שאלות נפוצות' },
     ],
     hero: {
-      titleLead: 'עקוב, נתח,',
-      titleAccent: 'השתפר',
-      titleTail: '— בכל עסקה.',
-      subtitle: 'UPLOTRADE מנתח את הגרפים שלך באמצעות AI, אוסף את הסטטיסטיקות, ועוזר לך לראות מה באמת עובד בלי טבלאות אקסל ובלי חישובים בראש.',
+      titleLead: 'יומן מסחר חכם',
+      titleAccent: 'ששם את הנתונים שלך',
+      titleTail: 'במרכז.',
+      subtitle: 'UPLOTRADE מרכז את העסקאות, מנתח גרפים עם AI ומציג לך סטטיסטיקות ברורות כדי להבין מה עובד, מה חוזר על עצמו, ואיפה להשתפר.',
       portfolioValue: 'שווי תיק נוכחי',
     },
     featuresHeader: {
@@ -99,10 +99,10 @@ const COPY = {
       { id: 'faq', label: 'FAQ' },
     ],
     hero: {
-      titleLead: 'Track, analyze,',
-      titleAccent: 'improve',
-      titleTail: '— every trade.',
-      subtitle: 'UPLOTRADE analyzes your charts with AI, collects your stats, and helps you see what actually works without spreadsheets or mental math.',
+      titleLead: 'A smarter trading journal',
+      titleAccent: 'built around your data',
+      titleTail: '.',
+      subtitle: 'UPLOTRADE brings your trades, AI chart analysis, and performance stats into one focused workspace so you can see what works and improve with clarity.',
       portfolioValue: 'Current portfolio value',
     },
     featuresHeader: {
@@ -622,11 +622,11 @@ export default function LandingPage() {
           z-index: 1;
         }
         .lp-hero {
-          min-height: 100svh;
+          min-height: 92svh;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 118px 24px 74px;
+          padding: 112px 24px 62px;
           position: relative;
           isolation: isolate;
           overflow: hidden;
@@ -641,7 +641,7 @@ export default function LandingPage() {
         }
         .lp-hero-inner {
           width: 100%;
-          max-width: 1060px;
+          max-width: 1120px;
           text-align: center;
           display: grid;
           justify-items: center;
@@ -664,28 +664,28 @@ export default function LandingPage() {
           backdrop-filter: blur(14px);
         }
         .lp-hero h1 {
-          margin: 0 0 18px;
+          margin: 0 0 16px;
           color: var(--text);
-          font-size: clamp(44px, 6.4vw, 82px);
+          font-size: clamp(40px, 5.15vw, 68px);
           font-weight: 900;
-          line-height: 1;
+          line-height: 1.05;
           letter-spacing: 0;
-          max-width: 980px;
+          max-width: 920px;
           text-wrap: balance;
         }
         .lp-hero h1 span, .lp-ai-head h2 span {
-          background: linear-gradient(90deg, #38bdf8 0%, #a855f7 45%, #36cb61 100%);
+          background: linear-gradient(90deg, #31d18d 0%, #0f8d63 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
         .lp-subtitle {
-          max-width: 640px;
-          margin: 0 auto 30px;
+          max-width: 720px;
+          margin: 0 auto 26px;
           color: var(--text2);
-          font-size: 18px;
-          font-weight: 500;
-          line-height: 1.6;
+          font-size: 17px;
+          font-weight: 650;
+          line-height: 1.7;
         }
         .lp-cta-row {
           display: flex;
@@ -743,8 +743,8 @@ export default function LandingPage() {
           backdrop-filter: blur(18px);
         }
         .lp-preview {
-          width: min(100%, 980px);
-          margin: 16px auto 0;
+          width: min(100%, 940px);
+          margin: 10px auto 0;
           padding: 0;
           text-align: start;
           display: block;
@@ -753,7 +753,7 @@ export default function LandingPage() {
           background: transparent;
           box-shadow: none;
           backdrop-filter: none;
-          perspective: 1200px;
+          perspective: none;
         }
         .lp-preview::before {
           display: none;
@@ -763,17 +763,17 @@ export default function LandingPage() {
           inset: 14% 8% -8% 10%;
           background: radial-gradient(closest-side, rgba(34,197,94,0.22), transparent 72%);
           filter: blur(34px);
-          transform: rotate(-3deg) skewX(-10deg);
+          transform: none;
           pointer-events: none;
         }
         .lp-dashboard-frame {
           position: relative;
-          transform: rotateX(8deg) rotateZ(-2.5deg) skewX(-5deg);
+          transform: none;
           transform-origin: 50% 50%;
-          clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
-          border-radius: 24px;
-          border: 1px solid rgba(255,255,255,0.14);
-          box-shadow: 0 34px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(34,197,94,0.08);
+          clip-path: none;
+          border-radius: 22px;
+          border: 1px solid rgba(255,255,255,0.12);
+          box-shadow: 0 24px 70px rgba(0,0,0,0.46), 0 0 0 1px rgba(34,197,94,0.06);
           overflow: hidden;
           background: #070a0f;
         }
@@ -795,10 +795,10 @@ export default function LandingPage() {
           background:
             radial-gradient(circle at 12% 5%, rgba(15,141,99,0.16), transparent 28%),
             linear-gradient(135deg, rgba(9,18,25,0.98), rgba(7,10,15,0.98) 48%, rgba(20,13,35,0.98));
-          transform: skewX(5deg);
+          transform: none;
           transform-origin: center;
-          margin-inline: -28px;
-          padding-inline: 28px;
+          margin-inline: 0;
+          padding-inline: 0;
         }
         .lp-shot-sidebar {
           display: flex;
@@ -1836,15 +1836,15 @@ export default function LandingPage() {
           .lp-ai-stats { grid-template-columns: 1fr; }
           .lp-preview { width: min(100%, 780px); }
           .lp-dashboard-frame {
-            transform: rotateX(7deg) rotateZ(-1.8deg) skewX(-3deg);
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+            transform: none;
+            clip-path: none;
           }
           .lp-dashboard-shot {
             min-height: 520px;
             grid-template-columns: 58px minmax(0, 1fr);
-            transform: skewX(3deg);
-            margin-inline: -18px;
-            padding-inline: 18px;
+            transform: none;
+            margin-inline: 0;
+            padding-inline: 0;
           }
           .lp-shot-main { padding: 18px; }
           .lp-shot-grid {
@@ -1940,15 +1940,15 @@ export default function LandingPage() {
           .lp-shot-shadow { inset: 18% 0 -6%; }
           .lp-dashboard-frame {
             border-radius: 18px;
-            transform: rotateX(0deg) rotateZ(-1.2deg) skewX(-2deg);
-            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+            transform: none;
+            clip-path: none;
           }
           .lp-dashboard-shot {
             min-height: 560px;
             grid-template-columns: 1fr;
-            transform: skewX(2deg);
-            margin-inline: -10px;
-            padding-inline: 10px;
+            transform: none;
+            margin-inline: 0;
+            padding-inline: 0;
           }
           .lp-shot-sidebar {
             flex-direction: row;
