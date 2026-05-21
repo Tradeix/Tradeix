@@ -297,7 +297,6 @@ export default function DashboardPage() {
             </div>
 
               <div className="welcome-quote-wrap" style={{
-                width: '100%',
                 maxWidth: '560px',
                 minWidth: 0,
                 marginLeft: 0,
