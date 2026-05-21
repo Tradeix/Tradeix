@@ -723,7 +723,7 @@ export default function DashboardPage() {
           .welcome-date { font-size: 12.5px !important; }
           .welcome-meta-row { width: 100% !important; margin-bottom: 7px !important; justify-content: flex-start !important; direction: rtl !important; text-align: right !important; }
           .welcome-date { width: 100% !important; text-align: right !important; }
-          .welcome-quote-wrap { order: 1 !important; flex: 0 1 50% !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; border-right: 2px solid rgba(15,141,99,0.8) !important; border-left: none !important; }
+          .welcome-quote-wrap { order: 1 !important; flex: 0 1 50% !important; width: 100% !important; max-width: 560px !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; border-right: 2px solid rgba(15,141,99,0.8) !important; border-left: none !important; }
           .welcome-quote-wrap > div { font-size: 10.5px !important; margin-bottom: 6px !important; gap: 5px !important; }
           .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }
           .welcome-quote { font-size: clamp(12px, 3.2vw, 13.5px) !important; line-height: 1.45 !important; }
