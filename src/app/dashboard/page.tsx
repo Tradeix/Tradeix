@@ -265,7 +265,16 @@ export default function DashboardPage() {
           boxShadow: 'none',
           minHeight: '104px',
         }}>
-          <div className="welcome-inner" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'center', gap: '24px', direction: 'ltr' }}>
+          <div className="welcome-inner" style={{
+            position: 'relative',
+            display: 'grid',
+            gridTemplateColumns: language === 'he'
+              ? 'minmax(0, 560px) minmax(0, 1fr)'
+              : 'minmax(0, 1fr) minmax(0, 560px)',
+            alignItems: 'center',
+            gap: '24px',
+            direction: 'ltr',
+          }}>
             <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0, gridColumn: language === 'he' ? '2' : '1', justifySelf: language === 'he' ? 'end' : 'start', direction: language === 'he' ? 'rtl' : 'ltr', order: language === 'he' ? 2 : 1 }}>
             <div style={{ minWidth: 0 }}>
               <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
