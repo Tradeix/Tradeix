@@ -554,8 +554,8 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* CTA — pinned to bottom for symmetric card heights */}
-          {hasPaidProPlan && (
+          {/* Time remaining — shown for paid PRO and PRO-Trial */}
+          {isPro && (
             <div style={{ display: 'grid', gap: '8px', marginBottom: '14px' }}>
               <div style={{
                 background: isLight ? 'rgba(255,255,255,0.56)' : 'rgba(255,255,255,0.035)',
