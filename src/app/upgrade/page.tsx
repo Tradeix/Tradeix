@@ -67,7 +67,6 @@ export default function UpgradePage() {
   const period = isYearly
     ? (language === 'he' ? 'לשנה' : 'per year')
     : (language === 'he' ? 'לחודש' : 'per month')
-  const monthlyEquivalent = language === 'he' ? 'יוצא $16.58 לחודש' : 'Only $16.58/mo'
   const hasActivePaidPlan = isAdmin || (isPro && !isTemporaryPro)
 
   return (
@@ -146,9 +145,11 @@ export default function UpgradePage() {
               <span>{period}</span>
             </div>
 
-            <div className="price-note">
-              {isYearly ? monthlyEquivalent : (language === 'he' ? 'אפשר לבטל בכל זמן' : 'Cancel anytime')}
-            </div>
+            {!isYearly && (
+              <div className="price-note">
+                {language === 'he' ? 'אפשר לבטל בכל זמן' : 'Cancel anytime'}
+              </div>
+            )}
           </div>
 
           {hasActivePaidPlan ? (
