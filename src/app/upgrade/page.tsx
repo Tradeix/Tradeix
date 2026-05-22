@@ -179,7 +179,9 @@ export default function UpgradePage() {
               ) : (
                 <>
                   <Icon name="lock_open" size={19} color="#fff" />
-                  {language === 'he' ? 'פתח PRO עכשיו' : 'Unlock PRO now'}
+                  {language === 'he'
+                    ? isYearly ? 'הפעל מנוי PRO שנתי' : 'הפעל מנוי PRO חודשי'
+                    : isYearly ? 'Activate yearly PRO plan' : 'Activate monthly PRO plan'}
                 </>
               )}
             </button>
