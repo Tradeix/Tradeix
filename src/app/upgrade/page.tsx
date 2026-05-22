@@ -612,6 +612,7 @@ export default function UpgradePage() {
 
           .upgrade-mark {
             order: 1;
+            margin-inline: auto;
             width: 40px;
             height: 40px;
             border-radius: 12px;
