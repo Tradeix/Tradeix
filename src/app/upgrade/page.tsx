@@ -81,7 +81,7 @@ export default function UpgradePage() {
             <Icon name="bolt" size={26} color="#0f8d63" />
           </div>
 
-          <div>
+          <div className="upgrade-headline">
             <div className="upgrade-eyebrow">
               {language === 'he' ? 'UPLOTRADE PRO' : 'UPLOTRADE PRO'}
             </div>
@@ -551,6 +551,7 @@ export default function UpgradePage() {
             min-height: 0;
             gap: 16px;
             padding: 18px;
+            width: min(100%, 720px);
           }
 
           .upgrade-copy {
@@ -572,33 +573,210 @@ export default function UpgradePage() {
           .upgrade-panel {
             border-inline-start: 0;
             padding-inline-start: 0;
+            border-top: 1px solid rgba(15,141,99,0.20);
+            padding-top: 16px;
           }
         }
 
         @media (max-width: 560px) {
+          .upgrade-shell {
+            display: block;
+            min-height: 0;
+            padding: 0 0 14px;
+          }
+
           .upgrade-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
             padding: 14px;
-            border-radius: 20px;
+            border-radius: 18px;
+            border-color: rgba(15,141,99,0.18);
+            background:
+              linear-gradient(180deg, rgba(15,141,99,0.075), rgba(255,255,255,0.012));
+            box-shadow: 0 14px 44px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.05);
+          }
+
+          .upgrade-glow {
+            display: none;
+          }
+
+          .upgrade-copy {
+            display: contents;
+          }
+
+          .upgrade-mark {
+            order: 1;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+          }
+
+          .upgrade-headline {
+            order: 2;
+          }
+
+          .upgrade-eyebrow {
+            font-size: 10px;
+            margin-bottom: 6px;
+          }
+
+          .upgrade-copy h1 {
+            font-size: 26px;
+            line-height: 1.05;
+            max-width: 320px;
+          }
+
+          .upgrade-copy p {
+            font-size: 12px;
+            line-height: 1.45;
+            margin-top: 8px;
+            max-width: 340px;
           }
 
           .upgrade-proof {
-            display: grid;
-            grid-template-columns: 1fr;
+            order: 3;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+          }
+
+          .upgrade-proof::-webkit-scrollbar {
+            display: none;
+          }
+
+          .upgrade-proof span {
+            flex: 0 0 auto;
+            min-height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(54,203,97,0.08);
+            border: 1px solid rgba(54,203,97,0.16);
+            font-size: 10px;
+          }
+
+          .upgrade-proof span::before {
+            width: 5px;
+            height: 5px;
+            margin-inline-end: 5px;
+          }
+
+          .upgrade-features {
+            order: 5;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+            padding-top: 2px;
+          }
+
+          .upgrade-features div {
+            min-height: 38px;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 8px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.026);
+            border: 1px solid rgba(255,255,255,0.055);
+            font-size: 11px;
+            line-height: 1.25;
+            font-weight: 850;
+          }
+
+          .upgrade-panel {
+            order: 4;
+            border-inline-start: 0;
+            padding-inline-start: 0;
+            border-top: 1px solid rgba(15,141,99,0.20);
+            border-bottom: 1px solid rgba(15,141,99,0.16);
+            padding: 12px 0;
+            gap: 12px;
+          }
+
+          .billing-toggle {
+            gap: 8px;
+          }
+
+          .billing-toggle button {
+            min-height: 58px;
+            border-radius: 14px;
+          }
+
+          .billing-toggle strong {
+            font-size: 13px;
+            margin-bottom: 3px;
+          }
+
+          .billing-toggle span {
+            font-size: 10px;
+          }
+
+          .price-strip {
+            grid-template-columns: 1fr auto;
+            gap: 8px 12px;
+            align-items: end;
+          }
+
+          .plan-badge {
+            min-height: 24px;
+            padding: 4px 9px;
+            font-size: 10px;
+          }
+
+          .price-row strong {
+            font-size: 40px;
+          }
+
+          .price-row span {
+            font-size: 11px;
+            padding-bottom: 3px;
+          }
+
+          .price-note {
+            font-size: 11px;
+            text-align: end;
+            padding-bottom: 4px;
+          }
+
+          .upgrade-cta,
+          .active-plan button {
+            min-height: 48px;
+            border-radius: 14px;
+            font-size: 14px;
+          }
+
+          .active-plan > div {
+            min-height: 44px;
+            font-size: 12px;
+          }
+
+          .checkout-hint {
+            font-size: 10px;
+            line-height: 1.4;
+            margin-top: -2px;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .upgrade-card {
+            padding: 12px;
+          }
+
+          .upgrade-copy h1 {
+            font-size: 23px;
+          }
+
+          .upgrade-copy p {
+            font-size: 11.5px;
           }
 
           .upgrade-features {
             grid-template-columns: 1fr;
-            gap: 8px;
-          }
-
-          .upgrade-panel {
-            border-inline-start: 0;
-            padding-inline-start: 0;
-            padding: 14px;
           }
 
           .price-row strong {
-            font-size: 44px;
+            font-size: 34px;
           }
         }
       `}</style>
