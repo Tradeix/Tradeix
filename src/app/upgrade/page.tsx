@@ -184,11 +184,6 @@ export default function UpgradePage() {
             </button>
           )}
 
-          <div className="checkout-hint">
-            {language === 'he'
-              ? 'התשלום נפתח בפופאפ מאובטח בתוך האתר.'
-              : 'Secure checkout opens in a popup inside the site.'}
-          </div>
         </div>
       </section>
 
@@ -521,14 +516,6 @@ export default function UpgradePage() {
           border: 1px solid rgba(239,68,68,0.25);
         }
 
-        .checkout-hint {
-          margin-top: -4px;
-          text-align: center;
-          color: var(--text3);
-          font-size: 11px;
-          font-weight: 750;
-        }
-
         .spinner {
           width: 20px;
           height: 20px;
@@ -751,11 +738,6 @@ export default function UpgradePage() {
             font-size: 12px;
           }
 
-          .checkout-hint {
-            font-size: 10px;
-            line-height: 1.4;
-            margin-top: -2px;
-          }
         }
 
         @media (max-width: 380px) {
