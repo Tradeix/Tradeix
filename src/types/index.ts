@@ -36,6 +36,7 @@ export type Profile = {
   avatar_url?: string
   language: 'he' | 'en'
   theme: 'dark' | 'light'
+  app_currency: 'ILS' | 'USD' | 'EUR'
   created_at: string
 }
 

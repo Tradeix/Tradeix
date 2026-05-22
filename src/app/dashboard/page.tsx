@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
+import { formatMoney, formatSignedMoney } from '@/lib/currency'
 import { t } from '@/lib/translations'
 import { Trade, Stats } from '@/types'
 import TradeModal from '@/components/TradeModal'
@@ -41,7 +42,7 @@ function calculateStats(rows: any[]): Stats {
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language } = useApp()
+  const { language, currency } = useApp()
   const router = useRouter()
   const tr = t[language]
   const [timeFilter, setTimeFilter] = useState(2)
@@ -243,6 +244,7 @@ export default function DashboardPage() {
   const winRateColor = stats.winRate >= 60 ? '#22c55e' : stats.winRate >= 40 ? '#f59e0b' : '#ef4444'
   const winRateGlow = stats.winRate >= 60 ? 'rgba(34,197,94,0.16)' : stats.winRate >= 40 ? 'rgba(245,158,11,0.16)' : 'rgba(239,68,68,0.16)'
   const winRateArc = Math.max(0, Math.min(100, stats.winRate))
+  const dashboardValue = portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -399,7 +401,7 @@ export default function DashboardPage() {
                 }}>
                   <Icon name="payments" size={13} color="var(--text3)" />
                   {language === 'he' ? 'קרן' : 'Capital'}
-                  <span dir="ltr" style={{ color: 'var(--text)', fontWeight: '900' }}>${initialCapital.toLocaleString()}</span>
+                  <span dir="ltr" style={{ color: 'var(--text)', fontWeight: '900' }}>{formatMoney(initialCapital, currency)}</span>
                 </span>
               )}
             </div>
@@ -428,7 +430,7 @@ export default function DashboardPage() {
                   {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
                 </div>
                 <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
-                  ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  {formatMoney(dashboardValue, currency)}
                 </div>
               </div>
 
@@ -549,7 +551,7 @@ export default function DashboardPage() {
           </div>
         </div>
         {[
-          { label: tr.portfolioPerformance, value: `${pnlPositive ? '+' : '-'}$${Math.abs(stats.totalPnl).toLocaleString()}`, icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
+          { label: tr.portfolioPerformance, value: formatSignedMoney(stats.totalPnl, currency), icon: pnlPositive ? 'trending_up' : 'trending_down', color: pnlPositive ? '#22c55e' : '#ef4444' },
           { label: tr.profitFactor, value: stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : '—', icon: 'analytics', color: '#0f8d63' },
         ].map((s, i) => (
           <div key={i} className={`stat-card card-hover stat-anim anim-delay-${i + 5}`} style={{ ...card, padding: '20px' }}>
@@ -639,7 +641,7 @@ export default function DashboardPage() {
                   </div>
                   <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '500', color: 'var(--text2)' }}>{new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit' })}</div>
                   <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '600', color: trade.outcome === 'win' && trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>{trade.outcome === 'win' && trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(1)}` : '—'}</div>
-                  <div dir="ltr" style={{ textAlign: 'center', fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}</div>
+                  <div dir="ltr" style={{ textAlign: 'center', fontSize: '15px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>{formatSignedMoney(trade.pnl, currency)}</div>
                 </div>
               ))}
             </>

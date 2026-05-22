@@ -5,6 +5,7 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
+export type Currency = 'ILS' | 'USD' | 'EUR'
 type SubscriptionTier = 'free' | 'pro'
 type BillingPeriod = 'monthly' | 'yearly'
 type CancelSubscriptionResult = {
@@ -39,8 +40,10 @@ declare global {
 type AppContextType = {
   theme: Theme
   language: Language
+  currency: Currency
   setTheme: (t: Theme) => void
   setLanguage: (l: Language) => void
+  setCurrency: (c: Currency) => void
   subscription: SubscriptionTier
   isPro: boolean
   isTemporaryPro: boolean
@@ -56,8 +59,8 @@ type AppContextType = {
 }
 
 const AppContext = createContext<AppContextType>({
-  theme: 'dark', language: 'en',
-  setTheme: () => {}, setLanguage: () => {},
+  theme: 'dark', language: 'en', currency: 'USD',
+  setTheme: () => {}, setLanguage: () => {}, setCurrency: () => {},
   subscription: 'free', isPro: false, isTemporaryPro: false, trialExpired: false,
   subscriptionStatus: null, subscriptionTrialEndsAt: null, subscriptionLoading: true, isAdmin: false,
   upgradeToPro: async () => {}, chooseFreePlan: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
@@ -65,6 +68,10 @@ const AppContext = createContext<AppContextType>({
 
 function isLanguage(value: string | null): value is Language {
   return value === 'he' || value === 'en'
+}
+
+function isCurrency(value: string | null): value is Currency {
+  return value === 'ILS' || value === 'USD' || value === 'EUR'
 }
 
 function detectBrowserLanguage(): Language {
@@ -188,6 +195,7 @@ function applyLanguage(l: Language) {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [language, setLanguageState] = useState<Language>('en')
+  const [currency, setCurrencyState] = useState<Currency>('USD')
   const [subscription, setSubscription] = useState<SubscriptionTier>('free')
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionTrialEndsAt, setSubscriptionTrialEndsAt] = useState<string | null>(null)
@@ -234,6 +242,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLanguageState(initialLang)
     applyLanguage(initialLang)
 
+    const storedCurrency = localStorage.getItem('tradeix-currency')
+    const initialCurrency = isCurrency(storedCurrency) ? storedCurrency : 'USD'
+    setCurrencyState(initialCurrency)
+
     if (!isSupabaseConfigured) {
       setSubscriptionLoading(false)
       setIsAdmin(false)
@@ -245,7 +257,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await fetch('/api/profile/ensure', { method: 'POST' }).catch(() => null)
 
       const { data } = await supabase.from('profiles')
-        .select('language')
+        .select('*')
         .eq('id', user.id).single()
 
       if (data) {
@@ -254,6 +266,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLanguageState(l)
         applyLanguage(l)
         localStorage.setItem('tradeix-lang', l)
+
+        const profileCurrency = isCurrency(data.app_currency) ? data.app_currency : null
+        const c = profileCurrency || initialCurrency
+        setCurrencyState(c)
+        localStorage.setItem('tradeix-currency', c)
       }
 
       const response = await fetch('/api/billing/status', { cache: 'no-store' }).catch(() => null)
@@ -277,6 +294,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured) return
     const { data: { user } } = await supabase.auth.getUser()
     if (user) await supabase.from('profiles').upsert({ id: user.id, language: l }, { onConflict: 'id' })
+  }
+
+  async function setCurrency(c: Currency) {
+    setCurrencyState(c)
+    localStorage.setItem('tradeix-currency', c)
+    if (!isSupabaseConfigured) return
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase.from('profiles').upsert({ id: user.id, app_currency: c }, { onConflict: 'id' })
+    }
   }
 
   async function upgradeToPro(billingPeriod: 'monthly' | 'yearly' = 'monthly') {
@@ -395,7 +422,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      theme, language, setTheme, setLanguage,
+      theme, language, currency, setTheme, setLanguage, setCurrency,
       subscription, isPro, isTemporaryPro, trialExpired, subscriptionStatus, subscriptionTrialEndsAt, subscriptionLoading, isAdmin,
       upgradeToPro, chooseFreePlan, cancelSubscription, resumeSubscription,
     }}>

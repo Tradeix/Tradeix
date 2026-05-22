@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useApp } from '@/lib/app-context'
+import type { Currency } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -19,7 +20,7 @@ type BillingProfile = {
 }
 
 export default function SettingsPage() {
-  const { theme, language, setTheme, setLanguage, isPro: contextIsPro, isAdmin: contextIsAdmin, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
@@ -33,6 +34,7 @@ export default function SettingsPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [pendingLang, setPendingLang] = useState(language)
   const [pendingTheme, setPendingTheme] = useState(theme)
+  const [pendingCurrency, setPendingCurrency] = useState<Currency>(currency)
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [syncingBilling, setSyncingBilling] = useState(false)
@@ -40,7 +42,7 @@ export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
   const hasAccountChanges = nickname !== savedNickname
-  const hasPreferenceChanges = pendingLang !== language || pendingTheme !== theme
+  const hasPreferenceChanges = pendingLang !== language || pendingTheme !== theme || pendingCurrency !== currency
 
   const refreshBillingProfile = useCallback(async (targetUserId?: string) => {
     const profileUserId = targetUserId || user?.id
@@ -138,7 +140,8 @@ export default function SettingsPage() {
   useEffect(() => {
     setPendingLang(language)
     setPendingTheme(theme)
-  }, [language, theme])
+    setPendingCurrency(currency)
+  }, [language, theme, currency])
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -178,10 +181,12 @@ export default function SettingsPage() {
   async function handleSavePreferences() {
     const nextLang = pendingLang
     const nextTheme = pendingTheme
+    const nextCurrency = pendingCurrency
     setSavingPrefs(true)
     try {
       if (nextTheme !== theme) await setTheme(nextTheme)
       if (nextLang !== language) await setLanguage(nextLang)
+      if (nextCurrency !== currency) await setCurrency(nextCurrency)
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
       toast.success(nextLang === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
     } catch {
@@ -482,6 +487,25 @@ export default function SettingsPage() {
               {pendingTheme === 'dark'
                 ? (language === 'he' ? 'עיצוב כהה' : 'Dark mode')
                 : (language === 'he' ? 'עיצוב בהיר' : 'Light mode')}
+            </div>
+          </div>
+
+          {/* Currency */}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {language === 'he' ? 'מטבע' : 'Currency'}
+            </div>
+            <ToggleGroup
+              value={pendingCurrency}
+              onChange={setPendingCurrency}
+              options={[
+                { value: 'ILS', label: 'ILS' },
+                { value: 'USD', label: 'USD' },
+                { value: 'EUR', label: 'EUR' },
+              ]}
+            />
+            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
+              {language === 'he' ? 'הדשבורד יציג סיכומים במטבע הנבחר' : 'Dashboard totals will use the selected currency'}
             </div>
           </div>
 

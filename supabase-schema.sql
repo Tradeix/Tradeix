@@ -14,6 +14,7 @@ create table if not exists public.profiles (
   avatar_url text,
   language text default 'he',
   theme text default 'dark',
+  app_currency text default 'USD' check (app_currency in ('ILS','USD','EUR')),
   created_at timestamptz default now()
 );
 
@@ -176,6 +177,16 @@ alter table public.profiles
   add column if not exists subscription_trial_ends_at timestamptz,
   add column if not exists subscription_updated_at timestamptz,
   add column if not exists is_admin boolean not null default false;
+
+alter table public.profiles
+  add column if not exists app_currency text default 'USD';
+
+alter table public.profiles
+  drop constraint if exists profiles_app_currency_check;
+
+alter table public.profiles
+  add constraint profiles_app_currency_check
+  check (app_currency in ('ILS','USD','EUR'));
 
 -- Admin users are configured manually in Supabase by setting
 -- public.profiles.is_admin = true. Authenticated users must not be able to

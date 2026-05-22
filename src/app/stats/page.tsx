@@ -617,12 +617,15 @@ export default function StatsPage() {
         </div>
 
         <div className="cal-week-row cal-head-row" style={{ marginBottom: '4px' }}>
-          <div className="cal-week-head-spacer cal-week-title">
+          {language === 'he' && <div className="cal-week-head-spacer cal-week-title">
             {language === 'he' ? 'סיכום שבועי' : 'Weekly summary'}
-          </div>
+          </div>}
           <div className="cal-grid cal-week-grid" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
             {[1, 2, 3, 4, 5].map(i => <div key={i} className="cal-dayname">{DAY_NAMES[i]}</div>)}
           </div>
+          {language !== 'he' && <div className="cal-week-head-spacer cal-week-title">
+            Weekly summary
+          </div>}
         </div>
 
         <div className="cal-weeks">
@@ -634,7 +637,7 @@ export default function StatsPage() {
             const weekZero = hasWeekData && summary.pnl === 0
             return (
               <div key={weekIndex} className="cal-week-row">
-                <div className="cal-week-summary" style={{
+                {language === 'he' && <div className="cal-week-summary" style={{
                   background: weekGreen ? 'rgba(34,197,94,0.08)' : weekRed ? 'rgba(239,68,68,0.08)' : 'var(--bg3)',
                   borderColor: weekGreen ? 'rgba(34,197,94,0.2)' : weekRed ? 'rgba(239,68,68,0.2)' : 'var(--border)',
                 }}>
@@ -642,7 +645,7 @@ export default function StatsPage() {
                     {hasWeekData ? formatSignedPnl(summary.pnl) : '-'}
                   </div>
                   <div className="cal-week-count">{summary.count} {summary.count === 1 ? 'TRADE' : 'TRADES'}</div>
-                </div>
+                </div>}
                 <div className="cal-grid cal-week-grid" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
                   {week.map((day, dayIndex) => {
                     if (day === null) return <div key={`e-${weekIndex}-${dayIndex}`} />
@@ -669,6 +672,15 @@ export default function StatsPage() {
                     )
                   })}
                 </div>
+                {language !== 'he' && <div className="cal-week-summary" style={{
+                  background: weekGreen ? 'rgba(34,197,94,0.08)' : weekRed ? 'rgba(239,68,68,0.08)' : 'var(--bg3)',
+                  borderColor: weekGreen ? 'rgba(34,197,94,0.2)' : weekRed ? 'rgba(239,68,68,0.2)' : 'var(--border)',
+                }}>
+                  <div className="cal-week-pnl" style={{ color: weekGreen ? '#22c55e' : weekRed ? '#ef4444' : 'var(--text3)' }}>
+                    {hasWeekData ? formatSignedPnl(summary.pnl) : '-'}
+                  </div>
+                  <div className="cal-week-count">{summary.count} {summary.count === 1 ? 'TRADE' : 'TRADES'}</div>
+                </div>}
               </div>
             )
           })}
