@@ -20,7 +20,7 @@ type BillingProfile = {
 }
 
 export default function SettingsPage() {
-  const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, upgradeToPro, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
@@ -28,7 +28,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [cancelingPro, setCancelingPro] = useState(false)
   const [resumingPro, setResumingPro] = useState<'monthly' | 'yearly' | null>(null)
-  const [upgradingTrial, setUpgradingTrial] = useState<'monthly' | 'yearly' | null>(null)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [showYearlySwitchConfirm, setShowYearlySwitchConfirm] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -271,17 +270,6 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleTrialUpgrade(billingPeriod: 'monthly' | 'yearly') {
-    setUpgradingTrial(billingPeriod)
-    try {
-      await upgradeToPro(billingPeriod)
-    } catch (error: any) {
-      toast.error(error?.message || (language === 'he' ? 'שדרוג המנוי נכשל' : 'Subscription upgrade failed'))
-    } finally {
-      setUpgradingTrial(null)
-    }
-  }
-
   const initials = (nickname || user?.email || 'U')[0].toUpperCase()
   const isAdmin = billingProfile?.is_admin === true || contextIsAdmin
   const isPro = isAdmin || (billingProfile?.subscription_tier ? billingProfile.subscription_tier === 'pro' : contextIsPro)
@@ -314,6 +302,7 @@ export default function SettingsPage() {
   const displayPlanAccent = isTemporaryPlan ? '#ef4444' : '#0f8d63'
   const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'חינם' : 'Free') : planPriceLabel
   const displayRemainingLabel = isTemporaryPlan ? (language === 'he' ? 'זמן שנותר לניסיון' : 'Trial time left') : remainingLabel
+  const hasPaidProPlan = isPro && !isTemporaryPlan
 
   function formatRemainingTime(value: string | null) {
     if (!value) return language === 'he' ? 'לא זמין כרגע' : 'Not available yet'
@@ -566,7 +555,7 @@ export default function SettingsPage() {
           </div>
 
           {/* CTA — pinned to bottom for symmetric card heights */}
-          {isPro && (
+          {hasPaidProPlan && (
             <div style={{ display: 'grid', gap: '8px', marginBottom: '14px' }}>
               <div style={{
                 background: isLight ? 'rgba(255,255,255,0.56)' : 'rgba(255,255,255,0.035)',
@@ -596,39 +585,8 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {isPro ? (
-            isTemporaryPlan ? (
-              <div className="plan-choice-grid">
-                <button
-                  className="plan-choice-btn plan-choice-btn--monthly"
-                  onClick={() => handleTrialUpgrade('monthly')}
-                  disabled={Boolean(upgradingTrial)}
-                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, #0f8d63 0%, #12a875 100%)', border: '1px solid rgba(31,210,145,0.55)', borderRadius: '16px', padding: '12px', color: '#fff', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.28)' }}
-                >
-                  <Icon name="bolt" size={18} color="#fff" />
-                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
-                    {upgradingTrial === 'monthly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'התחל חודשי' : 'Start monthly')}
-                  </span>
-                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
-                    {language === 'he' ? 'גמיש • $20 לחודש' : 'Flexible • $20/month'}
-                  </span>
-                </button>
-                <button
-                  className="plan-choice-btn plan-choice-btn--yearly"
-                  onClick={() => handleTrialUpgrade('yearly')}
-                  disabled={Boolean(upgradingTrial)}
-                  style={{ width: '100%', minHeight: '76px', background: 'linear-gradient(135deg, rgba(15,141,99,0.22) 0%, rgba(15,141,99,0.09) 100%)', border: '1px solid rgba(16,185,129,0.52)', borderRadius: '16px', padding: '12px', color: '#0f8d63', cursor: upgradingTrial ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', opacity: upgradingTrial ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.16)' }}
-                >
-                  <Icon name="calendar_month" size={18} color="#0f8d63" />
-                  <span style={{ fontSize: '13px', fontWeight: '900', lineHeight: 1.1 }}>
-                    {upgradingTrial === 'yearly' ? (language === 'he' ? 'פותח...' : 'Opening...') : (language === 'he' ? 'קח שנתי וחסוך' : 'Go yearly and save')}
-                  </span>
-                  <span style={{ fontSize: '10px', fontWeight: '750', opacity: 0.86, lineHeight: 1 }}>
-                    {language === 'he' ? 'חסוך $41 • $199 לשנה' : 'Save $41 • $199/year'}
-                  </span>
-                </button>
-              </div>
-            ) : isCanceledButActive ? (
+          {hasPaidProPlan ? (
+            isCanceledButActive ? (
               isCanceledYearlyButActive ? (
                 <div style={{
                   marginTop: 'auto',

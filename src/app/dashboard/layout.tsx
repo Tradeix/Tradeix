@@ -202,8 +202,8 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
       <div style={{ flex: 1 }} />
 
-      {/* Upgrade to PRO banner — free users only */}
-      {!subscriptionLoading && !isPro && (
+      {/* Upgrade to PRO banner — free and trial users */}
+      {!subscriptionLoading && (!isPro || isTemporaryPro) && (
         <Link href="/upgrade" style={{
           display: 'flex', alignItems: 'center', gap: '6px',
           background: '#0f8d63',

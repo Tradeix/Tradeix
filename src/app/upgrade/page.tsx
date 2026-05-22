@@ -30,7 +30,7 @@ const TRUST_ITEMS = {
 }
 
 export default function UpgradePage() {
-  const { language, isPro, isAdmin, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
+  const { language, isPro, isTemporaryPro, isAdmin, upgradeToPro, cancelSubscription, subscriptionLoading } = useApp()
   const [loading, setLoading] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
 
@@ -68,6 +68,7 @@ export default function UpgradePage() {
     ? (language === 'he' ? 'לשנה' : 'per year')
     : (language === 'he' ? 'לחודש' : 'per month')
   const monthlyEquivalent = language === 'he' ? 'יוצא $16.58 לחודש' : 'Only $16.58/mo'
+  const hasActivePaidPlan = isAdmin || (isPro && !isTemporaryPro)
 
   return (
     <div className="upgrade-shell" dir={language === 'he' ? 'rtl' : 'ltr'}>
@@ -150,7 +151,7 @@ export default function UpgradePage() {
             </div>
           </div>
 
-          {isPro ? (
+          {hasActivePaidPlan ? (
             <div className="active-plan">
               <div>
                 <Icon name="verified" size={19} color="#36cb61" />
