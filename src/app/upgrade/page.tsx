@@ -376,20 +376,6 @@ export default function UpgradePage() {
           transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
         }
 
-        .billing-toggle button::after {
-          content: '';
-          position: absolute;
-          left: 20px;
-          right: 20px;
-          bottom: 10px;
-          height: 3px;
-          border-radius: 999px;
-          background: #0f8d63;
-          opacity: 0;
-          transform: scaleX(0.4);
-          transition: opacity 0.16s ease, transform 0.16s ease;
-        }
-
         .billing-toggle button:hover {
           transform: translateY(-1px);
           border-color: rgba(15,141,99,0.36);
@@ -402,20 +388,37 @@ export default function UpgradePage() {
           box-shadow: 0 14px 34px rgba(15,141,99,0.11);
         }
 
-        .billing-toggle button[data-active="1"]::after {
-          opacity: 1;
-          transform: scaleX(1);
-        }
-
         .billing-toggle strong,
         .billing-toggle span {
           display: block;
         }
 
         .billing-toggle strong {
+          position: relative;
+          width: fit-content;
+          margin-inline: auto;
           font-size: 14px;
           font-weight: 950;
-          margin-bottom: 5px;
+          margin-bottom: 9px;
+        }
+
+        .billing-toggle strong::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -5px;
+          height: 3px;
+          border-radius: 999px;
+          background: #0f8d63;
+          opacity: 0;
+          transform: scaleX(0.55);
+          transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+
+        .billing-toggle button[data-active="1"] strong::after {
+          opacity: 1;
+          transform: scaleX(1);
         }
 
         .billing-toggle span {
@@ -705,16 +708,14 @@ export default function UpgradePage() {
             border-radius: 14px;
           }
 
-          .billing-toggle button::after {
-            left: 16px;
-            right: 16px;
-            bottom: 7px;
-            height: 2px;
-          }
-
           .billing-toggle strong {
             font-size: 13px;
-            margin-bottom: 3px;
+            margin-bottom: 7px;
+          }
+
+          .billing-toggle strong::after {
+            bottom: -4px;
+            height: 2px;
           }
 
           .billing-toggle span {
