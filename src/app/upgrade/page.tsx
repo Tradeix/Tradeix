@@ -136,7 +136,7 @@ export default function UpgradePage() {
           <div className="price-strip">
             <div className="plan-badge">
               {isYearly
-                ? (language === 'he' ? 'חודשיים מתנה' : '2 months free')
+                ? (language === 'he' ? 'קבל חודשיים מתנה!' : 'Get 2 months free!')
                 : (language === 'he' ? 'גמיש חודשי' : 'Flexible monthly')}
             </div>
 
