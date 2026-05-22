@@ -247,6 +247,8 @@ export default function UpgradePage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
+          align-items: center;
+          text-align: center;
           gap: 16px;
           min-width: 0;
         }
@@ -279,11 +281,12 @@ export default function UpgradePage() {
           font-weight: 950;
           letter-spacing: 0;
           max-width: 640px;
+          margin-inline: auto;
         }
 
         .upgrade-copy p {
           max-width: 620px;
-          margin: 12px 0 0;
+          margin: 12px auto 0;
           color: var(--text3);
           font-size: 15px;
           line-height: 1.55;
@@ -293,6 +296,7 @@ export default function UpgradePage() {
         .upgrade-proof {
           display: flex;
           flex-wrap: wrap;
+          justify-content: center;
           gap: 14px;
         }
 
@@ -321,6 +325,7 @@ export default function UpgradePage() {
           gap: 10px 18px;
           max-width: 620px;
           padding-top: 4px;
+          width: 100%;
         }
 
         .upgrade-features div {
