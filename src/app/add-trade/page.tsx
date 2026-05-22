@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { formatSignedMoney } from '@/lib/currency'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { Strategy, Trade } from '@/types'
 import Icon from '@/components/Icon'
@@ -78,7 +79,7 @@ export default function AddTradePage() {
   })
   const [strategies, setStrategies] = useState<Strategy[]>([])
   const router = useRouter()
-  const { language, isPro } = useApp()
+  const { language, currency, isPro } = useApp()
   const tr = t[language]
   const supabase = createClient()
   const selectedStrategy = strategies.find(strategy => strategy.id === tradeData.strategy_id)
@@ -1008,7 +1009,7 @@ export default function AddTradePage() {
                 {/* P&L */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ fontSize: '13px', color: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? '#22c55e' : '#ef4444', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
-                    P&L ($) <span style={{ color: '#ef4444' }}>*</span>
+                    P&L ({currency}) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                       type="number"
@@ -1119,7 +1120,7 @@ export default function AddTradePage() {
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: pnlError ? '#ef4444' : 'var(--text3)', marginBottom: '6px' }}>
-                  {language === 'he' ? 'סכום' : 'Amount'} ($)
+                  {language === 'he' ? 'סכום' : 'Amount'} ({currency})
                 </label>
                 <input
                   type="number"
@@ -1292,7 +1293,7 @@ export default function AddTradePage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))', gap: '7px', marginBottom: savedTradeSummary.notes ? '10px' : '12px', textAlign: 'start' }}>
                 {[
                   ['WIN/LOSS', savedTradeSummary.outcome.toUpperCase()],
-                  ['PNL', `${savedTradeSummary.pnl >= 0 ? '+' : '-'}$${Math.abs(savedTradeSummary.pnl).toLocaleString()}`],
+                  ['PNL', formatSignedMoney(savedTradeSummary.pnl, currency)],
                   ['ENTRY', savedTradeSummary.entry ?? '-'],
                   ['SL', savedTradeSummary.stopLoss ?? '-'],
                   ['TP', savedTradeSummary.takeProfit ?? '-'],

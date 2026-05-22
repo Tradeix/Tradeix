@@ -11,6 +11,7 @@ import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { formatSignedMoney } from '@/lib/currency'
 import Icon from '@/components/Icon'
 
 const PAGE_SIZE = 6
@@ -48,7 +49,7 @@ function FilterChip({ active, onClick, icon, children }: { active: boolean; onCl
 
 export default function TradesPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language, isPro } = useApp()
+  const { language, currency, isPro } = useApp()
   const router = useRouter()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
@@ -384,7 +385,7 @@ export default function TradesPage() {
 
                 {/* P&L */}
                 <div dir="ltr" style={{ textAlign: 'center', fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                  {trade.pnl >= 0 ? '+' : '-'}${Math.abs(trade.pnl)}
+                  {formatSignedMoney(trade.pnl, currency)}
                 </div>
               </div>
             ))}

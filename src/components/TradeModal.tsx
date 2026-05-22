@@ -8,6 +8,7 @@ import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { formatSignedMoney } from '@/lib/currency'
 import Icon from '@/components/Icon'
 
 interface TradeModalProps {
@@ -43,7 +44,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
   const [strategyMenuOpen, setStrategyMenuOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(trade.image_url || null)
   const [lightbox, setLightbox] = useState(false)
-  const { language, isPro } = useApp()
+  const { language, currency, isPro } = useApp()
   const tr = t[language]
   const supabase = createClient()
 
@@ -347,7 +348,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
               {/* P&L */}
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ fontSize: '11px', color: pnlError ? '#ef4444' : form.outcome === 'win' ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  P&L ($) <span style={{ color: '#ef4444', fontSize: '13px' }}>*</span>
+                  P&L ({currency}) <span style={{ color: '#ef4444', fontSize: '13px' }}>*</span>
                 </label>
                 <input
                   type="number"
@@ -640,7 +641,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                   lineHeight: 1, position: 'relative', zIndex: 1,
                   fontFamily: 'Heebo, sans-serif',
                 }}>
-                  {isWin ? '+' : '-'}${Math.abs(trade.pnl ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  {formatSignedMoney(trade.pnl ?? 0, currency, 2)}
                 </div>
 
                 {/* P&L label */}

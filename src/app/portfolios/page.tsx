@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { t } from '@/lib/translations'
+import { formatMoney, formatSignedMoney } from '@/lib/currency'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
@@ -40,7 +41,7 @@ interface PortfolioStats {
 }
 
 export default function PortfoliosPage() {
-  const { language, isPro } = useApp()
+  const { language, currency, isPro } = useApp()
   const tr = t[language]
   const router = useRouter()
   const { setActivePortfolio, reload: reloadPortfolioContext } = usePortfolio()
@@ -322,7 +323,7 @@ export default function PortfoliosPage() {
             </div>
 
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr.initialCapital}</label>
+              <label style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? `הון התחלתי (${currency})` : `Initial Capital (${currency})`}</label>
               <input type="number" value={form.initial_capital} onChange={e => setForm(p => ({ ...p, initial_capital: e.target.value }))} placeholder="10,000" />
             </div>
 
@@ -486,7 +487,7 @@ export default function PortfoliosPage() {
                           {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
                         </div>
                         <div dir="ltr" style={{ fontSize: '29px', fontWeight: '950', color: pnlAccent, letterSpacing: '-0.04em', lineHeight: 1 }}>
-                          {pnlPos ? '+' : '-'}${Math.abs(totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          {formatSignedMoney(totalPnl, currency, 2)}
                         </div>
                       </div>
 
@@ -509,7 +510,7 @@ export default function PortfoliosPage() {
                         {language === 'he' ? 'הון התחלתי' : 'Initial capital'}
                       </span>
                       <span dir="ltr" style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: '850' }}>
-                        ${Number(p.initial_capital || 0).toLocaleString()}
+                        {formatMoney(Number(p.initial_capital || 0), currency)}
                       </span>
                     </div>
                   </div>

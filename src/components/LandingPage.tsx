@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 import { useApp } from '@/lib/app-context'
+import { formatMoney, formatSignedMoney } from '@/lib/currency'
 
 const COPY = {
   he: {
@@ -182,7 +183,7 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
-  const { language } = useApp()
+  const { language, currency } = useApp()
   const copy = COPY[language]
   const isHe = language === 'he'
 
@@ -290,7 +291,7 @@ export default function LandingPage() {
                         <div className="lp-shot-balance-row">
                           <div>
                             <small>{copy.hero.portfolioValue}</small>
-                            <b dir="ltr">$254,890</b>
+                            <b dir="ltr">{formatMoney(254890, currency)}</b>
                           </div>
                           <div>
                             <small>{isHe ? 'תשואה' : 'Return'}</small>
@@ -327,7 +328,7 @@ export default function LandingPage() {
                           <strong dir="ltr">67%</strong>
                         </div>
                         <div className="lp-shot-metric-pair">
-                          <span dir="ltr">+$8,240</span>
+                          <span dir="ltr">{formatSignedMoney(8240, currency)}</span>
                           <span dir="ltr">2.34 PF</span>
                         </div>
                       </section>
@@ -335,7 +336,7 @@ export default function LandingPage() {
                       <section className="lp-shot-panel chart">
                         <div className="lp-shot-chart-title">
                           <span>{isHe ? 'עקומת הון' : 'Equity curve'}</span>
-                          <strong dir="ltr">+$24,890</strong>
+                          <strong dir="ltr">{formatSignedMoney(24890, currency)}</strong>
                         </div>
                         <div className="lp-shot-chart" dir="ltr">
                           <span />
@@ -355,14 +356,14 @@ export default function LandingPage() {
                           <strong>LIVE</strong>
                         </div>
                         {[
-                          ['EUR/USD', 'LONG', '+$420'],
-                          ['NASDAQ', 'BUY', '+$310'],
-                          ['BTC/USD', 'SHORT', '-$95'],
+                          ['EUR/USD', 'LONG', 420],
+                          ['NASDAQ', 'BUY', 310],
+                          ['BTC/USD', 'SHORT', -95],
                         ].map(([symbol, side, pnl]) => (
                           <div key={symbol} className="lp-shot-trade">
                             <span>{symbol}</span>
                             <small>{side}</small>
-                            <strong dir="ltr" className={pnl.startsWith('-') ? 'loss' : ''}>{pnl}</strong>
+                            <strong dir="ltr" className={(pnl as number) < 0 ? 'loss' : ''}>{formatSignedMoney(pnl as number, currency)}</strong>
                           </div>
                         ))}
                       </section>

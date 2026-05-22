@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { formatMoney, formatSignedMoney, formatSignedCompactMoney } from '@/lib/currency'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
@@ -17,7 +18,7 @@ const ACCENT = '#0f8d63'
 
 export default function StatsPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language, isPro, subscriptionLoading } = useApp()
+  const { language, currency, isPro, subscriptionLoading } = useApp()
   const router = useRouter()
   const tr = t[language]
   const [trades, setTrades] = useState<Trade[]>([])
@@ -120,12 +121,7 @@ export default function StatsPage() {
     const count = days.reduce((sum, day) => sum + (monthlyCount[day] || 0), 0)
     return { pnl, count }
   }
-  const formatSignedPnl = (value: number) => {
-    if (value === 0) return '$0'
-    const abs = Math.abs(value)
-    const display = abs >= 1000 ? `${(abs / 1000).toFixed(1)}k` : abs.toFixed(0)
-    return `${value > 0 ? '+' : '-'}$${display}`
-  }
+  const formatSignedPnl = (value: number) => formatSignedCompactMoney(value, currency)
 
   const DAY_NAMES = language === 'he'
     ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
@@ -173,7 +169,7 @@ export default function StatsPage() {
   const bestAsset = assetRows.length ? assetRows.reduce((a, b) => a.pnl >= b.pnl ? a : b) : null
   const losingAssets = assetRows.filter(asset => asset.pnl < 0)
   const worstAsset = losingAssets.length ? losingAssets.reduce((a, b) => a.pnl <= b.pnl ? a : b) : null
-  const formatPnl = (value: number) => `${value >= 0 ? '+' : '-'}$${Math.abs(value).toLocaleString()}`
+  const formatPnl = (value: number) => formatSignedMoney(value, currency)
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
@@ -282,12 +278,12 @@ export default function StatsPage() {
       {/* Stats grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }} className="stats-grid-4">
         <StatCard idx={0} label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
-        <StatCard idx={1} label={tr.totalPnl} value={`${totalPnl >= 0 ? '+' : ''}$${totalPnl.toLocaleString()}`} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
+        <StatCard idx={1} label={tr.totalPnl} value={formatSignedMoney(totalPnl, currency)} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
         <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#0f8d63" icon="insights" />
         <StatCard idx={3} label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
         <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
-        <StatCard idx={5} label={tr.bestTrade} value={`+$${Math.max(0, ...trades.map(t => t.pnl || 0))}`} color="#22c55e" icon="arrow_circle_up" />
-        <StatCard idx={6} label={tr.worstTrade} value={`$${Math.min(0, ...trades.map(t => t.pnl || 0))}`} color="#ef4444" icon="arrow_circle_down" />
+        <StatCard idx={5} label={tr.bestTrade} value={formatSignedMoney(Math.max(0, ...trades.map(t => t.pnl || 0)), currency)} color="#22c55e" icon="arrow_circle_up" />
+        <StatCard idx={6} label={tr.worstTrade} value={formatSignedMoney(Math.min(0, ...trades.map(t => t.pnl || 0)), currency)} color="#ef4444" icon="arrow_circle_down" />
         <StatCard idx={7} label={tr.avgRR} value={(() => {
           // RR is meaningful on winners only — average over them so a streak
           // of stop-outs doesn't drag the figure down with null contributions.
@@ -316,7 +312,7 @@ export default function StatsPage() {
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '3px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{tr.totalPnl}</div>
             <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', color: totalPnl >= 0 ? '#0f8d63' : '#ef4444', letterSpacing: '-0.02em', lineHeight: 1 }}>
-              {totalPnl >= 0 ? '+' : '-'}${Math.abs(totalPnl).toLocaleString()}
+              {formatSignedMoney(totalPnl, currency)}
             </div>
           </div>
         </div>
@@ -343,9 +339,7 @@ export default function StatsPage() {
                   padding={{ top: 12, bottom: 12 }}
                   domain={equityDomain}
                   tickFormatter={(v: number) => {
-                    const a = Math.abs(v)
-                    if (a >= 1000) return `${v < 0 ? '-' : ''}$${(a / 1000).toFixed(a >= 10000 ? 0 : 1).replace(/\.0$/, '')}k`
-                    return `${v < 0 ? '-' : ''}$${a}`
+                    return formatSignedCompactMoney(v, currency).replace(/^\+/, '')
                   }}
                 />
                 <ReferenceLine y={initialCapital} stroke="rgba(255,255,255,0.18)" strokeDasharray="4 4" />
@@ -357,7 +351,7 @@ export default function StatsPage() {
                     return (
                       <div style={{ background: 'var(--bg2)', border: '1px solid rgba(15,141,99,0.25)', borderRadius: '12px', fontSize: '13px', fontFamily: 'Heebo', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', padding: '10px 14px' }}>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginBottom: '4px' }}>{label}</div>
-                        <div dir="ltr" style={{ color: val < initialCapital ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>${val.toLocaleString()}</div>
+                        <div dir="ltr" style={{ color: val < initialCapital ? '#ef4444' : '#0f8d63', fontWeight: 700, fontSize: '15px' }}>{formatMoney(val, currency)}</div>
                         <div style={{ color: 'var(--text3)', fontSize: '11px', marginTop: '2px' }}>{language === 'he' ? 'שווי תיק' : 'Portfolio value'}</div>
                       </div>
                     )

@@ -18,3 +18,18 @@ export function formatSignedMoney(value: number, currency: Currency, maximumFrac
   const sign = value >= 0 ? '+' : '-'
   return `${sign}${formatMoney(Math.abs(value), currency, maximumFractionDigits)}`
 }
+
+export function formatCompactMoney(value: number, currency: Currency) {
+  return new Intl.NumberFormat(CURRENCY_LOCALE[currency], {
+    style: 'currency',
+    currency,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+export function formatSignedCompactMoney(value: number, currency: Currency) {
+  if (value === 0) return formatMoney(0, currency)
+  const sign = value > 0 ? '+' : '-'
+  return `${sign}${formatCompactMoney(Math.abs(value), currency)}`
+}

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import { t } from '@/lib/translations'
+import { formatSignedMoney } from '@/lib/currency'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
@@ -37,7 +38,7 @@ const EMPTY_STATS: StrategyStats = {
 }
 
 export default function StrategiesPage() {
-  const { language } = useApp()
+  const { language, currency } = useApp()
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const router = useRouter()
   const tr = t[language]
@@ -544,7 +545,7 @@ export default function StrategiesPage() {
                             {language === 'he' ? 'רווח כולל' : 'Total P&L'}
                           </div>
                           <div dir="ltr" style={{ fontSize: '23px', fontWeight: '800', letterSpacing: '-0.02em', color: pnlPositive ? '#22c55e' : '#ef4444' }}>
-                            {pnlPositive ? '+' : '-'}${Math.abs(stats.totalPnl).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                            {formatSignedMoney(stats.totalPnl, currency, 2)}
                           </div>
                         </div>
                         <div style={{ background: 'var(--bg2)', borderRadius: '12px', padding: '14px', border: '1px solid var(--border)' }}>

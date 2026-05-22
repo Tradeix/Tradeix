@@ -6,6 +6,7 @@ import { Portfolio, Trade } from '@/types'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
+import { formatSignedMoney } from '@/lib/currency'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 import TradeModal from '@/components/TradeModal'
@@ -38,7 +39,7 @@ interface PortfolioStats {
 }
 
 export default function ArchivePage() {
-  const { language, isPro, subscriptionLoading } = useApp()
+  const { language, currency, isPro, subscriptionLoading } = useApp()
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [stats, setStats] = useState<Record<string, PortfolioStats>>({})
   const [loading, setLoading] = useState(true)
@@ -243,7 +244,7 @@ export default function ArchivePage() {
                   {s && (
                     <div className="archive-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
                       <div style={{ fontSize: '17px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
-                        {pnlPos ? '+' : ''}${s.totalPnl.toLocaleString()}
+                        {formatSignedMoney(s.totalPnl, currency)}
                       </div>
                       <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
                     </div>
@@ -285,7 +286,7 @@ export default function ArchivePage() {
                         { label: language === 'he' ? 'עסקאות' : 'Trades', value: s.totalTrades, color: 'var(--text2)' },
                         { label: language === 'he' ? 'ניצחונות' : 'Wins', value: s.wins, color: '#22c55e' },
                         { label: language === 'he' ? 'אחוז הצלחה' : 'Win Rate', value: `${s.winRate.toFixed(1)}%`, color: '#0f8d63' },
-                        { label: 'P&L', value: `${s.totalPnl >= 0 ? '+' : ''}$${s.totalPnl.toLocaleString()}`, color: s.totalPnl >= 0 ? '#22c55e' : '#ef4444' },
+                        { label: 'P&L', value: formatSignedMoney(s.totalPnl, currency), color: s.totalPnl >= 0 ? '#22c55e' : '#ef4444' },
                       ].map(({ label, value, color: c }) => (
                         <div key={label} style={{ background: 'var(--bg3)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
                           <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</div>
@@ -379,7 +380,7 @@ export default function ArchivePage() {
 
                               {/* P&L */}
                               <div style={{ textAlign: 'center', fontSize: '14px', fontWeight: '900', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
-                                {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                                {formatSignedMoney(trade.pnl, currency)}
                               </div>
                             </div>
                           ))}
