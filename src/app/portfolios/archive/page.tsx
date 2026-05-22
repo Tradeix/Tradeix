@@ -237,10 +237,6 @@ export default function ArchivePage() {
                         {language === 'he' ? 'ארכיון' : 'ARCHIVED'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '600' }}>
-                      {MARKET_LABELS[language][p.market_type]}
-                      {s && ` • ${s.totalTrades} ${language === 'he' ? 'עסקאות' : 'trades'} • ${s.winRate.toFixed(0)}% WIN`}
-                    </div>
                   </div>
 
                   {/* Stats summary */}
