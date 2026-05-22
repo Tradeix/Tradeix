@@ -152,7 +152,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
   })()
 
   const WinLossToggle = () => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
       {(['win', 'loss'] as const).map(val => {
         const active = form.outcome === val
         const color = val === 'win' ? '#22c55e' : '#ef4444'
@@ -161,6 +161,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
         return (
           <button
             key={val}
+            type="button"
             onClick={() => setForm(p => ({ ...p, outcome: val }))}
             style={{
               padding: '12px', borderRadius: '12px',
@@ -174,6 +175,37 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
             }}
           >
             {val === 'win' ? 'WIN' : 'LOSS'}
+          </button>
+        )
+      })}
+    </div>
+  )
+
+  const DirectionToggle = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      {(['long', 'short'] as const).map(val => {
+        const active = form.direction === val
+        const color = val === 'long' ? '#22c55e' : '#ef4444'
+        const bg = val === 'long' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'
+        const border = val === 'long' ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'
+        return (
+          <button
+            key={val}
+            type="button"
+            onClick={() => setForm(p => ({ ...p, direction: val }))}
+            style={{
+              padding: '12px', borderRadius: '12px',
+              background: active ? bg : 'var(--bg3)',
+              border: `2px solid ${active ? border : 'var(--border)'}`,
+              color: active ? color : 'var(--text3)',
+              fontSize: '15px', fontWeight: '900', cursor: 'pointer',
+              fontFamily: 'Heebo, sans-serif', letterSpacing: '0.06em',
+              transition: 'all 0.18s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            }}
+          >
+            <Icon name={val === 'long' ? 'trending_up' : 'trending_down'} size={15} color={active ? color : 'var(--text3)'} />
+            {val === 'long' ? 'LONG' : 'SHORT'}
           </button>
         )
       })}
@@ -264,12 +296,20 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                 </div>
               </div>
 
-              {/* WIN / LOSS toggle */}
-              <div style={{ marginBottom: '0' }}>
-                <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  {language === 'he' ? 'תוצאה' : 'Outcome'}
-                </label>
-                <WinLossToggle />
+              {/* WIN / LOSS + direction toggles */}
+              <div className="trade-edit-classification-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'תוצאה' : 'Outcome'}
+                  </label>
+                  <WinLossToggle />
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '8px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {language === 'he' ? 'סוג עסקה' : 'Direction'}
+                  </label>
+                  <DirectionToggle />
+                </div>
               </div>
 
               {/* Entry + SL + Exit */}
@@ -754,6 +794,9 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
           }
           .trade-modal-pnl-label {
             display: none !important;
+          }
+          .trade-edit-classification-grid {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>

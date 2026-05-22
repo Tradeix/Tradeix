@@ -12,6 +12,7 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 
 const ACCENT = '#0f8d63'
+const POSITIVE = '#16a34a'
 const EMPTY_STATS: Stats = {
   totalTrades: 0, wins: 0, losses: 0, winRate: 0,
   totalPnl: 0, profitFactor: 0, avgRR: 0, bestTrade: 0, worstTrade: 0,
@@ -419,14 +420,14 @@ export default function DashboardPage() {
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '14px',
                 minHeight: '116px',
                 borderRadius: '16px',
-                background: 'linear-gradient(145deg, rgba(15,141,99,0.13), rgba(255,255,255,0.025))',
-                border: '1px solid rgba(15,141,99,0.16)',
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.045), rgba(15,141,99,0.035))',
+                border: '1px solid rgba(255,255,255,0.075)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <Icon name="account_balance_wallet" size={14} color="#0f8d63" />
+                  <Icon name="account_balance_wallet" size={14} color="var(--text3)" />
                   {language === 'he' ? 'שווי תיק נוכחי' : 'Current value'}
                 </div>
-                <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
+                <div dir="ltr" className="bal-amount" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: 'var(--text)', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
                   ${(portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </div>
               </div>
@@ -437,14 +438,14 @@ export default function DashboardPage() {
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '14px',
                 minHeight: '116px',
                 borderRadius: '16px',
-                background: 'linear-gradient(145deg, rgba(34,197,94,0.1), rgba(255,255,255,0.025))',
+                background: 'linear-gradient(145deg, rgba(22,163,74,0.085), rgba(255,255,255,0.025))',
                 border: '1px solid rgba(255,255,255,0.065)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: 'var(--text2)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? '#22c55e' : '#ef4444'} />
+                  <Icon name={portfolioPositive ? 'trending_up' : 'trending_down'} size={14} color={portfolioPositive ? POSITIVE : '#ef4444'} />
                   {language === 'he' ? 'תשואה' : 'Return'}
                 </div>
-                <div dir="ltr" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? '#22c55e' : '#ef4444', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
+                <div dir="ltr" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', lineHeight: 1, color: portfolioPositive ? POSITIVE : '#ef4444', fontFamily: 'Heebo, sans-serif', textAlign: 'center' }}>
                   {portfolioValue.totalReturn >= 0 ? '+' : ''}{portfolioValue.totalReturn.toFixed(1)}%
                 </div>
               </div>
@@ -452,11 +453,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(15,141,99,0.035))', minHeight: '124px' }}>
+          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.024))', minHeight: '124px' }}>
             {[
               { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
-              { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: '#0f8d63' },
-              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: portfolioStats.winRate >= 50 ? '#22c55e' : '#ef4444' },
+              { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: 'var(--text)' },
+              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: 'var(--text)' },
             ].map((t, i) => (
               <div key={i} style={{
                 padding: '16px 10px',
@@ -467,7 +468,7 @@ export default function DashboardPage() {
                 borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
                 minWidth: 0,
               }}>
-                <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '6px' }}>
+                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '8px' }}>
                   {t.label}
                 </div>
                 <div dir="ltr" style={{ fontSize: '20px', fontWeight: '900', color: t.color, letterSpacing: '-0.02em', lineHeight: 1 }}>
