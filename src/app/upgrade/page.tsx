@@ -145,11 +145,6 @@ export default function UpgradePage() {
               <span>{period}</span>
             </div>
 
-            {!isYearly && (
-              <div className="price-note">
-                {language === 'he' ? 'אפשר לבטל בכל זמן' : 'Cancel anytime'}
-              </div>
-            )}
           </div>
 
           {hasActivePaidPlan ? (
@@ -451,14 +446,6 @@ export default function UpgradePage() {
           padding-bottom: 4px;
         }
 
-        .price-note {
-          color: var(--text3);
-          font-size: 12px;
-          font-weight: 800;
-          margin-top: 0;
-          align-self: end;
-        }
-
         .upgrade-cta,
         .active-plan button {
           width: 100%;
@@ -721,12 +708,6 @@ export default function UpgradePage() {
           .price-row span {
             font-size: 11px;
             padding-bottom: 3px;
-          }
-
-          .price-note {
-            font-size: 11px;
-            text-align: end;
-            padding-bottom: 4px;
           }
 
           .upgrade-cta,
