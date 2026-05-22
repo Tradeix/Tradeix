@@ -360,6 +360,7 @@ export default function UpgradePage() {
         }
 
         .billing-toggle button {
+          position: relative;
           min-height: 76px;
           border: 1px solid var(--border);
           border-radius: 16px;
@@ -368,6 +369,20 @@ export default function UpgradePage() {
           cursor: pointer;
           font-family: Heebo, sans-serif;
           transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .billing-toggle button::after {
+          content: '';
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          bottom: 10px;
+          height: 3px;
+          border-radius: 999px;
+          background: #0f8d63;
+          opacity: 0;
+          transform: scaleX(0.4);
+          transition: opacity 0.16s ease, transform 0.16s ease;
         }
 
         .billing-toggle button:hover {
@@ -380,6 +395,11 @@ export default function UpgradePage() {
           background: linear-gradient(135deg, rgba(15,141,99,0.18), rgba(15,141,99,0.055));
           color: #0f8d63;
           box-shadow: 0 14px 34px rgba(15,141,99,0.11);
+        }
+
+        .billing-toggle button[data-active="1"]::after {
+          opacity: 1;
+          transform: scaleX(1);
         }
 
         .billing-toggle strong,
@@ -678,6 +698,13 @@ export default function UpgradePage() {
           .billing-toggle button {
             min-height: 58px;
             border-radius: 14px;
+          }
+
+          .billing-toggle button::after {
+            left: 16px;
+            right: 16px;
+            bottom: 7px;
+            height: 2px;
           }
 
           .billing-toggle strong {
