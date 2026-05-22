@@ -300,7 +300,7 @@ export default function SettingsPage() {
       ? 'PRO'
       : (language === 'he' ? 'חינמי' : 'Free')
   const displayPlanAccent = isTemporaryPlan ? '#ef4444' : '#0f8d63'
-  const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'חינם' : 'Free') : planPriceLabel
+  const displayPlanPriceLabel = isTemporaryPlan ? (language === 'he' ? 'זמני' : 'Temporary') : planPriceLabel
   const displayRemainingLabel = isTemporaryPlan ? (language === 'he' ? 'זמן שנותר לניסיון' : 'Trial time left') : remainingLabel
   const hasPaidProPlan = isPro && !isTemporaryPlan
 
