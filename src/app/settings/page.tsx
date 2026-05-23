@@ -343,18 +343,25 @@ export default function SettingsPage() {
     zIndex: 1,
   }
 
-  const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: any) => void }) => (
+  const ToggleGroup = ({ options, value, onChange }: { options: { value: string; label: string; icon?: string }[]; value: string; onChange: (v: any) => void }) => (
     <div style={{ display: 'flex', gap: '6px' }}>
-      {options.map(opt => (
+      {options.map(opt => {
+        const active = value === opt.value
+        return (
         <button key={opt.value} onClick={() => onChange(opt.value)} style={{
           padding: '7px 18px', borderRadius: '10px', fontSize: '13px',
           cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-          border: `1px solid ${value === opt.value ? 'rgba(15,141,99,0.4)' : 'var(--border)'}`,
-          background: value === opt.value ? 'rgba(15,141,99,0.15)' : 'var(--bg3)',
-          color: value === opt.value ? '#0f8d63' : 'var(--text3)',
+          border: `1px solid ${active ? 'rgba(15,141,99,0.4)' : 'var(--border)'}`,
+          background: active ? 'rgba(15,141,99,0.15)' : 'var(--bg3)',
+          color: active ? '#0f8d63' : 'var(--text3)',
           transition: 'all 0.2s',
-        }}>{opt.label}</button>
-      ))}
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
+        }}>
+          {opt.icon && <Icon name={opt.icon} size={15} color="currentColor" strokeWidth={2} />}
+          <span>{opt.label}</span>
+        </button>
+        )
+      })}
     </div>
   )
 
@@ -485,7 +492,10 @@ export default function SettingsPage() {
             <ToggleGroup
               value={pendingTheme}
               onChange={setPendingTheme}
-              options={[{ value: 'dark', label: language === 'he' ? 'כהה' : 'Dark' }, { value: 'light', label: language === 'he' ? 'בהיר' : 'Light' }]}
+              options={[
+                { value: 'dark', label: language === 'he' ? 'כהה' : 'Dark', icon: 'dark_mode' },
+                { value: 'light', label: language === 'he' ? 'בהיר' : 'Light', icon: 'light_mode' },
+              ]}
             />
           </PreferenceOption>
 
@@ -499,9 +509,9 @@ export default function SettingsPage() {
               value={pendingCurrency}
               onChange={setPendingCurrency}
               options={[
-                { value: 'ILS', label: 'ILS' },
-                { value: 'USD', label: 'USD' },
-                { value: 'EUR', label: 'EUR' },
+                { value: 'ILS', label: 'ILS', icon: 'currency_ils' },
+                { value: 'USD', label: 'USD', icon: 'currency_usd' },
+                { value: 'EUR', label: 'EUR', icon: 'currency_eur' },
               ]}
             />
           </PreferenceOption>

@@ -8,7 +8,7 @@ import {
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
   RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
   Check, Brain, Images, Image as ImageIcon, UploadCloud, Banknote, Key, Monitor,
-  Save, CalendarCheck,
+  Save, CalendarCheck, Sun, Moon, DollarSign, Euro, Coins,
   type LucideProps,
 } from 'lucide-react'
 
@@ -85,6 +85,11 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   cloud_upload: UploadCloud,
   image: ImageIcon,
   payments: Banknote,
+  currency_ils: Coins,
+  currency_usd: DollarSign,
+  currency_eur: Euro,
+  light_mode: Sun,
+  dark_mode: Moon,
   key: Key,
   screenshot_monitor: Monitor,
   save: Save,
