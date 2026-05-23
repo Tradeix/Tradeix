@@ -76,14 +76,16 @@ export default function UpgradePage() {
         <div className="upgrade-glow upgrade-glow-b" />
 
         <div className="upgrade-copy">
-          <div className="upgrade-mark">
-            <Icon name="bolt" size={26} color="#0f8d63" />
+          <div className="upgrade-brand">
+            <span className="upgrade-mark">
+              <Icon name="bolt" size={26} color="#0f8d63" />
+            </span>
+            <span className="upgrade-eyebrow">
+              UPLOTRADE PRO
+            </span>
           </div>
 
           <div className="upgrade-headline">
-            <div className="upgrade-eyebrow">
-              {language === 'he' ? 'UPLOTRADE PRO' : 'UPLOTRADE PRO'}
-            </div>
             <h1>
               {language === 'he' ? 'קבל יתרון אמיתי בכל עסקה' : 'Get an edge on every trade'}
             </h1>
@@ -254,6 +256,13 @@ export default function UpgradePage() {
           min-width: 0;
         }
 
+        .upgrade-brand {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          color: #0f8d63;
+        }
+
         .upgrade-mark {
           width: 48px;
           height: 48px;
@@ -267,11 +276,11 @@ export default function UpgradePage() {
 
         .upgrade-eyebrow {
           color: #0f8d63;
-          font-size: 12px;
+          font-size: 14px;
           font-weight: 950;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          margin-bottom: 8px;
+          line-height: 1;
         }
 
         .upgrade-copy h1 {
@@ -566,7 +575,7 @@ export default function UpgradePage() {
             gap: 14px;
           }
 
-          .upgrade-mark {
+          .upgrade-brand {
             align-self: center;
             justify-self: center;
             margin-inline: auto;
@@ -625,11 +634,15 @@ export default function UpgradePage() {
             display: contents;
           }
 
-          .upgrade-mark {
+          .upgrade-brand {
             order: 1;
             align-self: center;
             justify-self: center;
             margin-inline: auto;
+            gap: 10px;
+          }
+
+          .upgrade-mark {
             width: 40px;
             height: 40px;
             border-radius: 12px;
@@ -640,8 +653,8 @@ export default function UpgradePage() {
           }
 
           .upgrade-eyebrow {
-            font-size: 10px;
-            margin-bottom: 6px;
+            font-size: 12px;
+            letter-spacing: 0.12em;
           }
 
           .upgrade-copy h1 {
