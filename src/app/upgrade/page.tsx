@@ -134,17 +134,16 @@ export default function UpgradePage() {
           </div>
 
           <div className="price-strip">
-            <div className="plan-badge">
-              {isYearly
-                ? (language === 'he' ? 'קבל חודשיים מתנה!' : 'Get 2 months free!')
-                : (language === 'he' ? 'גמיש חודשי' : 'Flexible monthly')}
-            </div>
-
             <div className="price-row" dir="ltr">
               <strong>{price}</strong>
               <span>{period}</span>
             </div>
 
+            <div className="plan-badge">
+              {isYearly
+                ? (language === 'he' ? 'קבל חודשיים מתנה!' : 'Get 2 months free!')
+                : (language === 'he' ? 'גמיש חודשי' : 'Flexible monthly')}
+            </div>
           </div>
 
           {hasActivePaidPlan ? (
