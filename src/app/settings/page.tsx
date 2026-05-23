@@ -19,6 +19,8 @@ type BillingProfile = {
   is_admin?: boolean | null
 }
 
+type SettingsSection = 'profile' | 'preferences' | 'subscription'
+
 export default function SettingsPage() {
   const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
@@ -37,6 +39,8 @@ export default function SettingsPage() {
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [syncingBilling, setSyncingBilling] = useState(false)
+  const [activeSettingsSection, setActiveSettingsSection] = useState<SettingsSection>('profile')
+  const [mobileSettingsContentOpen, setMobileSettingsContentOpen] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
@@ -381,6 +385,41 @@ export default function SettingsPage() {
     </div>
   )
 
+  const settingsSections = [
+    {
+      id: 'profile' as SettingsSection,
+      icon: 'person',
+      title: language === 'he' ? 'פרופיל' : 'Profile',
+      subtitle: language === 'he' ? 'פרטים ותמונה' : 'Details & photo',
+      group: language === 'he' ? 'משתמש' : 'User',
+    },
+    {
+      id: 'preferences' as SettingsSection,
+      icon: 'tune',
+      title: language === 'he' ? 'העדפות' : 'Preferences',
+      subtitle: language === 'he' ? 'שפה, עיצוב ומטבע' : 'Language, theme & currency',
+      group: language === 'he' ? 'כללי' : 'General',
+    },
+    ...(!isAdmin ? [{
+      id: 'subscription' as SettingsSection,
+      icon: 'workspace_premium',
+      title: language === 'he' ? 'מנוי' : 'Subscription',
+      subtitle: language === 'he' ? 'תוכנית וחיוב' : 'Plan & billing',
+      group: language === 'he' ? 'משתמש' : 'User',
+    }] : []),
+  ]
+
+  const groupedSettingsSections = settingsSections.reduce<Record<string, typeof settingsSections>>((groups, section) => {
+    groups[section.group] = groups[section.group] || []
+    groups[section.group].push(section)
+    return groups
+  }, {})
+
+  const openSettingsSection = (section: SettingsSection) => {
+    setActiveSettingsSection(section)
+    setMobileSettingsContentOpen(true)
+  }
+
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)', minHeight: 'calc(100vh - 140px)', position: 'relative', zIndex: 1 }}>
       <PageHeader
@@ -389,11 +428,46 @@ export default function SettingsPage() {
         icon="settings"
       />
 
-      {/* 3 cards side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: isAdmin ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))', gap: '20px', marginBottom: '20px', alignItems: 'stretch' }} className="settings-grid">
+      <div className={`settings-shell ${mobileSettingsContentOpen ? 'settings-shell--content-open' : ''}`}>
+        <aside className="settings-sidebar" aria-label={language === 'he' ? 'תפריט הגדרות' : 'Settings menu'}>
+          {Object.entries(groupedSettingsSections).map(([group, sections]) => (
+            <div className="settings-menu-group" key={group}>
+              <div className="settings-menu-label">
+                <Icon name={group === (language === 'he' ? 'משתמש' : 'User') ? 'person' : 'settings'} size={17} color="#8ea0d6" />
+                <span>{group}</span>
+              </div>
+              <div className="settings-menu-list">
+                {sections.map(section => {
+                  const active = activeSettingsSection === section.id
+                  return (
+                    <button
+                      key={section.id}
+                      type="button"
+                      className={`settings-menu-item ${active ? 'settings-menu-item--active' : ''}`}
+                      onClick={() => openSettingsSection(section.id)}
+                    >
+                      <span className="settings-menu-item-copy">
+                        <span>{section.title}</span>
+                        <small>{section.subtitle}</small>
+                      </span>
+                      <Icon name="chevron_right" size={18} color="currentColor" />
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </aside>
+
+        <div className="settings-content">
+          <button type="button" className="settings-back-button" onClick={() => setMobileSettingsContentOpen(false)}>
+            <Icon name="chevron_left" size={20} color="currentColor" />
+            <span>{language === 'he' ? 'חזרה לתפריט הגדרות' : 'Back to settings menu'}</span>
+          </button>
 
         {/* ── CARD 1: Profile ── */}
-        <div style={{ ...glass }}>
+        {activeSettingsSection === 'profile' && (
+        <div style={{ ...glass }} className="settings-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="person" size={16} color="#0f8d63" />
@@ -457,9 +531,11 @@ export default function SettingsPage() {
           </button>
           )}
         </div>
+        )}
 
         {/* ── CARD 2: Preferences ── */}
-        <div style={{ ...glass }}>
+        {activeSettingsSection === 'preferences' && (
+        <div style={{ ...glass }} className="settings-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="tune" size={16} color="#0f8d63" />
@@ -532,12 +608,13 @@ export default function SettingsPage() {
           </button>
           )}
         </div>
+        )}
 
         {/* ── CARD 3: Subscription ── */}
-        {!isAdmin && (
+        {!isAdmin && activeSettingsSection === 'subscription' && (
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
-        }}>
+        }} className="settings-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="workspace_premium" size={16} color="#0f8d63" />
@@ -730,6 +807,7 @@ export default function SettingsPage() {
         </div>
         )}
       </div>
+      </div>
 
       {/* Cancel subscription confirmation modal */}
       {showCancelConfirm && (
@@ -806,7 +884,115 @@ export default function SettingsPage() {
       )}
 
       <style>{`
-        .settings-grid > div { min-width: 0; }
+        .settings-shell {
+          display: grid;
+          grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+          gap: 20px;
+          align-items: start;
+          margin-bottom: 20px;
+        }
+        .settings-sidebar {
+          position: sticky;
+          top: 92px;
+          display: grid;
+          gap: 22px;
+          min-width: 0;
+          padding: 18px;
+          border-radius: 18px;
+          background: linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
+          border: 1px solid rgba(255,255,255,0.07);
+          box-shadow: 0 16px 38px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .settings-menu-group {
+          display: grid;
+          gap: 10px;
+        }
+        .settings-menu-label {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          padding: 0 4px;
+          color: #8ea0d6;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+        .settings-menu-list {
+          display: grid;
+          overflow: hidden;
+          border-radius: 12px;
+          border: 1px solid rgba(142,160,214,0.18);
+          background: rgba(255,255,255,0.025);
+        }
+        .settings-menu-item {
+          width: 100%;
+          min-height: 58px;
+          border: 0;
+          border-bottom: 1px solid rgba(142,160,214,0.18);
+          background: transparent;
+          color: var(--text);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 12px 14px;
+          font-family: Heebo, sans-serif;
+          text-align: start;
+          transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+        }
+        .settings-menu-item:last-child {
+          border-bottom: 0;
+        }
+        .settings-menu-item-copy {
+          display: grid;
+          gap: 3px;
+          min-width: 0;
+        }
+        .settings-menu-item-copy span {
+          font-size: 15px;
+          font-weight: 900;
+          line-height: 1.05;
+        }
+        .settings-menu-item-copy small {
+          color: var(--text3);
+          font-size: 10.5px;
+          font-weight: 750;
+          line-height: 1.25;
+        }
+        .settings-menu-item--active {
+          background: rgba(15,141,99,0.15);
+          color: #0f8d63;
+        }
+        .settings-menu-item--active small {
+          color: rgba(15,141,99,0.72);
+        }
+        .settings-content {
+          min-width: 0;
+        }
+        .settings-card {
+          width: 100%;
+          max-width: 900px;
+          min-height: 0 !important;
+          height: auto !important;
+        }
+        .settings-back-button {
+          display: none;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          margin: 0 0 14px;
+          padding: 12px 14px;
+          border: 1px solid rgba(142,160,214,0.18);
+          border-radius: 12px;
+          background: rgba(255,255,255,0.035);
+          color: var(--text);
+          font-family: Heebo, sans-serif;
+          font-size: 14px;
+          font-weight: 900;
+          cursor: pointer;
+        }
         .preference-option {
           margin-bottom: 14px;
           padding: 12px;
@@ -1062,7 +1248,51 @@ export default function SettingsPage() {
           font-weight: 950;
           white-space: nowrap;
         }
-        @media (max-width: 1024px) { .settings-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 1024px) {
+          .settings-shell {
+            grid-template-columns: 250px minmax(0, 1fr);
+            gap: 14px;
+          }
+          .settings-sidebar {
+            top: 78px;
+            padding: 14px;
+          }
+        }
+        @media (max-width: 720px) {
+          .settings-shell {
+            display: block;
+          }
+          .settings-sidebar {
+            position: relative;
+            top: auto;
+            padding: 14px;
+          }
+          .settings-content {
+            display: none;
+          }
+          .settings-shell--content-open .settings-sidebar {
+            display: none;
+          }
+          .settings-shell--content-open .settings-content {
+            display: block;
+          }
+          .settings-back-button {
+            display: inline-flex;
+          }
+          .settings-card {
+            max-width: none;
+          }
+          .settings-menu-item {
+            min-height: 56px;
+            padding: 12px 14px;
+          }
+          .settings-menu-item svg {
+            transform: rotate(180deg);
+          }
+          [dir="ltr"] .settings-menu-item svg {
+            transform: none;
+          }
+        }
         @media (max-width: 520px) {
           .plan-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
           .plan-choice-btn { min-height: 66px !important; padding: 9px 7px !important; }
