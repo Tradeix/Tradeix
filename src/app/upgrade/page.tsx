@@ -427,10 +427,11 @@ export default function UpgradePage() {
         }
 
         .price-strip {
-          text-align: start;
+          text-align: center;
           display: grid;
-          grid-template-columns: auto 1fr;
+          grid-template-columns: 1fr;
           align-items: center;
+          justify-items: center;
           gap: 12px 18px;
           padding-block: 2px;
         }
@@ -448,13 +449,13 @@ export default function UpgradePage() {
           font-size: 11px;
           font-weight: 950;
           grid-column: 1 / -1;
-          justify-self: start;
+          justify-self: center;
         }
 
         .price-row {
           display: flex;
           align-items: flex-end;
-          justify-content: flex-start;
+          justify-content: center;
           gap: 7px;
         }
 
@@ -739,9 +740,10 @@ export default function UpgradePage() {
           }
 
           .price-strip {
-            grid-template-columns: 1fr auto;
-            gap: 8px 12px;
-            align-items: end;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            align-items: center;
+            justify-items: center;
           }
 
           .plan-badge {
