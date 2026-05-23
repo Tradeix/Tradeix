@@ -247,8 +247,8 @@ export default function UpgradePage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: center;
-          text-align: center;
+          align-items: flex-start;
+          text-align: start;
           gap: 16px;
           min-width: 0;
         }
@@ -281,12 +281,11 @@ export default function UpgradePage() {
           font-weight: 950;
           letter-spacing: 0;
           max-width: 640px;
-          margin-inline: auto;
         }
 
         .upgrade-copy p {
           max-width: 620px;
-          margin: 12px auto 0;
+          margin: 12px 0 0;
           color: var(--text3);
           font-size: 15px;
           line-height: 1.55;
@@ -296,7 +295,7 @@ export default function UpgradePage() {
         .upgrade-proof {
           display: flex;
           flex-wrap: wrap;
-          justify-content: center;
+          justify-content: flex-start;
           gap: 14px;
         }
 
@@ -560,15 +559,29 @@ export default function UpgradePage() {
           }
 
           .upgrade-copy {
+            align-items: center;
+            text-align: center;
             gap: 14px;
+          }
+
+          .upgrade-mark {
+            align-self: center;
+            justify-self: center;
+            margin-inline: auto;
           }
 
           .upgrade-copy h1 {
             font-size: 32px;
+            margin-inline: auto;
           }
 
           .upgrade-copy p {
             font-size: 13px;
+            margin-inline: auto;
+          }
+
+          .upgrade-proof {
+            justify-content: center;
           }
 
           .upgrade-features {
@@ -612,6 +625,8 @@ export default function UpgradePage() {
 
           .upgrade-mark {
             order: 1;
+            align-self: center;
+            justify-self: center;
             margin-inline: auto;
             width: 40px;
             height: 40px;
