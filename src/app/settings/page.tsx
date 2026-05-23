@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef, type ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useApp } from '@/lib/app-context'
 import type { Currency } from '@/lib/app-context'
@@ -358,6 +358,22 @@ export default function SettingsPage() {
     </div>
   )
 
+  const PreferenceOption = ({ title, note, children }: { title: string; note: string; children: ReactNode }) => (
+    <div className="preference-option">
+      <div className="preference-option-title">
+        <span className="preference-option-dot" />
+        <span>{title}</span>
+      </div>
+      <div className="preference-option-control">
+        {children}
+      </div>
+      <div className="preference-option-note">
+        <Icon name="info" size={14} color="#0f8d63" />
+        <span>{note}</span>
+      </div>
+    </div>
+  )
+
   return (
     <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)', minHeight: 'calc(100vh - 140px)', position: 'relative', zIndex: 1 }}>
       <PageHeader
@@ -447,43 +463,38 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Language */}
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {language === 'he' ? 'שפה' : 'Language'}
-            </div>
+          <PreferenceOption
+            title={language === 'he' ? 'שפה' : 'Language'}
+            note={pendingLang === 'he'
+              ? 'האתר יוצג בעברית ובכיוון ימין לשמאל בכל המסכים.'
+              : 'The site will display in English and left-to-right across the app.'}
+          >
             <ToggleGroup
               value={pendingLang}
               onChange={setPendingLang}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {pendingLang === 'he' ? 'האתר יוצג בכיוון ימין לשמאל' : 'Site will display left to right'}
-            </div>
-          </div>
+          </PreferenceOption>
 
-          {/* Theme */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {language === 'he' ? 'עיצוב' : 'Theme'}
-            </div>
+          <PreferenceOption
+            title={language === 'he' ? 'עיצוב' : 'Theme'}
+            note={pendingTheme === 'dark'
+              ? (language === 'he' ? 'מצב כהה יופעל בכל עמודי המערכת.' : 'Dark mode will apply across the app.')
+              : (language === 'he' ? 'מצב בהיר יופעל בכל עמודי המערכת.' : 'Light mode will apply across the app.')}
+          >
             <ToggleGroup
               value={pendingTheme}
               onChange={setPendingTheme}
               options={[{ value: 'dark', label: language === 'he' ? 'כהה' : 'Dark' }, { value: 'light', label: language === 'he' ? 'בהיר' : 'Light' }]}
             />
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {pendingTheme === 'dark'
-                ? (language === 'he' ? 'עיצוב כהה' : 'Dark mode')
-                : (language === 'he' ? 'עיצוב בהיר' : 'Light mode')}
-            </div>
-          </div>
+          </PreferenceOption>
 
-          {/* Currency */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {language === 'he' ? 'מטבע' : 'Currency'}
-            </div>
+          <PreferenceOption
+            title={language === 'he' ? 'מטבע' : 'Currency'}
+            note={language === 'he'
+              ? 'כל סכום כספי בדשבורד, עסקאות, סטטיסטיקות ותיקים יוצג במטבע הנבחר.'
+              : 'All trading amounts in dashboard, trades, stats, and portfolios will use the selected currency.'}
+          >
             <ToggleGroup
               value={pendingCurrency}
               onChange={setPendingCurrency}
@@ -493,10 +504,7 @@ export default function SettingsPage() {
                 { value: 'EUR', label: 'EUR' },
               ]}
             />
-            <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '8px', fontWeight: '600' }}>
-              {language === 'he' ? 'הדשבורד יציג סיכומים במטבע הנבחר' : 'Dashboard totals will use the selected currency'}
-            </div>
-          </div>
+          </PreferenceOption>
 
           {hasPreferenceChanges && (
           <button onClick={handleSavePreferences} disabled={savingPrefs} style={{
@@ -789,6 +797,64 @@ export default function SettingsPage() {
 
       <style>{`
         .settings-grid > div { min-width: 0; }
+        .preference-option {
+          margin-bottom: 14px;
+          padding: 12px;
+          border: 1px solid rgba(15,141,99,0.16);
+          border-radius: 14px;
+          background: linear-gradient(135deg, rgba(15,141,99,0.055), rgba(255,255,255,0.012));
+        }
+        .preference-option-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 10px;
+          color: var(--text);
+          font-size: 13px;
+          font-weight: 950;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .preference-option-title::after {
+          content: "";
+          flex: 1 1 auto;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(15,141,99,0.35), transparent);
+          opacity: 0.8;
+        }
+        [dir="rtl"] .preference-option-title::after {
+          background: linear-gradient(270deg, rgba(15,141,99,0.35), transparent);
+        }
+        .preference-option-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: #0f8d63;
+          box-shadow: 0 0 0 4px rgba(15,141,99,0.12);
+          flex: 0 0 auto;
+        }
+        .preference-option-control {
+          display: flex;
+          align-items: center;
+        }
+        .preference-option-note {
+          margin-top: 10px;
+          display: flex;
+          align-items: flex-start;
+          gap: 7px;
+          padding: 9px 10px;
+          border-radius: 11px;
+          border: 1px solid rgba(15,141,99,0.16);
+          background: rgba(15,141,99,0.075);
+          color: var(--text2);
+          font-size: 11.5px;
+          font-weight: 780;
+          line-height: 1.45;
+        }
+        .preference-option-note svg {
+          flex: 0 0 auto;
+          margin-top: 1px;
+        }
         .plan-choice-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
