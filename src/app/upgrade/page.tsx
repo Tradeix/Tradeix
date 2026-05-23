@@ -94,14 +94,6 @@ export default function UpgradePage() {
             </p>
           </div>
 
-          <div className="upgrade-proof">
-            {trustItems.map(item => (
-              <span key={item}>
-                {item}
-              </span>
-            ))}
-          </div>
-
           <div className="upgrade-features">
             {proList.map(feature => (
               <div key={feature.label}>
@@ -163,22 +155,32 @@ export default function UpgradePage() {
               )}
             </div>
           ) : (
-            <button
-              onClick={handleUpgrade}
-              disabled={loading || subscriptionLoading}
-              className="upgrade-cta"
-            >
-              {loading ? (
-                <span className="spinner" />
-              ) : (
-                <>
-                  <Icon name="lock_open" size={19} color="#fff" />
-                  {language === 'he'
-                    ? isYearly ? 'הפעל מנוי PRO שנתי' : 'הפעל מנוי PRO חודשי'
-                    : isYearly ? 'Activate yearly PRO plan' : 'Activate monthly PRO plan'}
-                </>
-              )}
-            </button>
+            <>
+              <button
+                onClick={handleUpgrade}
+                disabled={loading || subscriptionLoading}
+                className="upgrade-cta"
+              >
+                {loading ? (
+                  <span className="spinner" />
+                ) : (
+                  <>
+                    <Icon name="lock_open" size={19} color="#fff" />
+                    {language === 'he'
+                      ? isYearly ? 'הפעל מנוי PRO שנתי' : 'הפעל מנוי PRO חודשי'
+                      : isYearly ? 'Activate yearly PRO plan' : 'Activate monthly PRO plan'}
+                  </>
+                )}
+              </button>
+
+              <div className="upgrade-proof">
+                {trustItems.map(item => (
+                  <span key={item}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </>
           )}
 
         </div>
@@ -294,7 +296,7 @@ export default function UpgradePage() {
         .upgrade-proof {
           display: flex;
           flex-wrap: wrap;
-          justify-content: flex-start;
+          justify-content: center;
           gap: 14px;
         }
 
