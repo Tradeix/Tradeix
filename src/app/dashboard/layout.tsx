@@ -333,7 +333,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   ]
   const BOTTOM_NAV = [
     { href: '/gallery', icon: 'photo_library', label: language === 'he' ? 'גלריה' : 'Gallery' },
-    { href: '/portfolios', icon: 'cases', label: tr.portfolioSettings },
     ...(isPro ? [{ href: '/portfolios/archive', icon: 'inventory_2', label: language === 'he' ? 'ארכיון תיקים' : 'Archive' }] : []),
     { href: '/settings', icon: 'settings', label: language === 'he' ? 'הגדרות' : 'Settings' },
   ]

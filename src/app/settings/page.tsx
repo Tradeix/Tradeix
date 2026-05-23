@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
+import PortfolioSettings from '@/components/PortfolioSettings'
 
 type BillingProfile = {
   subscription_tier: 'free' | 'pro' | null
@@ -19,7 +20,7 @@ type BillingProfile = {
   is_admin?: boolean | null
 }
 
-type SettingsSection = 'profile' | 'preferences' | 'subscription'
+type SettingsSection = 'profile' | 'preferences' | 'subscription' | 'portfolios'
 type PreferenceHelp = 'language' | 'theme' | 'currency' | null
 
 export default function SettingsPage() {
@@ -147,6 +148,14 @@ export default function SettingsPage() {
     setPendingTheme(theme)
     setPendingCurrency(currency)
   }, [language, theme, currency])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (new URLSearchParams(window.location.search).get('section') === 'portfolios') {
+      setActiveSettingsSection('portfolios')
+      setMobileSettingsContentOpen(true)
+    }
+  }, [])
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -404,6 +413,13 @@ export default function SettingsPage() {
       subtitle: language === 'he' ? 'שפה, עיצוב ומטבע' : 'Language, theme & currency',
       group: language === 'he' ? 'כללי' : 'General',
     },
+    {
+      id: 'portfolios' as SettingsSection,
+      icon: 'cases',
+      title: language === 'he' ? 'תיקים' : 'Portfolios',
+      subtitle: language === 'he' ? 'ניהול תיקי מסחר' : 'Trading portfolio setup',
+      group: language === 'he' ? 'כללי' : 'General',
+    },
     ...(!isAdmin ? [{
       id: 'subscription' as SettingsSection,
       icon: 'workspace_premium',
@@ -422,6 +438,12 @@ export default function SettingsPage() {
   const openSettingsSection = (section: SettingsSection) => {
     setActiveSettingsSection(section)
     setMobileSettingsContentOpen(true)
+    if (typeof window !== 'undefined') {
+      const nextUrl = new URL(window.location.href)
+      if (section === 'portfolios') nextUrl.searchParams.set('section', 'portfolios')
+      else nextUrl.searchParams.delete('section')
+      window.history.replaceState(null, '', `${nextUrl.pathname}${nextUrl.search}`)
+    }
   }
 
   return (
@@ -618,6 +640,21 @@ export default function SettingsPage() {
         )}
 
         {/* ── CARD 3: Subscription ── */}
+        {activeSettingsSection === 'portfolios' && (
+        <div style={{ ...glass }} className="settings-card settings-card--wide">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="cases" size={16} color="#0f8d63" />
+            </div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות תיקים' : 'Portfolio Settings'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage trading portfolios'}</div>
+            </div>
+          </div>
+          <PortfolioSettings embedded />
+        </div>
+        )}
+
         {!isAdmin && activeSettingsSection === 'subscription' && (
         <div style={{
           ...glass, position: 'relative', overflow: 'hidden',
@@ -987,6 +1024,10 @@ export default function SettingsPage() {
           min-height: 0 !important;
           height: auto !important;
           padding: 20px !important;
+        }
+        .settings-card--wide {
+          width: min(100%, 980px) !important;
+          max-width: 980px !important;
         }
         .settings-back-button {
           display: none;

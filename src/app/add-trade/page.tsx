@@ -359,7 +359,7 @@ export default function AddTradePage() {
         const { data: portfolios } = await supabase.from('portfolios').select('id').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1)
         if ((portfolios?.length ?? 0) === 0) {
           toast.error(language === 'he' ? 'אין תיק - צור תיק קודם' : 'No portfolio found')
-          router.push('/portfolios')
+          router.push('/settings?section=portfolios')
           return
         }
         portfolioId = portfolios![0].id
@@ -460,7 +460,7 @@ export default function AddTradePage() {
         const { data: portfolios } = await supabase.from('portfolios').select('id').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1)
         if ((portfolios?.length ?? 0) === 0) {
           toast.error(language === 'he' ? 'אין תיק — צור תיק קודם' : 'No portfolio found')
-          router.push('/portfolios')
+          router.push('/settings?section=portfolios')
           return
         }
         portfolioId = portfolios![0].id
@@ -533,7 +533,7 @@ export default function AddTradePage() {
           <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
             {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
           </div>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/settings?section=portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
             {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
