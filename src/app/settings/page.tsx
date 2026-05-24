@@ -1035,18 +1035,23 @@ export default function SettingsPage() {
           display: none;
           align-items: center;
           gap: 8px;
-          width: 100%;
+          width: fit-content;
           margin: 0 0 14px;
-          padding: 12px 14px;
-          border: 1px solid rgba(142,160,214,0.18);
-          border-radius: 12px;
-          background: rgba(255,255,255,0.035);
+          margin-right: auto;
+          margin-left: 0;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
           color: var(--text);
           font-family: Heebo, sans-serif;
           font-size: 14px;
           font-weight: 900;
           cursor: pointer;
-          max-width: 760px;
+          transition: color 0.16s ease;
+        }
+        .settings-back-button:hover {
+          color: #0f8d63;
         }
         .preference-option {
           margin-bottom: 10px;
