@@ -226,13 +226,14 @@ export default function ArchivePage() {
             const totalPages = Math.ceil(total / PAGE_SIZE)
 
             return (
-              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderInlineStart: `3px solid ${color}`, borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s' }}>
+              <div key={p.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s' }}>
 
                 {/* Main row */}
                 <div className="archive-main-row" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{ width: '9px', height: '9px', borderRadius: '999px', background: color, flexShrink: 0 }} />
                       <div style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text)', opacity: 0.8 }}>{p.name}</div>
                       <span style={{ fontSize: '11px', fontWeight: '700', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
                         {language === 'he' ? 'ארכיון' : 'ARCHIVED'}
