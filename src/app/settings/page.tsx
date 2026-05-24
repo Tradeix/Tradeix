@@ -726,26 +726,7 @@ export default function SettingsPage() {
 
           {hasPaidProPlan ? (
             isCanceledButActive ? (
-              isCanceledYearlyButActive ? (
-                <div style={{
-                  marginTop: 'auto',
-                  background: isLight ? 'rgba(255,255,255,0.74)' : 'rgba(15,141,99,0.055)',
-                  border: '1px solid rgba(15,141,99,0.26)',
-                  borderRadius: '16px',
-                  padding: '16px',
-                  display: 'grid',
-                  gap: '8px',
-                }}>
-                  <div style={{ fontSize: '14px', fontWeight: '950', color: '#0f8d63' }}>
-                    {language === 'he' ? 'מנוי שנתי מבוטל' : 'Canceled yearly plan'}
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: 1.6, color: 'var(--text3)', fontWeight: '700' }}>
-                    {language === 'he'
-                      ? 'המנוי השנתי שלך כבר שולם ויישאר פעיל עד סוף התקופה. אפשר לבצע חידוש או מעבר לתוכנית אחרת רק אחרי שהתוקף השנתי יסתיים.'
-                      : 'Your yearly plan is already paid and remains active until the period ends. Renewal or plan changes will be available only after the yearly access expires.'}
-                  </div>
-                </div>
-              ) : (
+              !isCanceledYearlyButActive ? (
               <div className="plan-choice-grid">
                 <button
                   className="plan-choice-btn plan-choice-btn--monthly"
@@ -791,7 +772,7 @@ export default function SettingsPage() {
                   </span>
                 </button>
               </div>
-              )
+              ) : null
             ) : (
               <>
               {!isYearlyPlan && (
