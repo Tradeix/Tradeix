@@ -1034,7 +1034,7 @@ export default function SettingsPage() {
           color: #0f8d63;
         }
         .preference-option {
-          margin-bottom: 22px;
+          margin-bottom: 36px;
           padding: 0;
           border: 0;
           background: transparent;
