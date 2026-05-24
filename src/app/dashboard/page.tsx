@@ -241,10 +241,27 @@ export default function DashboardPage() {
     indigo: '#6366f1', rose: '#f43f5e',
   }
   const portfolioColor = PORTFOLIO_COLOR_MAP[(activePortfolio as any)?.color || 'green'] || '#0f8d63'
-  const winRateColor = stats.winRate >= 60 ? '#22c55e' : stats.winRate >= 40 ? '#f59e0b' : '#ef4444'
-  const winRateGlow = stats.winRate >= 60 ? 'rgba(34,197,94,0.16)' : stats.winRate >= 40 ? 'rgba(245,158,11,0.16)' : 'rgba(239,68,68,0.16)'
+  const winRateColor = stats.winRate >= 60 ? '#22c55e' : stats.winRate >= 30 ? '#f59e0b' : '#ef4444'
+  const winRateGlow = stats.winRate >= 60 ? 'rgba(34,197,94,0.16)' : stats.winRate >= 30 ? 'rgba(245,158,11,0.16)' : 'rgba(239,68,68,0.16)'
   const winRateArc = Math.max(0, Math.min(100, stats.winRate))
   const dashboardValue = portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital
+  const portfolioPnlPositive = portfolioStats.totalPnl >= 0
+  const portfolioPnlColor = portfolioPnlPositive ? '#22c55e' : '#ef4444'
+  const portfolioPnlGlow = portfolioPnlPositive ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'
+  const portfolioWinRateColor = portfolioStats.totalTrades === 0
+    ? '#f8fafc'
+    : portfolioStats.winRate >= 60
+      ? '#22c55e'
+      : portfolioStats.winRate >= 30
+        ? '#f59e0b'
+        : '#ef4444'
+  const portfolioWinRateGlow = portfolioStats.totalTrades === 0
+    ? 'rgba(255,255,255,0.08)'
+    : portfolioStats.winRate >= 60
+      ? 'rgba(34,197,94,0.18)'
+      : portfolioStats.winRate >= 30
+        ? 'rgba(245,158,11,0.18)'
+        : 'rgba(239,68,68,0.18)'
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -368,7 +385,7 @@ export default function DashboardPage() {
             Glowing portfolio-color dot next to the name (no full border),
             big "current value" headline with a +X.X% return pill,
             small "principal" hint under the headline, and a 3-tile row
-            (Trades / Profit Factor / Win Rate) at the bottom. */}
+            (Trades / PNL / Win Rate) at the bottom. */}
         <div className="card-hover balance-card" style={{ ...card, flex: 1, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
           {/* Soft glow keyed to portfolio color in the top corner */}
           <div style={{ position: 'absolute', top: '-50px', insetInlineStart: '-30px', width: '220px', height: '220px', background: `radial-gradient(circle, ${portfolioColor}15, transparent 65%)`, pointerEvents: 'none' }} />
@@ -455,25 +472,51 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.024))', minHeight: '124px' }}>
+          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', padding: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.024))', minHeight: '124px' }}>
             {[
-              { label: language === 'he' ? 'עסקאות' : 'Trades', value: portfolioStats.totalTrades, color: 'var(--text)' },
-              { label: 'Profit Factor', value: portfolioStats.profitFactor > 0 ? portfolioStats.profitFactor.toFixed(2) : '—', color: 'var(--text)' },
-              { label: language === 'he' ? 'אחוז זכייה' : 'Win Rate', value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—', color: 'var(--text)' },
+              {
+                label: language === 'he' ? 'עסקאות' : 'Trades',
+                value: portfolioStats.totalTrades,
+                color: '#f8fafc',
+                icon: 'receipt_long',
+                glow: 'rgba(255,255,255,0.08)',
+              },
+              {
+                label: 'PNL',
+                value: portfolioStats.totalTrades > 0 ? formatSignedMoney(portfolioStats.totalPnl, currency) : '—',
+                color: portfolioPnlColor,
+                icon: portfolioPnlPositive ? 'trending_up' : 'trending_down',
+                glow: portfolioPnlGlow,
+              },
+              {
+                label: language === 'he' ? 'אחוז זכייה' : 'Win Rate',
+                value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—',
+                color: portfolioWinRateColor,
+                icon: 'speed',
+                glow: portfolioWinRateGlow,
+              },
             ].map((t, i) => (
               <div key={i} style={{
-                padding: '16px 10px',
+                padding: '15px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
+                alignItems: 'center',
+                gap: '9px',
                 textAlign: 'center',
-                borderInlineStart: i > 0 ? '1px solid var(--border)' : 'none',
+                border: `1px solid ${t.color === '#f8fafc' ? 'rgba(255,255,255,0.09)' : t.color + '44'}`,
+                borderRadius: '14px',
+                background: `radial-gradient(circle at 50% -22%, ${t.glow}, transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))`,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 28px ${t.glow}`,
                 minWidth: 0,
               }}>
-                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em', marginBottom: '8px' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: t.glow, border: `1px solid ${t.color === '#f8fafc' ? 'rgba(255,255,255,0.10)' : t.color + '3f'}` }}>
+                  <Icon name={t.icon} size={15} color={t.color} />
+                </div>
+                <div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em' }}>
                   {t.label}
                 </div>
-                <div dir="ltr" style={{ fontSize: '20px', fontWeight: '900', color: t.color, letterSpacing: '-0.02em', lineHeight: 1 }}>
+                <div dir="ltr" style={{ fontSize: '22px', fontWeight: '950', color: t.color, letterSpacing: '-0.03em', lineHeight: 1, textShadow: `0 8px 24px ${t.glow}` }}>
                   {t.value}
                 </div>
               </div>
