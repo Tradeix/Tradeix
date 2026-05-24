@@ -559,8 +559,8 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
           .portfolios-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         }
         @media (max-width: 640px) {
-          .portfolio-settings-header { align-items: stretch !important; flex-direction: column !important; }
-          .portfolio-new-btn { width: 100% !important; justify-content: center !important; }
+          .portfolio-settings-header { gap: 10px !important; }
+          .portfolio-new-btn { padding: 9px 12px !important; font-size: 12px !important; white-space: nowrap !important; }
           .portfolios-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .portfolio-card { padding: 16px !important; }
           .portfolio-card .portfolio-actions button { height: 40px !important; }
