@@ -1016,7 +1016,7 @@ export default function SettingsPage() {
           min-width: 0;
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items: flex-start;
         }
         .settings-card {
           width: min(100%, 760px) !important;
