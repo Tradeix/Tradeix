@@ -8,7 +8,7 @@ import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { t } from '@/lib/translations'
-import { formatMoney, formatSignedMoney } from '@/lib/currency'
+import { formatMoney } from '@/lib/currency'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
 
@@ -415,39 +415,36 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
           <div style={{ fontSize: '14px', color: 'var(--text3)' }}>{tr.noPortfoliosDesc}</div>
         </div>
       ) : (
-        <div className="portfolios-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px' }}>
+        <div className="portfolios-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
           {portfolios.map((p, idx) => {
             const color = getColor((p as any).color || 'blue')
             const s = portfolioStats[p.id]
             const totalPnl = s?.totalPnl || 0
             const pnlPos = totalPnl >= 0
-            const pnlAccent = pnlPos ? '#22c55e' : '#ef4444'
             const pnlPercent = p.initial_capital > 0 ? (totalPnl / p.initial_capital) * 100 : null
+            const roiColor = pnlPercent == null ? 'var(--text3)' : pnlPos ? '#22c55e' : '#ef4444'
             return (
               <div
                 key={p.id}
-                className="card-hover trade-row-anim portfolio-card"
+                className="trade-row-anim portfolio-card"
                 style={{
-                  background: 'var(--bg2)',
-                  border: `1px solid ${color}30`,
-                  borderRadius: '14px',
-                  padding: '20px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '14px',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.032), rgba(255,255,255,0.012))',
+                  border: `1px solid ${color}58`,
+                  borderRadius: '16px',
+                  padding: '14px 16px',
+                  display: 'grid',
+                  gridTemplateColumns: 'minmax(0, 1fr) auto auto',
+                  alignItems: 'center',
+                  gap: '16px',
                   position: 'relative',
                   overflow: 'hidden',
                   animationDelay: `${idx * 0.08}s`,
                 }}
               >
-                {/* Subtle color glow */}
-                <div style={{ position: 'absolute', top: '-30px', insetInlineEnd: '-30px', width: '120px', height: '120px', background: `radial-gradient(circle, ${color}14 0%, transparent 70%)`, pointerEvents: 'none' }} />
-
-                {/* Header: color tile + name + market */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+                <div className="portfolio-identity" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                   <div style={{
-                    width: '42px', height: '42px', borderRadius: '12px',
-                    background: `${color}1f`, border: `1px solid ${color}50`,
+                    width: '42px', height: '42px', borderRadius: '13px',
+                    background: `${color}18`, border: `1px solid ${color}78`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
                   }}>
@@ -467,83 +464,31 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
                   </div>
                 </div>
 
-                {/* Trades + Win-rate strip */}
-                {s && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr', alignItems: 'center', background: 'var(--bg3)', borderRadius: '10px', padding: '10px 12px', position: 'relative' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{language === 'he' ? 'עסקאות' : 'Trades'}</div>
-                      <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text)', marginTop: '2px' }}>{s.totalTrades}</div>
-                    </div>
-                    <div style={{ width: '1px', height: '28px', background: 'var(--border)' }} />
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{language === 'he' ? 'אחוז זכייה' : 'Win rate'}</div>
-                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#0f8d63', marginTop: '2px' }}>{s.winRate.toFixed(0)}%</div>
-                    </div>
+                <div className="portfolio-compact-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(86px, auto))', gap: '10px', alignItems: 'center' }}>
+                  <div style={{ display: 'grid', gap: '4px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'קרן' : 'Capital'}</span>
+                    <strong dir="ltr" style={{ fontSize: '15px', color: 'var(--text)', fontWeight: '900', lineHeight: 1 }}>
+                      {formatMoney(Number(p.initial_capital || 0), currency)}
+                    </strong>
                   </div>
-                )}
-
-                {/* P&L block */}
-                {s && (
-                  <div style={{
-                    background: pnlPos
-                      ? 'linear-gradient(135deg, rgba(34,197,94,0.16), rgba(15,141,99,0.06))'
-                      : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(127,29,29,0.05))',
-                    border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.30)' : 'rgba(239,68,68,0.30)'}`,
-                    borderRadius: '14px',
-                    padding: '14px 16px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    minHeight: '82px',
-                    boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 16px 34px ${pnlPos ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)'}`,
-                  }}>
-                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '3px', background: `linear-gradient(90deg, transparent, ${pnlAccent}, transparent)` }} />
-
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', position: 'relative', zIndex: 1 }}>
-                      <div style={{ textAlign: language === 'he' ? 'right' : 'left' }}>
-                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '8px' }}>
-                          {language === 'he' ? 'רווח / הפסד כולל' : 'Total P&L'}
-                        </div>
-                        <div dir="ltr" style={{ fontSize: '29px', fontWeight: '950', color: pnlAccent, letterSpacing: '-0.04em', lineHeight: 1 }}>
-                          {formatSignedMoney(totalPnl, currency, 2)}
-                        </div>
-                      </div>
-
-                      <div style={{
-                        borderRadius: '999px',
-                        border: `1px solid ${pnlPos ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)'}`,
-                        background: pnlPos ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)',
-                        color: pnlAccent,
-                        padding: '6px 9px',
-                        fontSize: '12px',
-                        fontWeight: '900',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        {pnlPercent != null ? `${pnlPercent >= 0 ? '+' : '-'}${Math.abs(pnlPercent).toFixed(1)}%` : '—'}
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-start', gap: '6px', marginTop: '12px', position: 'relative', zIndex: 1 }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '750' }}>
-                        {language === 'he' ? 'הון התחלתי' : 'Initial capital'}
-                      </span>
-                      <span dir="ltr" style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: '850' }}>
-                        {formatMoney(Number(p.initial_capital || 0), currency)}
-                      </span>
-                    </div>
+                  <div style={{ display: 'grid', gap: '4px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.1em' }}>ROI</span>
+                    <strong dir="ltr" style={{ fontSize: '15px', color: roiColor, fontWeight: '950', lineHeight: 1 }}>
+                      {pnlPercent != null ? `${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(1)}%` : '—'}
+                    </strong>
                   </div>
-                )}
+                </div>
 
-                {/* Actions */}
-                <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', marginTop: 'auto', position: 'relative' }}>
-                  <button onClick={() => startEdit(p)} title={tr.edit} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                <div className="portfolio-actions" style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', position: 'relative' }}>
+                  <button onClick={() => startEdit(p)} title={tr.edit} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                     <Icon name="edit" size={16} />
                   </button>
                   {isPro && (
-                    <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                    <button onClick={() => handleArchive(p.id)} title={language === 'he' ? 'העבר לארכיון' : 'Archive'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                       <Icon name="inventory_2" size={16} />
                     </button>
                   )}
-                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ flex: 1, height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                  <button onClick={() => setConfirmDelete(p.id)} title={language === 'he' ? 'מחק תיק' : 'Delete'} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--bg3)', border: '1px solid var(--border)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                     <Icon name="delete" size={16} />
                   </button>
                 </div>
@@ -556,14 +501,14 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
       <style>{`
         @media (max-width: 1024px) {
           .form-grid { grid-template-columns: 1fr !important; }
-          .portfolios-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         }
         @media (max-width: 640px) {
           .portfolio-settings-header { gap: 10px !important; }
           .portfolio-new-btn { padding: 9px 12px !important; font-size: 12px !important; white-space: nowrap !important; }
-          .portfolios-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-          .portfolio-card { padding: 16px !important; }
-          .portfolio-card .portfolio-actions button { height: 40px !important; }
+          .portfolio-card { grid-template-columns: 1fr !important; align-items: stretch !important; padding: 14px !important; gap: 12px !important; }
+          .portfolio-compact-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+          .portfolio-card .portfolio-actions { justify-content: stretch !important; }
+          .portfolio-card .portfolio-actions button { flex: 1 !important; width: auto !important; height: 40px !important; }
           .portfolio-card .portfolio-actions button svg { width: 18px !important; height: 18px !important; }
         }
       `}</style>
