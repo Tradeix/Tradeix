@@ -949,18 +949,37 @@ export default function SettingsPage() {
         }
         .settings-menu-group {
           display: grid;
-          gap: 10px;
+          gap: 12px;
+        }
+        .settings-menu-group:not(:last-child) {
+          padding-bottom: 18px;
+          border-bottom: 1px solid rgba(142,160,214,0.14);
         }
         .settings-menu-label {
           display: flex;
           align-items: center;
           gap: 9px;
-          padding: 0 4px;
-          color: #8ea0d6;
-          font-size: 12px;
+          padding: 0 2px 2px;
+          color: #9aa9e6;
+          font-size: 12.5px;
           font-weight: 950;
           letter-spacing: 0.16em;
           text-transform: uppercase;
+          text-shadow: 0 0 18px rgba(142,160,214,0.16);
+        }
+        .settings-menu-label::after {
+          content: "";
+          flex: 1 1 auto;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(142,160,214,0.34), transparent);
+          opacity: 0.88;
+        }
+        [dir="rtl"] .settings-menu-label::after {
+          background: linear-gradient(270deg, rgba(142,160,214,0.34), transparent);
+        }
+        .settings-menu-label svg {
+          color: #9aa9e6;
+          stroke-width: 2;
         }
         .settings-menu-list {
           display: grid;
