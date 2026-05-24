@@ -642,15 +642,6 @@ export default function SettingsPage() {
         {/* ── CARD 3: Subscription ── */}
         {activeSettingsSection === 'portfolios' && (
         <div style={{ ...glass }} className="settings-card settings-card--wide">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="cases" size={16} color="#0f8d63" />
-            </div>
-            <div>
-              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות תיקים' : 'Portfolio Settings'}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage trading portfolios'}</div>
-            </div>
-          </div>
           <PortfolioSettings embedded />
         </div>
         )}

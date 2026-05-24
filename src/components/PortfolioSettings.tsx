@@ -164,6 +164,22 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
 
   const maxPortfolios = isPro ? 3 : 1
   const atMaxPortfolios = portfolios.length >= maxPortfolios
+  const newPortfolioButton = !atMaxPortfolios ? (
+    <button
+      type="button"
+      onClick={openNewForm}
+      className="btn-press portfolio-new-btn"
+      style={{
+        flexShrink: 0, background: '#0f8d63', color: '#fff', border: 'none',
+        borderRadius: '12px', padding: '10px 20px', fontSize: '13px', fontWeight: '700',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+        fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
+      }}
+    >
+      <Icon name="add" size={16} />
+      {tr.newPortfolioBtn}
+    </button>
+  ) : undefined
 
   return (
     <div className={embedded ? 'portfolio-settings-embedded' : ''} style={{ fontFamily: 'Heebo, sans-serif' }}>
@@ -172,41 +188,22 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
         title={tr.portfoliosTitle}
         subtitle={language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage your trading portfolios'}
         icon="cases"
-        action={!atMaxPortfolios ? (
-          <button
-            type="button"
-            onClick={openNewForm}
-            className="btn-press"
-            style={{
-              flexShrink: 0, background: '#0f8d63', color: '#fff', border: 'none',
-              borderRadius: '12px', padding: '10px 20px', fontSize: '13px', fontWeight: '600',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
-            }}
-          >
-            <Icon name="add" size={16} />
-            {tr.newPortfolioBtn}
-          </button>
-        ) : undefined}
+        action={newPortfolioButton}
       />
       )}
 
-      {embedded && !atMaxPortfolios && (
-        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '16px' }}>
-          <button
-            type="button"
-            onClick={openNewForm}
-            className="btn-press"
-            style={{
-              flexShrink: 0, background: '#0f8d63', color: '#fff', border: 'none',
-              borderRadius: '12px', padding: '10px 18px', fontSize: '13px', fontWeight: '700',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontFamily: 'Heebo, sans-serif', transition: 'background 0.15s, transform 0.1s',
-            }}
-          >
-            <Icon name="add" size={16} />
-            {tr.newPortfolioBtn}
-          </button>
+      {embedded && (
+        <div className="portfolio-settings-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="cases" size={16} color="#0f8d63" />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'הגדרות תיקים' : 'Portfolio Settings'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'ניהול תיקי המסחר שלך' : 'Manage trading portfolios'}</div>
+            </div>
+          </div>
+          {newPortfolioButton}
         </div>
       )}
 
@@ -562,6 +559,8 @@ export default function PortfolioSettings({ embedded = false }: { embedded?: boo
           .portfolios-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         }
         @media (max-width: 640px) {
+          .portfolio-settings-header { align-items: stretch !important; flex-direction: column !important; }
+          .portfolio-new-btn { width: 100% !important; justify-content: center !important; }
           .portfolios-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .portfolio-card { padding: 16px !important; }
           .portfolio-card .portfolio-actions button { height: 40px !important; }
