@@ -21,7 +21,6 @@ type BillingProfile = {
 }
 
 type SettingsSection = 'profile' | 'preferences' | 'subscription' | 'portfolios'
-type PreferenceHelp = 'language' | 'theme' | 'currency' | null
 
 export default function SettingsPage() {
   const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, cancelSubscription, resumeSubscription } = useApp()
@@ -43,7 +42,6 @@ export default function SettingsPage() {
   const [syncingBilling, setSyncingBilling] = useState(false)
   const [activeSettingsSection, setActiveSettingsSection] = useState<SettingsSection>('profile')
   const [mobileSettingsContentOpen, setMobileSettingsContentOpen] = useState(false)
-  const [activePreferenceHelp, setActivePreferenceHelp] = useState<PreferenceHelp>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
@@ -380,8 +378,8 @@ export default function SettingsPage() {
     </div>
   )
 
-  const PreferenceOption = ({ title, note, showNote = false, children }: { title: string; note: string; showNote?: boolean; children: ReactNode }) => (
-    <div className={`preference-option ${showNote ? 'preference-option--active-help' : ''}`}>
+  const PreferenceOption = ({ title, children }: { title: string; children: ReactNode }) => (
+    <div className="preference-option">
       <div className="preference-option-title">
         <span className="preference-option-dot" />
         <span>{title}</span>
@@ -389,12 +387,6 @@ export default function SettingsPage() {
       <div className="preference-option-control">
         {children}
       </div>
-      {showNote && (
-      <div className="preference-option-note">
-        <Icon name="info" size={14} color="#0f8d63" />
-        <span>{note}</span>
-      </div>
-      )}
     </div>
   )
 
@@ -574,28 +566,20 @@ export default function SettingsPage() {
 
           <PreferenceOption
             title={language === 'he' ? 'שפה' : 'Language'}
-            showNote={activePreferenceHelp === 'language'}
-            note={pendingLang === 'he'
-              ? 'האתר יוצג בעברית ובכיוון ימין לשמאל בכל המסכים.'
-              : 'The site will display in English and left-to-right across the app.'}
           >
             <ToggleGroup
               value={pendingLang}
-              onChange={(value) => { setPendingLang(value); setActivePreferenceHelp('language') }}
+              onChange={setPendingLang}
               options={[{ value: 'he', label: 'עברית' }, { value: 'en', label: 'English' }]}
             />
           </PreferenceOption>
 
           <PreferenceOption
             title={language === 'he' ? 'עיצוב' : 'Theme'}
-            showNote={activePreferenceHelp === 'theme'}
-            note={pendingTheme === 'dark'
-              ? (language === 'he' ? 'מצב כהה יופעל בכל עמודי המערכת.' : 'Dark mode will apply across the app.')
-              : (language === 'he' ? 'מצב בהיר יופעל בכל עמודי המערכת.' : 'Light mode will apply across the app.')}
           >
             <ToggleGroup
               value={pendingTheme}
-              onChange={(value) => { setPendingTheme(value); setActivePreferenceHelp('theme') }}
+              onChange={setPendingTheme}
               options={[
                 { value: 'dark', label: language === 'he' ? 'כהה' : 'Dark', icon: 'dark_mode' },
                 { value: 'light', label: language === 'he' ? 'בהיר' : 'Light', icon: 'light_mode' },
@@ -605,14 +589,10 @@ export default function SettingsPage() {
 
           <PreferenceOption
             title={language === 'he' ? 'מטבע' : 'Currency'}
-            showNote={activePreferenceHelp === 'currency'}
-            note={language === 'he'
-              ? 'כל סכום כספי בדשבורד, עסקאות, סטטיסטיקות ותיקים יוצג במטבע הנבחר.'
-              : 'All trading amounts in dashboard, trades, stats, and portfolios will use the selected currency.'}
           >
             <ToggleGroup
               value={pendingCurrency}
-              onChange={(value) => { setPendingCurrency(value); setActivePreferenceHelp('currency') }}
+              onChange={setPendingCurrency}
               options={[
                 { value: 'ILS', label: 'ILS', icon: 'currency_ils' },
                 { value: 'USD', label: 'USD', icon: 'currency_usd' },
@@ -1054,15 +1034,10 @@ export default function SettingsPage() {
           color: #0f8d63;
         }
         .preference-option {
-          margin-bottom: 10px;
-          padding: 12px 14px;
-          border: 1px solid rgba(15,141,99,0.16);
-          border-radius: 14px;
-          background: linear-gradient(135deg, rgba(15,141,99,0.055), rgba(255,255,255,0.012));
-        }
-        .preference-option--active-help {
-          border-color: rgba(15,141,99,0.28);
-          background: linear-gradient(135deg, rgba(15,141,99,0.075), rgba(255,255,255,0.014));
+          margin-bottom: 22px;
+          padding: 0;
+          border: 0;
+          background: transparent;
         }
         .preference-option-title {
           display: flex;
@@ -1099,24 +1074,6 @@ export default function SettingsPage() {
         }
         .preference-option-control > div {
           flex-wrap: wrap;
-        }
-        .preference-option-note {
-          margin-top: 9px;
-          display: flex;
-          align-items: flex-start;
-          gap: 7px;
-          padding: 9px 10px;
-          border-radius: 11px;
-          border: 1px solid rgba(15,141,99,0.16);
-          background: rgba(15,141,99,0.075);
-          color: var(--text2);
-          font-size: 11.5px;
-          font-weight: 780;
-          line-height: 1.45;
-        }
-        .preference-option-note svg {
-          flex: 0 0 auto;
-          margin-top: 1px;
         }
         .plan-choice-grid {
           display: grid;
