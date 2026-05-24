@@ -964,16 +964,13 @@ export default function SettingsPage() {
         }
         .settings-menu-list {
           display: grid;
-          overflow: hidden;
-          border-radius: 12px;
-          border: 1px solid rgba(142,160,214,0.18);
-          background: rgba(255,255,255,0.025);
+          gap: 8px;
+          overflow: visible;
         }
         .settings-menu-item {
           width: 100%;
-          min-height: 58px;
+          min-height: 48px;
           border: 0;
-          border-bottom: 1px solid rgba(142,160,214,0.18);
           background: transparent;
           color: var(--text);
           cursor: pointer;
@@ -981,13 +978,21 @@ export default function SettingsPage() {
           align-items: center;
           justify-content: space-between;
           gap: 12px;
-          padding: 12px 14px;
+          padding: 8px 4px;
           font-family: Heebo, sans-serif;
           text-align: start;
+          position: relative;
           transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
         }
-        .settings-menu-item:last-child {
-          border-bottom: 0;
+        .settings-menu-item::before {
+          content: "";
+          position: absolute;
+          inset-inline-start: -8px;
+          top: 9px;
+          bottom: 9px;
+          width: 3px;
+          background: #0f8d63;
+          opacity: 0;
         }
         .settings-menu-item-copy {
           display: grid;
@@ -1006,8 +1011,14 @@ export default function SettingsPage() {
           line-height: 1.25;
         }
         .settings-menu-item--active {
-          background: rgba(15,141,99,0.15);
           color: #0f8d63;
+        }
+        .settings-menu-item--active::before {
+          opacity: 1;
+        }
+        .settings-menu-item--active .settings-menu-item-copy span {
+          color: #0f8d63;
+          font-weight: 950;
         }
         .settings-menu-item--active small {
           color: rgba(15,141,99,0.72);
@@ -1343,8 +1354,8 @@ export default function SettingsPage() {
             max-width: none;
           }
           .settings-menu-item {
-            min-height: 56px;
-            padding: 12px 14px;
+            min-height: 50px;
+            padding: 9px 4px;
           }
         }
         @media (max-width: 520px) {
