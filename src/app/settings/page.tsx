@@ -476,7 +476,7 @@ export default function SettingsPage() {
                         <span>{section.title}</span>
                         <small>{section.subtitle}</small>
                       </span>
-                      <Icon name="chevron_right" size={18} color="currentColor" />
+                      <Icon name={language === 'he' ? 'chevron_left' : 'chevron_right'} size={18} color="currentColor" />
                     </button>
                   )
                 })}
@@ -1345,12 +1345,6 @@ export default function SettingsPage() {
           .settings-menu-item {
             min-height: 56px;
             padding: 12px 14px;
-          }
-          .settings-menu-item svg {
-            transform: rotate(180deg);
-          }
-          [dir="ltr"] .settings-menu-item svg {
-            transform: none;
           }
         }
         @media (max-width: 520px) {
