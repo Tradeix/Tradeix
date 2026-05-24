@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef, type ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useApp } from '@/lib/app-context'
-import type { Currency } from '@/lib/app-context'
+import type { AppTimezone, Currency } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -22,8 +22,19 @@ type BillingProfile = {
 
 type SettingsSection = 'profile' | 'preferences' | 'subscription' | 'portfolios'
 
+const TIMEZONE_OPTIONS: { value: AppTimezone; he: string; en: string }[] = [
+  { value: 'Asia/Jerusalem', he: 'ישראל - ירושלים', en: 'Israel - Jerusalem' },
+  { value: 'UTC', he: 'UTC זמן אוניברסלי', en: 'UTC' },
+  { value: 'America/New_York', he: 'ניו יורק', en: 'New York' },
+  { value: 'America/Chicago', he: 'שיקגו', en: 'Chicago' },
+  { value: 'America/Los_Angeles', he: 'לוס אנג׳לס', en: 'Los Angeles' },
+  { value: 'Europe/London', he: 'לונדון', en: 'London' },
+  { value: 'Europe/Berlin', he: 'ברלין', en: 'Berlin' },
+  { value: 'Asia/Dubai', he: 'דובאי', en: 'Dubai' },
+]
+
 export default function SettingsPage() {
-  const { theme, language, currency, setTheme, setLanguage, setCurrency, isPro: contextIsPro, isAdmin: contextIsAdmin, cancelSubscription, resumeSubscription } = useApp()
+  const { theme, language, currency, timezone, setTheme, setLanguage, setCurrency, setTimezone, isPro: contextIsPro, isAdmin: contextIsAdmin, cancelSubscription, resumeSubscription } = useApp()
   const [user, setUser] = useState<any>(null)
   const [billingProfile, setBillingProfile] = useState<BillingProfile | null>(null)
   const [nickname, setNickname] = useState('')
@@ -37,6 +48,7 @@ export default function SettingsPage() {
   const [pendingLang, setPendingLang] = useState(language)
   const [pendingTheme, setPendingTheme] = useState(theme)
   const [pendingCurrency, setPendingCurrency] = useState<Currency>(currency)
+  const [pendingTimezone, setPendingTimezone] = useState<AppTimezone>(timezone)
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [syncingBilling, setSyncingBilling] = useState(false)
@@ -46,7 +58,7 @@ export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
   const hasAccountChanges = nickname !== savedNickname
-  const hasPreferenceChanges = pendingLang !== language || pendingTheme !== theme || pendingCurrency !== currency
+  const hasPreferenceChanges = pendingLang !== language || pendingTheme !== theme || pendingCurrency !== currency || pendingTimezone !== timezone
 
   const refreshBillingProfile = useCallback(async (targetUserId?: string) => {
     const profileUserId = targetUserId || user?.id
@@ -145,7 +157,8 @@ export default function SettingsPage() {
     setPendingLang(language)
     setPendingTheme(theme)
     setPendingCurrency(currency)
-  }, [language, theme, currency])
+    setPendingTimezone(timezone)
+  }, [language, theme, currency, timezone])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -194,11 +207,13 @@ export default function SettingsPage() {
     const nextLang = pendingLang
     const nextTheme = pendingTheme
     const nextCurrency = pendingCurrency
+    const nextTimezone = pendingTimezone
     setSavingPrefs(true)
     try {
       if (nextTheme !== theme) await setTheme(nextTheme)
       if (nextLang !== language) await setLanguage(nextLang)
       if (nextCurrency !== currency) await setCurrency(nextCurrency)
+      if (nextTimezone !== timezone) await setTimezone(nextTimezone)
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
       toast.success(nextLang === 'he' ? 'ההעדפות נשמרו בהצלחה' : 'Preferences saved successfully')
     } catch {
@@ -402,7 +417,7 @@ export default function SettingsPage() {
       id: 'preferences' as SettingsSection,
       icon: 'tune',
       title: language === 'he' ? 'העדפות' : 'Preferences',
-      subtitle: language === 'he' ? 'שפה, עיצוב ומטבע' : 'Language, theme & currency',
+      subtitle: language === 'he' ? 'שפה, עיצוב, מטבע וזמן' : 'Language, theme, currency & time',
       group: language === 'he' ? 'כללי' : 'General',
     },
     {
@@ -560,7 +575,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'העדפות' : 'Preferences'}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה ועיצוב' : 'Language & theme'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'שפה, עיצוב וזמן' : 'Language, theme & time'}</div>
             </div>
           </div>
 
@@ -599,6 +614,23 @@ export default function SettingsPage() {
                 { value: 'EUR', label: 'EUR', icon: 'currency_eur' },
               ]}
             />
+          </PreferenceOption>
+
+          <PreferenceOption
+            title={language === 'he' ? 'אזור זמן' : 'Timezone'}
+          >
+            <select
+              className="timezone-select"
+              value={pendingTimezone}
+              onChange={e => setPendingTimezone(e.target.value as AppTimezone)}
+              aria-label={language === 'he' ? 'אזור זמן' : 'Timezone'}
+            >
+              {TIMEZONE_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {language === 'he' ? option.he : option.en}
+                </option>
+              ))}
+            </select>
           </PreferenceOption>
 
           {hasPreferenceChanges && (
@@ -1074,6 +1106,28 @@ export default function SettingsPage() {
         }
         .preference-option-control > div {
           flex-wrap: wrap;
+        }
+        .timezone-select {
+          width: 100%;
+          min-height: 48px;
+          border-radius: 12px;
+          border: 1px solid rgba(15,141,99,0.26);
+          background: rgba(255,255,255,0.035);
+          color: var(--text);
+          padding: 0 14px;
+          font-family: Heebo, sans-serif;
+          font-size: 14px;
+          font-weight: 800;
+          outline: none;
+          cursor: pointer;
+        }
+        .timezone-select:focus {
+          border-color: rgba(15,141,99,0.58);
+          box-shadow: 0 0 0 3px rgba(15,141,99,0.12);
+        }
+        .timezone-select option {
+          background: #070b12;
+          color: #f4f7fb;
         }
         .plan-choice-grid {
           display: grid;

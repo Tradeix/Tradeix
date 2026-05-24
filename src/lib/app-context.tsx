@@ -6,6 +6,15 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 type Theme = 'dark' | 'light'
 type Language = 'he' | 'en'
 export type Currency = 'ILS' | 'USD' | 'EUR'
+export type AppTimezone =
+  | 'Asia/Jerusalem'
+  | 'UTC'
+  | 'America/New_York'
+  | 'America/Chicago'
+  | 'America/Los_Angeles'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Asia/Dubai'
 type SubscriptionTier = 'free' | 'pro'
 type BillingPeriod = 'monthly' | 'yearly'
 type CancelSubscriptionResult = {
@@ -41,9 +50,11 @@ type AppContextType = {
   theme: Theme
   language: Language
   currency: Currency
+  timezone: AppTimezone
   setTheme: (t: Theme) => void
   setLanguage: (l: Language) => void
   setCurrency: (c: Currency) => void
+  setTimezone: (tz: AppTimezone) => void
   subscription: SubscriptionTier
   isPro: boolean
   isTemporaryPro: boolean
@@ -59,8 +70,8 @@ type AppContextType = {
 }
 
 const AppContext = createContext<AppContextType>({
-  theme: 'dark', language: 'en', currency: 'USD',
-  setTheme: () => {}, setLanguage: () => {}, setCurrency: () => {},
+  theme: 'dark', language: 'en', currency: 'USD', timezone: 'Asia/Jerusalem',
+  setTheme: () => {}, setLanguage: () => {}, setCurrency: () => {}, setTimezone: () => {},
   subscription: 'free', isPro: false, isTemporaryPro: false, trialExpired: false,
   subscriptionStatus: null, subscriptionTrialEndsAt: null, subscriptionLoading: true, isAdmin: false,
   upgradeToPro: async () => {}, chooseFreePlan: async () => {}, cancelSubscription: async () => ({}), resumeSubscription: async () => ({}),
@@ -72,6 +83,17 @@ function isLanguage(value: string | null): value is Language {
 
 function isCurrency(value: string | null): value is Currency {
   return value === 'ILS' || value === 'USD' || value === 'EUR'
+}
+
+function isTimezone(value: string | null): value is AppTimezone {
+  return value === 'Asia/Jerusalem'
+    || value === 'UTC'
+    || value === 'America/New_York'
+    || value === 'America/Chicago'
+    || value === 'America/Los_Angeles'
+    || value === 'Europe/London'
+    || value === 'Europe/Berlin'
+    || value === 'Asia/Dubai'
 }
 
 function detectBrowserLanguage(): Language {
@@ -196,6 +218,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [language, setLanguageState] = useState<Language>('en')
   const [currency, setCurrencyState] = useState<Currency>('USD')
+  const [timezone, setTimezoneState] = useState<AppTimezone>('Asia/Jerusalem')
   const [subscription, setSubscription] = useState<SubscriptionTier>('free')
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionTrialEndsAt, setSubscriptionTrialEndsAt] = useState<string | null>(null)
@@ -246,6 +269,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const initialCurrency = isCurrency(storedCurrency) ? storedCurrency : 'USD'
     setCurrencyState(initialCurrency)
 
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const storedTimezone = localStorage.getItem('tradeix-timezone')
+    const initialTimezone = isTimezone(storedTimezone)
+      ? storedTimezone
+      : isTimezone(browserTimezone)
+        ? browserTimezone
+        : 'Asia/Jerusalem'
+    setTimezoneState(initialTimezone)
+
     if (!isSupabaseConfigured) {
       setSubscriptionLoading(false)
       setIsAdmin(false)
@@ -271,6 +303,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const c = profileCurrency || initialCurrency
         setCurrencyState(c)
         localStorage.setItem('tradeix-currency', c)
+
+        const profileTimezone = isTimezone(data.app_timezone) ? data.app_timezone : null
+        const tz = profileTimezone || initialTimezone
+        setTimezoneState(tz)
+        localStorage.setItem('tradeix-timezone', tz)
       }
 
       const response = await fetch('/api/billing/status', { cache: 'no-store' }).catch(() => null)
@@ -303,6 +340,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('profiles').upsert({ id: user.id, app_currency: c }, { onConflict: 'id' })
+    }
+  }
+
+  async function setTimezone(tz: AppTimezone) {
+    setTimezoneState(tz)
+    localStorage.setItem('tradeix-timezone', tz)
+    if (!isSupabaseConfigured) return
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase.from('profiles').upsert({ id: user.id, app_timezone: tz }, { onConflict: 'id' })
     }
   }
 
@@ -422,7 +469,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      theme, language, currency, setTheme, setLanguage, setCurrency,
+      theme, language, currency, timezone, setTheme, setLanguage, setCurrency, setTimezone,
       subscription, isPro, isTemporaryPro, trialExpired, subscriptionStatus, subscriptionTrialEndsAt, subscriptionLoading, isAdmin,
       upgradeToPro, chooseFreePlan, cancelSubscription, resumeSubscription,
     }}>

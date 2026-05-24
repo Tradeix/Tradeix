@@ -15,6 +15,7 @@ create table if not exists public.profiles (
   language text default 'he',
   theme text default 'dark',
   app_currency text default 'USD' check (app_currency in ('ILS','USD','EUR')),
+  app_timezone text default 'Asia/Jerusalem',
   created_at timestamptz default now()
 );
 
@@ -180,6 +181,9 @@ alter table public.profiles
 
 alter table public.profiles
   add column if not exists app_currency text default 'USD';
+
+alter table public.profiles
+  add column if not exists app_timezone text default 'Asia/Jerusalem';
 
 alter table public.profiles
   drop constraint if exists profiles_app_currency_check;

@@ -42,7 +42,7 @@ function calculateStats(rows: any[]): Stats {
 
 export default function DashboardPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language, currency } = useApp()
+  const { language, currency, timezone } = useApp()
   const router = useRouter()
   const tr = t[language]
   const [timeFilter, setTimeFilter] = useState(2)
@@ -90,10 +90,21 @@ export default function DashboardPage() {
     'Start each trading day with a clear mind and a clear plan.',
   ]
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * QUOTES_HE.length))
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   const currentQuote = language === 'he' ? QUOTES_HE[quoteIndex] : QUOTES_EN[quoteIndex]
 
+  function getTimezoneHour(date: Date): number {
+    const hourPart = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      hour: '2-digit',
+      hour12: false,
+    }).formatToParts(date).find(part => part.type === 'hour')?.value
+    const hour = Number(hourPart)
+    return Number.isFinite(hour) ? hour % 24 : date.getHours()
+  }
+
   function getGreeting(): string {
-    const h = new Date().getHours()
+    const h = getTimezoneHour(currentTime)
     if (language === 'he') {
       if (h >= 5 && h < 12) return 'בוקר טוב'
       if (h >= 12 && h < 17) return 'צהריים טובים'
@@ -118,6 +129,11 @@ export default function DashboardPage() {
     const interval = setInterval(() => {
       setQuoteIndex(prev => (prev + 1) % QUOTES_HE.length)
     }, 18000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
 
@@ -263,8 +279,9 @@ export default function DashboardPage() {
 
       {/* ── WELCOME SECTION ── */}
       {userName && (() => {
-        const now = new Date()
-        const dateLabel = now.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })
+        const locale = language === 'he' ? 'he-IL' : 'en-US'
+        const dateLabel = currentTime.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: timezone })
+        const timeLabel = currentTime.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: timezone })
         return (
         <div className="welcome-section section-anim" style={{
           marginBottom: '18px',
@@ -295,6 +312,14 @@ export default function DashboardPage() {
                   letterSpacing: '0.01em',
                 }}>
                   {dateLabel}
+                </span>
+                <span className="welcome-time" dir="ltr" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  fontSize: '13px', fontWeight: '850', color: '#0f8d63',
+                  letterSpacing: '0.02em',
+                }}>
+                  <Icon name="timer" size={13} color="currentColor" />
+                  {timeLabel}
                 </span>
               </div>
                 <h2 className="welcome-title" style={{
@@ -762,7 +787,8 @@ export default function DashboardPage() {
           .welcome-title { font-size: clamp(20px, 5vw, 24px) !important; line-height: 1.12 !important; }
           .welcome-date { font-size: 12.5px !important; }
           .welcome-meta-row { width: 100% !important; margin-bottom: 7px !important; justify-content: flex-start !important; direction: rtl !important; text-align: right !important; }
-          .welcome-date { width: 100% !important; text-align: right !important; }
+          .welcome-date { width: auto !important; text-align: right !important; }
+          .welcome-time { font-size: 12.5px !important; }
           .welcome-quote-wrap { order: 1 !important; grid-column: 1 !important; width: 100% !important; max-width: 560px !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; justify-self: start !important; align-self: center !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; border-right: 2px solid rgba(15,141,99,0.8) !important; border-left: none !important; }
           .welcome-quote-wrap > div { font-size: 10.5px !important; margin-bottom: 6px !important; gap: 5px !important; }
           .welcome-quote-wrap > div svg { width: 12px !important; height: 12px !important; }

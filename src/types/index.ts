@@ -37,6 +37,7 @@ export type Profile = {
   language: 'he' | 'en'
   theme: 'dark' | 'light'
   app_currency: 'ILS' | 'USD' | 'EUR'
+  app_timezone?: string
   created_at: string
 }
 
