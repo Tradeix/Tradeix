@@ -247,7 +247,6 @@ export default function DashboardPage() {
   const dashboardValue = portfolioValue.currentValue > 0 ? portfolioValue.currentValue : initialCapital
   const portfolioPnlPositive = portfolioStats.totalPnl >= 0
   const portfolioPnlColor = portfolioPnlPositive ? '#22c55e' : '#ef4444'
-  const portfolioPnlGlow = portfolioPnlPositive ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'
   const portfolioWinRateColor = portfolioStats.totalTrades === 0
     ? '#f8fafc'
     : portfolioStats.winRate >= 60
@@ -255,13 +254,6 @@ export default function DashboardPage() {
       : portfolioStats.winRate >= 30
         ? '#f59e0b'
         : '#ef4444'
-  const portfolioWinRateGlow = portfolioStats.totalTrades === 0
-    ? 'rgba(255,255,255,0.08)'
-    : portfolioStats.winRate >= 60
-      ? 'rgba(34,197,94,0.18)'
-      : portfolioStats.winRate >= 30
-        ? 'rgba(245,158,11,0.18)'
-        : 'rgba(239,68,68,0.18)'
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
@@ -472,51 +464,45 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom — 3 stat tiles */}
-          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', padding: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.024))', minHeight: '124px' }}>
+          <div className="bal-stats-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 0, padding: '18px 0', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.02))', minHeight: '112px' }}>
             {[
               {
                 label: language === 'he' ? 'עסקאות' : 'Trades',
                 value: portfolioStats.totalTrades,
                 color: '#f8fafc',
                 icon: 'receipt_long',
-                glow: 'rgba(255,255,255,0.08)',
               },
               {
                 label: 'PNL',
                 value: portfolioStats.totalTrades > 0 ? formatSignedMoney(portfolioStats.totalPnl, currency) : '—',
                 color: portfolioPnlColor,
                 icon: portfolioPnlPositive ? 'trending_up' : 'trending_down',
-                glow: portfolioPnlGlow,
               },
               {
                 label: language === 'he' ? 'אחוז זכייה' : 'Win Rate',
                 value: portfolioStats.totalTrades > 0 ? `${portfolioStats.winRate.toFixed(0)}%` : '—',
                 color: portfolioWinRateColor,
                 icon: 'speed',
-                glow: portfolioWinRateGlow,
               },
             ].map((t, i) => (
               <div key={i} style={{
-                padding: '15px 12px',
+                padding: '14px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '9px',
+                gap: '7px',
                 textAlign: 'center',
-                border: `1px solid ${t.color === '#f8fafc' ? 'rgba(255,255,255,0.09)' : t.color + '44'}`,
-                borderRadius: '14px',
-                background: `radial-gradient(circle at 50% -22%, ${t.glow}, transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))`,
-                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 28px ${t.glow}`,
+                borderInlineStart: i > 0 ? '1px solid rgba(255,255,255,0.08)' : 'none',
                 minWidth: 0,
               }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: t.glow, border: `1px solid ${t.color === '#f8fafc' ? 'rgba(255,255,255,0.10)' : t.color + '3f'}` }}>
-                  <Icon name={t.icon} size={15} color={t.color} />
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.13em' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '7px', color: 'var(--text3)', minWidth: 0 }}>
+                  <Icon name={t.icon} size={14} color="currentColor" />
+                  <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.13em' }}>
                   {t.label}
+                  </span>
                 </div>
-                <div dir="ltr" style={{ fontSize: '22px', fontWeight: '950', color: t.color, letterSpacing: '-0.03em', lineHeight: 1, textShadow: `0 8px 24px ${t.glow}` }}>
+                <div dir="ltr" style={{ fontSize: '23px', fontWeight: '950', color: t.color, letterSpacing: '-0.03em', lineHeight: 1 }}>
                   {t.value}
                 </div>
               </div>
