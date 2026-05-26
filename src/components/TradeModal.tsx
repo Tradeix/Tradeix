@@ -797,8 +797,12 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
             display: none !important;
           }
           .trade-edit-symbol-date-grid {
-            grid-template-columns: 1fr !important;
-            gap: 10px !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            align-items: end !important;
+            gap: 8px !important;
+          }
+          .trade-edit-symbol-date-grid > div {
+            min-width: 0 !important;
           }
           .trade-edit-date-input {
             width: 100% !important;
@@ -807,6 +811,11 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
             line-height: 44px !important;
             box-sizing: border-box !important;
             text-align: center !important;
+            padding-inline: 6px !important;
+            font-size: 11px !important;
+          }
+          .trade-edit-date-input::-webkit-date-and-time-value {
+            text-align: center;
           }
           .trade-edit-classification-grid {
             grid-template-columns: 1fr !important;
