@@ -282,7 +282,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
               </div>
 
               {/* Symbol + Date */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              <div className="trade-edit-symbol-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
                   <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444', fontSize: '13px' }}>*</span>
@@ -293,7 +293,7 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
                   <label style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '6px', display: 'block', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {language === 'he' ? 'תאריך' : 'Date'}
                   </label>
-                  <input type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
+                  <input className="trade-edit-date-input" type="date" value={form.traded_at} onChange={e => setForm(p => ({ ...p, traded_at: e.target.value }))} />
                 </div>
               </div>
 
@@ -795,6 +795,18 @@ export default function TradeModal({ trade, onClose, onUpdate, readOnly = false,
           }
           .trade-modal-pnl-label {
             display: none !important;
+          }
+          .trade-edit-symbol-date-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+          .trade-edit-date-input {
+            width: 100% !important;
+            min-width: 0 !important;
+            height: 44px !important;
+            line-height: 44px !important;
+            box-sizing: border-box !important;
+            text-align: center !important;
           }
           .trade-edit-classification-grid {
             grid-template-columns: 1fr !important;
