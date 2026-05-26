@@ -39,6 +39,12 @@ function scheduleViewportTopReset() {
   }
 }
 
+function resetViewportBeforeNavigation() {
+  forceViewportTop()
+  if (typeof window === 'undefined') return
+  window.setTimeout(forceViewportTop, 0)
+}
+
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
   green:  '#0f8d63',
   blue:   '#3b82f6',
@@ -189,7 +195,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                   const isActive = activePortfolio?.id === p.id
                   const pColor = getPortfolioColor(p)
                   return (
-                    <div key={p.id} onClick={() => { setActivePortfolio(p); setShowMenu(false); router.push('/dashboard') }}
+                    <div key={p.id} onClick={() => { resetViewportBeforeNavigation(); setActivePortfolio(p); setShowMenu(false); router.push('/dashboard') }}
                       className="portfolio-item-anim"
                       style={{
                         padding: '10px 14px', fontSize: '14px', cursor: 'pointer',
@@ -230,7 +236,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
       {/* Upgrade to PRO banner — free and trial users */}
       {!subscriptionLoading && (!isPro || isTemporaryPro) && (
-        <Link href="/upgrade" style={{
+        <Link href="/upgrade" onClick={resetViewportBeforeNavigation} style={{
           display: 'flex', alignItems: 'center', gap: '6px',
           background: '#0f8d63',
           border: '1px solid rgba(16,185,129,0.35)',
@@ -308,7 +314,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
               transformOrigin: isRTL ? 'top left' : 'top right',
               boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
             }}>
-              <Link href="/settings" onClick={() => setShowUserMenu(false)} style={{
+              <Link href="/settings" onClick={() => { resetViewportBeforeNavigation(); setShowUserMenu(false) }} style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 14px', borderRadius: '8px',
                 fontSize: '14px', fontWeight: '600', color: 'var(--text2)',
@@ -368,7 +374,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
     return (
-      <Link href={href} onClick={() => setSidebarOpen(false)} title={label} className="nav-link-anim sidebar-link" data-active={active ? '1' : '0'} style={{
+      <Link href={href} scroll onClick={() => { resetViewportBeforeNavigation(); setSidebarOpen(false) }} title={label} className="nav-link-anim sidebar-link" data-active={active ? '1' : '0'} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
         color: active ? '#0f8d63' : 'var(--text3)',
@@ -402,7 +408,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--chrome-bg)', overflowY: 'auto', overflowX: 'hidden' }}>
       {/* Logo */}
       <div className="sidebar-top" style={{ padding: '24px 16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-        <Link href="/dashboard" onClick={() => setSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
+        <Link href="/dashboard" scroll onClick={() => { resetViewportBeforeNavigation(); setSidebarOpen(false) }} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
           <img src="/uplotrade-mark-cropped.png" alt="" aria-hidden="true" style={{ width: '44px', height: '36px', objectFit: 'contain', flexShrink: 0 }} />
           <span className="sidebar-wordmark" style={{ fontFamily: 'Manrope, Heebo, sans-serif', fontWeight: '800', fontSize: '21px', letterSpacing: '-0.02em', color: 'var(--text)' }}>
             UPLOTRADE
