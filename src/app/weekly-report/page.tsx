@@ -233,7 +233,33 @@ export default function WeeklyReportPage() {
         title={language === 'he' ? 'דוח שבועי' : 'Weekly Report'}
         subtitle={language === 'he' ? 'סיכום שבוע המסחר, מחשבות, ומקום ברור לשיפור' : 'Summarize the trading week, reflect, and plan the next improvement'}
         icon="edit_note"
+        action={(
+          <div className="weekly-header-action">
+            <Icon name="cases" size={16} />
+            <span>{activePortfolio?.name || (language === 'he' ? 'תיק פעיל' : 'Active portfolio')}</span>
+          </div>
+        )}
       />
+
+      <div className="weekly-page-top">
+        <div>
+          <span>{language === 'he' ? 'מחברת שבועית' : 'Weekly notebook'}</span>
+          <h3>{weekLabel}</h3>
+          <p>{language === 'he'
+            ? 'כל שבוע נשמר כדוח נפרד: ביצועים, פירוט יומי, תחושות, מסקנות ותוכנית פעולה לשבוע הבא.'
+            : 'Every week is saved as its own report: performance, daily breakdown, emotions, lessons, and next-week action plan.'}</p>
+        </div>
+        <div className="weekly-page-top-actions">
+          <button onClick={() => selectWeek(startOfTradingWeek(new Date()))}>
+            <Icon name="today" size={16} />
+            {language === 'he' ? 'השבוע הנוכחי' : 'Current week'}
+          </button>
+          <button onClick={saveReport} disabled={saving}>
+            <Icon name="save" size={16} />
+            {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור דוח' : 'Save report')}
+          </button>
+        </div>
+      </div>
 
       <div className="weekly-report-shell">
         <section className="weekly-report-main">
@@ -362,24 +388,120 @@ export default function WeeklyReportPage() {
       </div>
 
       <style>{`
+        .weekly-header-action {
+          min-height: 40px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 13px;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          color: var(--text2);
+          background: rgba(255,255,255,.025);
+          font-size: 13px;
+          font-weight: 850;
+          white-space: nowrap;
+        }
+        .weekly-header-action svg { color: #0f8d63; }
+        .weekly-page-top {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 18px;
+          align-items: end;
+          padding: 22px 0 24px;
+          margin-bottom: 6px;
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+        }
+        .weekly-page-top span {
+          display: inline-flex;
+          color: #0f8d63;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: .08em;
+          margin-bottom: 7px;
+        }
+        .weekly-page-top h3 {
+          margin: 0;
+          color: var(--text);
+          font-size: clamp(26px, 4vw, 40px);
+          font-weight: 950;
+          letter-spacing: -0.02em;
+          line-height: 1.05;
+        }
+        .weekly-page-top p {
+          max-width: 760px;
+          margin: 10px 0 0;
+          color: var(--text3);
+          font-size: 14.5px;
+          font-weight: 650;
+          line-height: 1.65;
+        }
+        .weekly-page-top-actions {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 9px;
+          min-width: 170px;
+        }
+        .weekly-page-top-actions button {
+          min-height: 42px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          background: transparent;
+          color: var(--text2);
+          font-family: Heebo, sans-serif;
+          font-weight: 900;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          transition: color .15s, border-color .15s, background .15s, transform .15s;
+        }
+        .weekly-page-top-actions button:last-child {
+          background: #0f8d63;
+          color: #fff;
+          border-color: rgba(16,185,129,.35);
+        }
+        .weekly-page-top-actions button:hover {
+          transform: translateY(-1px);
+          color: #0f8d63;
+          border-color: rgba(15,141,99,.35);
+          background: rgba(15,141,99,.08);
+        }
+        .weekly-page-top-actions button:last-child:hover {
+          color: #fff;
+          background: #12a875;
+        }
+        .weekly-page-top-actions button:disabled {
+          opacity: .68;
+          cursor: wait;
+          transform: none;
+        }
         .weekly-report-shell {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 280px;
-          gap: 28px;
+          grid-template-columns: minmax(0, 9fr) minmax(260px, 3fr);
+          gap: 34px;
           align-items: start;
         }
         .weekly-report-main,
         .weekly-report-sidebar {
-          border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
-          padding: 24px 0;
+          padding: 28px 0;
+        }
+        .weekly-report-sidebar {
+          position: sticky;
+          top: 92px;
+          border-top: 2px solid rgba(15,141,99,.55);
         }
         .weekly-toolbar {
           display: grid;
-          grid-template-columns: 42px minmax(0, 1fr) 42px auto;
+          grid-template-columns: 42px minmax(0, 1fr) 42px minmax(260px, auto);
           gap: 12px;
           align-items: center;
           margin-bottom: 26px;
+          padding-bottom: 22px;
+          border-bottom: 1px solid var(--border);
         }
         .weekly-nav-btn {
           width: 42px;
@@ -432,7 +554,6 @@ export default function WeeklyReportPage() {
         .weekly-metrics {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
           margin-bottom: 28px;
         }
@@ -633,12 +754,19 @@ export default function WeeklyReportPage() {
         }
         @media (max-width: 980px) {
           .weekly-report-shell { grid-template-columns: 1fr; gap: 20px; }
+          .weekly-page-top { grid-template-columns: 1fr; align-items: start; }
+          .weekly-page-top-actions { grid-template-columns: 1fr 1fr; min-width: 0; }
           .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
           .weekly-date-controls { grid-column: 1 / -1; }
           .weekly-date-controls input { width: 100%; min-width: 0; }
           .weekly-split { grid-template-columns: 1fr; gap: 24px; }
+          .weekly-report-sidebar { position: static; top: auto; }
         }
         @media (max-width: 640px) {
+          .weekly-header-action { display: none; }
+          .weekly-page-top { padding: 18px 0 20px; }
+          .weekly-page-top p { font-size: 13.5px; }
+          .weekly-page-top-actions { grid-template-columns: 1fr; }
           .weekly-report-main,
           .weekly-report-sidebar { padding: 18px 0; }
           .weekly-title-block h3 { font-size: 20px; }
