@@ -112,9 +112,6 @@ export default function WeeklyReportPage() {
       .maybeSingle()
 
     if (reportError && reportError.code !== 'PGRST116') {
-      setMessage(language === 'he'
-        ? 'טבלת הדוחות השבועיים עדיין לא קיימת בבסיס הנתונים.'
-        : 'The weekly reports table does not exist in the database yet.')
       setForm(EMPTY_FORM)
     } else {
       const report = reportData as WeeklyReport | null
@@ -164,8 +161,8 @@ export default function WeeklyReportPage() {
 
     if (error) {
       setMessage(language === 'he'
-        ? 'לא הצלחתי לשמור. ודא שטבלת weekly_reports קיימת ב-Supabase.'
-        : 'Could not save. Make sure the weekly_reports table exists in Supabase.')
+        ? 'לא הצלחנו לשמור את הדוח כרגע.'
+        : 'Could not save the report right now.')
     } else {
       setMessage(language === 'he' ? 'הדוח השבועי נשמר' : 'Weekly report saved')
       await loadReportsForMonth()
@@ -678,6 +675,7 @@ export default function WeeklyReportPage() {
         .save-row {
           display: flex;
           align-items: center;
+          justify-content: flex-end;
           gap: 14px;
           padding-top: 18px;
           flex-wrap: wrap;
