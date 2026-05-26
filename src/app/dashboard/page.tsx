@@ -350,7 +350,7 @@ export default function DashboardPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', marginBottom: '8px', color: '#0f8d63', fontSize: '12px', fontWeight: '900', letterSpacing: '0.08em' }}>
                   <Icon name="auto_awesome" size={15} color="#0f8d63" />
-                  FOCUS
+                  {language === 'he' ? 'מוטיבציה יומית' : 'FOCUS'}
                 </div>
                 <p className="welcome-quote" key={quoteIndex} style={{
                   fontSize: '15.5px', fontWeight: '700', color: 'rgba(238,240,246,0.82)',
