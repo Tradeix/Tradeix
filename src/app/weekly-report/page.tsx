@@ -246,16 +246,6 @@ export default function WeeklyReportPage() {
             ? 'כל שבוע נשמר כדוח נפרד: ביצועים, פירוט יומי, תחושות, מסקנות ותוכנית פעולה לשבוע הבא.'
             : 'Every week is saved as its own report: performance, daily breakdown, emotions, lessons, and next-week action plan.'}</p>
         </div>
-        <div className="weekly-page-top-actions">
-          <button onClick={() => selectWeek(startOfTradingWeek(new Date()))}>
-            <Icon name="today" size={16} />
-            {language === 'he' ? 'השבוע הנוכחי' : 'Current week'}
-          </button>
-          <button onClick={saveReport} disabled={saving}>
-            <Icon name="save" size={16} />
-            {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור דוח' : 'Save report')}
-          </button>
-        </div>
       </div>
 
       <div className="weekly-report-shell">
@@ -274,13 +264,6 @@ export default function WeeklyReportPage() {
               <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
             </button>
 
-            <div className="weekly-date-controls">
-              <input type="date" value={toDateInput(selectedWeek)} onChange={e => selectWeek(parseInputDate(e.target.value))} />
-              <input type="month" value={toDateInput(selectedMonth).slice(0, 7)} onChange={e => {
-                const next = parseInputDate(`${e.target.value}-01`)
-                setSelectedMonth(monthStart(next))
-              }} />
-            </div>
           </div>
 
           {loading && (
@@ -401,10 +384,6 @@ export default function WeeklyReportPage() {
         }
         .weekly-header-action svg { color: #0f8d63; }
         .weekly-page-top {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) auto;
-          gap: 18px;
-          align-items: end;
           padding: 22px 0 24px;
           margin-bottom: 6px;
           border-top: 1px solid var(--border);
@@ -434,47 +413,6 @@ export default function WeeklyReportPage() {
           font-weight: 650;
           line-height: 1.65;
         }
-        .weekly-page-top-actions {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 9px;
-          min-width: 170px;
-        }
-        .weekly-page-top-actions button {
-          min-height: 42px;
-          border-radius: 12px;
-          border: 1px solid var(--border);
-          background: transparent;
-          color: var(--text2);
-          font-family: Heebo, sans-serif;
-          font-weight: 900;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          cursor: pointer;
-          transition: color .15s, border-color .15s, background .15s, transform .15s;
-        }
-        .weekly-page-top-actions button:last-child {
-          background: #0f8d63;
-          color: #fff;
-          border-color: rgba(16,185,129,.35);
-        }
-        .weekly-page-top-actions button:hover {
-          transform: translateY(-1px);
-          color: #0f8d63;
-          border-color: rgba(15,141,99,.35);
-          background: rgba(15,141,99,.08);
-        }
-        .weekly-page-top-actions button:last-child:hover {
-          color: #fff;
-          background: #12a875;
-        }
-        .weekly-page-top-actions button:disabled {
-          opacity: .68;
-          cursor: wait;
-          transform: none;
-        }
         .weekly-report-shell {
           display: grid;
           grid-template-columns: minmax(0, 9fr) minmax(260px, 3fr);
@@ -493,7 +431,7 @@ export default function WeeklyReportPage() {
         }
         .weekly-toolbar {
           display: grid;
-          grid-template-columns: 42px minmax(0, 1fr) 42px minmax(260px, auto);
+          grid-template-columns: 42px minmax(0, 1fr) 42px;
           gap: 12px;
           align-items: center;
           margin-bottom: 26px;
@@ -532,21 +470,6 @@ export default function WeeklyReportPage() {
           font-size: 25px;
           font-weight: 900;
           line-height: 1.15;
-        }
-        .weekly-date-controls {
-          display: flex;
-          gap: 8px;
-        }
-        .weekly-date-controls input {
-          height: 42px;
-          background: var(--bg3);
-          border: 1px solid var(--border);
-          color: var(--text);
-          border-radius: 10px;
-          padding: 0 12px;
-          font-family: Heebo, sans-serif;
-          font-weight: 750;
-          color-scheme: dark;
         }
         .weekly-metrics {
           display: grid;
@@ -752,11 +675,7 @@ export default function WeeklyReportPage() {
         }
         @media (max-width: 980px) {
           .weekly-report-shell { grid-template-columns: 1fr; gap: 20px; }
-          .weekly-page-top { grid-template-columns: 1fr; align-items: start; }
-          .weekly-page-top-actions { grid-template-columns: 1fr 1fr; min-width: 0; }
           .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
-          .weekly-date-controls { grid-column: 1 / -1; }
-          .weekly-date-controls input { width: 100%; min-width: 0; }
           .weekly-split { grid-template-columns: 1fr; gap: 24px; }
           .weekly-report-sidebar { position: static; top: auto; }
         }
@@ -764,7 +683,6 @@ export default function WeeklyReportPage() {
           .weekly-header-action { display: none; }
           .weekly-page-top { padding: 18px 0 20px; }
           .weekly-page-top p { font-size: 13.5px; }
-          .weekly-page-top-actions { grid-template-columns: 1fr; }
           .weekly-report-main,
           .weekly-report-sidebar { padding: 18px 0; }
           .weekly-title-block h3 { font-size: 20px; }
