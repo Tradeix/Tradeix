@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { PortfolioProvider, usePortfolio } from '@/lib/portfolio-context'
@@ -16,6 +16,27 @@ function forceViewportTop() {
   document.scrollingElement?.scrollTo(scrollOptions)
   document.documentElement.scrollTop = 0
   document.body.scrollTop = 0
+}
+
+function scheduleViewportTopReset() {
+  if (typeof window === 'undefined') return () => {}
+
+  const frames: number[] = []
+  const timers: number[] = []
+
+  forceViewportTop()
+  frames.push(window.requestAnimationFrame(() => {
+    forceViewportTop()
+    frames.push(window.requestAnimationFrame(forceViewportTop))
+  }))
+  timers.push(window.setTimeout(forceViewportTop, 40))
+  timers.push(window.setTimeout(forceViewportTop, 120))
+  timers.push(window.setTimeout(forceViewportTop, 260))
+
+  return () => {
+    frames.forEach(frame => window.cancelAnimationFrame(frame))
+    timers.forEach(timer => window.clearTimeout(timer))
+  }
 }
 
 const PORTFOLIO_COLOR_MAP: Record<string, string> = {
@@ -61,6 +82,11 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     updateScrolled()
     window.addEventListener('scroll', updateScrolled, { passive: true })
     return () => window.removeEventListener('scroll', updateScrolled)
+  }, [pathname])
+
+  useLayoutEffect(() => {
+    setHasScrolled(false)
+    forceViewportTop()
   }, [pathname])
 
   const dotColor = activePortfolio ? getPortfolioColor(activePortfolio) : '#0f8d63'
@@ -452,16 +478,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // On every route change, briefly hide content so the new page renders invisibly
   // then fades in — eliminates the flash of stale/empty state
   // Also scroll to top (fixes mobile starting mid-page)
-  useEffect(() => {
+  useLayoutEffect(() => {
     setPageKey(k => k + 1)
-    forceViewportTop()
-    requestAnimationFrame(forceViewportTop)
-    const soon = window.setTimeout(forceViewportTop, 40)
-    const afterPaint = window.setTimeout(forceViewportTop, 120)
-    return () => {
-      window.clearTimeout(soon)
-      window.clearTimeout(afterPaint)
-    }
+    return scheduleViewportTopReset()
   }, [pathname])
 
   // Disable browser scroll restoration and force top on initial load, bfcache restores,
@@ -471,12 +490,11 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     if (typeof window === 'undefined') return
     const prev = history.scrollRestoration
     try { history.scrollRestoration = 'manual' } catch {}
-    const toTop = forceViewportTop
-    toTop()
-    requestAnimationFrame(toTop)
-    const onPageShow = () => { toTop(); requestAnimationFrame(toTop) }
+    const cancelInitialReset = scheduleViewportTopReset()
+    const onPageShow = () => { scheduleViewportTopReset() }
     window.addEventListener('pageshow', onPageShow)
     return () => {
+      cancelInitialReset()
       window.removeEventListener('pageshow', onPageShow)
       try { history.scrollRestoration = prev } catch {}
     }
@@ -486,10 +504,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // force scroll back to top so the header is visible.
   useEffect(() => {
     if (!ready) return
-    forceViewportTop()
-    requestAnimationFrame(forceViewportTop)
-    const afterPaint = window.setTimeout(forceViewportTop, 80)
-    return () => window.clearTimeout(afterPaint)
+    return scheduleViewportTopReset()
   }, [ready])
 
   useEffect(() => {
