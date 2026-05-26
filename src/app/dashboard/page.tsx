@@ -306,22 +306,6 @@ export default function DashboardPage() {
           }}>
             <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', minWidth: 0, gridColumn: language === 'he' ? '2' : '1', justifySelf: language === 'he' ? 'end' : 'start', direction: language === 'he' ? 'rtl' : 'ltr', order: language === 'he' ? 2 : 1 }}>
             <div style={{ minWidth: 0 }}>
-              <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '9px', flexWrap: 'wrap' }}>
-                <span className="welcome-date" style={{
-                  fontSize: '13px', fontWeight: '700', color: 'var(--text3)',
-                  letterSpacing: '0.01em',
-                }}>
-                  {dateLabel}
-                </span>
-                <span className="welcome-time" dir="ltr" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  fontSize: '13px', fontWeight: '850', color: '#0f8d63',
-                  letterSpacing: '0.02em',
-                }}>
-                  <Icon name="timer" size={13} color="currentColor" />
-                  {timeLabel}
-                </span>
-              </div>
                 <h2 className="welcome-title" style={{
                   fontSize: '31px', fontWeight: '900', margin: 0,
                   color: 'var(--text)', letterSpacing: '-0.02em',
@@ -330,6 +314,22 @@ export default function DashboardPage() {
                 }}>
                   {getGreeting()}, {userName}
                 </h2>
+                <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '9px', flexWrap: 'wrap', color: 'rgba(244,247,251,0.86)' }}>
+                  <span className="welcome-date" style={{
+                    fontSize: '13px', fontWeight: '750', color: 'currentColor',
+                    letterSpacing: '0.01em',
+                  }}>
+                    {dateLabel}
+                  </span>
+                  <span aria-hidden="true" style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'rgba(244,247,251,0.48)', flexShrink: 0 }} />
+                  <span className="welcome-time" dir="ltr" style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    fontSize: '13px', fontWeight: '850', color: 'currentColor',
+                    letterSpacing: '0.02em',
+                  }}>
+                    {timeLabel}
+                  </span>
+                </div>
             </div>
             </div>
 
@@ -786,7 +786,7 @@ export default function DashboardPage() {
           .welcome-tile > span { font-size: 23px !important; }
           .welcome-title { font-size: clamp(20px, 5vw, 24px) !important; line-height: 1.12 !important; }
           .welcome-date { font-size: 12.5px !important; }
-          .welcome-meta-row { width: 100% !important; margin-bottom: 7px !important; justify-content: flex-start !important; direction: rtl !important; text-align: right !important; }
+          .welcome-meta-row { width: 100% !important; margin-top: 7px !important; margin-bottom: 0 !important; justify-content: flex-start !important; direction: rtl !important; text-align: right !important; }
           .welcome-date { width: auto !important; text-align: right !important; }
           .welcome-time { font-size: 12.5px !important; }
           .welcome-quote-wrap { order: 1 !important; grid-column: 1 !important; width: 100% !important; max-width: 560px !important; min-width: 0 !important; margin-left: 0 !important; margin-right: 0 !important; justify-self: start !important; align-self: center !important; padding: 3px 12px 3px 0 !important; direction: rtl !important; text-align: right !important; border-right: 2px solid rgba(15,141,99,0.8) !important; border-left: none !important; }
