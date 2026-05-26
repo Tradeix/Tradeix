@@ -127,6 +127,42 @@ create policy "Users can manage own trades"
   with check (auth.uid() = user_id);
 
 
+-- WEEKLY REPORTS
+create table if not exists public.weekly_reports (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  portfolio_id uuid references public.portfolios on delete cascade not null,
+  week_start date not null,
+  week_end date not null,
+  feelings text default '',
+  lessons text default '',
+  improvements text default '',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique (user_id, portfolio_id, week_start)
+);
+
+alter table public.weekly_reports enable row level security;
+
+create policy "Users can manage own weekly reports"
+  on public.weekly_reports for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create or replace function public.touch_weekly_report_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists touch_weekly_report_updated_at on public.weekly_reports;
+create trigger touch_weekly_report_updated_at
+  before update on public.weekly_reports
+  for each row execute procedure public.touch_weekly_report_updated_at();
+
+
 -- ── STORAGE BUCKETS ──
 -- צור את הבאקטים האלה ב Supabase > Storage:
 -- 1. "trade-images" — public

@@ -63,3 +63,16 @@ export type Stats = {
   bestTrade: number
   worstTrade: number
 }
+
+export type WeeklyReport = {
+  id: string
+  user_id: string
+  portfolio_id: string
+  week_start: string
+  week_end: string
+  feelings?: string
+  lessons?: string
+  improvements?: string
+  created_at: string
+  updated_at: string
+}
