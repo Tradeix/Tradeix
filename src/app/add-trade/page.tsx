@@ -748,7 +748,7 @@ export default function AddTradePage() {
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'תאריך' : 'Date'}
                     </label>
-                    <input type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', direction: 'ltr', minWidth: 0 }} />
+                    <input className="manual-trade-date-input" type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', direction: 'ltr', minWidth: 0 }} />
                   </div>
                 </div>
 
@@ -1059,6 +1059,27 @@ export default function AddTradePage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @media (max-width: 640px) {
+          .symbol-date-grid {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+          }
+          .symbol-date-grid > div {
+            min-width: 0 !important;
+          }
+          .manual-trade-date-input {
+            width: 100% !important;
+            min-width: 0 !important;
+            height: 44px !important;
+            line-height: 44px !important;
+            box-sizing: border-box !important;
+            text-align: center !important;
+            padding-inline: 6px !important;
+            font-size: 11px !important;
+          }
+          .manual-trade-date-input::-webkit-date-and-time-value {
+            text-align: center;
+          }
+        }
         @media (max-width: 400px) {
           .price-grid-3 { grid-template-columns: 1fr 1fr !important; }
           .price-grid-3 > div:last-child { grid-column: 1 / -1; }
