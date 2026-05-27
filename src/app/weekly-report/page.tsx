@@ -363,14 +363,14 @@ export default function WeeklyReportPage() {
       </div>
 
       <div className="weekly-report-shell">
-        <section className="weekly-report-main">
+        <section className="weekly-report-main" dir={isRTL ? 'rtl' : 'ltr'}>
           {loading && (
             <div className="weekly-loading">
               {language === 'he' ? 'טוען את שבוע המסחר...' : 'Loading trading week...'}
             </div>
           )}
 
-          <div className="weekly-notebook">
+          <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade">
             <div className="weekly-toolbar">
               <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, -7))} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
                 <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
@@ -463,7 +463,7 @@ export default function WeeklyReportPage() {
           </div>
         </section>
 
-        <aside className="weekly-report-sidebar">
+        <aside className="weekly-report-sidebar" dir={isRTL ? 'rtl' : 'ltr'}>
           <div className="reports-month-card">
             <div className="reports-month-title">
               <span>{language === 'he' ? 'דוחות שבועיים' : 'Weekly reports'}</span>
@@ -554,6 +554,7 @@ export default function WeeklyReportPage() {
           grid-template-areas: "report reports";
           gap: 34px;
           align-items: start;
+          direction: ltr;
         }
         .weekly-report-main { grid-area: report; }
         .weekly-report-sidebar { grid-area: reports; }
@@ -572,6 +573,19 @@ export default function WeeklyReportPage() {
           border: 1px solid rgba(255,255,255,.095);
           border-radius: 24px;
           background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+        }
+        .report-fade {
+          animation: reportFadeIn .24s ease both;
+        }
+        @keyframes reportFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .weekly-toolbar {
           display: grid;
