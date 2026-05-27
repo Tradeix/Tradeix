@@ -986,17 +986,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .sidebar-el:hover .sidebar-link[data-active="1"] .material-symbols-outlined {
             filter: none;
           }
-          [dir="rtl"] .sidebar-el:hover .weekly-report-link {
-            flex-direction: row-reverse;
-            justify-content: space-between !important;
-          }
         }
 
         @media (max-width: 1024px) {
-          [dir="rtl"] .weekly-report-link {
-            flex-direction: row-reverse;
-            justify-content: space-between !important;
-          }
           .sidebar-el { width: 210px !important; transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .sidebar-rail-handle { display: none !important; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }

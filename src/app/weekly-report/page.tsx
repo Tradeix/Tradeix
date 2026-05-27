@@ -434,30 +434,7 @@ export default function WeeklyReportPage() {
           overflow: hidden;
           border: 1px solid rgba(255,255,255,.095);
           border-radius: 24px;
-          background:
-            linear-gradient(90deg, rgba(15,141,99,.26) 0 3px, transparent 3px 100%),
-            linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
-        }
-        [dir="rtl"] .weekly-notebook {
-          background:
-            linear-gradient(270deg, rgba(15,141,99,.26) 0 3px, transparent 3px 100%),
-            linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
-        }
-        .weekly-notebook::before {
-          content: '';
-          position: absolute;
-          inset-block: 20px;
-          inset-inline-start: 18px;
-          width: 8px;
-          border-radius: 999px;
-          background: radial-gradient(circle, rgba(15,141,99,.72) 0 2px, transparent 2.8px);
-          background-size: 8px 26px;
-          opacity: .58;
-          pointer-events: none;
-        }
-        [dir="rtl"] .weekly-notebook::before {
-          inset-inline-start: auto;
-          inset-inline-end: 18px;
+          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
         }
         .weekly-toolbar {
           display: grid;
@@ -547,7 +524,6 @@ export default function WeeklyReportPage() {
         }
         .daily-sheet {
           border-inline-end: 1px solid var(--border);
-          background: repeating-linear-gradient(to bottom, transparent 0 42px, rgba(255,255,255,.035) 43px, transparent 44px);
         }
         .highlight-sheet {
           background: rgba(15,141,99,.035);
@@ -609,21 +585,7 @@ export default function WeeklyReportPage() {
         .journal-area {
           padding: 28px 30px 26px;
           position: relative;
-          background:
-            linear-gradient(90deg, rgba(15,141,99,.38) 0 2px, transparent 2px 100%),
-            repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
-        }
-        [dir="rtl"] .journal-area {
-          background:
-            linear-gradient(270deg, rgba(15,141,99,.38) 0 2px, transparent 2px 100%),
-            repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
-        }
-        .notebook-panel::before {
-          display: none;
-        }
-        [dir="rtl"] .notebook-panel::before {
-          inset-inline-start: auto;
-          inset-inline-end: 14px;
+          background: rgba(0,0,0,.08);
         }
         .journal-field {
           padding: 20px 0 22px;
