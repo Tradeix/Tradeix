@@ -71,6 +71,8 @@ export default function WeeklyReportPage() {
 
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
+  const currentTradingWeek = useMemo(() => startOfTradingWeek(new Date()), [])
+  const canGoForward = selectedWeek.getTime() < currentTradingWeek.getTime()
   const selectedReport = reports.find(report => report.week_start === toDateInput(selectedWeek))
   const locale = language === 'he' ? 'he-IL' : 'en-US'
 
@@ -267,9 +269,13 @@ export default function WeeklyReportPage() {
                 <h3>{weekLabel}</h3>
               </div>
 
-              <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, 7))} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
-                <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
-              </button>
+              {canGoForward ? (
+                <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, 7))} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
+                  <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
+                </button>
+              ) : (
+                <div className="weekly-nav-spacer" aria-hidden="true" />
+              )}
             </div>
 
             <div className="weekly-metrics">
@@ -457,6 +463,10 @@ export default function WeeklyReportPage() {
           justify-content: center;
           cursor: pointer;
           transition: color .15s, border-color .15s, background .15s;
+        }
+        .weekly-nav-spacer {
+          width: 42px;
+          height: 42px;
         }
         .weekly-nav-btn:hover {
           color: #0f8d63;
