@@ -16,6 +16,15 @@ type ReportForm = {
   improvements: string
 }
 
+type GeneratedWeekReport = {
+  key: string
+  weekStart: Date
+  weekEnd: Date
+  savedReport?: WeeklyReport
+  trades: number
+  pnl: number
+}
+
 const EMPTY_FORM: ReportForm = { feelings: '', lessons: '', improvements: '' }
 
 function atLocalMidnight(date: Date) {
@@ -63,6 +72,7 @@ export default function WeeklyReportPage() {
   const [selectedWeek, setSelectedWeek] = useState(() => startOfTradingWeek(new Date()))
   const [selectedMonth, setSelectedMonth] = useState(() => monthStart(new Date()))
   const [trades, setTrades] = useState<Trade[]>([])
+  const [monthTrades, setMonthTrades] = useState<Trade[]>([])
   const [reports, setReports] = useState<WeeklyReport[]>([])
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
@@ -87,7 +97,7 @@ export default function WeeklyReportPage() {
 
   useEffect(() => {
     if (!activePortfolio || !userId) return
-    loadReportsForMonth()
+    loadMonthReportData()
   }, [activePortfolio?.id, userId, selectedMonth])
 
   async function loadWeek() {
@@ -122,24 +132,43 @@ export default function WeeklyReportPage() {
         lessons: report.lessons || '',
         improvements: report.improvements || '',
       } : EMPTY_FORM)
+      if (report) {
+        setReports(prev => {
+          const exists = prev.some(item => item.id === report.id)
+          return exists ? prev.map(item => item.id === report.id ? report : item) : [report, ...prev]
+        })
+      }
     }
 
     setLoading(false)
   }
 
-  async function loadReportsForMonth() {
+  async function loadMonthReportData() {
     if (!activePortfolio || !userId) return
     const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1)
-    const { data } = await supabase
+    const monthQueryStart = addDays(startOfTradingWeek(selectedMonth), -1)
+    const monthQueryEnd = addDays(startOfTradingWeek(nextMonth), 7)
+
+    const [{ data: reportData }, { data: tradeData }] = await Promise.all([
+      supabase
       .from('weekly_reports')
       .select('*')
       .eq('user_id', userId)
       .eq('portfolio_id', activePortfolio.id)
-      .gte('week_start', toDateInput(selectedMonth))
-      .lt('week_start', toDateInput(nextMonth))
-      .order('week_start', { ascending: false })
+        .gte('week_start', toDateInput(monthQueryStart))
+        .lt('week_start', toDateInput(monthQueryEnd))
+        .order('week_start', { ascending: false }),
+      supabase
+        .from('trades')
+        .select('*')
+        .eq('portfolio_id', activePortfolio.id)
+        .gte('traded_at', monthQueryStart.toISOString())
+        .lt('traded_at', monthQueryEnd.toISOString())
+        .order('traded_at', { ascending: true }),
+    ])
 
-    setReports((data || []) as WeeklyReport[])
+    setReports((reportData || []) as WeeklyReport[])
+    setMonthTrades((tradeData || []) as Trade[])
   }
 
   async function saveReport() {
@@ -157,17 +186,43 @@ export default function WeeklyReportPage() {
       improvements: form.improvements.trim(),
     }
 
-    const { error } = await supabase
-      .from('weekly_reports')
-      .upsert(payload, { onConflict: 'user_id,portfolio_id,week_start' })
+    let saveResult = selectedReport
+      ? await supabase
+        .from('weekly_reports')
+        .update({
+          week_end: payload.week_end,
+          feelings: payload.feelings,
+          lessons: payload.lessons,
+          improvements: payload.improvements,
+        })
+        .eq('id', selectedReport.id)
+        .eq('user_id', userId)
+      : await supabase
+        .from('weekly_reports')
+        .insert(payload)
 
-    if (error) {
+    if (!selectedReport && saveResult.error?.code === '23505') {
+      saveResult = await supabase
+        .from('weekly_reports')
+        .update({
+          week_end: payload.week_end,
+          feelings: payload.feelings,
+          lessons: payload.lessons,
+          improvements: payload.improvements,
+        })
+        .eq('user_id', userId)
+        .eq('portfolio_id', activePortfolio.id)
+        .eq('week_start', payload.week_start)
+    }
+
+    if (saveResult.error) {
+      console.error('weekly report save failed', saveResult.error)
       setMessage(language === 'he'
-        ? 'לא הצלחנו לשמור את הדוח כרגע.'
-        : 'Could not save the report right now.')
+        ? `לא הצלחנו לשמור את הדוח כרגע: ${saveResult.error.message}`
+        : `Could not save the report right now: ${saveResult.error.message}`)
     } else {
       setMessage(language === 'he' ? 'הדוח השבועי נשמר' : 'Weekly report saved')
-      await loadReportsForMonth()
+      await loadMonthReportData()
     }
 
     setSaving(false)
@@ -202,6 +257,55 @@ export default function WeeklyReportPage() {
 
   const monthLabel = selectedMonth.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
   const weekLabel = `${selectedWeek.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} - ${weekEnd.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`
+  const generatedReports = useMemo<GeneratedWeekReport[]>(() => {
+    const weeks = new Map<string, GeneratedWeekReport>()
+    const firstWeek = startOfTradingWeek(selectedMonth)
+    const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1)
+
+    for (let cursor = firstWeek; cursor < nextMonth && cursor <= currentTradingWeek; cursor = addDays(cursor, 7)) {
+      const key = toDateInput(cursor)
+      weeks.set(key, {
+        key,
+        weekStart: cursor,
+        weekEnd: addDays(cursor, 4),
+        trades: 0,
+        pnl: 0,
+      })
+    }
+
+    monthTrades.forEach(trade => {
+      const weekStart = startOfTradingWeek(new Date(trade.traded_at))
+      if (weekStart > currentTradingWeek) return
+      const key = toDateInput(weekStart)
+      const existing = weeks.get(key) || {
+        key,
+        weekStart,
+        weekEnd: addDays(weekStart, 4),
+        trades: 0,
+        pnl: 0,
+      }
+      existing.trades += 1
+      existing.pnl += trade.pnl || 0
+      weeks.set(key, existing)
+    })
+
+    reports.forEach(report => {
+      const weekStart = parseInputDate(report.week_start)
+      if (weekStart > currentTradingWeek) return
+      const key = report.week_start
+      const existing = weeks.get(key) || {
+        key,
+        weekStart,
+        weekEnd: parseInputDate(report.week_end),
+        trades: 0,
+        pnl: 0,
+      }
+      existing.savedReport = report
+      weeks.set(key, existing)
+    })
+
+    return Array.from(weeks.values()).sort((a, b) => b.weekStart.getTime() - a.weekStart.getTime())
+  }, [selectedMonth, currentTradingWeek, monthTrades, reports])
 
   if (portfoliosLoaded && !activePortfolio) {
     return (
@@ -353,19 +457,25 @@ export default function WeeklyReportPage() {
 
         <aside className="weekly-report-sidebar">
           <div className="sidebar-heading">
-            <span>{language === 'he' ? 'דוחות שמורים' : 'Saved reports'}</span>
+            <span>{language === 'he' ? 'דוחות שבועיים' : 'Weekly reports'}</span>
             <strong>{monthLabel}</strong>
           </div>
           <div className="report-list">
-            {reports.length === 0 ? (
-              <p>{language === 'he' ? 'אין דוחות שמורים בחודש הזה עדיין.' : 'No saved reports in this month yet.'}</p>
-            ) : reports.map(report => {
-              const active = report.week_start === toDateInput(selectedWeek)
-              const reportStart = parseInputDate(report.week_start)
-              const reportEnd = parseInputDate(report.week_end)
+            {generatedReports.length === 0 ? (
+              <p>{language === 'he' ? 'עדיין אין שבועות מסחר לחודש הזה.' : 'No trading weeks for this month yet.'}</p>
+            ) : generatedReports.map(report => {
+              const active = report.key === toDateInput(selectedWeek)
               return (
-                <button key={report.id} data-active={active ? '1' : '0'} onClick={() => selectWeek(reportStart)}>
-                  <span>{reportStart.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} - {reportEnd.toLocaleDateString(locale, { day: 'numeric', month: 'short' })}</span>
+                <button key={report.key} data-active={active ? '1' : '0'} onClick={() => selectWeek(report.weekStart)}>
+                  <span>
+                    <strong>{report.weekStart.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} - {report.weekEnd.toLocaleDateString(locale, { day: 'numeric', month: 'short' })}</strong>
+                    <small>
+                      {report.trades} {language === 'he' ? 'עסקאות' : report.trades === 1 ? 'trade' : 'trades'}
+                      {' · '}
+                      {formatSignedMoney(report.pnl, currency)}
+                      {report.savedReport ? (language === 'he' ? ' · נשמר' : ' · saved') : ''}
+                    </small>
+                  </span>
                   <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={16} />
                 </button>
               )
@@ -711,6 +821,22 @@ export default function WeeklyReportPage() {
         .report-list button[data-active="1"],
         .report-list button:hover {
           color: #0f8d63;
+        }
+        .report-list button span {
+          display: grid;
+          gap: 3px;
+          min-width: 0;
+        }
+        .report-list button strong {
+          color: inherit;
+          font-size: 13.5px;
+          font-weight: 900;
+        }
+        .report-list button small {
+          color: var(--text3);
+          font-size: 11.5px;
+          font-weight: 750;
+          white-space: normal;
         }
         @media (max-width: 980px) {
           .weekly-report-shell { grid-template-columns: 1fr; gap: 20px; }
