@@ -95,7 +95,7 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   screenshot_monitor: Monitor,
   save: Save,
   edit_note: BookOpen,
-  menu_book: BookOpen,
+  menu_book: FileText,
   event_available: CalendarCheck,
   calendar_month: Calendar,
   autorenew: RefreshCw,

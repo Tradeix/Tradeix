@@ -250,67 +250,67 @@ export default function WeeklyReportPage() {
 
       <div className="weekly-report-shell">
         <section className="weekly-report-main">
-          <div className="weekly-toolbar">
-            <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, -7))} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
-              <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
-            </button>
-
-            <div className="weekly-title-block">
-              <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>
-              <h3>{weekLabel}</h3>
-            </div>
-
-            <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, 7))} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
-              <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
-            </button>
-
-          </div>
-
           {loading && (
             <div className="weekly-loading">
               {language === 'he' ? 'טוען את שבוע המסחר...' : 'Loading trading week...'}
             </div>
           )}
 
-          <div className="weekly-metrics">
-            <Metric label={language === 'he' ? 'עסקאות' : 'Trades'} value={trades.length.toString()} />
-            <Metric label={language === 'he' ? 'PNL שבועי' : 'Weekly PNL'} value={formatSignedMoney(stats.pnl, currency)} tone={stats.pnl > 0 ? 'good' : stats.pnl < 0 ? 'bad' : 'neutral'} />
-            <Metric label={language === 'he' ? 'אחוז זכייה' : 'Win rate'} value={`${Math.round(stats.winRate)}%`} tone={stats.winRate >= 60 ? 'good' : stats.winRate >= 30 ? 'warn' : stats.winRate > 0 ? 'bad' : 'neutral'} />
-            <Metric label={language === 'he' ? 'ממוצע לעסקה' : 'Avg. trade'} value={formatSignedMoney(stats.avgPnl, currency)} tone={stats.avgPnl > 0 ? 'good' : stats.avgPnl < 0 ? 'bad' : 'neutral'} />
-          </div>
+          <div className="weekly-notebook">
+            <div className="weekly-toolbar">
+              <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, -7))} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
+                <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
+              </button>
 
-          <div className="weekly-split">
-            <div className="weekly-line-section">
-              <div className="section-heading">
-                <span>{language === 'he' ? 'פירוט יומי' : 'Daily breakdown'}</span>
+              <div className="weekly-title-block">
+                <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>
+                <h3>{weekLabel}</h3>
               </div>
-              <div className="daily-list">
-                {dailyRows.map(row => (
-                  <div className="daily-row" key={row.date.toISOString()}>
-                    <div>
-                      <strong>{row.date.toLocaleDateString(locale, { weekday: 'long' })}</strong>
-                      <span>{row.date.toLocaleDateString(locale, { day: 'numeric', month: 'long' })}</span>
+
+              <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, 7))} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
+                <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
+              </button>
+            </div>
+
+            <div className="weekly-metrics">
+              <Metric label={language === 'he' ? 'עסקאות' : 'Trades'} value={trades.length.toString()} />
+              <Metric label={language === 'he' ? 'PNL שבועי' : 'Weekly PNL'} value={formatSignedMoney(stats.pnl, currency)} tone={stats.pnl > 0 ? 'good' : stats.pnl < 0 ? 'bad' : 'neutral'} />
+              <Metric label={language === 'he' ? 'אחוז זכייה' : 'Win rate'} value={`${Math.round(stats.winRate)}%`} tone={stats.winRate >= 60 ? 'good' : stats.winRate >= 30 ? 'warn' : stats.winRate > 0 ? 'bad' : 'neutral'} />
+              <Metric label={language === 'he' ? 'ממוצע לעסקה' : 'Avg. trade'} value={formatSignedMoney(stats.avgPnl, currency)} tone={stats.avgPnl > 0 ? 'good' : stats.avgPnl < 0 ? 'bad' : 'neutral'} />
+            </div>
+
+            <div className="notebook-content-grid">
+              <div className="weekly-line-section daily-sheet">
+                <div className="section-heading">
+                  <span>{language === 'he' ? 'פירוט יומי' : 'Daily breakdown'}</span>
+                </div>
+                <div className="daily-list">
+                  {dailyRows.map(row => (
+                    <div className="daily-row" key={row.date.toISOString()}>
+                      <div>
+                        <strong>{row.date.toLocaleDateString(locale, { weekday: 'long' })}</strong>
+                        <span>{row.date.toLocaleDateString(locale, { day: 'numeric', month: 'long' })}</span>
+                      </div>
+                      <div>{row.trades} {language === 'he' ? 'עסקאות' : row.trades === 1 ? 'trade' : 'trades'}</div>
+                      <b data-tone={row.pnl > 0 ? 'good' : row.pnl < 0 ? 'bad' : 'neutral'}>{formatSignedMoney(row.pnl, currency)}</b>
                     </div>
-                    <div>{row.trades} {language === 'he' ? 'עסקאות' : row.trades === 1 ? 'trade' : 'trades'}</div>
-                    <b data-tone={row.pnl > 0 ? 'good' : row.pnl < 0 ? 'bad' : 'neutral'}>{formatSignedMoney(row.pnl, currency)}</b>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              <div className="weekly-line-section highlight-sheet">
+                <div className="section-heading">
+                  <span>{language === 'he' ? 'תמונת מצב' : 'Snapshot'}</span>
+                </div>
+                <div className="highlight-list">
+                  <Highlight label={language === 'he' ? 'עסקה טובה ביותר' : 'Best trade'} value={formatSignedMoney(stats.bestTrade, currency)} tone={stats.bestTrade > 0 ? 'good' : 'neutral'} />
+                  <Highlight label={language === 'he' ? 'עסקה חלשה ביותר' : 'Worst trade'} value={formatSignedMoney(stats.worstTrade, currency)} tone={stats.worstTrade < 0 ? 'bad' : 'neutral'} />
+                  <Highlight label={language === 'he' ? 'ניצחונות / הפסדים' : 'Wins / Losses'} value={`${stats.wins} / ${stats.losses}`} />
+                </div>
               </div>
             </div>
 
-            <div className="weekly-line-section">
-              <div className="section-heading">
-                <span>{language === 'he' ? 'נקודות קצה' : 'Highlights'}</span>
-              </div>
-              <div className="highlight-list">
-                <Highlight label={language === 'he' ? 'עסקה טובה ביותר' : 'Best trade'} value={formatSignedMoney(stats.bestTrade, currency)} tone={stats.bestTrade > 0 ? 'good' : 'neutral'} />
-                <Highlight label={language === 'he' ? 'עסקה חלשה ביותר' : 'Worst trade'} value={formatSignedMoney(stats.worstTrade, currency)} tone={stats.worstTrade < 0 ? 'bad' : 'neutral'} />
-                <Highlight label={language === 'he' ? 'ניצחונות / הפסדים' : 'Wins / Losses'} value={`${stats.wins} / ${stats.losses}`} />
-              </div>
-            </div>
-          </div>
-
-          <div className="journal-area notebook-panel">
+            <div className="journal-area notebook-panel">
             <div className="section-heading">
               <span>{language === 'he' ? 'המחברת השבועית' : 'Weekly journal'}</span>
             </div>
@@ -340,6 +340,7 @@ export default function WeeklyReportPage() {
                 {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : selectedReport ? (language === 'he' ? 'עדכן דוח' : 'Update report') : (language === 'he' ? 'שמור דוח שבועי' : 'Save weekly report')}
               </button>
               {message && <span>{message}</span>}
+            </div>
             </div>
           </div>
         </section>
@@ -421,7 +422,6 @@ export default function WeeklyReportPage() {
         }
         .weekly-report-main,
         .weekly-report-sidebar {
-          border-bottom: 1px solid var(--border);
           padding: 28px 0;
         }
         .weekly-report-sidebar {
@@ -429,14 +429,44 @@ export default function WeeklyReportPage() {
           top: 92px;
           border-top: 2px solid rgba(15,141,99,.55);
         }
+        .weekly-notebook {
+          position: relative;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,.095);
+          border-radius: 24px;
+          background:
+            linear-gradient(90deg, rgba(15,141,99,.26) 0 3px, transparent 3px 100%),
+            linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+        }
+        [dir="rtl"] .weekly-notebook {
+          background:
+            linear-gradient(270deg, rgba(15,141,99,.26) 0 3px, transparent 3px 100%),
+            linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+        }
+        .weekly-notebook::before {
+          content: '';
+          position: absolute;
+          inset-block: 20px;
+          inset-inline-start: 18px;
+          width: 8px;
+          border-radius: 999px;
+          background: radial-gradient(circle, rgba(15,141,99,.72) 0 2px, transparent 2.8px);
+          background-size: 8px 26px;
+          opacity: .58;
+          pointer-events: none;
+        }
+        [dir="rtl"] .weekly-notebook::before {
+          inset-inline-start: auto;
+          inset-inline-end: 18px;
+        }
         .weekly-toolbar {
           display: grid;
           grid-template-columns: 42px minmax(0, 1fr) 42px;
           gap: 12px;
           align-items: center;
-          margin-bottom: 26px;
-          padding-bottom: 22px;
+          padding: 24px 30px 22px;
           border-bottom: 1px solid var(--border);
+          background: rgba(0,0,0,.12);
         }
         .weekly-nav-btn {
           width: 42px;
@@ -475,7 +505,7 @@ export default function WeeklyReportPage() {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
           border-bottom: 1px solid var(--border);
-          margin-bottom: 28px;
+          background: rgba(255,255,255,.018);
         }
         .weekly-loading {
           color: var(--text3);
@@ -506,11 +536,21 @@ export default function WeeklyReportPage() {
         [data-tone="good"] { color: #22c55e !important; }
         [data-tone="bad"] { color: #ef4444 !important; }
         [data-tone="warn"] { color: #f59e0b !important; }
-        .weekly-split {
+        .notebook-content-grid {
           display: grid;
           grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
-          gap: 34px;
-          margin-bottom: 34px;
+          gap: 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .weekly-line-section {
+          padding: 28px 30px;
+        }
+        .daily-sheet {
+          border-inline-end: 1px solid var(--border);
+          background: repeating-linear-gradient(to bottom, transparent 0 42px, rgba(255,255,255,.035) 43px, transparent 44px);
+        }
+        .highlight-sheet {
+          background: rgba(15,141,99,.035);
         }
         .section-heading {
           display: flex;
@@ -535,7 +575,7 @@ export default function WeeklyReportPage() {
           grid-template-columns: minmax(0, 1fr) auto auto;
           gap: 14px;
           align-items: center;
-          padding: 13px 0;
+          padding: 14px 0;
           border-bottom: 1px solid var(--border);
         }
         .daily-row strong,
@@ -567,15 +607,11 @@ export default function WeeklyReportPage() {
           white-space: nowrap;
         }
         .journal-area {
-          border-top: 1px solid var(--border);
-          padding: 26px 28px 24px;
+          padding: 28px 30px 26px;
           position: relative;
           background:
             linear-gradient(90deg, rgba(15,141,99,.38) 0 2px, transparent 2px 100%),
             repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
-          border-inline-start: 1px solid rgba(15,141,99,.32);
-          border-bottom: 1px solid var(--border);
-          border-radius: 0 0 18px 18px;
         }
         [dir="rtl"] .journal-area {
           background:
@@ -583,31 +619,34 @@ export default function WeeklyReportPage() {
             repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
         }
         .notebook-panel::before {
-          content: '';
-          position: absolute;
-          inset-block: 18px;
-          inset-inline-start: 14px;
-          width: 6px;
-          border-radius: 999px;
-          background: radial-gradient(circle, rgba(15,141,99,.7) 0 2px, transparent 2.5px);
-          background-size: 6px 22px;
-          opacity: .52;
+          display: none;
         }
         [dir="rtl"] .notebook-panel::before {
           inset-inline-start: auto;
           inset-inline-end: 14px;
         }
         .journal-field {
-          padding: 18px 0 20px;
-          border-bottom: 1px solid rgba(255,255,255,.07);
+          padding: 20px 0 22px;
+          border-bottom: 1px solid rgba(255,255,255,.08);
           position: relative;
         }
         .journal-field label {
-          display: block;
+          display: flex;
+          align-items: center;
+          gap: 9px;
           color: var(--text);
           font-size: 15px;
           font-weight: 900;
           margin-bottom: 8px;
+        }
+        .journal-field label::before {
+          content: '';
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #0f8d63;
+          box-shadow: 0 0 0 5px rgba(15,141,99,.1);
+          flex: 0 0 auto;
         }
         .journal-field textarea {
           width: 100%;
@@ -704,7 +743,8 @@ export default function WeeklyReportPage() {
         @media (max-width: 980px) {
           .weekly-report-shell { grid-template-columns: 1fr; gap: 20px; }
           .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
-          .weekly-split { grid-template-columns: 1fr; gap: 24px; }
+          .notebook-content-grid { grid-template-columns: 1fr; }
+          .daily-sheet { border-inline-end: none; border-bottom: 1px solid var(--border); }
           .weekly-report-sidebar { position: static; top: auto; }
         }
         @media (max-width: 640px) {
@@ -713,6 +753,9 @@ export default function WeeklyReportPage() {
           .weekly-page-top p { font-size: 13.5px; }
           .weekly-report-main,
           .weekly-report-sidebar { padding: 18px 0; }
+          .weekly-toolbar,
+          .weekly-line-section,
+          .journal-area { padding-inline: 18px; }
           .weekly-title-block h3 { font-size: 20px; }
           .weekly-metrics { grid-template-columns: 1fr 1fr; }
           .metric:nth-child(2) { border-inline-end: none; }
