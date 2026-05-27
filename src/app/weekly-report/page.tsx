@@ -229,7 +229,7 @@ export default function WeeklyReportPage() {
       <PageHeader
         title={language === 'he' ? 'דוח שבועי' : 'Weekly Report'}
         subtitle={language === 'he' ? 'סיכום שבוע המסחר, מחשבות, ומקום ברור לשיפור' : 'Summarize the trading week, reflect, and plan the next improvement'}
-        icon="edit_note"
+        icon="menu_book"
         action={(
           <div className="weekly-header-action">
             <Icon name="cases" size={16} />
@@ -310,7 +310,7 @@ export default function WeeklyReportPage() {
             </div>
           </div>
 
-          <div className="journal-area">
+          <div className="journal-area notebook-panel">
             <div className="section-heading">
               <span>{language === 'he' ? 'המחברת השבועית' : 'Weekly journal'}</span>
             </div>
@@ -568,11 +568,39 @@ export default function WeeklyReportPage() {
         }
         .journal-area {
           border-top: 1px solid var(--border);
-          padding-top: 24px;
+          padding: 26px 28px 24px;
+          position: relative;
+          background:
+            linear-gradient(90deg, rgba(15,141,99,.38) 0 2px, transparent 2px 100%),
+            repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
+          border-inline-start: 1px solid rgba(15,141,99,.32);
+          border-bottom: 1px solid var(--border);
+          border-radius: 0 0 18px 18px;
+        }
+        [dir="rtl"] .journal-area {
+          background:
+            linear-gradient(270deg, rgba(15,141,99,.38) 0 2px, transparent 2px 100%),
+            repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255,255,255,.055) 36px, transparent 37px);
+        }
+        .notebook-panel::before {
+          content: '';
+          position: absolute;
+          inset-block: 18px;
+          inset-inline-start: 14px;
+          width: 6px;
+          border-radius: 999px;
+          background: radial-gradient(circle, rgba(15,141,99,.7) 0 2px, transparent 2.5px);
+          background-size: 6px 22px;
+          opacity: .52;
+        }
+        [dir="rtl"] .notebook-panel::before {
+          inset-inline-start: auto;
+          inset-inline-end: 14px;
         }
         .journal-field {
-          padding: 18px 0;
-          border-bottom: 1px solid var(--border);
+          padding: 18px 0 20px;
+          border-bottom: 1px solid rgba(255,255,255,.07);
+          position: relative;
         }
         .journal-field label {
           display: block;
@@ -591,7 +619,7 @@ export default function WeeklyReportPage() {
           color: var(--text);
           font-family: Heebo, sans-serif;
           font-size: 15px;
-          line-height: 1.65;
+          line-height: 1.8;
           padding: 0;
         }
         .journal-field textarea::placeholder { color: var(--text3); }

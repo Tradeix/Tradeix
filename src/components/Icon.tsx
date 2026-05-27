@@ -9,6 +9,7 @@ import {
   RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
   Check, Brain, Images, Image as ImageIcon, UploadCloud, Banknote, Key, Monitor,
   Save, CalendarCheck, Sun, Moon, DollarSign, Euro, Coins,
+  BookOpen,
   type LucideProps,
 } from 'lucide-react'
 
@@ -93,6 +94,8 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   key: Key,
   screenshot_monitor: Monitor,
   save: Save,
+  edit_note: BookOpen,
+  menu_book: BookOpen,
   event_available: CalendarCheck,
   calendar_month: Calendar,
   autorenew: RefreshCw,

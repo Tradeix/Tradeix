@@ -360,7 +360,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
     { href: '/dashboard', icon: 'space_dashboard', label: tr.dashboard },
     { href: '/add-trade', icon: 'post_add', label: tr.addTrade },
     { href: '/trades', icon: 'swap_horiz', label: tr.allTrades },
-    { href: '/weekly-report', icon: 'edit_note', label: language === 'he' ? 'דוח שבועי' : 'Weekly Report' },
+    { href: '/weekly-report', icon: 'menu_book', label: language === 'he' ? 'דוח שבועי' : 'Weekly Report' },
     ...(isPro ? [{ href: '/strategies', icon: 'psychology', label: tr.strategies }] : []),
     ...(isPro ? [{ href: '/stats', icon: 'monitoring', label: tr.statistics }] : []),
   ]
@@ -374,8 +374,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
 
   const NavLink = ({ href, icon, label }: any) => {
     const active = pathname === href
+    const weeklyReportLink = href === '/weekly-report'
     return (
-      <Link href={href} scroll onClick={() => { resetViewportBeforeNavigation(); setSidebarOpen(false) }} title={label} className="nav-link-anim sidebar-link" data-active={active ? '1' : '0'} style={{
+      <Link href={href} scroll onClick={() => { resetViewportBeforeNavigation(); setSidebarOpen(false) }} title={label} className={`nav-link-anim sidebar-link${weeklyReportLink ? ' weekly-report-link' : ''}`} data-active={active ? '1' : '0'} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '11px 20px',
         color: active ? '#0f8d63' : 'var(--text3)',
@@ -985,9 +986,17 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .sidebar-el:hover .sidebar-link[data-active="1"] .material-symbols-outlined {
             filter: none;
           }
+          [dir="rtl"] .sidebar-el:hover .weekly-report-link {
+            flex-direction: row-reverse;
+            justify-content: space-between !important;
+          }
         }
 
         @media (max-width: 1024px) {
+          [dir="rtl"] .weekly-report-link {
+            flex-direction: row-reverse;
+            justify-content: space-between !important;
+          }
           .sidebar-el { width: 210px !important; transform: ${sidebarOpen ? 'translateX(0)' : isRTL ? 'translateX(100%)' : 'translateX(-100%)'}; }
           .sidebar-rail-handle { display: none !important; }
           .main-content { margin-right: 0 !important; margin-left: 0 !important; }
