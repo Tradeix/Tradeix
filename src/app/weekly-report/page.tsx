@@ -82,7 +82,9 @@ export default function WeeklyReportPage() {
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
   const currentTradingWeek = useMemo(() => startOfTradingWeek(new Date()), [])
+  const currentMonth = useMemo(() => monthStart(new Date()), [])
   const canGoForward = selectedWeek.getTime() < currentTradingWeek.getTime()
+  const canGoNextMonth = selectedMonth.getTime() < currentMonth.getTime()
   const selectedReport = reports.find(report => report.week_start === toDateInput(selectedWeek))
   const locale = language === 'he' ? 'he-IL' : 'en-US'
 
@@ -232,6 +234,12 @@ export default function WeeklyReportPage() {
     const week = startOfTradingWeek(date)
     setSelectedWeek(week)
     setSelectedMonth(monthStart(week))
+  }
+
+  function moveMonth(direction: -1 | 1) {
+    const next = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + direction, 1)
+    if (next > currentMonth) return
+    setSelectedMonth(monthStart(next))
   }
 
   const stats = useMemo(() => {
@@ -456,9 +464,19 @@ export default function WeeklyReportPage() {
         </section>
 
         <aside className="weekly-report-sidebar">
-          <div className="sidebar-heading">
-            <span>{language === 'he' ? 'דוחות שבועיים' : 'Weekly reports'}</span>
-            <strong>{monthLabel}</strong>
+          <div className="reports-month-card">
+            <div className="reports-month-title">
+              <span>{language === 'he' ? 'דוחות שבועיים' : 'Weekly reports'}</span>
+              <strong>{monthLabel}</strong>
+            </div>
+            <div className="reports-month-nav">
+              <button onClick={() => moveMonth(-1)} aria-label={language === 'he' ? 'חודש קודם' : 'Previous month'}>
+                <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={17} />
+              </button>
+              <button onClick={() => moveMonth(1)} disabled={!canGoNextMonth} aria-label={language === 'he' ? 'חודש הבא' : 'Next month'}>
+                <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={17} />
+              </button>
+            </div>
           </div>
           <div className="report-list">
             {generatedReports.length === 0 ? (
@@ -532,10 +550,13 @@ export default function WeeklyReportPage() {
         }
         .weekly-report-shell {
           display: grid;
-          grid-template-columns: minmax(0, 9fr) minmax(260px, 3fr);
+          grid-template-columns: minmax(0, 9fr) minmax(280px, 3fr);
+          grid-template-areas: "report reports";
           gap: 34px;
           align-items: start;
         }
+        .weekly-report-main { grid-area: report; }
+        .weekly-report-sidebar { grid-area: reports; }
         .weekly-report-main,
         .weekly-report-sidebar {
           padding: 28px 0;
@@ -773,27 +794,62 @@ export default function WeeklyReportPage() {
           font-size: 13px;
           font-weight: 750;
         }
-        .sidebar-heading {
+        .reports-month-card {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: space-between;
           gap: 12px;
-          margin-bottom: 16px;
+          margin-bottom: 18px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(255,255,255,.09);
         }
-        .sidebar-heading span {
+        .reports-month-title {
+          display: grid;
+          gap: 4px;
+          min-width: 0;
+        }
+        .reports-month-title span {
           color: var(--text);
           font-weight: 950;
           font-size: 16px;
         }
-        .sidebar-heading strong {
+        .reports-month-title strong {
           color: var(--text3);
-          font-size: 12px;
-          font-weight: 800;
-          text-align: end;
+          font-size: 20px;
+          font-weight: 950;
+          line-height: 1.1;
+        }
+        .reports-month-nav {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+        .reports-month-nav button {
+          width: 34px;
+          height: 34px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: rgba(255,255,255,.025);
+          color: var(--text2);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: color .15s, border-color .15s, background .15s, opacity .15s;
+        }
+        .reports-month-nav button:hover:not(:disabled) {
+          color: #0f8d63;
+          border-color: rgba(15,141,99,.35);
+          background: rgba(15,141,99,.08);
+        }
+        .reports-month-nav button:disabled {
+          opacity: .32;
+          cursor: not-allowed;
         }
         .report-list {
           display: grid;
-          gap: 2px;
+          gap: 10px;
         }
         .report-list p {
           color: var(--text3);
@@ -803,11 +859,11 @@ export default function WeeklyReportPage() {
           padding: 12px 0;
         }
         .report-list button {
-          border: none;
-          border-bottom: 1px solid var(--border);
-          background: transparent;
+          border: 1px solid rgba(255,255,255,.075);
+          border-radius: 14px;
+          background: rgba(255,255,255,.024);
           color: var(--text2);
-          min-height: 46px;
+          min-height: 66px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -815,12 +871,20 @@ export default function WeeklyReportPage() {
           cursor: pointer;
           font-family: Heebo, sans-serif;
           font-weight: 850;
-          padding: 0;
+          padding: 12px 14px;
           text-align: start;
+          transition: color .15s, border-color .15s, background .15s, transform .15s;
         }
-        .report-list button[data-active="1"],
         .report-list button:hover {
           color: #0f8d63;
+          border-color: rgba(15,141,99,.28);
+          background: rgba(15,141,99,.065);
+          transform: translateY(-1px);
+        }
+        .report-list button[data-active="1"] {
+          color: #0f8d63;
+          border-color: rgba(15,141,99,.42);
+          background: rgba(15,141,99,.11);
         }
         .report-list button span {
           display: grid;
@@ -839,7 +903,13 @@ export default function WeeklyReportPage() {
           white-space: normal;
         }
         @media (max-width: 980px) {
-          .weekly-report-shell { grid-template-columns: 1fr; gap: 20px; }
+          .weekly-report-shell {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+              "reports"
+              "report";
+            gap: 20px;
+          }
           .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
           .notebook-content-grid { grid-template-columns: 1fr; }
           .daily-sheet { border-inline-end: none; border-bottom: 1px solid var(--border); }
