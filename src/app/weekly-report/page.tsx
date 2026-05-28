@@ -703,7 +703,7 @@ export default function WeeklyReportPage() {
         [data-tone="warn"] { color: #f59e0b !important; }
         .notebook-content-grid {
           display: grid;
-          grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0;
           border-bottom: 1px solid var(--border);
         }
@@ -923,15 +923,13 @@ export default function WeeklyReportPage() {
         @media (max-width: 980px) {
           .weekly-report-shell {
             grid-template-columns: 1fr;
-            grid-template-areas:
-              "reports"
-              "report";
+            grid-template-areas: "report";
             gap: 20px;
           }
           .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
           .notebook-content-grid { grid-template-columns: 1fr; }
           .daily-sheet { border-inline-end: none; border-bottom: 1px solid var(--border); }
-          .weekly-report-sidebar { position: static; top: auto; }
+          .weekly-report-sidebar { display: none; }
         }
         @media (max-width: 640px) {
           .weekly-header-action { display: none; }
