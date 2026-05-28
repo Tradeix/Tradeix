@@ -77,6 +77,7 @@ export default function WeeklyReportPage() {
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
   const skipNextAutoSave = useRef(true)
+  const autoSaveTimer = useRef<number | null>(null)
 
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
@@ -111,12 +112,19 @@ export default function WeeklyReportPage() {
     const hasText = Boolean(form.feelings.trim() || form.lessons.trim() || form.improvements.trim())
     if (!hasText && !selectedReport) return
 
-    const timer = window.setTimeout(() => {
+    clearAutoSaveTimer()
+    autoSaveTimer.current = window.setTimeout(() => {
       saveReport(form)
     }, 700)
 
-    return () => window.clearTimeout(timer)
+    return clearAutoSaveTimer
   }, [form, activePortfolio?.id, userId, loading, selectedWeek, selectedReport?.id])
+
+  function clearAutoSaveTimer() {
+    if (!autoSaveTimer.current) return
+    window.clearTimeout(autoSaveTimer.current)
+    autoSaveTimer.current = null
+  }
 
   async function loadWeek() {
     if (!activePortfolio || !userId) return
@@ -192,6 +200,8 @@ export default function WeeklyReportPage() {
 
   async function saveReport(formSnapshot: ReportForm) {
     if (!activePortfolio || !userId) return
+    const hasText = Boolean(formSnapshot.feelings.trim() || formSnapshot.lessons.trim() || formSnapshot.improvements.trim())
+    if (!hasText && !selectedReport) return
 
     const payload = {
       user_id: userId,
@@ -239,15 +249,23 @@ export default function WeeklyReportPage() {
     }
   }
 
-  function selectWeek(date: Date) {
+  async function flushCurrentReport() {
+    clearAutoSaveTimer()
+    await saveReport(form)
+  }
+
+  async function selectWeek(date: Date) {
     const week = startOfTradingWeek(date)
+    if (week.getTime() === selectedWeek.getTime()) return
+    await flushCurrentReport()
     setSelectedWeek(week)
     setSelectedMonth(monthStart(week))
   }
 
-  function moveMonth(direction: -1 | 1) {
+  async function moveMonth(direction: -1 | 1) {
     const next = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + direction, 1)
     if (next > currentMonth) return
+    await flushCurrentReport()
     setSelectedMonth(monthStart(next))
   }
 
