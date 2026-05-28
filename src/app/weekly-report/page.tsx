@@ -61,6 +61,21 @@ function monthStart(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1)
 }
 
+function firstTradingWeekOfMonth(date: Date) {
+  const d = monthStart(date)
+  const day = d.getDay()
+  const diff = day === 0 ? 1 : day === 1 ? 0 : 8 - day
+  d.setDate(d.getDate() + diff)
+  return d
+}
+
+function tradingWeeksForMonth(date: Date, currentTradingWeek: Date) {
+  const firstWeek = firstTradingWeekOfMonth(date)
+  return Array.from({ length: 4 })
+    .map((_, index) => addDays(firstWeek, index * 7))
+    .filter(week => week <= currentTradingWeek)
+}
+
 export default function WeeklyReportPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language, currency } = useApp()
@@ -83,7 +98,6 @@ export default function WeeklyReportPage() {
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
   const currentTradingWeek = useMemo(() => startOfTradingWeek(new Date()), [])
   const currentMonth = useMemo(() => monthStart(new Date()), [])
-  const canGoForward = selectedWeek.getTime() < currentTradingWeek.getTime()
   const canGoNextMonth = selectedMonth.getTime() < currentMonth.getTime()
   const selectedReport = reports.find(report => report.week_start === toDateInput(selectedWeek))
   const locale = language === 'he' ? 'he-IL' : 'en-US'
@@ -172,9 +186,9 @@ export default function WeeklyReportPage() {
 
   async function loadMonthReportData() {
     if (!activePortfolio || !userId) return
-    const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1)
-    const monthQueryStart = addDays(startOfTradingWeek(selectedMonth), -1)
-    const monthQueryEnd = addDays(startOfTradingWeek(nextMonth), 7)
+    const monthWeeks = tradingWeeksForMonth(selectedMonth, currentTradingWeek)
+    const monthQueryStart = monthWeeks[0] || firstTradingWeekOfMonth(selectedMonth)
+    const monthQueryEnd = addDays(monthQueryStart, 28)
 
     const [{ data: reportData }, { data: tradeData }] = await Promise.all([
       supabase
@@ -259,14 +273,18 @@ export default function WeeklyReportPage() {
     if (week.getTime() === selectedWeek.getTime()) return
     await flushCurrentReport()
     setSelectedWeek(week)
-    setSelectedMonth(monthStart(week))
   }
 
   async function moveMonth(direction: -1 | 1) {
     const next = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + direction, 1)
     if (next > currentMonth) return
     await flushCurrentReport()
-    setSelectedMonth(monthStart(next))
+    const nextMonthStart = monthStart(next)
+    const nextMonthWeeks = tradingWeeksForMonth(nextMonthStart, currentTradingWeek)
+    setSelectedMonth(nextMonthStart)
+    if (nextMonthWeeks.length) {
+      setSelectedWeek(nextMonthWeeks[nextMonthWeeks.length - 1])
+    }
   }
 
   const stats = useMemo(() => {
@@ -294,10 +312,9 @@ export default function WeeklyReportPage() {
   const weekLabel = `${selectedWeek.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} - ${weekEnd.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`
   const generatedReports = useMemo<GeneratedWeekReport[]>(() => {
     const weeks = new Map<string, GeneratedWeekReport>()
-    const firstWeek = startOfTradingWeek(selectedMonth)
-    const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1)
+    const monthWeeks = tradingWeeksForMonth(selectedMonth, currentTradingWeek)
 
-    for (let cursor = firstWeek; cursor < nextMonth && cursor <= currentTradingWeek; cursor = addDays(cursor, 7)) {
+    monthWeeks.forEach(cursor => {
       const key = toDateInput(cursor)
       weeks.set(key, {
         key,
@@ -306,19 +323,14 @@ export default function WeeklyReportPage() {
         trades: 0,
         pnl: 0,
       })
-    }
+    })
 
     monthTrades.forEach(trade => {
       const weekStart = startOfTradingWeek(new Date(trade.traded_at))
       if (weekStart > currentTradingWeek) return
       const key = toDateInput(weekStart)
-      const existing = weeks.get(key) || {
-        key,
-        weekStart,
-        weekEnd: addDays(weekStart, 4),
-        trades: 0,
-        pnl: 0,
-      }
+      const existing = weeks.get(key)
+      if (!existing) return
       existing.trades += 1
       existing.pnl += trade.pnl || 0
       weeks.set(key, existing)
@@ -328,19 +340,20 @@ export default function WeeklyReportPage() {
       const weekStart = parseInputDate(report.week_start)
       if (weekStart > currentTradingWeek) return
       const key = report.week_start
-      const existing = weeks.get(key) || {
-        key,
-        weekStart,
-        weekEnd: parseInputDate(report.week_end),
-        trades: 0,
-        pnl: 0,
-      }
+      const existing = weeks.get(key)
+      if (!existing) return
       existing.savedReport = report
       weeks.set(key, existing)
     })
 
     return Array.from(weeks.values()).sort((a, b) => b.weekStart.getTime() - a.weekStart.getTime())
   }, [selectedMonth, currentTradingWeek, monthTrades, reports])
+  const monthWeeksAscending = useMemo(() => [...generatedReports].sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime()), [generatedReports])
+  const selectedMonthWeekIndex = monthWeeksAscending.findIndex(report => report.key === toDateInput(selectedWeek))
+  const previousMonthWeek = selectedMonthWeekIndex > 0 ? monthWeeksAscending[selectedMonthWeekIndex - 1] : null
+  const nextMonthWeek = selectedMonthWeekIndex >= 0 && selectedMonthWeekIndex < monthWeeksAscending.length - 1
+    ? monthWeeksAscending[selectedMonthWeekIndex + 1]
+    : null
 
   if (portfoliosLoaded && !activePortfolio) {
     return (
@@ -399,17 +412,21 @@ export default function WeeklyReportPage() {
 
           <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade">
             <div className="weekly-toolbar">
-              <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, -7))} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
-                <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
-              </button>
+              {previousMonthWeek ? (
+                <button className="weekly-nav-btn" onClick={() => selectWeek(previousMonthWeek.weekStart)} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
+                  <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
+                </button>
+              ) : (
+                <div className="weekly-nav-spacer" aria-hidden="true" />
+              )}
 
               <div className="weekly-title-block">
                 <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>
                 <h3>{weekLabel}</h3>
               </div>
 
-              {canGoForward ? (
-                <button className="weekly-nav-btn" onClick={() => selectWeek(addDays(selectedWeek, 7))} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
+              {nextMonthWeek ? (
+                <button className="weekly-nav-btn" onClick={() => selectWeek(nextMonthWeek.weekStart)} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
                   <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
                 </button>
               ) : (
