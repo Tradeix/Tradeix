@@ -392,16 +392,6 @@ export default function WeeklyReportPage() {
         )}
       />
 
-      <div className="weekly-page-top">
-        <div>
-          <span>{language === 'he' ? 'מחברת שבועית' : 'Weekly notebook'}</span>
-          <h3>{weekLabel}</h3>
-          <p>{language === 'he'
-            ? 'כל שבוע נשמר כדוח נפרד: ביצועים, פירוט יומי, תחושות, מסקנות ותוכנית פעולה לשבוע הבא.'
-            : 'Every week is saved as its own report: performance, daily breakdown, emotions, lessons, and next-week action plan.'}</p>
-        </div>
-      </div>
-
       <div className="weekly-report-shell">
         <section className="weekly-report-main" dir={isRTL ? 'rtl' : 'ltr'}>
           {loading && (
@@ -551,36 +541,6 @@ export default function WeeklyReportPage() {
           white-space: nowrap;
         }
         .weekly-header-action svg { color: #0f8d63; }
-        .weekly-page-top {
-          padding: 22px 0 24px;
-          margin-bottom: 6px;
-          border-top: 1px solid var(--border);
-          border-bottom: 1px solid var(--border);
-        }
-        .weekly-page-top span {
-          display: inline-flex;
-          color: #0f8d63;
-          font-size: 12px;
-          font-weight: 950;
-          letter-spacing: .08em;
-          margin-bottom: 7px;
-        }
-        .weekly-page-top h3 {
-          margin: 0;
-          color: var(--text);
-          font-size: clamp(26px, 4vw, 40px);
-          font-weight: 950;
-          letter-spacing: -0.02em;
-          line-height: 1.05;
-        }
-        .weekly-page-top p {
-          max-width: 760px;
-          margin: 10px 0 0;
-          color: var(--text3);
-          font-size: 14.5px;
-          font-weight: 650;
-          line-height: 1.65;
-        }
         .weekly-report-shell {
           display: grid;
           grid-template-columns: minmax(0, 9fr) minmax(280px, 3fr);
@@ -933,8 +893,6 @@ export default function WeeklyReportPage() {
         }
         @media (max-width: 640px) {
           .weekly-header-action { display: none; }
-          .weekly-page-top { padding: 18px 0 20px; }
-          .weekly-page-top p { font-size: 13.5px; }
           .weekly-report-main,
           .weekly-report-sidebar { padding: 18px 0; }
           .weekly-toolbar,
