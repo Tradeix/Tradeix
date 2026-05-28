@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
@@ -76,8 +76,7 @@ export default function WeeklyReportPage() {
   const [reports, setReports] = useState<WeeklyReport[]>([])
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState('')
+  const skipNextAutoSave = useRef(true)
 
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
@@ -102,10 +101,26 @@ export default function WeeklyReportPage() {
     loadMonthReportData()
   }, [activePortfolio?.id, userId, selectedMonth])
 
+  useEffect(() => {
+    if (!activePortfolio || !userId || loading) return
+    if (skipNextAutoSave.current) {
+      skipNextAutoSave.current = false
+      return
+    }
+
+    const hasText = Boolean(form.feelings.trim() || form.lessons.trim() || form.improvements.trim())
+    if (!hasText && !selectedReport) return
+
+    const timer = window.setTimeout(() => {
+      saveReport(form)
+    }, 700)
+
+    return () => window.clearTimeout(timer)
+  }, [form, activePortfolio?.id, userId, loading, selectedWeek, selectedReport?.id])
+
   async function loadWeek() {
     if (!activePortfolio || !userId) return
     setLoading(true)
-    setMessage('')
 
     const { data: tradeData } = await supabase
       .from('trades')
@@ -126,9 +141,11 @@ export default function WeeklyReportPage() {
       .maybeSingle()
 
     if (reportError && reportError.code !== 'PGRST116') {
+      skipNextAutoSave.current = true
       setForm(EMPTY_FORM)
     } else {
       const report = reportData as WeeklyReport | null
+      skipNextAutoSave.current = true
       setForm(report ? {
         feelings: report.feelings || '',
         lessons: report.lessons || '',
@@ -173,19 +190,17 @@ export default function WeeklyReportPage() {
     setMonthTrades((tradeData || []) as Trade[])
   }
 
-  async function saveReport() {
+  async function saveReport(formSnapshot: ReportForm) {
     if (!activePortfolio || !userId) return
-    setSaving(true)
-    setMessage('')
 
     const payload = {
       user_id: userId,
       portfolio_id: activePortfolio.id,
       week_start: toDateInput(selectedWeek),
       week_end: toDateInput(weekEnd),
-      feelings: form.feelings.trim(),
-      lessons: form.lessons.trim(),
-      improvements: form.improvements.trim(),
+      feelings: formSnapshot.feelings.trim(),
+      lessons: formSnapshot.lessons.trim(),
+      improvements: formSnapshot.improvements.trim(),
     }
 
     let saveResult = selectedReport
@@ -219,15 +234,9 @@ export default function WeeklyReportPage() {
 
     if (saveResult.error) {
       console.error('weekly report save failed', saveResult.error)
-      setMessage(language === 'he'
-        ? `לא הצלחנו לשמור את הדוח כרגע: ${saveResult.error.message}`
-        : `Could not save the report right now: ${saveResult.error.message}`)
     } else {
-      setMessage(language === 'he' ? 'הדוח השבועי נשמר' : 'Weekly report saved')
       await loadMonthReportData()
     }
-
-    setSaving(false)
   }
 
   function selectWeek(date: Date) {
@@ -452,13 +461,6 @@ export default function WeeklyReportPage() {
               onChange={value => setForm(prev => ({ ...prev, improvements: value }))}
             />
 
-            <div className="save-row">
-              <button onClick={saveReport} disabled={saving}>
-                <Icon name="save" size={17} />
-                {saving ? (language === 'he' ? 'שומר...' : 'Saving...') : selectedReport ? (language === 'he' ? 'עדכן דוח' : 'Update report') : (language === 'he' ? 'שמור דוח שבועי' : 'Save weekly report')}
-              </button>
-              {message && <span>{message}</span>}
-            </div>
             </div>
           </div>
         </section>
@@ -779,35 +781,6 @@ export default function WeeklyReportPage() {
           padding: 0;
         }
         .journal-field textarea::placeholder { color: var(--text3); }
-        .save-row {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          gap: 14px;
-          padding-top: 18px;
-          flex-wrap: wrap;
-        }
-        .save-row button {
-          border: none;
-          background: #0f8d63;
-          color: #fff;
-          border-radius: 12px;
-          padding: 12px 22px;
-          font-family: Heebo, sans-serif;
-          font-weight: 900;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          transition: transform .15s, background .15s;
-        }
-        .save-row button:hover { transform: translateY(-1px); background: #12a875; }
-        .save-row button:disabled { opacity: .7; cursor: wait; transform: none; }
-        .save-row span {
-          color: var(--text3);
-          font-size: 13px;
-          font-weight: 750;
-        }
         .reports-month-card {
           display: flex;
           align-items: center;
@@ -945,7 +918,6 @@ export default function WeeklyReportPage() {
           .metric strong { font-size: 20px; }
           .daily-row { grid-template-columns: minmax(0, 1fr) auto; }
           .daily-row b { grid-column: 1 / -1; }
-          .save-row button { width: 100%; justify-content: center; }
         }
       `}</style>
     </div>
