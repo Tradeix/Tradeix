@@ -473,10 +473,6 @@ export default function WeeklyReportPage() {
             </div>
 
             <div className="journal-area notebook-panel">
-            <div className="section-heading">
-              <span>{language === 'he' ? 'המחברת השבועית' : 'Weekly journal'}</span>
-            </div>
-
             <JournalField
               label={language === 'he' ? 'איך הרגשתי השבוע?' : 'How did this week feel?'}
               placeholder={language === 'he' ? 'לדוגמה: הייתי סבלני יותר, אבל אחרי הפסד שני נכנסתי ללחץ...' : 'Example: I was more patient, but after the second loss I started forcing trades...'}
