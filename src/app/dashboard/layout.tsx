@@ -136,7 +136,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {!hideSelector && activePortfolio && portfolios.length > 0 && (() => {
         const activeColor = getPortfolioColor(activePortfolio)
         return (
-        <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div style={{ display: 'none' }}>
           <div
             onClick={() => setShowMenu(!showMenu)}
             className="active-portfolio-badge"
