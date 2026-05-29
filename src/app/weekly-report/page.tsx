@@ -45,6 +45,10 @@ function addDays(date: Date, days: number) {
   return next
 }
 
+function formsMatch(a: ReportForm, b: ReportForm) {
+  return a.feelings === b.feelings && a.lessons === b.lessons && a.improvements === b.improvements
+}
+
 function toDateInput(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -91,8 +95,11 @@ export default function WeeklyReportPage() {
   const [reports, setReports] = useState<WeeklyReport[]>([])
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
+  const [hasPendingChanges, setHasPendingChanges] = useState(false)
+  const [savingReport, setSavingReport] = useState(false)
   const skipNextAutoSave = useRef(true)
   const autoSaveTimer = useRef<number | null>(null)
+  const formRef = useRef(form)
 
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
@@ -115,6 +122,10 @@ export default function WeeklyReportPage() {
     if (!activePortfolio || !userId) return
     loadMonthReportData()
   }, [activePortfolio?.id, userId, selectedMonth])
+
+  useEffect(() => {
+    formRef.current = form
+  }, [form])
 
   useEffect(() => {
     if (!activePortfolio || !userId || loading) return
@@ -165,6 +176,7 @@ export default function WeeklyReportPage() {
     if (reportError && reportError.code !== 'PGRST116') {
       skipNextAutoSave.current = true
       setForm(EMPTY_FORM)
+      setHasPendingChanges(false)
     } else {
       const report = reportData as WeeklyReport | null
       skipNextAutoSave.current = true
@@ -173,6 +185,7 @@ export default function WeeklyReportPage() {
         lessons: report.lessons || '',
         improvements: report.improvements || '',
       } : EMPTY_FORM)
+      setHasPendingChanges(false)
       if (report) {
         setReports(prev => {
           const exists = prev.some(item => item.id === report.id)
@@ -216,6 +229,7 @@ export default function WeeklyReportPage() {
     if (!activePortfolio || !userId) return
     const hasText = Boolean(formSnapshot.feelings.trim() || formSnapshot.lessons.trim() || formSnapshot.improvements.trim())
     if (!hasText && !selectedReport) return
+    setSavingReport(true)
 
     const payload = {
       user_id: userId,
@@ -256,16 +270,26 @@ export default function WeeklyReportPage() {
         .eq('week_start', payload.week_start)
     }
 
-    if (saveResult.error) {
-      console.error('weekly report save failed', saveResult.error)
-    } else {
-      await loadMonthReportData()
+    try {
+      if (saveResult.error) {
+        console.error('weekly report save failed', saveResult.error)
+      } else {
+        if (formsMatch(formRef.current, formSnapshot)) setHasPendingChanges(false)
+        await loadMonthReportData()
+      }
+    } finally {
+      setSavingReport(false)
     }
   }
 
   async function flushCurrentReport() {
     clearAutoSaveTimer()
-    await saveReport(form)
+    await saveReport(formRef.current)
+  }
+
+  function updateJournalField(field: keyof ReportForm, value: string) {
+    setHasPendingChanges(true)
+    setForm(prev => ({ ...prev, [field]: value }))
   }
 
   async function selectWeek(date: Date) {
@@ -467,20 +491,26 @@ export default function WeeklyReportPage() {
               label={language === 'he' ? 'איך הרגשתי השבוע?' : 'How did this week feel?'}
               placeholder={language === 'he' ? 'לדוגמה: הייתי סבלני יותר, אבל אחרי הפסד שני נכנסתי ללחץ...' : 'Example: I was more patient, but after the second loss I started forcing trades...'}
               value={form.feelings}
-              onChange={value => setForm(prev => ({ ...prev, feelings: value }))}
+              onChange={value => updateJournalField('feelings', value)}
             />
             <JournalField
               label={language === 'he' ? 'מה למדתי מהשבוע?' : 'What did I learn this week?'}
               placeholder={language === 'he' ? 'מה עבד, מה חזר על עצמו, ומה חשוב לזכור לשבוע הבא.' : 'What worked, what repeated, and what should stay top of mind next week.'}
               value={form.lessons}
-              onChange={value => setForm(prev => ({ ...prev, lessons: value }))}
+              onChange={value => updateJournalField('lessons', value)}
             />
             <JournalField
               label={language === 'he' ? 'מה אני משפר בשבוע הבא?' : 'What will I improve next week?'}
               placeholder={language === 'he' ? 'בחר פעולה אחת או שתיים: פחות עסקאות, להמתין לאישור, לעצור אחרי 2 הפסדים...' : 'Choose one or two actions: fewer trades, wait for confirmation, stop after 2 losses...'}
               value={form.improvements}
-              onChange={value => setForm(prev => ({ ...prev, improvements: value }))}
+              onChange={value => updateJournalField('improvements', value)}
             />
+            {hasPendingChanges && (
+              <button className="journal-save-pill" onClick={flushCurrentReport} disabled={savingReport}>
+                <Icon name={savingReport ? 'autorenew' : 'save'} size={14} />
+                <span>{savingReport ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}</span>
+              </button>
+            )}
 
             </div>
           </div>
@@ -630,7 +660,9 @@ export default function WeeklyReportPage() {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
           border-bottom: 1px solid var(--border);
-          background: rgba(255,255,255,.018);
+          background:
+            linear-gradient(90deg, rgba(15,141,99,.08), transparent 34%, rgba(255,255,255,.025)),
+            rgba(255,255,255,.018);
         }
         .weekly-loading {
           color: var(--text3);
@@ -639,22 +671,34 @@ export default function WeeklyReportPage() {
           margin: -12px 0 18px;
         }
         .metric {
-          padding: 18px 16px;
+          position: relative;
+          padding: 20px 18px 19px;
           border-inline-end: 1px solid var(--border);
+          isolation: isolate;
         }
         .metric:last-child { border-inline-end: none; }
+        .metric::before {
+          content: '';
+          position: absolute;
+          inset: 11px 10px;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,.055);
+          background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.012));
+          opacity: .75;
+          z-index: -1;
+        }
         .metric span {
           display: block;
-          color: var(--text3);
+          color: #95a3b8;
           font-size: 12px;
           font-weight: 850;
-          letter-spacing: .06em;
+          letter-spacing: .04em;
           margin-bottom: 7px;
         }
         .metric strong {
           display: block;
           color: var(--text);
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 950;
           line-height: 1;
         }
@@ -666,6 +710,9 @@ export default function WeeklyReportPage() {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0;
           border-bottom: 1px solid var(--border);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.006)),
+            repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 86px);
         }
         .weekly-line-section {
           padding: 28px 30px;
@@ -674,13 +721,13 @@ export default function WeeklyReportPage() {
           border-inline-end: 1px solid var(--border);
         }
         .highlight-sheet {
-          background: rgba(15,141,99,.035);
+          background: linear-gradient(135deg, rgba(15,141,99,.07), rgba(255,255,255,.015) 42%, rgba(15,141,99,.025));
         }
         .section-heading {
           display: flex;
           align-items: center;
           gap: 10px;
-          margin-bottom: 14px;
+          margin-bottom: 18px;
           color: var(--text);
           font-size: 17px;
           font-weight: 950;
@@ -699,8 +746,18 @@ export default function WeeklyReportPage() {
           grid-template-columns: minmax(0, 1fr) auto auto;
           gap: 14px;
           align-items: center;
-          padding: 14px 0;
-          border-bottom: 1px solid var(--border);
+          min-height: 68px;
+          padding: 13px 14px;
+          border-bottom: 1px solid rgba(255,255,255,.075);
+          border-radius: 16px;
+          background: rgba(2,8,14,.18);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+          margin-bottom: 8px;
+        }
+        .daily-row:last-child,
+        .highlight-row:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
         }
         .daily-row strong,
         .highlight-row span {
@@ -722,23 +779,31 @@ export default function WeeklyReportPage() {
           font-size: 13px;
           font-weight: 750;
           white-space: nowrap;
+          padding: 5px 9px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.035);
         }
         .daily-row b,
         .highlight-row b {
           color: var(--text);
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 950;
           white-space: nowrap;
         }
         .journal-area {
-          padding: 28px 30px 26px;
+          padding: 28px 30px 66px;
           position: relative;
-          background: rgba(0,0,0,.08);
+          background:
+            linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.03)),
+            repeating-linear-gradient(0deg, transparent 0 31px, rgba(255,255,255,.025) 31px 32px);
         }
         .journal-field {
           padding: 20px 0 22px;
           border-bottom: 1px solid rgba(255,255,255,.08);
           position: relative;
+        }
+        .journal-field:last-of-type {
+          border-bottom: none;
         }
         .journal-field label {
           display: flex;
@@ -772,6 +837,34 @@ export default function WeeklyReportPage() {
           padding: 0;
         }
         .journal-field textarea::placeholder { color: var(--text3); }
+        .journal-save-pill {
+          position: absolute;
+          left: 24px;
+          bottom: 20px;
+          min-height: 34px;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 0 13px;
+          border: 1px solid rgba(34,197,94,.42);
+          border-radius: 999px;
+          background: linear-gradient(180deg, #19a86c, #0f8d63);
+          color: #fff;
+          box-shadow: 0 12px 24px rgba(15,141,99,.18), inset 0 1px 0 rgba(255,255,255,.22);
+          cursor: pointer;
+          font-family: Heebo, sans-serif;
+          font-size: 12px;
+          font-weight: 900;
+          transition: transform .15s, box-shadow .15s, opacity .15s;
+        }
+        .journal-save-pill:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 16px 30px rgba(15,141,99,.24), inset 0 1px 0 rgba(255,255,255,.24);
+        }
+        .journal-save-pill:disabled {
+          cursor: wait;
+          opacity: .78;
+        }
         .reports-month-card {
           display: flex;
           align-items: center;

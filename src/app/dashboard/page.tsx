@@ -51,7 +51,10 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>(EMPTY_STATS)
   const [portfolioStats, setPortfolioStats] = useState<Stats>(EMPTY_STATS)
   const [portfolioValue, setPortfolioValue] = useState({ currentValue: 0, allTimePnl: 0, totalReturn: 0, maxDrawdown: 0 })
-  const [userName, setUserName] = useState('')
+  const [userName, setUserName] = useState(() => {
+    if (typeof window === 'undefined') return ''
+    return localStorage.getItem('tradeix-dashboard-name') || ''
+  })
   const activePortfolioIdRef = useRef<string | null>(null)
   const supabase = createClient()
 
@@ -120,7 +123,9 @@ export default function DashboardPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        setUserName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || '')
+        const nextName = user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || ''
+        setUserName(nextName)
+        if (nextName) localStorage.setItem('tradeix-dashboard-name', nextName)
       }
     })
   }, [])
@@ -270,15 +275,16 @@ export default function DashboardPage() {
       : portfolioStats.winRate >= 30
         ? '#f59e0b'
         : '#ef4444'
+  const displayName = userName || (language === 'he' ? 'Trader' : 'Trader')
 
   /* ── card base style ── */
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
   return (
-    <div style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
+    <div className="dashboard-page" style={{ fontFamily: 'Heebo, sans-serif', color: 'var(--text)' }}>
 
       {/* ── WELCOME SECTION ── */}
-      {userName && (() => {
+      {(() => {
         const locale = language === 'he' ? 'he-IL' : 'en-US'
         const dateLabel = currentTime.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: timezone })
         const timeLabel = currentTime.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: timezone })
@@ -312,7 +318,7 @@ export default function DashboardPage() {
                   fontFamily: 'Heebo, sans-serif', lineHeight: 1.04,
                   textShadow: '0 10px 28px rgba(0,0,0,0.22)',
                 }}>
-                  {getGreeting()}, {userName}
+                  {getGreeting()}, {displayName}
                 </h2>
                 <div className="welcome-meta-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '9px', flexWrap: 'wrap', color: 'rgba(244,247,251,0.86)' }}>
                   <span className="welcome-date" style={{
@@ -356,7 +362,6 @@ export default function DashboardPage() {
                   fontSize: '15.5px', fontWeight: '700', color: 'rgba(238,240,246,0.82)',
                   margin: 0, lineHeight: 1.55,
                   fontFamily: 'Heebo, sans-serif',
-                  animation: 'quoteFade 18s ease-in-out',
                   direction: language === 'he' ? 'rtl' : 'ltr',
                 }}>
                   {currentQuote}
@@ -708,6 +713,15 @@ export default function DashboardPage() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .dashboard-page .section-anim,
+        .dashboard-page .stat-anim,
+        .dashboard-page .trade-row-anim {
+          opacity: 1 !important;
+          animation: none !important;
+          transform: none !important;
+          filter: none !important;
+        }
 
         .welcome-stat-divider {
           position: relative;
