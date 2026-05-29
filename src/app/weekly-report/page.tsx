@@ -372,13 +372,6 @@ export default function WeeklyReportPage() {
 
     return Array.from(weeks.values()).sort((a, b) => b.weekStart.getTime() - a.weekStart.getTime())
   }, [selectedMonth, currentTradingWeek, monthTrades, reports])
-  const monthWeeksAscending = useMemo(() => [...generatedReports].sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime()), [generatedReports])
-  const selectedMonthWeekIndex = monthWeeksAscending.findIndex(report => report.key === toDateInput(selectedWeek))
-  const previousMonthWeek = selectedMonthWeekIndex > 0 ? monthWeeksAscending[selectedMonthWeekIndex - 1] : null
-  const nextMonthWeek = selectedMonthWeekIndex >= 0 && selectedMonthWeekIndex < monthWeeksAscending.length - 1
-    ? monthWeeksAscending[selectedMonthWeekIndex + 1]
-    : null
-
   if (portfoliosLoaded && !activePortfolio) {
     return (
       <div dir={isRTL ? 'rtl' : 'ltr'}>
@@ -426,26 +419,10 @@ export default function WeeklyReportPage() {
 
           <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade">
             <div className="weekly-toolbar">
-              {previousMonthWeek ? (
-                <button className="weekly-nav-btn" onClick={() => selectWeek(previousMonthWeek.weekStart)} aria-label={language === 'he' ? 'שבוע קודם' : 'Previous week'}>
-                  <Icon name={isRTL ? 'chevron_right' : 'chevron_left'} size={18} />
-                </button>
-              ) : (
-                <div className="weekly-nav-spacer" aria-hidden="true" />
-              )}
-
               <div className="weekly-title-block">
                 <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>
                 <h3>{weekLabel}</h3>
               </div>
-
-              {nextMonthWeek ? (
-                <button className="weekly-nav-btn" onClick={() => selectWeek(nextMonthWeek.weekStart)} aria-label={language === 'he' ? 'שבוע הבא' : 'Next week'}>
-                  <Icon name={isRTL ? 'chevron_left' : 'chevron_right'} size={18} />
-                </button>
-              ) : (
-                <div className="weekly-nav-spacer" aria-hidden="true" />
-              )}
             </div>
 
             <div className="weekly-metrics">
@@ -611,35 +588,12 @@ export default function WeeklyReportPage() {
           }
         }
         .weekly-toolbar {
-          display: grid;
-          grid-template-columns: 42px minmax(0, 1fr) 42px;
-          gap: 12px;
+          display: flex;
+          justify-content: flex-end;
           align-items: center;
           padding: 24px 30px 22px;
           border-bottom: 1px solid var(--border);
           background: rgba(0,0,0,.12);
-        }
-        .weekly-nav-btn {
-          width: 42px;
-          height: 42px;
-          border-radius: 12px;
-          border: 1px solid var(--border);
-          background: transparent;
-          color: var(--text2);
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: color .15s, border-color .15s, background .15s;
-        }
-        .weekly-nav-spacer {
-          width: 42px;
-          height: 42px;
-        }
-        .weekly-nav-btn:hover {
-          color: #0f8d63;
-          border-color: rgba(15,141,99,.35);
-          background: rgba(15,141,99,.08);
         }
         .weekly-title-block { min-width: 0; }
         .weekly-kicker {
@@ -674,19 +628,8 @@ export default function WeeklyReportPage() {
           position: relative;
           padding: 20px 18px 19px;
           border-inline-end: 1px solid var(--border);
-          isolation: isolate;
         }
         .metric:last-child { border-inline-end: none; }
-        .metric::before {
-          content: '';
-          position: absolute;
-          inset: 11px 10px;
-          border-radius: 16px;
-          border: 1px solid rgba(255,255,255,.055);
-          background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.012));
-          opacity: .75;
-          z-index: -1;
-        }
         .metric span {
           display: block;
           color: #95a3b8;
@@ -715,6 +658,8 @@ export default function WeeklyReportPage() {
             repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 86px);
         }
         .weekly-line-section {
+          display: flex;
+          flex-direction: column;
           padding: 28px 30px;
         }
         .daily-sheet {
@@ -740,6 +685,18 @@ export default function WeeklyReportPage() {
           background: #0f8d63;
           box-shadow: 0 0 0 5px rgba(15,141,99,.1);
         }
+        .daily-list,
+        .highlight-list {
+          flex: 1;
+          display: grid;
+          gap: 8px;
+        }
+        .daily-list {
+          grid-template-rows: repeat(5, minmax(68px, 1fr));
+        }
+        .highlight-list {
+          grid-template-rows: repeat(3, minmax(68px, 1fr));
+        }
         .daily-row,
         .highlight-row {
           display: grid;
@@ -752,12 +709,10 @@ export default function WeeklyReportPage() {
           border-radius: 16px;
           background: rgba(2,8,14,.18);
           box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
-          margin-bottom: 8px;
         }
         .daily-row:last-child,
         .highlight-row:last-child {
           border-bottom: none;
-          margin-bottom: 0;
         }
         .daily-row strong,
         .highlight-row span {
@@ -979,7 +934,6 @@ export default function WeeklyReportPage() {
             grid-template-areas: "report";
             gap: 20px;
           }
-          .weekly-toolbar { grid-template-columns: 42px minmax(0, 1fr) 42px; }
           .notebook-content-grid { grid-template-columns: 1fr; }
           .daily-sheet { border-inline-end: none; border-bottom: 1px solid var(--border); }
           .weekly-report-sidebar { display: none; }
