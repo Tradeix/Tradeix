@@ -16,6 +16,8 @@ type ReportForm = {
   improvements: string
 }
 
+type DirtyFields = Record<keyof ReportForm, boolean>
+
 type GeneratedWeekReport = {
   key: string
   weekStart: Date
@@ -26,6 +28,7 @@ type GeneratedWeekReport = {
 }
 
 const EMPTY_FORM: ReportForm = { feelings: '', lessons: '', improvements: '' }
+const CLEAN_FIELDS: DirtyFields = { feelings: false, lessons: false, improvements: false }
 
 function atLocalMidnight(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate())
@@ -95,11 +98,11 @@ export default function WeeklyReportPage() {
   const [reports, setReports] = useState<WeeklyReport[]>([])
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
-  const [hasPendingChanges, setHasPendingChanges] = useState(false)
-  const [savingReport, setSavingReport] = useState(false)
-  const skipNextAutoSave = useRef(true)
-  const autoSaveTimer = useRef<number | null>(null)
+  const [dirtyFields, setDirtyFields] = useState<DirtyFields>(CLEAN_FIELDS)
+  const [savingField, setSavingField] = useState<keyof ReportForm | null>(null)
+  const [capturingReport, setCapturingReport] = useState(false)
   const formRef = useRef(form)
+  const reportRef = useRef<HTMLDivElement | null>(null)
 
   const weekEnd = useMemo(() => addDays(selectedWeek, 4), [selectedWeek])
   const nextWeekStart = useMemo(() => addDays(selectedWeek, 7), [selectedWeek])
@@ -127,30 +130,6 @@ export default function WeeklyReportPage() {
     formRef.current = form
   }, [form])
 
-  useEffect(() => {
-    if (!activePortfolio || !userId || loading) return
-    if (skipNextAutoSave.current) {
-      skipNextAutoSave.current = false
-      return
-    }
-
-    const hasText = Boolean(form.feelings.trim() || form.lessons.trim() || form.improvements.trim())
-    if (!hasText && !selectedReport) return
-
-    clearAutoSaveTimer()
-    autoSaveTimer.current = window.setTimeout(() => {
-      saveReport(form)
-    }, 700)
-
-    return clearAutoSaveTimer
-  }, [form, activePortfolio?.id, userId, loading, selectedWeek, selectedReport?.id])
-
-  function clearAutoSaveTimer() {
-    if (!autoSaveTimer.current) return
-    window.clearTimeout(autoSaveTimer.current)
-    autoSaveTimer.current = null
-  }
-
   async function loadWeek() {
     if (!activePortfolio || !userId) return
     setLoading(true)
@@ -174,18 +153,16 @@ export default function WeeklyReportPage() {
       .maybeSingle()
 
     if (reportError && reportError.code !== 'PGRST116') {
-      skipNextAutoSave.current = true
       setForm(EMPTY_FORM)
-      setHasPendingChanges(false)
+      setDirtyFields(CLEAN_FIELDS)
     } else {
       const report = reportData as WeeklyReport | null
-      skipNextAutoSave.current = true
       setForm(report ? {
         feelings: report.feelings || '',
         lessons: report.lessons || '',
         improvements: report.improvements || '',
       } : EMPTY_FORM)
-      setHasPendingChanges(false)
+      setDirtyFields(CLEAN_FIELDS)
       if (report) {
         setReports(prev => {
           const exists = prev.some(item => item.id === report.id)
@@ -229,7 +206,6 @@ export default function WeeklyReportPage() {
     if (!activePortfolio || !userId) return
     const hasText = Boolean(formSnapshot.feelings.trim() || formSnapshot.lessons.trim() || formSnapshot.improvements.trim())
     if (!hasText && !selectedReport) return
-    setSavingReport(true)
 
     const payload = {
       user_id: userId,
@@ -274,22 +250,52 @@ export default function WeeklyReportPage() {
       if (saveResult.error) {
         console.error('weekly report save failed', saveResult.error)
       } else {
-        if (formsMatch(formRef.current, formSnapshot)) setHasPendingChanges(false)
+        if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
         await loadMonthReportData()
       }
-    } finally {
-      setSavingReport(false)
-    }
+    } finally {}
   }
 
   async function flushCurrentReport() {
-    clearAutoSaveTimer()
     await saveReport(formRef.current)
   }
 
   function updateJournalField(field: keyof ReportForm, value: string) {
-    setHasPendingChanges(true)
+    setDirtyFields(prev => ({ ...prev, [field]: true }))
     setForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  async function saveJournalField(field: keyof ReportForm) {
+    setSavingField(field)
+    try {
+      await saveReport(formRef.current)
+    } finally {
+      setSavingField(null)
+    }
+  }
+
+  async function downloadReportImage() {
+    if (!reportRef.current || capturingReport) return
+    setCapturingReport(true)
+    try {
+      await flushCurrentReport()
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(reportRef.current, {
+        backgroundColor: '#070a0f',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        ignoreElements: element => element.classList?.contains('no-report-capture') || false,
+      })
+      const link = document.createElement('a')
+      link.download = `tradeix-weekly-report-${toDateInput(selectedWeek)}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    } catch (error) {
+      console.error('weekly report screenshot failed', error)
+    } finally {
+      setCapturingReport(false)
+    }
   }
 
   async function selectWeek(date: Date) {
@@ -417,8 +423,12 @@ export default function WeeklyReportPage() {
             </div>
           )}
 
-          <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade">
+          <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade" ref={reportRef}>
             <div className="weekly-toolbar">
+              <button className="weekly-screenshot-btn no-report-capture" onClick={downloadReportImage} disabled={capturingReport}>
+                <Icon name={capturingReport ? 'autorenew' : 'screenshot_monitor'} size={16} />
+                <span>{capturingReport ? (language === 'he' ? 'מצלם...' : 'Capturing...') : (language === 'he' ? 'צילום מסך' : 'Screenshot')}</span>
+              </button>
               <div className="weekly-title-block">
                 <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>
                 <h3>{weekLabel}</h3>
@@ -469,25 +479,28 @@ export default function WeeklyReportPage() {
               placeholder={language === 'he' ? 'לדוגמה: הייתי סבלני יותר, אבל אחרי הפסד שני נכנסתי ללחץ...' : 'Example: I was more patient, but after the second loss I started forcing trades...'}
               value={form.feelings}
               onChange={value => updateJournalField('feelings', value)}
+              isDirty={dirtyFields.feelings}
+              isSaving={savingField === 'feelings'}
+              onSave={() => saveJournalField('feelings')}
             />
             <JournalField
               label={language === 'he' ? 'מה למדתי מהשבוע?' : 'What did I learn this week?'}
               placeholder={language === 'he' ? 'מה עבד, מה חזר על עצמו, ומה חשוב לזכור לשבוע הבא.' : 'What worked, what repeated, and what should stay top of mind next week.'}
               value={form.lessons}
               onChange={value => updateJournalField('lessons', value)}
+              isDirty={dirtyFields.lessons}
+              isSaving={savingField === 'lessons'}
+              onSave={() => saveJournalField('lessons')}
             />
             <JournalField
               label={language === 'he' ? 'מה אני משפר בשבוע הבא?' : 'What will I improve next week?'}
               placeholder={language === 'he' ? 'בחר פעולה אחת או שתיים: פחות עסקאות, להמתין לאישור, לעצור אחרי 2 הפסדים...' : 'Choose one or two actions: fewer trades, wait for confirmation, stop after 2 losses...'}
               value={form.improvements}
               onChange={value => updateJournalField('improvements', value)}
+              isDirty={dirtyFields.improvements}
+              isSaving={savingField === 'improvements'}
+              onSave={() => saveJournalField('improvements')}
             />
-            {hasPendingChanges && (
-              <button className="journal-save-pill" onClick={flushCurrentReport} disabled={savingReport}>
-                <Icon name={savingReport ? 'autorenew' : 'save'} size={14} />
-                <span>{savingReport ? (language === 'he' ? 'שומר...' : 'Saving...') : (language === 'he' ? 'שמור' : 'Save')}</span>
-              </button>
-            )}
 
             </div>
           </div>
@@ -589,13 +602,47 @@ export default function WeeklyReportPage() {
         }
         .weekly-toolbar {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           align-items: center;
+          gap: 18px;
+          direction: ltr;
           padding: 24px 30px 22px;
           border-bottom: 1px solid var(--border);
           background: rgba(0,0,0,.12);
         }
-        .weekly-title-block { min-width: 0; }
+        .weekly-title-block {
+          min-width: 0;
+          text-align: end;
+          direction: ${isRTL ? 'rtl' : 'ltr'};
+        }
+        .weekly-screenshot-btn {
+          min-height: 38px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 14px;
+          border: 1px solid rgba(255,255,255,.09);
+          border-radius: 12px;
+          background: rgba(255,255,255,.035);
+          color: var(--text2);
+          cursor: pointer;
+          font-family: Heebo, sans-serif;
+          font-size: 12px;
+          font-weight: 900;
+          white-space: nowrap;
+          transition: color .15s, border-color .15s, background .15s, transform .15s, opacity .15s;
+        }
+        .weekly-screenshot-btn svg { color: #0f8d63; }
+        .weekly-screenshot-btn:hover:not(:disabled) {
+          color: var(--text);
+          border-color: rgba(15,141,99,.34);
+          background: rgba(15,141,99,.095);
+          transform: translateY(-1px);
+        }
+        .weekly-screenshot-btn:disabled {
+          cursor: wait;
+          opacity: .7;
+        }
         .weekly-kicker {
           color: #0f8d63;
           font-size: 12px;
@@ -746,7 +793,7 @@ export default function WeeklyReportPage() {
           white-space: nowrap;
         }
         .journal-area {
-          padding: 28px 30px 66px;
+          padding: 28px 30px 26px;
           position: relative;
           background:
             linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.03)),
@@ -789,34 +836,31 @@ export default function WeeklyReportPage() {
           font-family: Heebo, sans-serif;
           font-size: 15px;
           line-height: 1.8;
-          padding: 0;
+          padding: 0 0 24px;
         }
         .journal-field textarea::placeholder { color: var(--text3); }
-        .journal-save-pill {
+        .journal-save-check {
           position: absolute;
-          left: 24px;
-          bottom: 20px;
-          min-height: 34px;
+          left: 0;
+          bottom: 16px;
+          width: 32px;
+          height: 32px;
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          padding: 0 13px;
+          justify-content: center;
           border: 1px solid rgba(34,197,94,.42);
-          border-radius: 999px;
+          border-radius: 10px;
           background: linear-gradient(180deg, #19a86c, #0f8d63);
           color: #fff;
           box-shadow: 0 12px 24px rgba(15,141,99,.18), inset 0 1px 0 rgba(255,255,255,.22);
           cursor: pointer;
-          font-family: Heebo, sans-serif;
-          font-size: 12px;
-          font-weight: 900;
           transition: transform .15s, box-shadow .15s, opacity .15s;
         }
-        .journal-save-pill:hover:not(:disabled) {
+        .journal-save-check:hover:not(:disabled) {
           transform: translateY(-1px);
           box-shadow: 0 16px 30px rgba(15,141,99,.24), inset 0 1px 0 rgba(255,255,255,.24);
         }
-        .journal-save-pill:disabled {
+        .journal-save-check:disabled {
           cursor: wait;
           opacity: .78;
         }
@@ -977,11 +1021,32 @@ function Highlight({ label, value, tone = 'neutral' }: { label: string; value: s
   )
 }
 
-function JournalField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (value: string) => void }) {
+function JournalField({
+  label,
+  placeholder,
+  value,
+  onChange,
+  isDirty,
+  isSaving,
+  onSave,
+}: {
+  label: string
+  placeholder: string
+  value: string
+  onChange: (value: string) => void
+  isDirty: boolean
+  isSaving: boolean
+  onSave: () => void
+}) {
   return (
     <div className="journal-field">
       <label>{label}</label>
       <textarea value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} />
+      {isDirty && (
+        <button className="journal-save-check no-report-capture" onClick={onSave} disabled={isSaving} aria-label="Save field">
+          <Icon name={isSaving ? 'autorenew' : 'check'} size={16} />
+        </button>
+      )}
     </div>
   )
 }
