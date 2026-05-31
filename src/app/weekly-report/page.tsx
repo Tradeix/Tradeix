@@ -956,28 +956,31 @@ export default function WeeklyReportPage() {
         }
         .highlight-row {
           display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 13px;
-          min-height: 92px;
-          padding: 18px 20px;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          min-height: 68px;
+          padding: 13px 14px;
           border: 1px solid rgba(255,255,255,.09);
-          border-radius: 20px;
+          border-bottom: 1px solid rgba(255,255,255,.075);
+          border-radius: 16px;
           background:
-            radial-gradient(circle at 8% 18%, rgba(123,75,255,.13), transparent 32%),
-            linear-gradient(135deg, rgba(255,255,255,.072), rgba(255,255,255,.024));
-          box-shadow:
-            inset 0 1px 0 rgba(255,255,255,.07),
-            0 16px 34px rgba(0,0,0,.18);
+            linear-gradient(90deg, rgba(123,75,255,.06), rgba(255,255,255,.018) 45%, rgba(15,141,99,.035)),
+            rgba(2,8,14,.18);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
         }
         .highlight-head {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
+          justify-content: flex-start;
+          gap: 10px;
+          min-width: 210px;
+          flex: 0 0 44%;
         }
-        .highlight-head > div:first-child {
+        .highlight-head > div:not(.highlight-icon) {
           min-width: 0;
+          text-align: inherit;
         }
         .highlight-head span {
           display: block;
@@ -988,7 +991,7 @@ export default function WeeklyReportPage() {
         }
         .highlight-head b {
           color: var(--text);
-          font-size: 19px;
+          font-size: 18px;
           font-weight: 950;
           line-height: 1;
         }
@@ -996,12 +999,12 @@ export default function WeeklyReportPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 44px;
-          height: 44px;
+          width: 38px;
+          height: 38px;
           flex: 0 0 auto;
-          border-radius: 16px;
+          border-radius: 13px;
           color: #a56bff;
-          font-size: 23px;
+          font-size: 21px;
           font-weight: 950;
           background: rgba(255,255,255,.035);
           box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
@@ -1009,20 +1012,22 @@ export default function WeeklyReportPage() {
         .highlight-row[data-tone-card="good"] .highlight-icon { color: #22c55e; }
         .highlight-row[data-tone-card="bad"] .highlight-icon { color: #ef4444; }
         .highlight-gauge-wrap {
-          display: grid;
-          grid-template-columns: 92px minmax(0, 1fr);
-          align-items: end;
-          gap: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 12px;
+          min-width: 0;
+          flex: 1;
         }
         .highlight-gauge {
-          width: 92px;
-          height: 54px;
+          width: 82px;
+          height: 46px;
           overflow: hidden;
         }
         .highlight-gauge path {
           fill: none;
           stroke-linecap: round;
-          stroke-width: 8;
+          stroke-width: 7;
         }
         .highlight-gauge-track { stroke: rgba(255,255,255,.12); }
         .highlight-gauge-win {
@@ -1037,6 +1042,7 @@ export default function WeeklyReportPage() {
           display: flex;
           gap: 7px;
           justify-content: flex-end;
+          flex: 0 0 auto;
         }
         .highlight-chips i {
           min-width: 38px;
@@ -1054,6 +1060,8 @@ export default function WeeklyReportPage() {
         .highlight-bar-panel {
           display: grid;
           gap: 8px;
+          min-width: 0;
+          flex: 1;
         }
         .highlight-bar-labels {
           display: flex;
@@ -1071,7 +1079,7 @@ export default function WeeklyReportPage() {
         .highlight-bar-labels small[data-tone="good"] { color: #22c55e; }
         .highlight-bar-labels small[data-tone="bad"] { color: #ef4444; }
         .highlight-performance-bar {
-          height: 12px;
+          height: 11px;
           overflow: hidden;
           border-radius: 999px;
           background: rgba(255,255,255,.09);
@@ -1318,6 +1326,14 @@ export default function WeeklyReportPage() {
           .metric strong { font-size: 20px; }
           .daily-row { grid-template-columns: minmax(0, 1fr) auto; }
           .daily-row b { grid-column: 1 / -1; }
+          .highlight-row { gap: 10px; }
+          .highlight-head { min-width: 0; flex: 0 0 42%; }
+          .highlight-icon { width: 32px; height: 32px; border-radius: 11px; font-size: 18px; }
+          .highlight-head span { font-size: 12px; }
+          .highlight-head b { font-size: 16px; }
+          .highlight-gauge { width: 64px; height: 38px; }
+          .highlight-chips { gap: 4px; }
+          .highlight-chips i { min-width: 30px; padding: 2px 5px; font-size: 10px; }
         }
       `}</style>
     </div>
@@ -1350,11 +1366,11 @@ function Highlight({
   return (
     <div className="highlight-row" data-kind={tone === 'split' ? 'split' : 'range'} data-tone-card={tone}>
       <div className="highlight-head">
+        <div className="highlight-icon">{tone === 'split' ? '%' : tone === 'bad' ? '-' : '+'}</div>
         <div>
           <span>{label}</span>
           <b data-tone={tone === 'split' ? 'neutral' : tone}>{value}</b>
         </div>
-        <div className="highlight-icon">{tone === 'split' ? '%' : tone === 'bad' ? '-' : '+'}</div>
       </div>
       {tone === 'split' ? (
         <div className="highlight-gauge-wrap" aria-hidden="true">
