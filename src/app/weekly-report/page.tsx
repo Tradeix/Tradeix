@@ -576,21 +576,24 @@ export default function WeeklyReportPage() {
 
   if (portfoliosLoaded && !activePortfolio) {
     return (
-      <div dir={isRTL ? 'rtl' : 'ltr'}>
+      <div dir={isRTL ? 'rtl' : 'ltr'} style={{ fontFamily: 'Heebo, sans-serif' }}>
         <PageHeader
           title={language === 'he' ? 'דוח שבועי' : 'Weekly Report'}
           subtitle={language === 'he' ? 'מחברת שבועית לשיפור המסחר שלך' : 'A weekly trading journal for better decisions'}
-          icon="edit_note"
+          icon="menu_book"
         />
-        <div style={{ textAlign: 'center', padding: '64px 18px', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text)', marginBottom: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Icon name="folder_open" size={32} color="var(--text3)" />
+          </div>
+          <div style={{ fontSize: '21px', fontWeight: '700', marginBottom: '10px', color: 'var(--text)' }}>
             {language === 'he' ? 'אין תיקים עדיין' : 'No portfolios yet'}
           </div>
-          <p style={{ color: 'var(--text3)', margin: '0 0 22px', fontWeight: 650 }}>
-            {language === 'he' ? 'צריך תיק פעיל כדי ליצור דוח שבועי.' : 'Create an active portfolio to write weekly reports.'}
-          </p>
-          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/settings?section=portfolios') }} style={{ background: '#0f8d63', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 24px', fontWeight: 850, cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
-            {language === 'he' ? 'צור תיק חדש' : 'Create portfolio'}
+          <div style={{ fontSize: '14px', color: 'var(--text3)', marginBottom: '24px' }}>
+            {language === 'he' ? 'צור תיק ראשון כדי להתחיל' : 'Create your first portfolio to get started'}
+          </div>
+          <button onClick={() => { localStorage.setItem('tradeix-open-new-portfolio', '1'); router.push('/settings?section=portfolios') }} style={{ background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Heebo, sans-serif' }}>
+            {language === 'he' ? '+ צור תיק חדש' : '+ Create Portfolio'}
           </button>
         </div>
       </div>
