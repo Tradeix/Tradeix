@@ -163,6 +163,43 @@ create trigger touch_weekly_report_updated_at
   for each row execute procedure public.touch_weekly_report_updated_at();
 
 
+-- SUPPORT REPORTS
+create table if not exists public.support_reports (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  category text not null check (category in ('billing', 'renewal', 'bug', 'not_working', 'other')),
+  full_name text not null,
+  email text not null,
+  message text not null,
+  status text not null default 'open' check (status in ('open', 'in_progress', 'resolved', 'closed')),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table public.support_reports enable row level security;
+
+create policy "Users can create own support reports"
+  on public.support_reports for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can view own support reports"
+  on public.support_reports for select
+  using (auth.uid() = user_id);
+
+create or replace function public.touch_support_report_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists touch_support_report_updated_at on public.support_reports;
+create trigger touch_support_report_updated_at
+  before update on public.support_reports
+  for each row execute procedure public.touch_support_report_updated_at();
+
+
 -- ── STORAGE BUCKETS ──
 -- צור את הבאקטים האלה ב Supabase > Storage:
 -- 1. "trade-images" — public

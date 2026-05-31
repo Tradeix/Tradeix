@@ -20,7 +20,16 @@ type BillingProfile = {
   is_admin?: boolean | null
 }
 
-type SettingsSection = 'profile' | 'preferences' | 'subscription' | 'portfolios'
+type SettingsSection = 'profile' | 'preferences' | 'support' | 'subscription' | 'portfolios'
+type SupportCategory = 'billing' | 'renewal' | 'bug' | 'not_working' | 'other'
+
+const SUPPORT_CATEGORY_OPTIONS: { value: SupportCategory; he: string; en: string }[] = [
+  { value: 'billing', he: 'בעיית תשלום', en: 'Payment issue' },
+  { value: 'renewal', he: 'חידוש מנוי', en: 'Subscription renewal' },
+  { value: 'bug', he: 'באג באתר', en: 'Site bug' },
+  { value: 'not_working', he: 'משהו לא עובד', en: 'Something is not working' },
+  { value: 'other', he: 'אחר', en: 'Other' },
+]
 
 const TIMEZONE_OPTIONS: { value: AppTimezone; he: string; en: string }[] = [
   { value: 'Asia/Jerusalem', he: 'ישראל - ירושלים', en: 'Israel - Jerusalem' },
@@ -54,6 +63,13 @@ export default function SettingsPage() {
   const [syncingBilling, setSyncingBilling] = useState(false)
   const [activeSettingsSection, setActiveSettingsSection] = useState<SettingsSection>('profile')
   const [mobileSettingsContentOpen, setMobileSettingsContentOpen] = useState(false)
+  const [supportForm, setSupportForm] = useState({
+    category: 'bug' as SupportCategory,
+    fullName: '',
+    email: '',
+    message: '',
+  })
+  const [sendingSupportReport, setSendingSupportReport] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const supabase = useMemo(() => createClient(), [])
   const isLight = theme === 'light'
@@ -82,6 +98,11 @@ export default function SettingsPage() {
       setNickname(currentNickname)
       setSavedNickname(currentNickname)
       setAvatarUrl(user?.user_metadata?.avatar_url || null)
+      setSupportForm(prev => ({
+        ...prev,
+        fullName: prev.fullName || currentNickname || user?.user_metadata?.name || '',
+        email: prev.email || user?.email || '',
+      }))
 
       if (user) {
         const response = await fetch('/api/billing/status', { cache: 'no-store' })
@@ -220,6 +241,48 @@ export default function SettingsPage() {
       toast.error(nextLang === 'he' ? 'שגיאה בשמירה' : 'Save failed')
     } finally {
       setSavingPrefs(false)
+    }
+  }
+
+  async function handleSubmitSupportReport() {
+    const fullName = supportForm.fullName.trim()
+    const email = supportForm.email.trim()
+    const message = supportForm.message.trim()
+
+    if (!fullName) {
+      toast.error(language === 'he' ? 'נא להזין שם מלא' : 'Please enter your full name')
+      return
+    }
+    if (!email || !email.includes('@')) {
+      toast.error(language === 'he' ? 'נא להזין מייל תקין' : 'Please enter a valid email')
+      return
+    }
+    if (message.length < 10) {
+      toast.error(language === 'he' ? 'נא לפרט קצת יותר על התקלה' : 'Please add a little more detail')
+      return
+    }
+
+    setSendingSupportReport(true)
+    try {
+      const response = await fetch('/api/support/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: supportForm.category,
+          fullName,
+          email,
+          message,
+        }),
+      })
+      const payload = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(payload?.error || 'Report failed')
+
+      toast.success(language === 'he' ? 'הדיווח נשלח בהצלחה' : 'Report sent successfully')
+      setSupportForm(prev => ({ ...prev, category: 'bug', message: '' }))
+    } catch (error: any) {
+      toast.error(error?.message || (language === 'he' ? 'שליחת הדיווח נכשלה' : 'Report failed'))
+    } finally {
+      setSendingSupportReport(false)
     }
   }
 
@@ -425,6 +488,13 @@ export default function SettingsPage() {
       icon: 'cases',
       title: language === 'he' ? 'תיקים' : 'Portfolios',
       subtitle: language === 'he' ? 'ניהול תיקי מסחר' : 'Trading portfolio setup',
+      group: language === 'he' ? 'כללי' : 'General',
+    },
+    {
+      id: 'support' as SettingsSection,
+      icon: 'support_agent',
+      title: language === 'he' ? 'דווח על תקלה' : 'Report an issue',
+      subtitle: language === 'he' ? 'תשלום, חידוש, באג או משהו שלא עובד' : 'Billing, renewal, bugs or broken flows',
       group: language === 'he' ? 'כללי' : 'General',
     },
     ...(!isAdmin ? [{
@@ -652,6 +722,82 @@ export default function SettingsPage() {
         )}
 
         {/* ── CARD 3: Subscription ── */}
+        {activeSettingsSection === 'support' && (
+        <div style={{ ...glass }} className="settings-card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(15,141,99,0.15)', border: '1px solid rgba(15,141,99,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="support_agent" size={16} color="#0f8d63" />
+            </div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text)' }}>{language === 'he' ? 'דווח על תקלה' : 'Report an issue'}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'תשלום, חידוש, באג או משהו שלא עובד' : 'Billing, renewal, bugs or broken flows'}</div>
+            </div>
+          </div>
+
+          <div className="support-form">
+            <label className="support-field support-field--full">
+              <span>{language === 'he' ? 'סוג התקלה' : 'Issue type'}</span>
+              <select
+                className="settings-input"
+                value={supportForm.category}
+                onChange={e => setSupportForm(prev => ({ ...prev, category: e.target.value as SupportCategory }))}
+              >
+                {SUPPORT_CATEGORY_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {language === 'he' ? option.he : option.en}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="support-field">
+              <span>{language === 'he' ? 'שם מלא' : 'Full name'}</span>
+              <input
+                className="settings-input"
+                value={supportForm.fullName}
+                onChange={e => setSupportForm(prev => ({ ...prev, fullName: e.target.value }))}
+                placeholder={language === 'he' ? 'השם שלך' : 'Your name'}
+              />
+            </label>
+
+            <label className="support-field">
+              <span>{language === 'he' ? 'מייל לחזרה' : 'Reply email'}</span>
+              <input
+                className="settings-input"
+                type="email"
+                value={supportForm.email}
+                onChange={e => setSupportForm(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="name@email.com"
+              />
+            </label>
+
+            <label className="support-field support-field--full">
+              <span>{language === 'he' ? 'פירוט התקלה' : 'Issue details'}</span>
+              <textarea
+                className="settings-input support-textarea"
+                value={supportForm.message}
+                onChange={e => setSupportForm(prev => ({ ...prev, message: e.target.value }))}
+                placeholder={language === 'he' ? 'כתוב כאן מה קרה, באיזה עמוד, ומה ניסית לעשות...' : 'Tell us what happened, where it happened, and what you tried to do...'}
+              />
+            </label>
+          </div>
+
+          <button onClick={handleSubmitSupportReport} disabled={sendingSupportReport} style={{
+            width: '100%', background: '#0f8d63',
+            color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
+            fontSize: '14px', fontWeight: '700',
+            cursor: sendingSupportReport ? 'wait' : 'pointer',
+            opacity: sendingSupportReport ? 0.7 : 1,
+            fontFamily: 'Heebo, sans-serif',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            marginTop: '16px',
+          }}>
+            <Icon name="support_agent" size={16} color="#fff" strokeWidth={2.5} />
+            {sendingSupportReport ? (language === 'he' ? 'שולח...' : 'Sending...') : (language === 'he' ? 'שליחת דיווח' : 'Send report')}
+          </button>
+        </div>
+        )}
+
         {activeSettingsSection === 'portfolios' && (
         <div style={{ ...glass }} className="settings-card settings-card--wide">
           <PortfolioSettings embedded />
@@ -1129,6 +1275,56 @@ export default function SettingsPage() {
           background: #070b12;
           color: #f4f7fb;
         }
+        .support-form {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+        }
+        .support-field {
+          display: grid;
+          gap: 7px;
+        }
+        .support-field--full {
+          grid-column: 1 / -1;
+        }
+        .support-field span {
+          color: var(--text3);
+          font-size: 12px;
+          font-weight: 850;
+        }
+        .settings-input {
+          width: 100%;
+          min-height: 48px;
+          border-radius: 12px;
+          border: 1px solid rgba(15,141,99,0.24);
+          background: rgba(255,255,255,0.035);
+          color: var(--text);
+          padding: 0 14px;
+          font-family: Heebo, sans-serif;
+          font-size: 14px;
+          font-weight: 800;
+          outline: none;
+          transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+        }
+        .settings-input:focus {
+          border-color: rgba(15,141,99,0.58);
+          box-shadow: 0 0 0 3px rgba(15,141,99,0.12);
+          background: rgba(255,255,255,0.05);
+        }
+        .settings-input::placeholder {
+          color: var(--text3);
+          opacity: 0.72;
+        }
+        .settings-input option {
+          background: #070b12;
+          color: #f4f7fb;
+        }
+        .support-textarea {
+          min-height: 138px;
+          padding: 13px 14px;
+          resize: vertical;
+          line-height: 1.55;
+        }
         .plan-choice-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1368,6 +1564,7 @@ export default function SettingsPage() {
           }
         }
         @media (max-width: 520px) {
+          .support-form { grid-template-columns: 1fr; }
           .plan-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
           .plan-choice-btn { min-height: 66px !important; padding: 9px 7px !important; }
           .plan-choice-btn > svg { width: 30px; height: 30px; }
