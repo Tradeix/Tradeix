@@ -4,8 +4,13 @@ import { AppProvider } from '@/lib/app-context'
 import AppToaster from '@/components/AppToaster'
 
 export const metadata: Metadata = {
-  title: 'UPLOTRADE — Smart Trading Journal',
+  title: 'UploTrade- יומן המסחר שלי',
   description: 'Track, analyze, and improve your trading performance with UPLOTRADE',
+  icons: {
+    icon: '/uplotrade-mark-cropped.png',
+    shortcut: '/uplotrade-mark-cropped.png',
+    apple: '/uplotrade-mark-cropped.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
