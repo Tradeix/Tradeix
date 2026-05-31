@@ -906,12 +906,10 @@ export default function WeeklyReportPage() {
         }
         .highlight-list {
           flex: 0 0 auto;
-          width: calc(100% - 56px);
-          max-width: 520px;
-          margin-inline: auto;
+          width: 100%;
           grid-template-rows: repeat(3, 76px);
           align-content: start;
-          padding-bottom: 16px;
+          padding-bottom: 10px;
         }
         .daily-row,
         .highlight-row {
@@ -962,11 +960,10 @@ export default function WeeklyReportPage() {
           white-space: nowrap;
         }
         .highlight-row {
-          display: flex;
-          flex-direction: row;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 190px;
           align-items: center;
-          justify-content: space-between;
-          gap: 18px;
+          gap: 14px;
           min-height: 76px;
           height: 76px;
           box-sizing: border-box;
@@ -984,8 +981,7 @@ export default function WeeklyReportPage() {
           align-items: center;
           justify-content: flex-start;
           gap: 10px;
-          min-width: 190px;
-          flex: 0 0 auto;
+          min-width: 0;
         }
         .highlight-head > div:not(.highlight-icon) {
           min-width: 0;
@@ -1023,11 +1019,10 @@ export default function WeeklyReportPage() {
         .highlight-gauge-wrap {
           display: flex;
           align-items: center;
-          justify-content: flex-end;
-          gap: 12px;
+          justify-content: space-between;
+          gap: 10px;
           min-width: 0;
-          flex: 1 1 240px;
-          max-width: 290px;
+          width: 100%;
         }
         .highlight-gauge {
           width: 82px;
@@ -1071,8 +1066,7 @@ export default function WeeklyReportPage() {
           display: grid;
           gap: 8px;
           min-width: 0;
-          flex: 1 1 240px;
-          max-width: 290px;
+          width: 100%;
         }
         .highlight-bar-labels {
           display: flex;
@@ -1338,10 +1332,10 @@ export default function WeeklyReportPage() {
           .metric strong { font-size: 20px; }
           .daily-row { grid-template-columns: minmax(0, 1fr) auto; }
           .daily-row b { grid-column: 1 / -1; }
-          .highlight-row { gap: 10px; }
-          .highlight-head { min-width: 0; flex: 0 0 auto; }
+          .highlight-row { grid-template-columns: minmax(0, 1fr) 140px; gap: 10px; }
+          .highlight-head { min-width: 0; }
           .highlight-bar-panel,
-          .highlight-gauge-wrap { flex-basis: 150px; max-width: none; }
+          .highlight-gauge-wrap { width: 100%; }
           .highlight-icon { width: 32px; height: 32px; border-radius: 11px; font-size: 18px; }
           .highlight-head span { font-size: 12px; }
           .highlight-head b { font-size: 16px; }
