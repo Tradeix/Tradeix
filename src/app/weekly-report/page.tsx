@@ -906,9 +906,11 @@ export default function WeeklyReportPage() {
         }
         .highlight-list {
           flex: 0 0 auto;
+          width: calc(100% - 28px);
+          margin-inline-end: auto;
           grid-template-rows: repeat(3, 76px);
           align-content: start;
-          padding-bottom: 8px;
+          padding-bottom: 14px;
         }
         .daily-row,
         .highlight-row {
@@ -966,6 +968,7 @@ export default function WeeklyReportPage() {
           gap: 18px;
           min-height: 76px;
           height: 76px;
+          box-sizing: border-box;
           padding: 13px 14px;
           border: 1px solid rgba(255,255,255,.09);
           border-bottom: 1px solid rgba(255,255,255,.075);
