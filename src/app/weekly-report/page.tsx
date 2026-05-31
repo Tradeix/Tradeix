@@ -84,6 +84,41 @@ function tradingWeeksForMonth(date: Date, currentTradingWeek: Date) {
     .filter(week => week <= currentTradingWeek)
 }
 
+function weeklyReportsTableMissing(error: { code?: string; message?: string } | null | undefined) {
+  const message = (error?.message || '').toLowerCase()
+  return error?.code === 'PGRST205' ||
+    error?.code === '42P01' ||
+    (message.includes('weekly_reports') && (
+      message.includes('schema cache') ||
+      message.includes('could not find') ||
+      message.includes('does not exist')
+    ))
+}
+
+function weeklyReportsLocalKey(userId: string, portfolioId: string) {
+  return `tradeix-weekly-reports:${userId}:${portfolioId}`
+}
+
+function readLocalWeeklyReports(userId: string, portfolioId: string): WeeklyReport[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(weeklyReportsLocalKey(userId, portfolioId))
+    const reports = raw ? JSON.parse(raw) : []
+    return Array.isArray(reports) ? reports : []
+  } catch {
+    return []
+  }
+}
+
+function writeLocalWeeklyReport(report: WeeklyReport) {
+  if (typeof window === 'undefined') return
+  const reports = readLocalWeeklyReports(report.user_id, report.portfolio_id)
+  const next = reports.some(item => item.week_start === report.week_start)
+    ? reports.map(item => item.week_start === report.week_start ? report : item)
+    : [report, ...reports]
+  window.localStorage.setItem(weeklyReportsLocalKey(report.user_id, report.portfolio_id), JSON.stringify(next))
+}
+
 export default function WeeklyReportPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language, currency } = useApp()
@@ -153,7 +188,22 @@ export default function WeeklyReportPage() {
       .eq('week_start', toDateInput(selectedWeek))
       .maybeSingle()
 
-    if (reportError && reportError.code !== 'PGRST116') {
+    if (weeklyReportsTableMissing(reportError)) {
+      const report = readLocalWeeklyReports(userId, activePortfolio.id)
+        .find(item => item.week_start === toDateInput(selectedWeek)) || null
+      setForm(report ? {
+        feelings: report.feelings || '',
+        lessons: report.lessons || '',
+        improvements: report.improvements || '',
+      } : EMPTY_FORM)
+      setDirtyFields(CLEAN_FIELDS)
+      if (report) {
+        setReports(prev => {
+          const exists = prev.some(item => item.week_start === report.week_start)
+          return exists ? prev.map(item => item.week_start === report.week_start ? report : item) : [report, ...prev]
+        })
+      }
+    } else if (reportError && reportError.code !== 'PGRST116') {
       setForm(EMPTY_FORM)
       setDirtyFields(CLEAN_FIELDS)
     } else {
@@ -181,7 +231,7 @@ export default function WeeklyReportPage() {
     const monthQueryStart = monthWeeks[0] || firstTradingWeekOfMonth(selectedMonth)
     const monthQueryEnd = addDays(monthQueryStart, 28)
 
-    const [{ data: reportData }, { data: tradeData }] = await Promise.all([
+    const [reportResult, { data: tradeData }] = await Promise.all([
       supabase
       .from('weekly_reports')
       .select('*')
@@ -199,7 +249,13 @@ export default function WeeklyReportPage() {
         .order('traded_at', { ascending: true }),
     ])
 
-    setReports((reportData || []) as WeeklyReport[])
+    const reportData = weeklyReportsTableMissing(reportResult.error)
+      ? readLocalWeeklyReports(userId, activePortfolio.id)
+        .filter(report => report.week_start >= toDateInput(monthQueryStart) && report.week_start < toDateInput(monthQueryEnd))
+        .sort((a, b) => b.week_start.localeCompare(a.week_start))
+      : (reportResult.data || []) as WeeklyReport[]
+
+    setReports(reportData)
     setMonthTrades((tradeData || []) as Trade[])
   }
 
@@ -255,12 +311,6 @@ export default function WeeklyReportPage() {
       }
     }
 
-    if (saveError) {
-      console.error('weekly report save failed', saveError)
-      toast.error(saveError.message || (language === 'he' ? 'השמירה נכשלה' : 'Save failed'))
-      return
-    }
-
     const savedReport: WeeklyReport = {
       id: selectedReport?.id || `${payload.portfolio_id}-${payload.week_start}`,
       user_id: payload.user_id,
@@ -272,6 +322,18 @@ export default function WeeklyReportPage() {
       improvements: payload.improvements,
       created_at: selectedReport?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
+    }
+
+    if (weeklyReportsTableMissing(saveError)) {
+      console.warn('weekly_reports table missing; saving weekly report locally', saveError)
+      writeLocalWeeklyReport(savedReport)
+      saveError = null
+    }
+
+    if (saveError) {
+      console.error('weekly report save failed', saveError)
+      toast.error(saveError.message || (language === 'he' ? 'השמירה נכשלה' : 'Save failed'))
+      return
     }
 
     if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
