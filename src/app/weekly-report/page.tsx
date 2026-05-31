@@ -9,6 +9,7 @@ import { formatSignedMoney } from '@/lib/currency'
 import { Trade, WeeklyReport } from '@/types'
 import PageHeader from '@/components/PageHeader'
 import Icon from '@/components/Icon'
+import toast from 'react-hot-toast'
 
 type ReportForm = {
   feelings: string
@@ -217,33 +218,69 @@ export default function WeeklyReportPage() {
       improvements: formSnapshot.improvements.trim(),
     }
 
-    const { data: savedReport, error } = await supabase
-      .from('weekly_reports')
-      .upsert(payload, { onConflict: 'user_id,portfolio_id,week_start' })
-      .select('*')
-      .single()
+    const updatePayload = {
+      week_end: payload.week_end,
+      feelings: payload.feelings,
+      lessons: payload.lessons,
+      improvements: payload.improvements,
+    }
 
-    try {
-      if (error) {
-        console.error('weekly report save failed', error)
-      } else {
-        if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
-        if (savedReport) {
-          setReports(prev => {
-            const report = savedReport as WeeklyReport
-            const isSameReport = (item: WeeklyReport) => item.id === report.id || (
-              item.user_id === report.user_id &&
-              item.portfolio_id === report.portfolio_id &&
-              item.week_start === report.week_start
-            )
-            return prev.some(isSameReport)
-              ? prev.map(item => isSameReport(item) ? report : item)
-              : [report, ...prev]
-          })
-        }
-        await loadMonthReportData()
+    const updateResult = await supabase
+      .from('weekly_reports')
+      .update(updatePayload)
+      .eq('user_id', userId)
+      .eq('portfolio_id', activePortfolio.id)
+      .eq('week_start', payload.week_start)
+      .select('*')
+      .maybeSingle()
+
+    let savedReport = updateResult.data as WeeklyReport | null
+    let saveError = updateResult.error
+
+    if (!saveError && !savedReport) {
+      const insertResult = await supabase
+        .from('weekly_reports')
+        .insert(payload)
+        .select('*')
+        .single()
+
+      savedReport = insertResult.data as WeeklyReport | null
+      saveError = insertResult.error
+
+      if (saveError?.code === '23505') {
+        const retryResult = await supabase
+          .from('weekly_reports')
+          .update(updatePayload)
+          .eq('user_id', userId)
+          .eq('portfolio_id', activePortfolio.id)
+          .eq('week_start', payload.week_start)
+          .select('*')
+          .single()
+
+        savedReport = retryResult.data as WeeklyReport | null
+        saveError = retryResult.error
       }
-    } finally {}
+    }
+
+    if (saveError || !savedReport) {
+      console.error('weekly report save failed', saveError)
+      toast.error(language === 'he' ? 'השמירה נכשלה' : 'Save failed')
+      return
+    }
+
+    if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
+    setReports(prev => {
+      const isSameReport = (item: WeeklyReport) => item.id === savedReport.id || (
+        item.user_id === savedReport.user_id &&
+        item.portfolio_id === savedReport.portfolio_id &&
+        item.week_start === savedReport.week_start
+      )
+      return prev.some(isSameReport)
+        ? prev.map(item => isSameReport(item) ? savedReport : item)
+        : [savedReport, ...prev]
+    })
+    toast.success(language === 'he' ? 'נשמר' : 'Saved')
+    await loadMonthReportData()
   }
 
   async function flushCurrentReport() {
@@ -602,7 +639,7 @@ export default function WeeklyReportPage() {
         }
         .weekly-title-block {
           min-width: 0;
-          text-align: end;
+          text-align: ${isRTL ? 'right' : 'left'};
           direction: ${isRTL ? 'rtl' : 'ltr'};
         }
         .weekly-screenshot-btn {
@@ -665,6 +702,7 @@ export default function WeeklyReportPage() {
           position: relative;
           padding: 20px 18px 19px;
           border-inline-end: 1px solid var(--border);
+          text-align: center;
         }
         .metric:last-child { border-inline-end: none; }
         .metric span {
