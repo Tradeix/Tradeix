@@ -906,11 +906,12 @@ export default function WeeklyReportPage() {
         }
         .highlight-list {
           flex: 0 0 auto;
-          width: calc(100% - 28px);
-          margin-inline-end: auto;
+          width: calc(100% - 56px);
+          max-width: 520px;
+          margin-inline: auto;
           grid-template-rows: repeat(3, 76px);
           align-content: start;
-          padding-bottom: 14px;
+          padding-bottom: 16px;
         }
         .daily-row,
         .highlight-row {
