@@ -695,7 +695,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             line-height: 1;
           }
           .trial-choice-pro::before {
-            background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,0.34) 48%, transparent 72%);
+            background: linear-gradient(100deg, transparent 18%, rgba(16,185,129,0.28) 48%, transparent 72%);
           }
           .trial-choice-pro::after {
             background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 56%);
