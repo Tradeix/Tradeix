@@ -958,97 +958,140 @@ export default function WeeklyReportPage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 14px;
-          min-height: 78px;
-          padding: 16px;
-          border: 1px solid rgba(255,255,255,.07);
-          border-radius: 18px;
+          gap: 13px;
+          min-height: 92px;
+          padding: 18px 20px;
+          border: 1px solid rgba(255,255,255,.09);
+          border-radius: 20px;
           background:
-            radial-gradient(circle at 18% 20%, rgba(15,141,99,.12), transparent 34%),
-            linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.012));
+            radial-gradient(circle at 8% 18%, rgba(123,75,255,.13), transparent 32%),
+            linear-gradient(135deg, rgba(255,255,255,.072), rgba(255,255,255,.024));
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,.055),
-            0 14px 30px rgba(0,0,0,.12);
+            inset 0 1px 0 rgba(255,255,255,.07),
+            0 16px 34px rgba(0,0,0,.18);
         }
-        .highlight-row-top {
+        .highlight-head {
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 12px;
         }
-        .highlight-row-top span {
-          color: var(--text);
-          font-size: 14px;
+        .highlight-head > div:first-child {
+          min-width: 0;
+        }
+        .highlight-head span {
+          display: block;
+          color: #a9b2c2;
+          font-size: 13px;
           font-weight: 900;
+          margin-bottom: 3px;
         }
-        .highlight-row-top b {
-          font-size: 18px;
+        .highlight-head b {
+          color: var(--text);
+          font-size: 19px;
+          font-weight: 950;
+          line-height: 1;
         }
-        .highlight-meter {
-          position: relative;
-          height: 18px;
-          overflow: hidden;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.07);
-          background:
-            linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 25%),
-            rgba(255,255,255,.045);
-        }
-        .highlight-meter::before {
-          content: '';
-          position: absolute;
-          inset: 50% 10px auto;
-          height: 1px;
-          background: rgba(255,255,255,.16);
-        }
-        .highlight-meter i {
-          position: absolute;
-          inset: 3px auto 3px 3px;
-          min-width: 8px;
-          border-radius: inherit;
-          background: linear-gradient(90deg, rgba(34,197,94,.72), #22c55e);
-          box-shadow: 0 0 20px rgba(34,197,94,.24);
-        }
-        .highlight-meter[data-tone="bad"] i {
-          background: linear-gradient(90deg, rgba(239,68,68,.72), #ef4444);
-          box-shadow: 0 0 20px rgba(239,68,68,.22);
-        }
-        .highlight-meter[data-tone="neutral"] i {
-          background: linear-gradient(90deg, rgba(148,163,184,.62), #94a3b8);
-          box-shadow: 0 0 18px rgba(148,163,184,.16);
-        }
-        .highlight-meter em {
-          position: absolute;
-          top: 50%;
-          width: 11px;
-          height: 11px;
-          border: 2px solid #e5eefb;
-          border-radius: 50%;
-          background: #0b1118;
-          transform: translate(-50%, -50%);
-          box-shadow: 0 0 0 5px rgba(255,255,255,.06);
-        }
-        .highlight-stack {
+        .highlight-icon {
           display: flex;
-          height: 18px;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          flex: 0 0 auto;
+          border-radius: 16px;
+          color: #a56bff;
+          font-size: 23px;
+          font-weight: 950;
+          background: rgba(255,255,255,.035);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+        }
+        .highlight-row[data-tone-card="good"] .highlight-icon { color: #22c55e; }
+        .highlight-row[data-tone-card="bad"] .highlight-icon { color: #ef4444; }
+        .highlight-gauge-wrap {
+          display: grid;
+          grid-template-columns: 92px minmax(0, 1fr);
+          align-items: end;
+          gap: 14px;
+        }
+        .highlight-gauge {
+          width: 92px;
+          height: 54px;
+          overflow: hidden;
+        }
+        .highlight-gauge path {
+          fill: none;
+          stroke-linecap: round;
+          stroke-width: 8;
+        }
+        .highlight-gauge-track { stroke: rgba(255,255,255,.12); }
+        .highlight-gauge-win {
+          stroke: #22c55e;
+          filter: drop-shadow(0 0 7px rgba(34,197,94,.34));
+        }
+        .highlight-gauge-loss {
+          stroke: #ef4444;
+          filter: drop-shadow(0 0 7px rgba(239,68,68,.28));
+        }
+        .highlight-chips {
+          display: flex;
+          gap: 7px;
+          justify-content: flex-end;
+        }
+        .highlight-chips i {
+          min-width: 38px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          color: var(--text);
+          font-size: 11px;
+          font-style: normal;
+          font-weight: 900;
+          text-align: center;
+          background: rgba(255,255,255,.07);
+        }
+        .highlight-chips i[data-chip="win"] { color: #22c55e; }
+        .highlight-chips i[data-chip="loss"] { color: #ef4444; }
+        .highlight-bar-panel {
+          display: grid;
+          gap: 8px;
+        }
+        .highlight-bar-labels {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+        .highlight-bar-labels small {
+          color: #a9b2c2;
+          font-size: 12px;
+          font-weight: 900;
+          background: transparent;
+          padding: 0;
+        }
+        .highlight-bar-labels small[data-tone="good"] { color: #22c55e; }
+        .highlight-bar-labels small[data-tone="bad"] { color: #ef4444; }
+        .highlight-performance-bar {
+          height: 12px;
           overflow: hidden;
           border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.08);
-          background: rgba(255,255,255,.045);
+          background: rgba(255,255,255,.09);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
         }
-        .highlight-stack i {
+        .highlight-performance-bar i {
+          display: block;
           min-width: 8px;
-          transition: width .2s ease;
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, rgba(34,197,94,.82), #22c55e);
+          box-shadow: 0 0 18px rgba(34,197,94,.28);
         }
-        .highlight-stack-win {
-          background:
-            linear-gradient(90deg, rgba(34,197,94,.64), #22c55e),
-            repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 10px);
+        .highlight-performance-bar[data-tone="bad"] i {
+          background: linear-gradient(90deg, rgba(239,68,68,.82), #ef4444);
+          box-shadow: 0 0 18px rgba(239,68,68,.24);
         }
-        .highlight-stack-loss {
-          background:
-            linear-gradient(90deg, #ef4444, rgba(239,68,68,.66)),
-            repeating-linear-gradient(90deg, rgba(255,255,255,.13) 0 1px, transparent 1px 10px);
+        .highlight-performance-bar[data-tone="neutral"] i {
+          background: linear-gradient(90deg, rgba(148,163,184,.72), #94a3b8);
+          box-shadow: 0 0 16px rgba(148,163,184,.16);
         }
         .journal-area {
           padding: 16px 24px 14px;
@@ -1305,20 +1348,35 @@ function Highlight({
   const lossPercent = 100 - clampedPercent
 
   return (
-    <div className="highlight-row" data-kind={tone === 'split' ? 'split' : 'range'}>
-      <div className="highlight-row-top">
-        <span>{label}</span>
-        <b data-tone={tone === 'split' ? 'neutral' : tone}>{value}</b>
+    <div className="highlight-row" data-kind={tone === 'split' ? 'split' : 'range'} data-tone-card={tone}>
+      <div className="highlight-head">
+        <div>
+          <span>{label}</span>
+          <b data-tone={tone === 'split' ? 'neutral' : tone}>{value}</b>
+        </div>
+        <div className="highlight-icon">{tone === 'split' ? '%' : tone === 'bad' ? '-' : '+'}</div>
       </div>
       {tone === 'split' ? (
-        <div className="highlight-stack" aria-hidden="true">
-          <i className="highlight-stack-win" style={{ width: `${clampedPercent}%` }} />
-          <i className="highlight-stack-loss" style={{ width: `${lossPercent}%` }} />
+        <div className="highlight-gauge-wrap" aria-hidden="true">
+          <svg className="highlight-gauge" viewBox="0 0 120 70">
+            <path className="highlight-gauge-track" d="M15 60A45 45 0 0 1 105 60" pathLength="100" />
+            <path className="highlight-gauge-win" d="M15 60A45 45 0 0 1 105 60" pathLength="100" style={{ strokeDasharray: `${clampedPercent} 100` }} />
+            <path className="highlight-gauge-loss" d="M15 60A45 45 0 0 1 105 60" pathLength="100" style={{ strokeDasharray: `${lossPercent} 100`, strokeDashoffset: -clampedPercent }} />
+          </svg>
+          <div className="highlight-chips">
+            <i data-chip="win">{clampedPercent}%</i>
+            <i data-chip="loss">{lossPercent}%</i>
+          </div>
         </div>
       ) : (
-        <div className="highlight-meter" data-tone={tone} aria-hidden="true">
-          <i style={{ width: `${clampedPercent}%` }} />
-          <em style={{ insetInlineStart: `${clampedPercent}%` }} />
+        <div className="highlight-bar-panel" aria-hidden="true">
+          <div className="highlight-bar-labels">
+            <small data-tone={tone}>{value}</small>
+            <small>{clampedPercent}%</small>
+          </div>
+          <div className="highlight-performance-bar" data-tone={tone}>
+            <i style={{ width: `${clampedPercent}%` }} />
+          </div>
         </div>
       )}
     </div>
