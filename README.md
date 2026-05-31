@@ -69,6 +69,9 @@
    LEMONSQUEEZY_PRO_VARIANT_ID=your_pro_variant_id
    LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=your_yearly_pro_variant_id
    LEMONSQUEEZY_WEBHOOK_SECRET=your_webhook_signing_secret
+   RESEND_API_KEY=your_resend_api_key
+   SUPPORT_TO_EMAIL=yctrades7@gmail.com
+   SUPPORT_FROM_EMAIL=Tradeix Support <support@your-domain.com>
    ```
 
 Lemon Squeezy webhook callback:

@@ -190,7 +190,6 @@ export default function TradesPage() {
       <div className="trades-top-controls section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px', direction: 'ltr', position: 'relative', zIndex: 3000, overflow: 'visible' }}>
         {paginationArrows}
         <div className="trades-filter-slot" style={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0, direction: isRTL ? 'rtl' : 'ltr' }}>
-      {isPro && (
         <div className="trades-filter-shell" style={{ position: 'relative', zIndex: 3100, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
           <button onClick={() => setFilterMenuOpen(v => !v)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -243,7 +242,8 @@ export default function TradesPage() {
                 </div>
               </FilterGroup>
 
-              <FilterGroup title={language === 'he' ? 'אסטרטגיית מסחר' : 'Trading strategy'} icon="psychology">
+              {isPro && (
+                <FilterGroup title={language === 'he' ? 'אסטרטגיית מסחר' : 'Trading strategy'} icon="psychology">
                 {strategies.length > 0 ? (
                   <div className="filter-chip-grid strategy-filter-grid">
                     {strategies.map(strategy => (
@@ -257,7 +257,8 @@ export default function TradesPage() {
                     {language === 'he' ? 'אין כרגע אסטרטגיות קיימות' : 'No strategies exist yet'}
                   </div>
                 )}
-              </FilterGroup>
+                </FilterGroup>
+              )}
 
               {activeFilterCount > 0 && (
                 <button onClick={() => { setFilter('all'); setTimeFilter(0); setStrategyFilter('all'); setPage(0) }} style={{
@@ -273,47 +274,6 @@ export default function TradesPage() {
             </div>
           )}
         </div>
-      )}
-
-      {/* Filters — always visible */}
-      {!isPro && <div className="trades-filter-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 0, gap: '8px' }}>
-        {/* Outcome — WIN/LOSS */}
-        <div className="trades-outcome-btns" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {OUTCOME_FILTERS.map(({ key, label, icon }) => (
-            <button key={key} onClick={() => { setFilter(filter === key ? 'all' : key as any); setPage(0) }} style={{
-              display: 'flex', alignItems: 'center', gap: '5px',
-              padding: '7px 14px', borderRadius: '10px', fontSize: '12px',
-              cursor: 'pointer', fontFamily: 'Heebo, sans-serif', fontWeight: '700',
-              border: `1px solid ${filter === key ? key === 'win' ? 'rgba(34,197,94,0.4)' : key === 'loss' ? 'rgba(239,68,68,0.4)' : 'rgba(15,141,99,0.4)' : 'var(--border)'}`,
-              background: filter === key ? key === 'win' ? 'rgba(34,197,94,0.1)' : key === 'loss' ? 'rgba(239,68,68,0.1)' : 'rgba(15,141,99,0.1)' : 'var(--bg3)',
-              color: filter === key ? key === 'win' ? '#22c55e' : key === 'loss' ? '#ef4444' : '#0f8d63' : 'var(--text3)',
-              transition: 'all 0.2s',
-            }}>
-              <Icon name={icon} size={13} />
-              {label}
-              {filter === key && <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '6px', padding: '1px 6px', fontSize: '11px' }}>{total}</span>}
-            </button>
-          ))}
-        </div>
-
-        {/* Separator */}
-        <div className="trades-filter-sep" style={{ width: '1px', height: '22px', background: 'var(--border)', flexShrink: 0 }} />
-
-        {/* Time filter */}
-        <div className="trades-time-filter" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <div style={{ display: 'flex', gap: '2px', background: 'var(--bg3)', padding: '2px', borderRadius: '10px', border: '1px solid var(--border)' }}>
-          {TIME_LABELS.map((label, i) => (
-            <button key={i} onClick={() => { setTimeFilter(i); setPage(0) }} style={{
-              padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700',
-              cursor: 'pointer', border: 'none', fontFamily: 'Heebo, sans-serif',
-              background: timeFilter === i ? '#0f8d63' : 'transparent',
-              color: timeFilter === i ? '#fff' : 'var(--text3)',
-              transition: 'all 0.15s', whiteSpace: 'nowrap',
-            }}>{label}</button>
-          ))}
-        </div>
-        </div>
-      </div>}
         </div>
       </div>
 

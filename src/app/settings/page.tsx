@@ -924,32 +924,6 @@ export default function SettingsPage() {
               ) : null
             ) : (
               <>
-              {!isYearlyPlan && (
-              <button
-                className="yearly-switch-cta"
-                onClick={() => setShowYearlySwitchConfirm(true)}
-                disabled={Boolean(resumingPro)}
-                style={{ width: '100%', minHeight: '66px', background: 'linear-gradient(135deg, rgba(15,141,99,0.20) 0%, rgba(15,141,99,0.08) 100%)', border: '1px solid rgba(16,185,129,0.52)', borderRadius: '16px', padding: '12px 14px', color: '#0f8d63', cursor: resumingPro ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', transition: 'transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', opacity: resumingPro ? 0.65 : 1, boxShadow: '0 12px 28px rgba(15,141,99,0.15), inset 0 1px 0 rgba(255,255,255,0.10)', marginTop: 'auto', marginBottom: '10px' }}
-              >
-                <span className="yearly-switch-sheen" />
-                <span className="yearly-switch-icon">
-                  <Icon name="calendar_month" size={20} color="#fff" />
-                </span>
-                <span className="yearly-switch-copy" style={{ textAlign: language === 'he' ? 'right' : 'left' }}>
-                  <span className="yearly-switch-title">
-                    {resumingPro === 'yearly'
-                      ? (language === 'he' ? 'מעביר לשנתי...' : 'Switching to yearly...')
-                      : (language === 'he' ? 'עבור לשנתי וחסוך' : 'Switch yearly and save')}
-                  </span>
-                  <span className="yearly-switch-subtitle">
-                    {language === 'he' ? 'חיוב יחסי עכשיו • $199 לשנה בחידוש הבא' : 'Prorated now • $199/year next renewal'}
-                  </span>
-                </span>
-                <span className="yearly-switch-badge">
-                  {language === 'he' ? 'חסוך $41' : 'Save $41'}
-                </span>
-              </button>
-              )}
               <button
                 onClick={() => setShowCancelConfirm(true)}
                 disabled={cancelingPro}
@@ -1327,17 +1301,19 @@ export default function SettingsPage() {
         }
         .plan-choice-grid {
           display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
+          grid-template-columns: repeat(2, minmax(132px, 168px));
+          justify-content: start;
+          gap: 8px;
           margin-top: auto;
+          direction: ltr;
         }
         .plan-choice-btn {
           position: relative !important;
           isolation: isolate;
           overflow: hidden !important;
-          min-height: 70px !important;
-          border-radius: 16px !important;
-          padding: 10px 9px !important;
+          min-height: 48px !important;
+          border-radius: 12px !important;
+          padding: 7px 10px !important;
           border-width: 1px !important;
           border-style: solid !important;
           color: #fff !important;
@@ -1347,7 +1323,7 @@ export default function SettingsPage() {
           flex-direction: column !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 4px !important;
+          gap: 2px !important;
           transform: translateY(0);
           transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, opacity 0.18s ease !important;
         }
@@ -1374,17 +1350,17 @@ export default function SettingsPage() {
           background:
             radial-gradient(circle at 50% -24%, rgba(187,247,208,0.42), transparent 44%),
             linear-gradient(135deg, #0f8d63 0%, #16a873 48%, #35c287 100%) !important;
-          box-shadow: 0 18px 38px rgba(15,141,99,0.34), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+          box-shadow: 0 10px 22px rgba(15,141,99,0.24), inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }
         .plan-choice-btn--yearly {
           border-color: rgba(16,185,129,0.78) !important;
           background:
             radial-gradient(circle at 48% -26%, rgba(187,247,208,0.42), transparent 44%),
             linear-gradient(135deg, #0b7a56 0%, #0f8d63 48%, #35c287 100%) !important;
-          box-shadow: 0 18px 38px rgba(15,141,99,0.3), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+          box-shadow: 0 10px 22px rgba(15,141,99,0.22), inset 0 1px 0 rgba(255,255,255,0.22) !important;
         }
         .plan-choice-btn:hover:not(:disabled) {
-          transform: translateY(-3px) scale(1.015);
+          transform: translateY(-1px);
           filter: saturate(1.08) brightness(1.04);
         }
         .plan-choice-btn:disabled {
@@ -1393,8 +1369,8 @@ export default function SettingsPage() {
           transform: none;
         }
         .plan-choice-btn svg {
-          width: 18px;
-          height: 18px;
+          width: 14px;
+          height: 14px;
           color: #fff !important;
           stroke: #fff !important;
           filter: drop-shadow(0 7px 14px rgba(0,0,0,0.24));
@@ -1416,11 +1392,15 @@ export default function SettingsPage() {
           color: #fff !important;
           text-shadow: 0 2px 10px rgba(0,0,0,0.22);
         }
-        .plan-choice-btn:has(> svg) > span:nth-of-type(1) {
-          font-size: 12px !important;
+        .plan-choice-btn--monthly > span:nth-of-type(2),
+        .plan-choice-btn--yearly > span:nth-of-type(3) {
+          font-size: 11.5px !important;
+          line-height: 1.05 !important;
         }
-        .plan-choice-btn:has(> svg) > span:nth-of-type(2) {
-          font-size: 9.5px !important;
+        .plan-choice-btn--monthly > span:nth-of-type(3),
+        .plan-choice-btn--yearly > span:nth-of-type(4) {
+          font-size: 8.5px !important;
+          line-height: 1 !important;
         }
         .yearly-switch-cta {
           position: relative !important;
