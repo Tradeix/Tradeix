@@ -119,6 +119,52 @@ function writeLocalWeeklyReport(report: WeeklyReport) {
   window.localStorage.setItem(weeklyReportsLocalKey(report.user_id, report.portfolio_id), JSON.stringify(next))
 }
 
+function canvasToPdfBlob(canvas: HTMLCanvasElement) {
+  const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.95)
+  const jpegBytes = Uint8Array.from(atob(jpegDataUrl.split(',')[1]), char => char.charCodeAt(0))
+  const jpegBuffer = new ArrayBuffer(jpegBytes.byteLength)
+  new Uint8Array(jpegBuffer).set(jpegBytes)
+  const pageWidth = canvas.width
+  const pageHeight = canvas.height
+  const content = `q\n${pageWidth} 0 0 ${pageHeight} 0 0 cm\n/Im1 Do\nQ\n`
+  const chunks: (string | ArrayBuffer)[] = []
+  const offsets: number[] = []
+  let offset = 0
+
+  const append = (chunk: string | ArrayBuffer) => {
+    chunks.push(chunk)
+    offset += typeof chunk === 'string' ? chunk.length : chunk.byteLength
+  }
+
+  const object = (id: number, body: string | ((id: number) => void)) => {
+    offsets[id] = offset
+    append(`${id} 0 obj\n`)
+    if (typeof body === 'string') append(body)
+    else body(id)
+    append('\nendobj\n')
+  }
+
+  append('%PDF-1.4\n')
+  object(1, '<< /Type /Catalog /Pages 2 0 R >>')
+  object(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>')
+  object(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>`)
+  object(4, () => {
+    append(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.byteLength} >>\nstream\n`)
+    append(jpegBuffer)
+    append('\nendstream')
+  })
+  object(5, `<< /Length ${content.length} >>\nstream\n${content}endstream`)
+
+  const xrefOffset = offset
+  append(`xref\n0 6\n0000000000 65535 f \n`)
+  for (let id = 1; id <= 5; id += 1) {
+    append(`${String(offsets[id]).padStart(10, '0')} 00000 n \n`)
+  }
+  append(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`)
+
+  return new Blob(chunks, { type: 'application/pdf' })
+}
+
 export default function WeeklyReportPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
   const { language, currency } = useApp()
@@ -389,7 +435,7 @@ export default function WeeklyReportPage() {
     }
   }
 
-  async function downloadReportImage() {
+  async function downloadReportPdf() {
     if (!reportRef.current || capturingReport) return
     setCapturingReport(true)
     try {
@@ -403,11 +449,13 @@ export default function WeeklyReportPage() {
         ignoreElements: element => element.classList?.contains('no-report-capture') || false,
       })
       const link = document.createElement('a')
-      link.download = `tradeix-weekly-report-${toDateInput(selectedWeek)}.png`
-      link.href = canvas.toDataURL('image/png')
+      const pdfUrl = URL.createObjectURL(canvasToPdfBlob(canvas))
+      link.download = `tradeix-weekly-report-${toDateInput(selectedWeek)}.pdf`
+      link.href = pdfUrl
       link.click()
+      window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 0)
     } catch (error) {
-      console.error('weekly report screenshot failed', error)
+      console.error('weekly report PDF export failed', error)
     } finally {
       setCapturingReport(false)
     }
@@ -522,12 +570,6 @@ export default function WeeklyReportPage() {
         title={language === 'he' ? 'דוח שבועי' : 'Weekly Report'}
         subtitle={language === 'he' ? 'סיכום שבוע המסחר, מחשבות, ומקום ברור לשיפור' : 'Summarize the trading week, reflect, and plan the next improvement'}
         icon="menu_book"
-        action={(
-          <div className="weekly-header-action">
-            <Icon name="cases" size={16} />
-            <span>{activePortfolio?.name || (language === 'he' ? 'תיק פעיל' : 'Active portfolio')}</span>
-          </div>
-        )}
       />
 
       <div className="weekly-report-shell">
@@ -540,9 +582,9 @@ export default function WeeklyReportPage() {
 
           <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade" ref={reportRef}>
             <div className="weekly-toolbar">
-              <button className="weekly-screenshot-btn no-report-capture" onClick={downloadReportImage} disabled={capturingReport}>
-                <Icon name={capturingReport ? 'autorenew' : 'screenshot_monitor'} size={16} />
-                <span>{capturingReport ? (language === 'he' ? 'מצלם...' : 'Capturing...') : (language === 'he' ? 'צילום מסך' : 'Screenshot')}</span>
+              <button className="weekly-screenshot-btn no-report-capture" onClick={downloadReportPdf} disabled={capturingReport}>
+                <Icon name={capturingReport ? 'autorenew' : 'download'} size={16} />
+                <span>{capturingReport ? (language === 'he' ? 'מכין דוח...' : 'Preparing...') : (language === 'he' ? 'הורדת דוח' : 'Download report')}</span>
               </button>
               <div className="weekly-title-block">
                 <div className="weekly-kicker">{language === 'he' ? 'שבוע מסחר' : 'Trading week'}</div>

@@ -8,7 +8,7 @@ import {
   ArrowLeft, BarChart2, Scale, Hourglass, Lightbulb, Camera, Gauge, CheckCircle,
   RotateCcw, Wallet, Infinity, Sparkles, LockOpen, RefreshCw, HeadsetIcon, Shield,
   Check, Brain, Images, Image as ImageIcon, UploadCloud, Banknote, Key, Monitor,
-  Save, CalendarCheck, Sun, Moon, DollarSign, Euro, Coins,
+  Save, CalendarCheck, Sun, Moon, DollarSign, Euro, Coins, Download,
   BookOpen,
   type LucideProps,
 } from 'lucide-react'
@@ -94,6 +94,7 @@ const MAP: Record<string, React.FC<LucideProps>> = {
   key: Key,
   screenshot_monitor: Monitor,
   save: Save,
+  download: Download,
   edit_note: BookOpen,
   menu_book: FileText,
   event_available: CalendarCheck,
