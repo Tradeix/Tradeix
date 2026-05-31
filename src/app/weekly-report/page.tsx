@@ -225,47 +225,53 @@ export default function WeeklyReportPage() {
       improvements: payload.improvements,
     }
 
-    const updateResult = await supabase
-      .from('weekly_reports')
-      .update(updatePayload)
-      .eq('user_id', userId)
-      .eq('portfolio_id', activePortfolio.id)
-      .eq('week_start', payload.week_start)
-      .select('*')
-      .maybeSingle()
+    let saveError: { code?: string; message?: string } | null = null
 
-    let savedReport = updateResult.data as WeeklyReport | null
-    let saveError = updateResult.error
+    if (selectedReport) {
+      const { error } = await supabase
+        .from('weekly_reports')
+        .update(updatePayload)
+        .eq('user_id', userId)
+        .eq('portfolio_id', activePortfolio.id)
+        .eq('week_start', payload.week_start)
 
-    if (!saveError && !savedReport) {
+      saveError = error
+    } else {
       const insertResult = await supabase
         .from('weekly_reports')
         .insert(payload)
-        .select('*')
-        .single()
 
-      savedReport = insertResult.data as WeeklyReport | null
       saveError = insertResult.error
 
       if (saveError?.code === '23505') {
-        const retryResult = await supabase
+        const { error } = await supabase
           .from('weekly_reports')
           .update(updatePayload)
           .eq('user_id', userId)
           .eq('portfolio_id', activePortfolio.id)
           .eq('week_start', payload.week_start)
-          .select('*')
-          .single()
 
-        savedReport = retryResult.data as WeeklyReport | null
-        saveError = retryResult.error
+        saveError = error
       }
     }
 
-    if (saveError || !savedReport) {
+    if (saveError) {
       console.error('weekly report save failed', saveError)
-      toast.error(language === 'he' ? 'השמירה נכשלה' : 'Save failed')
+      toast.error(saveError.message || (language === 'he' ? 'השמירה נכשלה' : 'Save failed'))
       return
+    }
+
+    const savedReport: WeeklyReport = {
+      id: selectedReport?.id || `${payload.portfolio_id}-${payload.week_start}`,
+      user_id: payload.user_id,
+      portfolio_id: payload.portfolio_id,
+      week_start: payload.week_start,
+      week_end: payload.week_end,
+      feelings: payload.feelings,
+      lessons: payload.lessons,
+      improvements: payload.improvements,
+      created_at: selectedReport?.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
 
     if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)

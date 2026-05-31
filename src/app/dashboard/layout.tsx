@@ -162,7 +162,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 {language === 'he' ? 'תיק פעיל' : 'Active'}
               </div>
               <div style={{ fontSize: '14px', fontWeight: '700', color: activeColor, lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
-                {tr.selectPortfolio}
+                {activePortfolio.name}
               </div>
             </div>
             <div style={{
