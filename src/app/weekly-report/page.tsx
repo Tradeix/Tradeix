@@ -930,7 +930,7 @@ export default function WeeklyReportPage() {
           color: var(--text);
           font-size: 14px;
           font-weight: 900;
-          margin-bottom: 4px;
+          margin-bottom: 10px;
         }
         .journal-field label::before {
           content: '';
