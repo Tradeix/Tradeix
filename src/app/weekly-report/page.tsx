@@ -896,15 +896,19 @@ export default function WeeklyReportPage() {
         }
         .daily-list,
         .highlight-list {
-          flex: 1;
           display: grid;
           gap: 8px;
+          width: 100%;
         }
         .daily-list {
+          flex: 1;
           grid-template-rows: repeat(5, minmax(68px, 1fr));
         }
         .highlight-list {
-          grid-template-rows: repeat(3, minmax(68px, 1fr));
+          flex: 0 0 auto;
+          grid-template-rows: repeat(3, 76px);
+          align-content: start;
+          padding-bottom: 8px;
         }
         .daily-row,
         .highlight-row {
@@ -960,7 +964,8 @@ export default function WeeklyReportPage() {
           align-items: center;
           justify-content: space-between;
           gap: 18px;
-          min-height: 68px;
+          min-height: 76px;
+          height: 76px;
           padding: 13px 14px;
           border: 1px solid rgba(255,255,255,.09);
           border-bottom: 1px solid rgba(255,255,255,.075);
