@@ -259,7 +259,7 @@ export default function WeeklyReportPage() {
     setMonthTrades((tradeData || []) as Trade[])
   }
 
-  async function saveReport(formSnapshot: ReportForm, fieldToSave?: keyof ReportForm) {
+  async function saveReport(formSnapshot: ReportForm, fieldToSave?: keyof ReportForm, options: { silent?: boolean } = {}) {
     if (!activePortfolio || !userId) return
     const fieldsToSave: (keyof ReportForm)[] = fieldToSave ? [fieldToSave] : ['feelings', 'lessons', 'improvements']
     const hasText = fieldsToSave.some(field => formSnapshot[field].trim())
@@ -342,7 +342,7 @@ export default function WeeklyReportPage() {
 
     if (saveError) {
       console.error('weekly report save failed', saveError)
-      toast.error(saveError.message || (language === 'he' ? 'השמירה נכשלה' : 'Save failed'))
+      if (!options.silent) toast.error(saveError.message || (language === 'he' ? 'השמירה נכשלה' : 'Save failed'))
       return
     }
 
@@ -363,12 +363,16 @@ export default function WeeklyReportPage() {
         ? prev.map(item => isSameReport(item) ? savedReport : item)
         : [savedReport, ...prev]
     })
-    toast.success(language === 'he' ? 'נשמר' : 'Saved')
+    if (!options.silent) toast.success(language === 'he' ? 'נשמר' : 'Saved')
     await loadMonthReportData()
   }
 
   async function flushCurrentReport() {
-    await saveReport(formRef.current)
+    const dirtyEntries = Object.entries(dirtyFields) as [keyof ReportForm, boolean][]
+    const dirty = dirtyEntries.filter(([, isDirty]) => isDirty).map(([field]) => field)
+    if (dirty.length === 0) return
+
+    await Promise.all(dirty.map(field => saveReport(formRef.current, field, { silent: true })))
   }
 
   function updateJournalField(field: keyof ReportForm, value: string) {
