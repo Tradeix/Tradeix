@@ -259,26 +259,35 @@ export default function WeeklyReportPage() {
     setMonthTrades((tradeData || []) as Trade[])
   }
 
-  async function saveReport(formSnapshot: ReportForm) {
+  async function saveReport(formSnapshot: ReportForm, fieldToSave?: keyof ReportForm) {
     if (!activePortfolio || !userId) return
-    const hasText = Boolean(formSnapshot.feelings.trim() || formSnapshot.lessons.trim() || formSnapshot.improvements.trim())
+    const fieldsToSave: (keyof ReportForm)[] = fieldToSave ? [fieldToSave] : ['feelings', 'lessons', 'improvements']
+    const hasText = fieldsToSave.some(field => formSnapshot[field].trim())
     if (!hasText && !selectedReport) return
 
-    const payload = {
+    const basePayload = {
       user_id: userId,
       portfolio_id: activePortfolio.id,
       week_start: toDateInput(selectedWeek),
       week_end: toDateInput(weekEnd),
-      feelings: formSnapshot.feelings.trim(),
-      lessons: formSnapshot.lessons.trim(),
-      improvements: formSnapshot.improvements.trim(),
+    }
+
+    const fieldPayload = fieldsToSave.reduce<Partial<ReportForm>>((payload, field) => {
+      payload[field] = formSnapshot[field].trim()
+      return payload
+    }, {})
+
+    const insertPayload = {
+      ...basePayload,
+      feelings: '',
+      lessons: '',
+      improvements: '',
+      ...fieldPayload,
     }
 
     const updatePayload = {
-      week_end: payload.week_end,
-      feelings: payload.feelings,
-      lessons: payload.lessons,
-      improvements: payload.improvements,
+      week_end: basePayload.week_end,
+      ...fieldPayload,
     }
 
     let saveError: { code?: string; message?: string } | null = null
@@ -289,13 +298,13 @@ export default function WeeklyReportPage() {
         .update(updatePayload)
         .eq('user_id', userId)
         .eq('portfolio_id', activePortfolio.id)
-        .eq('week_start', payload.week_start)
+        .eq('week_start', basePayload.week_start)
 
       saveError = error
     } else {
       const insertResult = await supabase
         .from('weekly_reports')
-        .insert(payload)
+        .insert(insertPayload)
 
       saveError = insertResult.error
 
@@ -305,21 +314,22 @@ export default function WeeklyReportPage() {
           .update(updatePayload)
           .eq('user_id', userId)
           .eq('portfolio_id', activePortfolio.id)
-          .eq('week_start', payload.week_start)
+          .eq('week_start', basePayload.week_start)
 
         saveError = error
       }
     }
 
     const savedReport: WeeklyReport = {
-      id: selectedReport?.id || `${payload.portfolio_id}-${payload.week_start}`,
-      user_id: payload.user_id,
-      portfolio_id: payload.portfolio_id,
-      week_start: payload.week_start,
-      week_end: payload.week_end,
-      feelings: payload.feelings,
-      lessons: payload.lessons,
-      improvements: payload.improvements,
+      id: selectedReport?.id || `${basePayload.portfolio_id}-${basePayload.week_start}`,
+      user_id: basePayload.user_id,
+      portfolio_id: basePayload.portfolio_id,
+      week_start: basePayload.week_start,
+      week_end: basePayload.week_end,
+      feelings: selectedReport?.feelings || '',
+      lessons: selectedReport?.lessons || '',
+      improvements: selectedReport?.improvements || '',
+      ...fieldPayload,
       created_at: selectedReport?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
@@ -336,7 +346,13 @@ export default function WeeklyReportPage() {
       return
     }
 
-    if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
+    if (fieldToSave) {
+      if (formRef.current[fieldToSave] === formSnapshot[fieldToSave]) {
+        setDirtyFields(prev => ({ ...prev, [fieldToSave]: false }))
+      }
+    } else if (formsMatch(formRef.current, formSnapshot)) {
+      setDirtyFields(CLEAN_FIELDS)
+    }
     setReports(prev => {
       const isSameReport = (item: WeeklyReport) => item.id === savedReport.id || (
         item.user_id === savedReport.user_id &&
@@ -363,7 +379,7 @@ export default function WeeklyReportPage() {
   async function saveJournalField(field: keyof ReportForm) {
     setSavingField(field)
     try {
-      await saveReport(formRef.current)
+      await saveReport(formRef.current, field)
     } finally {
       setSavingField(null)
     }
