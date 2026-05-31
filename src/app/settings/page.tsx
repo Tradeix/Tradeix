@@ -6,7 +6,6 @@ import { useApp } from '@/lib/app-context'
 import type { AppTimezone, Currency } from '@/lib/app-context'
 import PageHeader from '@/components/PageHeader'
 import toast from 'react-hot-toast'
-import Link from 'next/link'
 import Icon from '@/components/Icon'
 import PortfolioSettings from '@/components/PortfolioSettings'
 
@@ -888,22 +887,7 @@ export default function SettingsPage() {
               </button>
               </>
             )
-          ) : (
-            <Link href="/upgrade" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              width: '100%', background: '#0f8d63',
-              color: '#fff', border: 'none', borderRadius: '12px', padding: '11px',
-              fontSize: '14px', fontWeight: '800', textDecoration: 'none',
-              transition: 'all 0.15s',
-              marginTop: 'auto',
-            }}
-              onMouseOver={(e: any) => { e.currentTarget.style.opacity = '0.9' }}
-              onMouseOut={(e: any) => { e.currentTarget.style.opacity = '1' }}
-            >
-              <Icon name="bolt" size={16} />
-              {language === 'he' ? 'שדרג ל PRO — $20/חודש' : 'Upgrade to PRO — $20/mo'}
-            </Link>
-          )}
+          ) : null}
         </div>
         )}
       </div>
