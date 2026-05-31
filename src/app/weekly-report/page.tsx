@@ -959,14 +959,14 @@ export default function WeeklyReportPage() {
           flex-direction: row;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
+          gap: 18px;
           min-height: 68px;
           padding: 13px 14px;
           border: 1px solid rgba(255,255,255,.09);
           border-bottom: 1px solid rgba(255,255,255,.075);
           border-radius: 16px;
           background:
-            linear-gradient(90deg, rgba(123,75,255,.06), rgba(255,255,255,.018) 45%, rgba(15,141,99,.035)),
+            linear-gradient(135deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
             rgba(2,8,14,.18);
           box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
         }
@@ -975,8 +975,8 @@ export default function WeeklyReportPage() {
           align-items: center;
           justify-content: flex-start;
           gap: 10px;
-          min-width: 210px;
-          flex: 0 0 44%;
+          min-width: 190px;
+          flex: 0 0 auto;
         }
         .highlight-head > div:not(.highlight-icon) {
           min-width: 0;
@@ -1017,7 +1017,8 @@ export default function WeeklyReportPage() {
           justify-content: flex-end;
           gap: 12px;
           min-width: 0;
-          flex: 1;
+          flex: 1 1 240px;
+          max-width: 290px;
         }
         .highlight-gauge {
           width: 82px;
@@ -1061,7 +1062,8 @@ export default function WeeklyReportPage() {
           display: grid;
           gap: 8px;
           min-width: 0;
-          flex: 1;
+          flex: 1 1 240px;
+          max-width: 290px;
         }
         .highlight-bar-labels {
           display: flex;
@@ -1327,7 +1329,9 @@ export default function WeeklyReportPage() {
           .daily-row { grid-template-columns: minmax(0, 1fr) auto; }
           .daily-row b { grid-column: 1 / -1; }
           .highlight-row { gap: 10px; }
-          .highlight-head { min-width: 0; flex: 0 0 42%; }
+          .highlight-head { min-width: 0; flex: 0 0 auto; }
+          .highlight-bar-panel,
+          .highlight-gauge-wrap { flex-basis: 150px; max-width: none; }
           .highlight-icon { width: 32px; height: 32px; border-radius: 11px; font-size: 18px; }
           .highlight-head span { font-size: 12px; }
           .highlight-head b { font-size: 16px; }
