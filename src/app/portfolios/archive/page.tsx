@@ -6,7 +6,7 @@ import { Portfolio, Trade } from '@/types'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/PageHeader'
 import { useApp } from '@/lib/app-context'
-import { formatSignedMoney } from '@/lib/currency'
+import { formatMoney, formatSignedMoney } from '@/lib/currency'
 import Link from 'next/link'
 import Icon from '@/components/Icon'
 import TradeModal from '@/components/TradeModal'
@@ -243,11 +243,21 @@ export default function ArchivePage() {
 
                   {/* Stats summary */}
                   {s && (
-                    <div className="archive-pnl" style={{ textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
-                      <div style={{ fontSize: '17px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
-                        {formatSignedMoney(s.totalPnl, currency)}
+                    <div className="archive-pnl" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(76px, auto))', gap: '14px', textAlign: 'center', paddingInline: '16px', borderInline: '1px solid var(--border)' }}>
+                      <div>
+                        <div style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text)' }}>
+                          {formatMoney(Number(p.initial_capital || 0), currency)}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                          {language === 'he' ? 'קרן' : 'Capital'}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                      <div>
+                        <div style={{ fontSize: '17px', fontWeight: '900', color: pnlPos ? '#22c55e' : '#ef4444' }}>
+                          {formatSignedMoney(s.totalPnl, currency)}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>P&L</div>
+                      </div>
                     </div>
                   )}
 
