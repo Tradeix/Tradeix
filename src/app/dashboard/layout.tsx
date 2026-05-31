@@ -306,27 +306,14 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
             <div onClick={() => setShowUserMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
             <div style={{
               position: 'absolute', top: '48px',
-              [isRTL ? 'left' : 'right']: 0,
+              right: 0,
               background: 'var(--modal-bg)', border: '1px solid var(--border)',
-              borderRadius: '10px', zIndex: 200, minWidth: '180px',
+              borderRadius: '10px', zIndex: 200, minWidth: '150px',
               overflow: 'hidden', padding: '6px',
-              animation: 'scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
-              transformOrigin: isRTL ? 'top left' : 'top right',
+              animation: 'slideInRight 0.16s cubic-bezier(0.16, 1, 0.3, 1)',
+              transformOrigin: 'top right',
               boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
             }}>
-              <Link href="/settings" onClick={() => { resetViewportBeforeNavigation(); setShowUserMenu(false) }} style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '10px 14px', borderRadius: '8px',
-                fontSize: '14px', fontWeight: '600', color: 'var(--text2)',
-                textDecoration: 'none', transition: 'background 0.15s',
-              }}
-                onMouseOver={e => e.currentTarget.style.background = 'var(--bg3)'}
-                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <Icon name="settings" size={15} color="var(--text3)" />
-                {language === 'he' ? 'הגדרות' : 'Settings'}
-              </Link>
-              <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
               <button onClick={() => { setShowUserMenu(false); handleSignOut() }} style={{
                 display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
                 padding: '10px 14px', borderRadius: '8px',
