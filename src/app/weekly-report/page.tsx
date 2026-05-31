@@ -827,14 +827,14 @@ export default function WeeklyReportPage() {
           white-space: nowrap;
         }
         .journal-area {
-          padding: 28px 30px 26px;
+          padding: 16px 24px 14px;
           position: relative;
           background:
             linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.03)),
             repeating-linear-gradient(0deg, transparent 0 31px, rgba(255,255,255,.025) 31px 32px);
         }
         .journal-field {
-          padding: 20px 0 22px;
+          padding: 12px 0 14px;
           border-bottom: 1px solid rgba(255,255,255,.08);
           position: relative;
         }
@@ -846,9 +846,9 @@ export default function WeeklyReportPage() {
           align-items: center;
           gap: 9px;
           color: var(--text);
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 900;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
         }
         .journal-field label::before {
           content: '';
@@ -861,29 +861,29 @@ export default function WeeklyReportPage() {
         }
         .journal-field textarea {
           width: 100%;
-          min-height: 92px;
+          min-height: 52px;
           resize: vertical;
           background: transparent;
           border: none;
           outline: none;
           color: var(--text);
           font-family: Heebo, sans-serif;
-          font-size: 15px;
-          line-height: 1.8;
-          padding: 0 0 24px;
+          font-size: 14px;
+          line-height: 1.45;
+          padding: 0 38px 4px 0;
         }
         .journal-field textarea::placeholder { color: var(--text3); }
         .journal-save-check {
           position: absolute;
           left: 0;
-          bottom: 16px;
-          width: 32px;
-          height: 32px;
+          bottom: 12px;
+          width: 28px;
+          height: 28px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           border: 1px solid rgba(34,197,94,.42);
-          border-radius: 10px;
+          border-radius: 9px;
           background: linear-gradient(180deg, #19a86c, #0f8d63);
           color: #fff;
           box-shadow: 0 12px 24px rgba(15,141,99,.18), inset 0 1px 0 rgba(255,255,255,.22);
