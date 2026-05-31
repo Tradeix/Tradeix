@@ -588,13 +588,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               : 'Your PRO trial has ended. Everything you created, including portfolios, trades, and data, is saved and will continue with whichever option you choose: upgrade to PRO or switch to Free.'}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', marginBottom: '18px' }}>
-            <button className="trial-choice-button trial-choice-pro trial-choice-monthly" onClick={() => handleTrialUpgrade('monthly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(16,185,129,0.48)', borderRadius: '18px', background: 'linear-gradient(135deg, #0f8d63, #16a873)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(15,141,99,0.24)', position: 'relative', overflow: 'hidden' }}>
-              <Icon name="bolt" size={24} color="#fff" />
+            <button className="trial-choice-button trial-choice-pro trial-choice-monthly" onClick={() => handleTrialUpgrade('monthly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid var(--border)', borderRadius: '18px', background: 'var(--bg3)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', position: 'relative', overflow: 'hidden' }}>
+              <Icon name="bolt" size={24} color="#0f8d63" />
               <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'monthly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO חודשי' : 'Start monthly PRO')}</span>
               <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$20 לחודש • גמיש' : '$20/month • flexible'}</span>
             </button>
-            <button className="trial-choice-button trial-choice-pro trial-choice-yearly" onClick={() => handleTrialUpgrade('yearly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(16,185,129,0.48)', borderRadius: '18px', background: 'linear-gradient(135deg, #0b7a56, #12a875)', color: '#fff', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '14px', boxShadow: '0 20px 46px rgba(15,141,99,0.28)', position: 'relative', overflow: 'hidden' }}>
-              <Icon name="rocket_launch" size={24} color="#fff" />
+            <button className="trial-choice-button trial-choice-pro trial-choice-yearly" onClick={() => handleTrialUpgrade('yearly')} disabled={Boolean(trialChoiceLoading)} style={{ minHeight: '108px', border: '1px solid rgba(16,185,129,0.58)', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(16,185,129,0.18), var(--bg3) 58%)', color: 'var(--text)', cursor: trialChoiceLoading ? 'wait' : 'pointer', fontFamily: 'Heebo, sans-serif', display: 'grid', placeItems: 'center', gap: '8px', padding: '18px 14px 14px', boxShadow: '0 20px 46px rgba(16,185,129,0.18), inset 0 1px 0 rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden' }}>
+              <span className="trial-choice-badge">{language === 'he' ? 'מומלץ' : 'Recommended'}</span>
+              <Icon name="rocket_launch" size={24} color="#0f8d63" />
               <span style={{ fontSize: '17px', fontWeight: 950 }}>{trialChoiceLoading === 'yearly' ? (language === 'he' ? 'פותח תשלום...' : 'Opening checkout...') : (language === 'he' ? 'התחל PRO שנתי' : 'Start yearly PRO')}</span>
               <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.86 }}>{language === 'he' ? '$199 לשנה • חסוך $41' : '$199/year • save $41'}</span>
             </button>
@@ -655,13 +656,43 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
             opacity: 0.78;
           }
           .trial-choice-pro:not(:disabled):hover {
-            border-color: rgba(255,255,255,0.42);
-            box-shadow: 0 24px 58px rgba(16,185,129,0.32), 0 0 0 1px rgba(255,255,255,0.08) inset;
+            border-color: rgba(16,185,129,0.55);
+            box-shadow: 0 20px 46px rgba(16,185,129,0.18), 0 0 0 1px rgba(16,185,129,0.16) inset;
             filter: saturate(1.08);
           }
           .trial-choice-monthly:not(:disabled):hover {
-            border-color: rgba(255,255,255,0.42);
-            box-shadow: 0 24px 58px rgba(16,185,129,0.32), 0 0 0 1px rgba(255,255,255,0.08) inset;
+            border-color: rgba(16,185,129,0.55);
+            box-shadow: 0 20px 46px rgba(16,185,129,0.18), 0 0 0 1px rgba(16,185,129,0.16) inset;
+          }
+          .trial-choice-pro > span:last-child {
+            color: var(--text3) !important;
+            opacity: 1 !important;
+          }
+          .trial-choice-yearly {
+            transform: translateY(-2px);
+          }
+          .trial-choice-yearly > span:last-child {
+            color: #0f8d63 !important;
+            font-weight: 900 !important;
+            opacity: 1 !important;
+          }
+          .trial-choice-yearly:not(:disabled):hover {
+            border-color: rgba(16,185,129,0.78);
+            box-shadow: 0 24px 58px rgba(16,185,129,0.28), 0 0 0 1px rgba(16,185,129,0.25) inset;
+          }
+          .trial-choice-badge {
+            position: absolute !important;
+            top: 10px;
+            inset-inline-start: 12px;
+            z-index: 2 !important;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(16,185,129,0.38);
+            background: rgba(16,185,129,0.14);
+            color: #0f8d63;
+            font-size: 10px;
+            font-weight: 950;
+            line-height: 1;
           }
           .trial-choice-pro::before {
             background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,0.34) 48%, transparent 72%);
