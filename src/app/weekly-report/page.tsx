@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { usePortfolio } from '@/lib/portfolio-context'
 import { useApp } from '@/lib/app-context'
@@ -167,7 +168,7 @@ function canvasToPdfBlob(canvas: HTMLCanvasElement) {
 
 export default function WeeklyReportPage() {
   const { activePortfolio, portfoliosLoaded } = usePortfolio()
-  const { language, currency } = useApp()
+  const { language, currency, isPro, subscriptionLoading } = useApp()
   const router = useRouter()
   const isRTL = language === 'he'
   const supabase = createClient()
@@ -545,6 +546,34 @@ export default function WeeklyReportPage() {
 
     return Array.from(weeks.values()).sort((a, b) => b.weekStart.getTime() - a.weekStart.getTime())
   }, [selectedMonth, currentTradingWeek, monthTrades, reports])
+
+  if (!subscriptionLoading && !isPro) {
+    return (
+      <div dir={isRTL ? 'rtl' : 'ltr'} style={{ fontFamily: 'Heebo, sans-serif' }}>
+        <PageHeader
+          title={language === 'he' ? 'דוח שבועי' : 'Weekly Report'}
+          subtitle={language === 'he' ? 'מחברת שבועית לשיפור המסחר שלך' : 'A weekly trading journal for better decisions'}
+          icon="menu_book"
+        />
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '72px', height: '72px', borderRadius: '20px', background: 'var(--bg3)', marginBottom: '24px' }}>
+            <Icon name="lock" size={32} color="#0f8d63" />
+          </div>
+          <div style={{ fontSize: '23px', fontWeight: 800, color: 'var(--text)', marginBottom: '12px' }}>
+            {language === 'he' ? 'דוח שבועי זמין ל-PRO בלבד' : 'Weekly Report is PRO only'}
+          </div>
+          <div style={{ fontSize: '15px', color: 'var(--text3)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6, fontWeight: 650 }}>
+            {language === 'he' ? 'שדרג ל-PRO כדי לסכם שבוע מסחר, לשמור תובנות ולעקוב אחרי השיפור שלך.' : 'Upgrade to PRO to summarize trading weeks, save insights, and track your improvement.'}
+          </div>
+          <Link href="/upgrade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0f8d63', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px', fontWeight: 800 }}>
+            <Icon name="bolt" size={16} />
+            {language === 'he' ? 'שדרג ל-PRO' : 'Upgrade to PRO'}
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   if (portfoliosLoaded && !activePortfolio) {
     return (
       <div dir={isRTL ? 'rtl' : 'ltr'}>
