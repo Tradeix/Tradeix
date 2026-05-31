@@ -142,7 +142,7 @@ export default function DashboardPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly, tr.yearly]
+  const TIME_FILTERS = [tr.daily, tr.weekly, tr.monthly]
 
   function getDateRange(filter: number): { start: string; end?: string } {
     const now = new Date()
