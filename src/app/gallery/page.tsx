@@ -304,7 +304,9 @@ export default function GalleryPage() {
             ) : (
               <div {...getRootProps()} style={{ border: `2px dashed ${isDragActive ? '#0f8d63' : 'var(--border2)'}`, borderRadius: '14px', padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: isDragActive ? 'rgba(15,141,99,0.06)' : 'var(--bg3)', transition: 'all 0.2s', marginBottom: '14px' }}>
                 <input {...getInputProps()} />
-                <Icon name="add_photo_alternate" size={32} color="var(--text3)" />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Icon name="add_photo_alternate" size={32} color="var(--text3)" />
+                </div>
                 <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text2)', marginTop: '8px' }}>
                   {language === 'he' ? 'גרור תמונה לכאן או לחץ לבחירה' : 'Drop an image here or click to pick'}
                 </div>
