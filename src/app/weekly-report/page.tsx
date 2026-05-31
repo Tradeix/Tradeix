@@ -504,6 +504,9 @@ export default function WeeklyReportPage() {
 
   const monthLabel = selectedMonth.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
   const weekLabel = `${selectedWeek.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} - ${weekEnd.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`
+  const highlightScale = Math.max(Math.abs(stats.bestTrade), Math.abs(stats.worstTrade), 1)
+  const winLossTotal = Math.max(stats.wins + stats.losses, 1)
+  const winShare = Math.round((stats.wins / winLossTotal) * 100)
   const generatedReports = useMemo<GeneratedWeekReport[]>(() => {
     const weeks = new Map<string, GeneratedWeekReport>()
     const monthWeeks = tradingWeeksForMonth(selectedMonth, currentTradingWeek)
@@ -624,9 +627,9 @@ export default function WeeklyReportPage() {
                   <span>{language === 'he' ? 'תמונת מצב' : 'Snapshot'}</span>
                 </div>
                 <div className="highlight-list">
-                  <Highlight label={language === 'he' ? 'עסקה טובה ביותר' : 'Best trade'} value={formatSignedMoney(stats.bestTrade, currency)} tone={stats.bestTrade > 0 ? 'good' : 'neutral'} />
-                  <Highlight label={language === 'he' ? 'עסקה חלשה ביותר' : 'Worst trade'} value={formatSignedMoney(stats.worstTrade, currency)} tone={stats.worstTrade < 0 ? 'bad' : 'neutral'} />
-                  <Highlight label={language === 'he' ? 'ניצחונות / הפסדים' : 'Wins / Losses'} value={`${stats.wins} / ${stats.losses}`} />
+                  <Highlight label={language === 'he' ? 'עסקה טובה ביותר' : 'Best trade'} value={formatSignedMoney(stats.bestTrade, currency)} tone={stats.bestTrade > 0 ? 'good' : 'neutral'} percent={(Math.abs(stats.bestTrade) / highlightScale) * 100} />
+                  <Highlight label={language === 'he' ? 'עסקה חלשה ביותר' : 'Worst trade'} value={formatSignedMoney(stats.worstTrade, currency)} tone={stats.worstTrade < 0 ? 'bad' : 'neutral'} percent={(Math.abs(stats.worstTrade) / highlightScale) * 100} />
+                  <Highlight label={language === 'he' ? 'ניצחונות / הפסדים' : 'Wins / Losses'} value={`${stats.wins} / ${stats.losses}`} tone="split" percent={winShare} />
                 </div>
               </div>
             </div>
@@ -951,6 +954,102 @@ export default function WeeklyReportPage() {
           font-weight: 950;
           white-space: nowrap;
         }
+        .highlight-row {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 14px;
+          min-height: 78px;
+          padding: 16px;
+          border: 1px solid rgba(255,255,255,.07);
+          border-radius: 18px;
+          background:
+            radial-gradient(circle at 18% 20%, rgba(15,141,99,.12), transparent 34%),
+            linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.012));
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.055),
+            0 14px 30px rgba(0,0,0,.12);
+        }
+        .highlight-row-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+        .highlight-row-top span {
+          color: var(--text);
+          font-size: 14px;
+          font-weight: 900;
+        }
+        .highlight-row-top b {
+          font-size: 18px;
+        }
+        .highlight-meter {
+          position: relative;
+          height: 18px;
+          overflow: hidden;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,.07);
+          background:
+            linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 25%),
+            rgba(255,255,255,.045);
+        }
+        .highlight-meter::before {
+          content: '';
+          position: absolute;
+          inset: 50% 10px auto;
+          height: 1px;
+          background: rgba(255,255,255,.16);
+        }
+        .highlight-meter i {
+          position: absolute;
+          inset: 3px auto 3px 3px;
+          min-width: 8px;
+          border-radius: inherit;
+          background: linear-gradient(90deg, rgba(34,197,94,.72), #22c55e);
+          box-shadow: 0 0 20px rgba(34,197,94,.24);
+        }
+        .highlight-meter[data-tone="bad"] i {
+          background: linear-gradient(90deg, rgba(239,68,68,.72), #ef4444);
+          box-shadow: 0 0 20px rgba(239,68,68,.22);
+        }
+        .highlight-meter[data-tone="neutral"] i {
+          background: linear-gradient(90deg, rgba(148,163,184,.62), #94a3b8);
+          box-shadow: 0 0 18px rgba(148,163,184,.16);
+        }
+        .highlight-meter em {
+          position: absolute;
+          top: 50%;
+          width: 11px;
+          height: 11px;
+          border: 2px solid #e5eefb;
+          border-radius: 50%;
+          background: #0b1118;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 0 5px rgba(255,255,255,.06);
+        }
+        .highlight-stack {
+          display: flex;
+          height: 18px;
+          overflow: hidden;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,.08);
+          background: rgba(255,255,255,.045);
+        }
+        .highlight-stack i {
+          min-width: 8px;
+          transition: width .2s ease;
+        }
+        .highlight-stack-win {
+          background:
+            linear-gradient(90deg, rgba(34,197,94,.64), #22c55e),
+            repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 10px);
+        }
+        .highlight-stack-loss {
+          background:
+            linear-gradient(90deg, #ef4444, rgba(239,68,68,.66)),
+            repeating-linear-gradient(90deg, rgba(255,255,255,.13) 0 1px, transparent 1px 10px);
+        }
         .journal-area {
           padding: 16px 24px 14px;
           position: relative;
@@ -1191,12 +1290,37 @@ function Metric({ label, value, tone = 'neutral' }: { label: string; value: stri
   )
 }
 
-function Highlight({ label, value, tone = 'neutral' }: { label: string; value: string; tone?: 'good' | 'bad' | 'neutral' }) {
+function Highlight({
+  label,
+  value,
+  tone = 'neutral',
+  percent = 0,
+}: {
+  label: string
+  value: string
+  tone?: 'good' | 'bad' | 'neutral' | 'split'
+  percent?: number
+}) {
+  const clampedPercent = Math.max(0, Math.min(100, Math.round(percent)))
+  const lossPercent = 100 - clampedPercent
+
   return (
-    <div className="highlight-row">
-      <span>{label}</span>
-      <small />
-      <b data-tone={tone}>{value}</b>
+    <div className="highlight-row" data-kind={tone === 'split' ? 'split' : 'range'}>
+      <div className="highlight-row-top">
+        <span>{label}</span>
+        <b data-tone={tone === 'split' ? 'neutral' : tone}>{value}</b>
+      </div>
+      {tone === 'split' ? (
+        <div className="highlight-stack" aria-hidden="true">
+          <i className="highlight-stack-win" style={{ width: `${clampedPercent}%` }} />
+          <i className="highlight-stack-loss" style={{ width: `${lossPercent}%` }} />
+        </div>
+      ) : (
+        <div className="highlight-meter" data-tone={tone} aria-hidden="true">
+          <i style={{ width: `${clampedPercent}%` }} />
+          <em style={{ insetInlineStart: `${clampedPercent}%` }} />
+        </div>
+      )}
     </div>
   )
 }
