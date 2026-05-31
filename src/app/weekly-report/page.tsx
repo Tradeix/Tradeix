@@ -1273,7 +1273,7 @@ export default function WeeklyReportPage() {
           border-radius: 14px;
           background: rgba(255,255,255,.024);
           color: var(--text2);
-          min-height: 66px;
+          min-height: 54px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -1281,7 +1281,7 @@ export default function WeeklyReportPage() {
           cursor: pointer;
           font-family: Heebo, sans-serif;
           font-weight: 850;
-          padding: 12px 14px;
+          padding: 10px 14px;
           text-align: start;
           transition: color .15s, border-color .15s, background .15s, transform .15s;
         }
@@ -1298,7 +1298,7 @@ export default function WeeklyReportPage() {
         }
         .report-list button span {
           display: grid;
-          gap: 3px;
+          gap: 0;
           min-width: 0;
         }
         .report-list button strong {
@@ -1307,6 +1307,7 @@ export default function WeeklyReportPage() {
           font-weight: 900;
         }
         .report-list button small {
+          display: none;
           color: var(--text3);
           font-size: 11.5px;
           font-weight: 750;
