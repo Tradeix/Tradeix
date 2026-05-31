@@ -173,15 +173,15 @@ export default function StatsPage() {
 
   const card: React.CSSProperties = { background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }
 
-  const StatCard = ({ label, value, color, icon, idx = 0 }: any) => (
+  const StatCard = ({ label, value, color, iconColor = color, valueColor = color, icon, idx = 0 }: any) => (
     <div className="card-hover stat-anim" style={{ ...card, padding: '20px', animationDelay: `${idx * 0.05}s` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
         <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text3)' }}>{label}</div>
         <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name={icon} size={16} color={color} />
+          <Icon name={icon} size={16} color={iconColor} />
         </div>
       </div>
-      <div style={{ fontSize: '25px', fontWeight: '700', color, letterSpacing: '-0.02em' }}>{value}</div>
+      <div style={{ fontSize: '25px', fontWeight: '700', color: valueColor, letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
 
@@ -279,9 +279,22 @@ export default function StatsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }} className="stats-grid-4">
         <StatCard idx={0} label={tr.winRate} value={`${winRate.toFixed(1)}%`} color={ACCENT} icon="speed" />
         <StatCard idx={1} label={tr.totalPnl} value={formatSignedMoney(totalPnl, currency)} color={totalPnl >= 0 ? '#22c55e' : '#ef4444'} icon="trending_up" />
-        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="#0f8d63" icon="insights" />
+        <StatCard idx={2} label={tr.profitFactor} value={profitFactor.toFixed(2)} color="var(--text)" iconColor="#0f8d63" icon="insights" />
         <StatCard idx={3} label={tr.trades} value={trades.length} color="var(--text2)" icon="swap_horiz" />
-        <StatCard idx={4} label={`${tr.wins} / ${tr.losses}`} value={`${wins.length} / ${losses.length}`} color="#22c55e" icon="leaderboard" />
+        <StatCard
+          idx={4}
+          label={`${tr.wins} / ${tr.losses}`}
+          value={(
+            <span dir="ltr">
+              <span style={{ color: '#22c55e' }}>{wins.length}</span>
+              <span style={{ color: 'var(--text2)' }}> / </span>
+              <span style={{ color: '#ef4444' }}>{losses.length}</span>
+            </span>
+          )}
+          color="var(--text)"
+          iconColor="#22c55e"
+          icon="leaderboard"
+        />
         <StatCard idx={5} label={tr.bestTrade} value={formatSignedMoney(Math.max(0, ...trades.map(t => t.pnl || 0)), currency)} color="#22c55e" icon="arrow_circle_up" />
         <StatCard idx={6} label={tr.worstTrade} value={formatSignedMoney(Math.min(0, ...trades.map(t => t.pnl || 0)), currency)} color="#ef4444" icon="arrow_circle_down" />
         <StatCard idx={7} label={tr.avgRR} value={(() => {
