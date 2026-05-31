@@ -1355,7 +1355,9 @@ export default function SettingsPage() {
             display: block;
           }
           .settings-back-button {
-            display: inline-flex;
+            display: flex;
+            margin-right: auto;
+            margin-left: 0;
           }
           .settings-card {
             max-width: none;
