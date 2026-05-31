@@ -440,6 +440,7 @@ export default function WeeklyReportPage() {
     setCapturingReport(true)
     try {
       await flushCurrentReport()
+      await new Promise<void>(resolve => window.requestAnimationFrame(() => resolve()))
       const html2canvas = (await import('html2canvas')).default
       const canvas = await html2canvas(reportRef.current, {
         backgroundColor: '#070a0f',
@@ -580,7 +581,7 @@ export default function WeeklyReportPage() {
             </div>
           )}
 
-          <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade" ref={reportRef}>
+          <div key={toDateInput(selectedWeek)} className="weekly-notebook report-fade" data-exporting={capturingReport ? '1' : '0'} ref={reportRef}>
             <div className="weekly-toolbar">
               <button className="weekly-screenshot-btn no-report-capture" onClick={downloadReportPdf} disabled={capturingReport}>
                 <Icon name={capturingReport ? 'autorenew' : 'download'} size={16} />
@@ -995,8 +996,29 @@ export default function WeeklyReportPage() {
           font-size: 14px;
           line-height: 1.45;
           padding: 0 38px 4px 0;
+          direction: inherit;
+          text-align: inherit;
         }
         .journal-field textarea::placeholder { color: var(--text3); }
+        .journal-export-value {
+          display: none;
+          min-height: 52px;
+          color: var(--text);
+          font-family: Heebo, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 1.45;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          direction: inherit;
+          text-align: inherit;
+        }
+        .weekly-notebook[data-exporting="1"] .journal-field textarea {
+          display: none;
+        }
+        .weekly-notebook[data-exporting="1"] .journal-export-value {
+          display: block;
+        }
         .journal-save-check {
           position: absolute;
           left: 0;
@@ -1200,6 +1222,7 @@ function JournalField({
     <div className="journal-field">
       <label>{label}</label>
       <textarea value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} />
+      <div className="journal-export-value">{value || placeholder}</div>
       {isDirty && (
         <button type="button" className="journal-save-check no-report-capture" onClick={onSave} disabled={isSaving} aria-label="Save field">
           <Icon name={isSaving ? 'autorenew' : 'check'} size={16} />
