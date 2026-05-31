@@ -19,16 +19,8 @@ interface GalleryItem {
   title: string
   description: string | null
   image_url: string
-  category: string | null
   created_at: string
 }
-
-const CATEGORIES = (lang: 'he' | 'en') => [
-  { id: 'payouts', label: lang === 'he' ? 'תשלומים' : 'Payouts', icon: 'payments' },
-  { id: 'credentials', label: lang === 'he' ? 'פרטי גישה' : 'Credentials', icon: 'key' },
-  { id: 'screenshots', label: lang === 'he' ? 'צילומי מסך' : 'Screenshots', icon: 'screenshot_monitor' },
-  { id: 'certificates', label: lang === 'he' ? 'תעודות מבחן' : 'Certificates', icon: 'workspace_premium' },
-]
 
 export default function GalleryPage() {
   const { language, isPro, subscriptionLoading } = useApp()
@@ -36,7 +28,6 @@ export default function GalleryPage() {
   const router = useRouter()
   const isRTL = language === 'he'
   const supabase = createClient()
-  const cats = CATEGORIES(language)
 
   const [items, setItems] = useState<GalleryItem[]>([])
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
@@ -46,7 +37,7 @@ export default function GalleryPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   // Upload form
-  const [form, setForm] = useState({ title: '', description: '', category: 'payouts' })
+  const [form, setForm] = useState({ title: '', description: '' })
   const [pickedFile, setPickedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -87,7 +78,7 @@ export default function GalleryPage() {
   })
 
   function resetForm() {
-    setForm({ title: '', description: '', category: 'payouts' })
+    setForm({ title: '', description: '' })
     setPickedFile(null)
     if (previewUrl) URL.revokeObjectURL(previewUrl)
     setPreviewUrl(null)
@@ -128,7 +119,6 @@ export default function GalleryPage() {
         user_id: user.id,
         title: form.title.trim(),
         description: form.description.trim() || null,
-        category: form.category,
         image_url: pub.publicUrl,
       }
       if (portfolioId) insertPayload.portfolio_id = portfolioId
@@ -226,9 +216,7 @@ export default function GalleryPage() {
       ) : (
         <>
           <div className="gallery-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            {visible.map((item, idx) => {
-              const cat = cats.find(c => c.id === item.category)
-              return (
+            {visible.map((item, idx) => (
                 <div
                   key={item.id}
                   className="card-hover trade-row-anim"
@@ -241,18 +229,6 @@ export default function GalleryPage() {
                       alt={item.title}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     />
-                    {cat && (
-                      <div style={{
-                        position: 'absolute', top: '10px', insetInlineStart: '10px',
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        padding: '5px 10px', borderRadius: '8px',
-                        background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                      }}>
-                        <Icon name={cat.icon} size={13} color="rgba(255,255,255,0.85)" />
-                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>{cat.label}</span>
-                      </div>
-                    )}
                     <button
                       onClick={(e) => { e.stopPropagation(); setConfirmDelete(item.id) }}
                       title={language === 'he' ? 'מחק' : 'Delete'}
@@ -279,8 +255,7 @@ export default function GalleryPage() {
                     )}
                   </div>
                 </div>
-              )
-            })}
+            ))}
           </div>
 
           {hasMore && (
@@ -359,35 +334,6 @@ export default function GalleryPage() {
               placeholder={language === 'he' ? 'תיאור קצר על התמונה' : 'Short description'}
               style={{ marginBottom: '14px', resize: 'vertical' }}
             />
-
-            {/* Category */}
-            <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-              {language === 'he' ? 'קטגוריה' : 'Category'}
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '20px' }}>
-              {cats.map(c => {
-                const active = form.category === c.id
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setForm(p => ({ ...p, category: c.id }))}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '8px',
-                      padding: '10px 12px', borderRadius: '10px',
-                      background: active ? 'rgba(15,141,99,0.12)' : 'var(--bg3)',
-                      border: `1px solid ${active ? 'rgba(15,141,99,0.35)' : 'var(--border)'}`,
-                      color: active ? '#0f8d63' : 'var(--text2)',
-                      cursor: 'pointer', fontSize: '13px', fontWeight: '700',
-                      fontFamily: 'Heebo, sans-serif', transition: 'all 0.15s',
-                    }}
-                  >
-                    <Icon name={c.icon} size={15} color="currentColor" />
-                    {c.label}
-                  </button>
-                )
-              })}
-            </div>
 
             <button
               onClick={handleUpload}

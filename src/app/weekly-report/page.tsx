@@ -217,40 +217,30 @@ export default function WeeklyReportPage() {
       improvements: formSnapshot.improvements.trim(),
     }
 
-    let saveResult = selectedReport
-      ? await supabase
-        .from('weekly_reports')
-        .update({
-          week_end: payload.week_end,
-          feelings: payload.feelings,
-          lessons: payload.lessons,
-          improvements: payload.improvements,
-        })
-        .eq('id', selectedReport.id)
-        .eq('user_id', userId)
-      : await supabase
-        .from('weekly_reports')
-        .insert(payload)
-
-    if (!selectedReport && saveResult.error?.code === '23505') {
-      saveResult = await supabase
-        .from('weekly_reports')
-        .update({
-          week_end: payload.week_end,
-          feelings: payload.feelings,
-          lessons: payload.lessons,
-          improvements: payload.improvements,
-        })
-        .eq('user_id', userId)
-        .eq('portfolio_id', activePortfolio.id)
-        .eq('week_start', payload.week_start)
-    }
+    const { data: savedReport, error } = await supabase
+      .from('weekly_reports')
+      .upsert(payload, { onConflict: 'user_id,portfolio_id,week_start' })
+      .select('*')
+      .single()
 
     try {
-      if (saveResult.error) {
-        console.error('weekly report save failed', saveResult.error)
+      if (error) {
+        console.error('weekly report save failed', error)
       } else {
         if (formsMatch(formRef.current, formSnapshot)) setDirtyFields(CLEAN_FIELDS)
+        if (savedReport) {
+          setReports(prev => {
+            const report = savedReport as WeeklyReport
+            const isSameReport = (item: WeeklyReport) => item.id === report.id || (
+              item.user_id === report.user_id &&
+              item.portfolio_id === report.portfolio_id &&
+              item.week_start === report.week_start
+            )
+            return prev.some(isSameReport)
+              ? prev.map(item => isSameReport(item) ? report : item)
+              : [report, ...prev]
+          })
+        }
         await loadMonthReportData()
       }
     } finally {}
@@ -1043,7 +1033,7 @@ function JournalField({
       <label>{label}</label>
       <textarea value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} />
       {isDirty && (
-        <button className="journal-save-check no-report-capture" onClick={onSave} disabled={isSaving} aria-label="Save field">
+        <button type="button" className="journal-save-check no-report-capture" onClick={onSave} disabled={isSaving} aria-label="Save field">
           <Icon name={isSaving ? 'autorenew' : 'check'} size={16} />
         </button>
       )}

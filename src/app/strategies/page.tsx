@@ -404,11 +404,11 @@ export default function StrategiesPage() {
                     ))}
                   </div>
 
-                  <div className="strat-hover-details">
-                    <div style={{
+                  <div className="strat-hover-details" dir={isRTL ? 'rtl' : 'ltr'}>
+                    <div className="strat-hover-details-head" style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
+                      justifyContent: 'flex-start',
                       gap: '10px',
                       marginBottom: '10px',
                     }}>
@@ -416,6 +416,8 @@ export default function StrategiesPage() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '7px',
+                        flex: 1,
+                        minWidth: 0,
                         fontSize: '11px',
                         fontWeight: '900',
                         color: accentColor,
@@ -426,7 +428,8 @@ export default function StrategiesPage() {
                         {language === 'he' ? 'פירוט אסטרטגיה' : 'Strategy details'}
                       </div>
                       <button
-                        className="strat-hover-edit"
+                        type="button"
+                        className="strat-hover-action strat-hover-edit"
                         onClick={e => {
                           e.stopPropagation()
                           startEdit(s)
@@ -448,7 +451,19 @@ export default function StrategiesPage() {
                         }}
                       >
                         <Icon name="edit" size={12} color="currentColor" />
-                        {language === 'he' ? 'ערוך' : 'Edit'}
+                      </button>
+                      <button
+                        type="button"
+                        className="strat-hover-action strat-hover-delete"
+                        onClick={e => {
+                          e.stopPropagation()
+                          if (window.confirm(language === 'he' ? 'למחוק את האסטרטגיה?' : 'Delete this strategy?')) {
+                            handleDelete(s.id)
+                          }
+                        }}
+                        aria-label={language === 'he' ? 'מחק אסטרטגיה' : 'Delete strategy'}
+                      >
+                        <Icon name="delete" size={13} color="currentColor" />
                       </button>
                     </div>
                     <div style={{
@@ -774,13 +789,43 @@ export default function StrategiesPage() {
           background: linear-gradient(135deg, rgba(15, 141, 99, 0.08), rgba(255, 255, 255, 0.02));
         }
 
+        .strat-hover-action {
+          width: 30px;
+          height: 30px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          border-radius: 9px;
+          padding: 0;
+          font-family: Heebo, sans-serif;
+          cursor: pointer;
+        }
+
         .strat-hover-edit {
           opacity: 0;
           transform: translateY(-2px);
+          width: 30px !important;
+          height: 30px !important;
+          justify-content: center !important;
+          gap: 0 !important;
+          padding: 0 !important;
+          font-size: 0 !important;
           transition: opacity 0.18s ease, transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
         }
 
+        .strat-hover-delete {
+          opacity: 0;
+          transform: translateY(-2px);
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.26);
+          color: rgba(248, 113, 113, 0.92);
+          transition: opacity 0.18s ease, transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+        }
+
         .strat-card:hover .strat-hover-edit,
+        .strat-card:hover .strat-hover-delete,
+        .strat-hover-delete:focus-visible,
         .strat-hover-edit:focus-visible {
           opacity: 1;
           transform: translateY(0);
@@ -789,6 +834,12 @@ export default function StrategiesPage() {
         .strat-hover-edit:hover {
           background: rgba(15, 141, 99, 0.2) !important;
           border-color: rgba(45, 217, 151, 0.45) !important;
+        }
+
+        .strat-hover-delete:hover {
+          color: #f87171;
+          background: rgba(239, 68, 68, 0.18);
+          border-color: rgba(248, 113, 113, 0.42);
         }
 
         @media (max-width: 768px) {
@@ -826,7 +877,8 @@ export default function StrategiesPage() {
             border-color: rgba(15, 141, 99, 0.18) !important;
             background: linear-gradient(135deg, rgba(15, 141, 99, 0.08), rgba(255, 255, 255, 0.02)) !important;
           }
-          .strat-hover-edit {
+          .strat-hover-edit,
+          .strat-hover-delete {
             opacity: 1 !important;
             transform: none !important;
           }

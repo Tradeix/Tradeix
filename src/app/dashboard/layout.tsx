@@ -136,7 +136,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
       {!hideSelector && activePortfolio && portfolios.length > 0 && (() => {
         const activeColor = getPortfolioColor(activePortfolio)
         return (
-        <div style={{ display: 'none' }}>
+        <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
             onClick={() => setShowMenu(!showMenu)}
             className="active-portfolio-badge"
@@ -162,7 +162,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
                 {language === 'he' ? 'תיק פעיל' : 'Active'}
               </div>
               <div style={{ fontSize: '14px', fontWeight: '700', color: activeColor, lineHeight: 1.2, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
-                {activePortfolio.name}
+                {tr.selectPortfolio}
               </div>
             </div>
             <div style={{
