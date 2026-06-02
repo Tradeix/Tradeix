@@ -301,7 +301,7 @@ export default function TradesPage() {
             </div>
           </div>
         ) : (
-          <div className="trades-list-inner" style={{ padding: '8px 12px' }}>
+          <div style={{ padding: '8px 12px' }}>
             {/* Column header row */}
             <div className="trade-row trade-header-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px 80px 110px', alignItems: 'center', gap: '12px', padding: '8px', borderBottom: '1px solid var(--border)', marginBottom: '4px' }}>
               <div className="trade-col-symbol" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{language === 'he' ? 'נכס' : 'Symbol'}</div>
@@ -329,22 +329,22 @@ export default function TradesPage() {
                 </div>
 
                 {/* Status */}
-                <div className="trade-col-outcome" data-label={language === 'he' ? 'תוצאה' : 'Result'} style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: 'center' }}>
                   <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '700', background: trade.outcome === 'win' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${trade.outcome === 'win' ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`, color: trade.outcome === 'win' ? '#22c55e' : '#ef4444' }}>
                     {trade.outcome === 'win' ? 'WIN' : 'LOSS'}
                   </span>
                 </div>
 
                 {/* Date */}
-                <div className="trade-col-date" data-label={language === 'he' ? 'תאריך' : 'Date'} style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
+                <div style={{ textAlign: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--text2)' }}>
                   {new Date(trade.traded_at).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                 </div>
 
                 {/* RR */}
-                <div className="trade-col-rr" data-label="RR" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: trade.outcome === 'win' && trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>{trade.outcome === 'win' && trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(1)}` : '—'}</div>
+                <div className="trade-col-rr" dir="ltr" style={{ textAlign: 'center', fontSize: '14px', fontWeight: '800', color: trade.outcome === 'win' && trade.rr_ratio != null ? '#22c55e' : 'var(--text3)' }}>{trade.outcome === 'win' && trade.rr_ratio != null ? `1 : ${trade.rr_ratio.toFixed(1)}` : '—'}</div>
 
                 {/* P&L */}
-                <div className="trade-col-pnl" data-label="P&L" dir="ltr" style={{ textAlign: 'center', fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
+                <div dir="ltr" style={{ textAlign: 'center', fontSize: '16px', fontWeight: '700', color: trade.pnl >= 0 ? '#22c55e' : '#ef4444' }}>
                   {formatSignedMoney(trade.pnl, currency)}
                 </div>
               </div>
@@ -444,68 +444,15 @@ export default function TradesPage() {
           }
           .filter-chip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
           .strategy-filter-grid { grid-template-columns: 1fr !important; }
-          .trades-list-shell {
-            border: 0 !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            overflow: visible !important;
-          }
-          .trades-list-inner {
-            padding: 0 !important;
-            display: grid !important;
-            gap: 10px !important;
-          }
-          .trade-header-row { display: none !important; }
-          .trade-row {
-            grid-template-columns: 1fr auto !important;
-            gap: 12px 14px !important;
-            padding: 14px !important;
-            margin-bottom: 0 !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 16px !important;
-            background: var(--bg2) !important;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.16) !important;
-            min-height: 124px !important;
-            align-items: center !important;
-          }
-          .trade-row:active { transform: scale(0.99) !important; }
-          .trade-row .trade-col-symbol {
-            grid-column: 1 / -1 !important;
-            gap: 10px !important;
-            min-width: 0 !important;
-            overflow: hidden !important;
-            padding-bottom: 10px !important;
-            border-bottom: 1px solid var(--border) !important;
-          }
+          .trade-row { grid-template-columns: minmax(0, 1.2fr) 80px 80px 90px !important; gap: 6px !important; padding: 10px 6px !important; }
+          .trade-row .trade-col-symbol { gap: 8px !important; min-width: 0 !important; overflow: hidden !important; }
           .trade-row .trade-col-symbol > div:first-child { width: 32px !important; height: 32px !important; border-radius: 10px !important; flex-shrink: 0 !important; }
-          .trade-row .trade-col-symbol > div:last-child { font-size: 16px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; min-width: 0 !important; }
-          .trade-col-outcome,
-          .trade-col-date,
-          .trade-col-rr,
-          .trade-col-pnl {
-            text-align: start !important;
-            min-width: 0 !important;
-          }
-          .trade-col-outcome::before,
-          .trade-col-date::before,
-          .trade-col-rr::before,
-          .trade-col-pnl::before {
-            content: attr(data-label);
-            display: block;
-            margin-bottom: 4px;
-            color: var(--text3);
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-          }
-          .trade-col-pnl {
-            text-align: end !important;
-            font-size: 18px !important;
-            font-weight: 900 !important;
-          }
-          .trade-col-date { font-size: 14px !important; }
-          .trade-col-rr { display: block !important; }
+          .trade-row .trade-col-symbol > div:last-child { font-size: 13px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; min-width: 0 !important; }
+          .trades-filter-row { justify-content: space-between !important; width: 100%; }
+          .trades-time-filter { order: -1; }
+          .trades-outcome-btns { order: 1; }
+          .trades-filter-sep { display: none !important; }
+          .trades-data-by-label { display: none !important; }
         }
       `}</style>
     </div>
