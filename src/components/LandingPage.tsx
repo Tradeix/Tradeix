@@ -10,7 +10,6 @@ const COPY = {
   he: {
     nav: [
       { id: 'features', label: 'תכונות' },
-      { id: 'how', label: 'איך זה עובד' },
       { id: 'pricing', label: 'מחירים' },
       { id: 'faq', label: 'שאלות נפוצות' },
     ],
@@ -95,7 +94,6 @@ const COPY = {
   en: {
     nav: [
       { id: 'features', label: 'Features' },
-      { id: 'how', label: 'How it works' },
       { id: 'pricing', label: 'Pricing' },
       { id: 'faq', label: 'FAQ' },
     ],
@@ -386,73 +384,6 @@ export default function LandingPage() {
                 <h3>{feature.title}</h3>
                 <p>{feature.desc}</p>
               </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="how" className="lp-section">
-          <div data-animate className="lp-ai-head">
-            <div className="lp-chip pulse"><span />{copy.ai.eyebrow}</div>
-            <h2>{copy.ai.titleLead}<span>{copy.ai.titleAccent}</span> {copy.ai.titleTail}</h2>
-            <p>{copy.ai.subtitle}</p>
-          </div>
-
-          <div data-animate className="lp-ai-card">
-            <div className="lp-chart" dir="ltr">
-              <div className="lp-chart-title">
-                <strong>EUR/USD</strong>
-                <span>LONG</span>
-                <small>1H</small>
-              </div>
-              <svg viewBox="0 0 400 240" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="lpPriceGlow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgba(34,197,94,0.32)" />
-                    <stop offset="100%" stopColor="rgba(34,197,94,0)" />
-                  </linearGradient>
-                </defs>
-                <line x1="0" y1="60" x2="400" y2="60" />
-                <line x1="0" y1="140" x2="400" y2="140" />
-                <line x1="0" y1="200" x2="400" y2="200" />
-                <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60 L 400 240 L 0 240 Z" fill="url(#lpPriceGlow)" />
-                <path d="M 0 162 Q 50 154 100 148 Q 160 132 220 118 Q 280 96 340 78 L 400 60" fill="none" />
-                <circle cx="6" cy="140" r="5" />
-                <circle cx="394" cy="60" r="5" />
-              </svg>
-              <div className="lp-scan" />
-              <div className="lp-analyzing"><span />Analyzing</div>
-            </div>
-
-            <div className="lp-fields">
-              <div className="lp-detected">
-                <Icon name="auto_awesome" size={15} color="#0f8d63" />
-                {copy.ai.detected}
-              </div>
-              {copy.ai.fields.map(([label, value], index) => (
-                <div key={label} className="lp-field" style={{ animationDelay: `${0.12 + index * 0.06}s` }}>
-                  <span><Icon name="check" size={12} color="#0f8d63" />{label}</span>
-                  <strong dir="ltr">{value}</strong>
-                </div>
-              ))}
-            </div>
-
-            <div className="lp-ai-stats">
-              {copy.ai.stats.map(([value, label]) => (
-                <div key={label}>
-                  <strong dir="ltr">{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div data-animate className="lp-steps">
-            {copy.ai.steps.map((step, index) => (
-              <div key={step.title}>
-                <span>0{index + 1}</span>
-                <Icon name={step.icon} size={14} color="var(--text2)" />
-                {step.title}
-              </div>
             ))}
           </div>
         </section>
