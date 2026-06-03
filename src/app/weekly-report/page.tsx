@@ -771,7 +771,6 @@ export default function WeeklyReportPage() {
         .weekly-report-sidebar {
           position: sticky;
           top: 92px;
-          border-top: 2px solid rgba(15,141,99,.55);
         }
         .weekly-notebook {
           position: relative;
