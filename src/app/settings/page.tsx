@@ -1082,6 +1082,43 @@ export default function SettingsPage() {
         .settings-menu-item--active small {
           color: rgba(15,141,99,0.72);
         }
+        [data-theme="light"] .settings-sidebar {
+          background: rgba(255,255,255,0.92) !important;
+          border-color: rgba(15,23,42,0.08) !important;
+          box-shadow: 0 18px 44px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+        }
+        [data-theme="light"] .settings-menu-group:not(:last-child) {
+          border-bottom-color: rgba(15,23,42,0.09) !important;
+        }
+        [data-theme="light"] .settings-menu-label {
+          color: #111827 !important;
+          text-shadow: none !important;
+        }
+        [data-theme="light"] .settings-menu-label::after {
+          background: linear-gradient(90deg, rgba(15,23,42,0.14), transparent) !important;
+        }
+        [dir="rtl"][data-theme="light"] .settings-menu-label::after {
+          background: linear-gradient(270deg, rgba(15,23,42,0.14), transparent) !important;
+        }
+        [data-theme="light"] .settings-menu-label svg {
+          color: #64748b !important;
+        }
+        [data-theme="light"] .settings-menu-item {
+          color: #111827 !important;
+        }
+        [data-theme="light"] .settings-menu-item-copy span {
+          color: #111827 !important;
+        }
+        [data-theme="light"] .settings-menu-item-copy small {
+          color: #64748b !important;
+        }
+        [data-theme="light"] .settings-menu-item--active,
+        [data-theme="light"] .settings-menu-item--active .settings-menu-item-copy span {
+          color: #0f8d63 !important;
+        }
+        [data-theme="light"] .settings-menu-item--active small {
+          color: rgba(15,141,99,0.78) !important;
+        }
         .settings-content {
           min-width: 0;
           display: flex;
