@@ -499,7 +499,7 @@ export default function DashboardPage() {
               {
                 label: language === 'he' ? 'עסקאות' : 'Trades',
                 value: portfolioStats.totalTrades,
-                color: '#f8fafc',
+                color: 'var(--text)',
                 icon: 'receipt_long',
               },
               {
@@ -515,7 +515,7 @@ export default function DashboardPage() {
                 icon: 'speed',
               },
             ].map((t, i) => (
-              <div key={i} style={{
+              <div key={i} className="bal-stat-tile" style={{
                 padding: '14px 12px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -532,7 +532,7 @@ export default function DashboardPage() {
                   {t.label}
                   </span>
                 </div>
-                <div dir="ltr" style={{ fontSize: '23px', fontWeight: '950', color: t.color, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                <div className="bal-stat-value" dir="ltr" style={{ fontSize: '23px', fontWeight: '950', color: t.color, letterSpacing: '-0.03em', lineHeight: 1 }}>
                   {t.value}
                 </div>
               </div>
@@ -754,6 +754,13 @@ export default function DashboardPage() {
         }
         [data-theme="light"] .welcome-meta-row > span[aria-hidden="true"] {
           background: rgba(17,24,39,0.45) !important;
+        }
+        [data-theme="light"] .bal-stats-grid {
+          border-top-color: rgba(15,23,42,0.12) !important;
+          background: rgba(255,255,255,0.44) !important;
+        }
+        [data-theme="light"] .bal-stat-tile {
+          border-inline-start-color: rgba(15,23,42,0.12) !important;
         }
 
         @media (max-width: 1024px) {
