@@ -213,11 +213,11 @@ export default function AddTradePage() {
     setAiConfidence(data.confidence || 85)
     setAiRaw(analysis)
     setIsManual(false)
-    setPendingAiSave(null)
-    setShowAiPnlPopup(false)
+    setPendingAiSave({ data: nextTradeData, imageFile: sourceImageFile ?? imageFile, analysis })
+    setShowAiPnlPopup(true)
     setPnlError(false)
-    setStep(3)
-    toast.success(language === 'he' ? 'ה-AI מילא את פרטי העסקה. הוסף P&L ושמור.' : 'AI filled the trade. Add P&L and save.')
+    setStep(1)
+    toast.success(language === 'he' ? 'ה-AI ניתח את העסקה. הוסף P&L ואשר.' : 'AI analyzed the trade. Add P&L and confirm.')
     return
     if (missing.length > 0 || !nextTradeData.stop_loss || !nextTradeData.take_profit) {
       toast.error(language === 'he' ? 'חסרים נתונים לשמירה אוטומטית, בדוק ידנית' : 'Missing data for auto-save, please review manually')
@@ -1156,9 +1156,39 @@ export default function AddTradePage() {
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '12px', lineHeight: 1.35 }}>
               {language === 'he'
-                ? 'בחר אם זו עסקת רווח או הפסד והזן את הסכום.'
-                : 'Choose whether this was a win or loss and enter the amount.'}
+                ? 'בדוק את נתוני העסקה, הזן P&L ואשר. אם משהו לא נכון, לחץ עריכת עסקה.'
+                : 'Review the trade data, enter P&L, and confirm. If something is wrong, edit the trade.'}
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '7px', marginBottom: '12px', textAlign: 'start' }}>
+              {[
+                ['SYMBOL', tradeData.symbol || '-'],
+                ['DATE', `${tradeData.traded_at || '-'} ${tradeData.traded_time || ''}`.trim()],
+                ['DIR', tradeData.direction.toUpperCase()],
+                ['RESULT', tradeData.outcome.toUpperCase()],
+                ['ENTRY', tradeData.entry_price || '-'],
+                ['EXIT', tradeData.exit_price || '-'],
+                ['SL', tradeData.stop_loss || '-'],
+                ['TP', tradeData.take_profit || '-'],
+              ].map(([label, value]) => {
+                const tone =
+                  label === 'RESULT' ? (value === 'WIN' ? '#22c55e' : '#ef4444') :
+                  label === 'DIR' ? (value === 'LONG' ? '#22c55e' : '#ef4444') :
+                  label === 'SL' ? '#ef4444' :
+                  label === 'TP' ? '#22c55e' :
+                  'var(--text)'
+                return (
+                  <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '11px', padding: '8px 9px', minWidth: 0 }}>
+                    <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 850, letterSpacing: '0.06em', marginBottom: '2px' }}>{label}</div>
+                    <div dir="ltr" style={{ fontSize: '13px', color: tone, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
+                  </div>
+                )
+              })}
+            </div>
+            {aiConfidence > 0 && (
+              <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '11px', padding: '8px 10px', marginBottom: '10px', color: '#0f8d63', fontSize: '12px', fontWeight: 900 }}>
+                {language === 'he' ? 'ביטחון קריאה' : 'Reading confidence'}: {aiConfidence}%
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '10px', marginBottom: '10px', textAlign: language === 'he' ? 'right' : 'left' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: 'var(--text3)', marginBottom: '6px' }}>
@@ -1321,14 +1351,28 @@ export default function AddTradePage() {
                 style={{ width: '100%', minHeight: '58px', resize: 'none', boxSizing: 'border-box', fontSize: '13px', lineHeight: 1.35 }}
               />
             </div>
-            <button
-              onClick={confirmAiPnl}
-              disabled={submitting}
-              className="btn-primary"
-              style={{ width: '100%', padding: '11px', fontSize: '14px', fontWeight: 800, opacity: submitting ? 0.65 : 1, cursor: submitting ? 'wait' : 'pointer' }}
-            >
-              {submitting ? tr.submitting : (language === 'he' ? 'שמור עסקה' : 'Save Trade')}
-            </button>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAiPnlPopup(false)
+                  setPendingAiSave(null)
+                  setStep(3)
+                }}
+                className="btn-ghost"
+                style={{ width: '100%', padding: '11px', fontSize: '14px', fontWeight: 800 }}
+              >
+                {language === 'he' ? 'עריכת עסקה' : 'Edit Trade'}
+              </button>
+              <button
+                onClick={confirmAiPnl}
+                disabled={submitting}
+                className="btn-primary"
+                style={{ width: '100%', padding: '11px', fontSize: '14px', fontWeight: 800, opacity: submitting ? 0.65 : 1, cursor: submitting ? 'wait' : 'pointer' }}
+              >
+                {submitting ? tr.submitting : (language === 'he' ? 'אישור' : 'Confirm')}
+              </button>
+            </div>
           </div>
         </div>
       )}
