@@ -1135,6 +1135,9 @@ export default function AddTradePage() {
           .price-grid-4 {
             grid-template-columns: 1fr 1fr !important;
           }
+          .ai-trade-ticket {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          }
         }
         @media (max-width: 400px) {
           .price-grid-4 { grid-template-columns: 1fr 1fr !important; }
@@ -1149,84 +1152,41 @@ export default function AddTradePage() {
           <div
             onClick={e => e.stopPropagation()}
             className="app-modal-card app-modal-card--compact" data-tight="1"
-            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '18px', padding: '18px', maxWidth: '460px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border)', borderRadius: '18px', padding: '18px', maxWidth: '560px', width: '100%', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.55)' }}
           >
             <div style={{ fontSize: '16px', fontWeight: 900, color: 'var(--text)', marginBottom: '6px' }}>
               {language === 'he' ? 'כמה הרווחת / הפסדת בעסקה?' : 'How much did you win / lose?'}
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '12px', lineHeight: 1.35 }}>
               {language === 'he'
-                ? 'בדוק את נתוני העסקה, הזן P&L ואשר. אם משהו לא נכון, לחץ עריכת עסקה.'
-                : 'Review the trade data, enter P&L, and confirm. If something is wrong, edit the trade.'}
+                ? 'בדוק את נתוני העסקה, הזן P&L ואשר. אם משהו לא נכון, ערוך את נתוני העסקה.'
+                : 'Review the trade data, enter P&L, and confirm. If something is wrong, edit the trade data.'}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '7px', marginBottom: '12px', textAlign: 'start' }}>
+            <div className="ai-trade-ticket" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '1px', marginBottom: '12px', overflow: 'hidden', border: '1px solid var(--border)', borderRadius: '14px', background: 'var(--border)' }}>
               {[
                 ['SYMBOL', tradeData.symbol || '-'],
                 ['DATE', `${tradeData.traded_at || '-'} ${tradeData.traded_time || ''}`.trim()],
-                ['DIR', tradeData.direction.toUpperCase()],
                 ['RESULT', tradeData.outcome.toUpperCase()],
                 ['ENTRY', tradeData.entry_price || '-'],
-                ['EXIT', tradeData.exit_price || '-'],
                 ['SL', tradeData.stop_loss || '-'],
                 ['TP', tradeData.take_profit || '-'],
               ].map(([label, value]) => {
                 const tone =
                   label === 'RESULT' ? (value === 'WIN' ? '#22c55e' : '#ef4444') :
-                  label === 'DIR' ? (value === 'LONG' ? '#22c55e' : '#ef4444') :
                   label === 'SL' ? '#ef4444' :
                   label === 'TP' ? '#22c55e' :
                   'var(--text)'
                 return (
-                  <div key={label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '11px', padding: '8px 9px', minWidth: 0 }}>
-                    <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 850, letterSpacing: '0.06em', marginBottom: '2px' }}>{label}</div>
-                    <div dir="ltr" style={{ fontSize: '13px', color: tone, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
+                  <div key={label} style={{ background: 'var(--bg3)', padding: '9px 8px', minWidth: 0 }}>
+                    <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 900, letterSpacing: '0.06em', marginBottom: '4px' }}>{label}</div>
+                    <div dir="ltr" style={{ fontSize: '12.5px', color: tone, fontWeight: 950, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
                   </div>
                 )
               })}
             </div>
-            {aiConfidence > 0 && (
-              <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.2)', borderRadius: '11px', padding: '8px 10px', marginBottom: '10px', color: '#0f8d63', fontSize: '12px', fontWeight: 900 }}>
-                {language === 'he' ? 'ביטחון קריאה' : 'Reading confidence'}: {aiConfidence}%
-              </div>
-            )}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '10px', marginBottom: '10px', textAlign: language === 'he' ? 'right' : 'left' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: 'var(--text3)', marginBottom: '6px' }}>
-                  {language === 'he' ? 'תוצאה' : 'Result'}
-                </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px' }}>
-                  {(['win', 'loss'] as const).map(outcome => {
-                    const active = tradeData.outcome === outcome
-                    const color = outcome === 'win' ? '#22c55e' : '#ef4444'
-                    return (
-                      <button
-                        key={outcome}
-                        type="button"
-                        onClick={() => {
-                          setTradeData(p => ({ ...p, outcome }))
-                          if (pendingAiSave) setPendingAiSave({ ...pendingAiSave, data: { ...pendingAiSave.data, outcome } })
-                        }}
-                        style={{
-                          height: '40px',
-                          borderRadius: '10px',
-                          border: `1px solid ${active ? color : 'var(--border)'}`,
-                          background: active ? `${color}18` : 'var(--bg3)',
-                          color: active ? color : 'var(--text2)',
-                          fontFamily: 'Heebo, sans-serif',
-                          fontSize: '13px',
-                          fontWeight: 900,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {outcome.toUpperCase()}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-              <div>
+            <div style={{ marginBottom: '10px', textAlign: language === 'he' ? 'right' : 'left' }}>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: pnlError ? '#ef4444' : 'var(--text3)', marginBottom: '6px' }}>
-                  {language === 'he' ? 'סכום' : 'Amount'} ({currency})
+                  P&L ({currency})
                 </label>
                 <input
                   type="number"
@@ -1241,13 +1201,12 @@ export default function AddTradePage() {
                     textAlign: 'center',
                     fontSize: '22px',
                     fontWeight: 900,
-                    height: '40px',
+                    height: '44px',
                     marginBottom: 0,
                     borderColor: pnlError ? '#ef4444' : tradeData.outcome === 'win' ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
                     boxShadow: pnlError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
                   }}
                 />
-              </div>
             </div>
             {pnlError && (
               <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>
@@ -1362,7 +1321,7 @@ export default function AddTradePage() {
                 className="btn-ghost"
                 style={{ width: '100%', padding: '11px', fontSize: '14px', fontWeight: 800 }}
               >
-                {language === 'he' ? 'עריכת עסקה' : 'Edit Trade'}
+                {language === 'he' ? 'עריכת נתוני עסקה' : 'Edit Trade Data'}
               </button>
               <button
                 onClick={confirmAiPnl}
