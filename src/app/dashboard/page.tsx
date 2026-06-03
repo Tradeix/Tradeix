@@ -749,6 +749,12 @@ export default function DashboardPage() {
           filter: blur(8px);
           transform: translateY(-50%);
         }
+        [data-theme="light"] .welcome-meta-row {
+          color: #111827 !important;
+        }
+        [data-theme="light"] .welcome-meta-row > span[aria-hidden="true"] {
+          background: rgba(17,24,39,0.45) !important;
+        }
 
         @media (max-width: 1024px) {
           .overview-perf-grid { grid-template-columns: 1fr !important; gap: 36px !important; align-items: start !important; }

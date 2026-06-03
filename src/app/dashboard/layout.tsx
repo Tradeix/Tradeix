@@ -304,7 +304,7 @@ function Header({ sidebarOpen, setSidebarOpen, handleSignOut }: any) {
         {showUserMenu && (
           <>
             <div onClick={() => setShowUserMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 199 }} />
-            <div style={{
+            <div className="user-menu-popover" style={{
               position: 'absolute', top: '48px',
               right: 0,
               background: 'var(--modal-bg)', border: '1px solid var(--border)',
@@ -1020,12 +1020,24 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           .page-content { padding: 88px 14px 16px !important; }
           .header-inner { padding: 0 14px !important; gap: 8px !important; }
           .user-name-block { display: none !important; }
+          .user-menu-popover {
+            left: 0 !important;
+            right: auto !important;
+            top: 48px !important;
+            min-width: 132px !important;
+            animation: userMenuSlideRight 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transform-origin: top left !important;
+          }
           .active-portfolio-badge { padding: 5px 10px 5px 5px !important; gap: 10px !important; }
           .active-portfolio-badge > div:nth-child(1) { width: 32px !important; height: 32px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:first-child { font-size: 9px !important; }
           .active-portfolio-badge > div:nth-child(2) > div:last-child { max-width: 200px !important; font-size: 14px !important; }
           .active-portfolio-badge > div:nth-child(3) { padding-inline-start: 10px !important; margin-inline-start: 0 !important; }
           .upgrade-btn { padding: 6px 10px !important; font-size: 11px !important; }
+        }
+        @keyframes userMenuSlideRight {
+          from { opacity: 0; transform: translateX(-14px) scale(0.98); }
+          to { opacity: 1; transform: translateX(0) scale(1); }
         }
         .sidebar-logout { display: block; }
         @media (min-width: 1025px) { .sidebar-el { transform: translateX(0) !important; } }
