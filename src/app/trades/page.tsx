@@ -405,39 +405,46 @@ export default function TradesPage() {
         }
         @media (max-width: 640px) {
           .trades-top-controls {
-            flex-direction: column-reverse !important;
-            align-items: stretch !important;
-            gap: 12px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 10px !important;
             margin-bottom: 16px !important;
           }
           .trades-page-arrows,
           .trades-page-arrows-placeholder {
-            width: 100% !important;
-            min-width: 0 !important;
-            justify-content: center !important;
+            width: auto !important;
+            min-width: 98px !important;
+            justify-content: flex-start !important;
+            flex-shrink: 0 !important;
           }
-          .trades-page-arrows-placeholder { display: none !important; }
           .trades-page-btn {
             width: 44px !important;
             height: 44px !important;
             border-radius: 13px !important;
           }
-          .trades-filter-slot,
+          .trades-filter-slot {
+            width: auto !important;
+            flex: 0 1 auto !important;
+            justify-content: flex-end !important;
+          }
           .trades-filter-shell {
-            width: 100% !important;
-            justify-content: stretch !important;
+            width: auto !important;
+            justify-content: flex-end !important;
           }
           .trades-filter-shell > button {
-            width: 100% !important;
+            width: auto !important;
             min-height: 48px !important;
             justify-content: center !important;
             border-radius: 14px !important;
             font-size: 14px !important;
+            padding-inline: 16px !important;
+            white-space: nowrap !important;
           }
           .trades-filter-popover {
             left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
+            right: auto !important;
+            width: min(calc(100vw - 28px), 430px) !important;
             max-width: none !important;
             padding: 14px !important;
             border-radius: 18px !important;
