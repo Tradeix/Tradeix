@@ -190,7 +190,7 @@ export default function TradesPage() {
       <div className="trades-top-controls section-anim anim-delay-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px', direction: 'ltr', position: 'relative', zIndex: 3000, overflow: 'visible', width: '100%' }}>
         {paginationArrows}
         <div className="trades-filter-slot" style={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0, direction: isRTL ? 'rtl' : 'ltr' }}>
-        <div className="trades-filter-shell" style={{ position: 'relative', zIndex: 3100, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0, minWidth: 0 }}>
+        <div className="trades-filter-shell" data-dir={isRTL ? 'rtl' : 'ltr'} style={{ position: 'relative', zIndex: 3100, isolation: 'isolate', display: 'flex', justifyContent: 'flex-end', marginBottom: 0, minWidth: 0 }}>
           <button onClick={() => setFilterMenuOpen(v => !v)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '10px 15px', borderRadius: '12px',
@@ -212,7 +212,7 @@ export default function TradesPage() {
 
           {filterMenuOpen && (
             <div className="trades-filter-popover" style={{
-              position: 'absolute', top: 'calc(100% + 10px)', right: 0, zIndex: 3200,
+              position: 'absolute', top: 'calc(100% + 10px)', right: isRTL ? 0 : 'auto', left: isRTL ? 'auto' : 0, zIndex: 3200,
               width: 'min(100vw - 32px, 430px)', padding: '16px',
               borderRadius: '18px', border: '1px solid var(--border2)',
               background: 'var(--modal-bg)', backgroundColor: 'var(--modal-bg)',
@@ -442,12 +442,18 @@ export default function TradesPage() {
             white-space: nowrap !important;
           }
           .trades-filter-popover {
-            left: 0 !important;
-            right: auto !important;
             width: min(calc(100vw - 28px), 430px) !important;
             max-width: none !important;
             padding: 14px !important;
             border-radius: 18px !important;
+          }
+          .trades-filter-shell[data-dir="rtl"] .trades-filter-popover {
+            right: 0 !important;
+            left: auto !important;
+          }
+          .trades-filter-shell[data-dir="ltr"] .trades-filter-popover {
+            right: auto !important;
+            left: 0 !important;
           }
           .filter-chip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
           .strategy-filter-grid { grid-template-columns: 1fr !important; }
