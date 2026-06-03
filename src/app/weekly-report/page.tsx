@@ -1345,6 +1345,9 @@ export default function WeeklyReportPage() {
           background: #fff;
           box-shadow: 0 18px 44px rgba(15,23,42,.08);
         }
+        [data-theme="light"] .weekly-report-sidebar {
+          border-top: none;
+        }
         [data-theme="light"] .weekly-toolbar {
           border-bottom-color: rgba(15,23,42,.08);
           background: #fff;
