@@ -27,6 +27,7 @@ interface TradeData {
   take_profit: string
   pnl: string
   traded_at: string
+  traded_time: string
   notes: string
   strategy_id: string
 }
@@ -74,7 +75,7 @@ export default function AddTradePage() {
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '', direction: 'long', outcome: 'win',
     entry_price: '', exit_price: '', stop_loss: '', take_profit: '',
-    pnl: '', traded_at: new Date().toISOString().split('T')[0], notes: '',
+    pnl: '', traded_at: getLocalDateInputValue(), traded_time: getLocalTimeInputValue(), notes: '',
     strategy_id: '',
   })
   const [strategies, setStrategies] = useState<Strategy[]>([])
@@ -203,12 +204,21 @@ export default function AddTradePage() {
       stop_loss: data.stop_loss?.toString() || '',
       take_profit: data.take_profit?.toString() || '',
       pnl: '',
+      traded_at: isDateInputValue(data.trade_date) ? data.trade_date : tradeData.traded_at,
+      traded_time: isTimeInputValue(data.entry_time) ? data.entry_time : tradeData.traded_time,
       ...(detectedOutcome ? { outcome: detectedOutcome } : {}),
     }
     setTradeData(nextTradeData)
     const analysis = data.analysis || ''
     setAiConfidence(data.confidence || 85)
     setAiRaw(analysis)
+    setIsManual(false)
+    setPendingAiSave(null)
+    setShowAiPnlPopup(false)
+    setPnlError(false)
+    setStep(3)
+    toast.success(language === 'he' ? 'ה-AI מילא את פרטי העסקה. הוסף P&L ושמור.' : 'AI filled the trade. Add P&L and save.')
+    return
     if (missing.length > 0 || !nextTradeData.stop_loss || !nextTradeData.take_profit) {
       toast.error(language === 'he' ? 'חסרים נתונים לשמירה אוטומטית, בדוק ידנית' : 'Missing data for auto-save, please review manually')
       setStep(3)
@@ -286,6 +296,10 @@ export default function AddTradePage() {
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
+  }
+
+  function getTradeTimestamp(data: TradeData) {
+    return combineTradeDateTime(data.traded_at, data.traded_time)
   }
 
   function skipToManual() {
@@ -395,7 +409,7 @@ export default function AddTradePage() {
         pnl,
         rr_ratio: rrRatio,
         image_url: imageUrl, ai_analysis: options.sourceAi ? (options.aiAnalysis ?? aiRaw) : null,
-        notes: data.notes, traded_at: data.traded_at,
+        notes: data.notes, traded_at: getTradeTimestamp(data),
         outcome: data.outcome,
         strategy_id: isPro ? (data.strategy_id || null) : null,
       }).select('*').single()
@@ -410,7 +424,7 @@ export default function AddTradePage() {
         stopLoss: slNum,
         takeProfit: tpNum,
         rr: rrRatio,
-        date: data.traded_at,
+        date: getTradeTimestamp(data),
         strategyName: isPro ? (strategies.find(strategy => strategy.id === data.strategy_id)?.name || tr.noStrategy) : '',
         notes: data.notes || '',
       })
@@ -430,7 +444,7 @@ export default function AddTradePage() {
   }
 
   async function handleSubmit() {
-    await saveTrade(tradeData, imageFile, { redirect: true, sourceAi: false })
+    await saveTrade(tradeData, imageFile, { redirect: true, sourceAi: !isManual, aiAnalysis: aiRaw })
     return
     const missingPnl = !tradeData.pnl || tradeData.pnl.trim() === ''
     if (missingPnl) setPnlError(true)
@@ -498,7 +512,7 @@ export default function AddTradePage() {
         pnl,
         rr_ratio: rrRatio,
         image_url: imageUrl, ai_analysis: isManual ? null : aiRaw,
-        notes: tradeData.notes, traded_at: tradeData.traded_at,
+        notes: tradeData.notes, traded_at: getTradeTimestamp(tradeData),
         outcome: tradeData.outcome,
         strategy_id: isPro ? (tradeData.strategy_id || null) : null,
       })
@@ -694,6 +708,27 @@ export default function AddTradePage() {
                 <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{isManual ? tr.manualMode : tr.editableMode}</div>
               </div>
               <div style={{ padding: '20px' }}>
+                {!isManual && (aiConfidence > 0 || aiRaw) && (
+                  <div style={{ background: 'rgba(15,141,99,0.08)', border: '1px solid rgba(15,141,99,0.24)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', marginBottom: '16px', display: 'grid', gap: '7px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0f8d63', fontSize: '13px', fontWeight: 900 }}>
+                        <Icon name="psychology" size={17} color="#0f8d63" />
+                        {language === 'he' ? 'העסקה נותחה ומוכנה לבדיקה' : 'Trade analyzed and ready to review'}
+                      </div>
+                      {aiConfidence > 0 && (
+                        <span style={{ color: '#0f8d63', fontSize: '12px', fontWeight: 900 }}>
+                          {language === 'he' ? 'ביטחון' : 'Confidence'}: {aiConfidence}%
+                        </span>
+                      )}
+                    </div>
+                    {aiRaw && (
+                      <div style={{ color: 'var(--text2)', fontSize: '12px', lineHeight: 1.55, fontWeight: 650 }}>
+                        {aiRaw}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Missing fields warning */}
                 {aiMissingFields.length > 0 && (
                   <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
@@ -737,7 +772,7 @@ export default function AddTradePage() {
                 </div>
 
                 {/* Symbol + Date */}
-                <div className="symbol-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                <div className="symbol-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                   <div style={{ minWidth: 0 }}>
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'שם הצמד' : 'Symbol'} <span style={{ color: '#ef4444' }}>*</span>
@@ -749,6 +784,12 @@ export default function AddTradePage() {
                       {language === 'he' ? 'תאריך' : 'Date'}
                     </label>
                     <input className="manual-trade-date-input" type="date" value={tradeData.traded_at} onChange={e => setTradeData(p => ({ ...p, traded_at: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', direction: 'ltr', minWidth: 0 }} />
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
+                      {language === 'he' ? 'שעת כניסה' : 'Entry time'}
+                    </label>
+                    <input className="manual-trade-time-input" type="time" value={tradeData.traded_time} onChange={e => setTradeData(p => ({ ...p, traded_time: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', direction: 'ltr', minWidth: 0 }} />
                   </div>
                 </div>
 
@@ -919,7 +960,7 @@ export default function AddTradePage() {
                 )}
 
                 {/* Entry + SL + Exit */}
-                <div className="price-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <div className="price-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '6px', display: 'block', fontWeight: '600' }}>
                       {language === 'he' ? 'כניסה' : 'Entry'}
@@ -946,6 +987,17 @@ export default function AddTradePage() {
                       onChange={e => setTradeData(p => ({ ...p, exit_price: e.target.value }))}
                       placeholder="0.00"
                       style={tradeData.exit_price ? { borderColor: tradeData.outcome === 'loss' ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)' } : {}}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '13px', marginBottom: '6px', display: 'block', fontWeight: '600', color: 'rgba(34,197,94,0.7)' }}>
+                      TP
+                    </label>
+                    <input
+                      value={tradeData.take_profit}
+                      onChange={e => setTradeData(p => ({ ...p, take_profit: e.target.value }))}
+                      placeholder="0.00"
+                      style={tradeData.take_profit ? { borderColor: 'rgba(34,197,94,0.35)' } : {}}
                     />
                   </div>
                 </div>
@@ -1066,7 +1118,8 @@ export default function AddTradePage() {
           .symbol-date-grid > div {
             min-width: 0 !important;
           }
-          .manual-trade-date-input {
+          .manual-trade-date-input,
+          .manual-trade-time-input {
             width: 100% !important;
             min-width: 0 !important;
             height: 44px !important;
@@ -1079,10 +1132,12 @@ export default function AddTradePage() {
           .manual-trade-date-input::-webkit-date-and-time-value {
             text-align: center;
           }
+          .price-grid-4 {
+            grid-template-columns: 1fr 1fr !important;
+          }
         }
         @media (max-width: 400px) {
-          .price-grid-3 { grid-template-columns: 1fr 1fr !important; }
-          .price-grid-3 > div:last-child { grid-column: 1 / -1; }
+          .price-grid-4 { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
 
@@ -1399,4 +1454,29 @@ export default function AddTradePage() {
       )}
     </div>
   )
+}
+
+function getLocalDateInputValue(date = new Date()) {
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+  return offsetDate.toISOString().slice(0, 10)
+}
+
+function getLocalTimeInputValue(date = new Date()) {
+  const hh = String(date.getHours()).padStart(2, '0')
+  const mm = String(date.getMinutes()).padStart(2, '0')
+  return `${hh}:${mm}`
+}
+
+function isDateInputValue(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+}
+
+function isTimeInputValue(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{2}:\d{2}$/.test(value)
+}
+
+function combineTradeDateTime(dateValue: string, timeValue: string) {
+  const date = isDateInputValue(dateValue) ? dateValue : getLocalDateInputValue()
+  const time = isTimeInputValue(timeValue) ? timeValue : '00:00'
+  return `${date}T${time}:00`
 }

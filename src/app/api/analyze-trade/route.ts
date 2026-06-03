@@ -156,6 +156,9 @@ RULES
 - direction is exactly "long" or "short".
 - first_touch is exactly "stop_loss", "take_profit", or "unknown".
 - outcome is exactly "win", "loss", or "unknown".
+- trade_date is YYYY-MM-DD if the exact trade date is visible, otherwise "".
+- entry_time is HH:mm if the exact entry time is visible, otherwise "".
+- Do not invent trade_date or entry_time. Only return them when they are visible in the chart header, order label, or time axis near entry.
 - confidence is an integer 0-100.`
 
 // Tool with simple-typed schema — the API accepts these reliably across SDK
@@ -207,6 +210,14 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
         description:
           'Which boundary was touched first after entry when scanning candles left-to-right. stop_loss if SL was hit before TP, take_profit if TP was hit before SL, unknown if unclear.',
       },
+      trade_date: {
+        type: 'string',
+        description: 'Trade date in YYYY-MM-DD when explicitly visible on the chart. Empty string "" if not visible.',
+      },
+      entry_time: {
+        type: 'string',
+        description: 'Entry time in HH:mm 24-hour format when explicitly visible near the entry. Empty string "" if not visible.',
+      },
       confidence: {
         type: 'integer',
         description: 'Confidence 0-100 that the extracted values are correct.',
@@ -226,6 +237,8 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
       'take_profit',
       'outcome',
       'first_touch',
+      'trade_date',
+      'entry_time',
       'confidence',
       'analysis',
     ],
@@ -325,7 +338,7 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: 'Analyze this trading chart and submit the values via submit_trade_analysis. Be especially careful with first_touch: scan the candles from the trade entry forward. If price hit stop loss first and only later reached take profit, return first_touch="stop_loss", outcome="loss", and exit_price=stop_loss.',
+              text: 'Analyze this trading chart and submit the values via submit_trade_analysis. Be especially careful with direction and first_touch. Direction must come from the TradingView position tool colors and SL/TP geometry, not from candle trend. Scan candles from the trade entry forward. If price hit stop loss first and only later reached take profit, return first_touch="stop_loss", outcome="loss", and exit_price=stop_loss. If an exact trade date or entry time is visible in the chart, return trade_date and entry_time; otherwise return empty strings.',
             },
           ],
         },
@@ -350,6 +363,8 @@ export async function POST(req: NextRequest) {
       take_profit: number
       outcome?: 'win' | 'loss' | 'unknown'
       first_touch?: 'stop_loss' | 'take_profit' | 'unknown'
+      trade_date?: string
+      entry_time?: string
       confidence: number
       analysis: string
     }
@@ -364,6 +379,8 @@ export async function POST(req: NextRequest) {
       take_profit: raw.take_profit && raw.take_profit > 0 ? raw.take_profit : null,
       outcome: raw.outcome === 'win' || raw.outcome === 'loss' ? raw.outcome : null,
       first_touch: raw.first_touch === 'stop_loss' || raw.first_touch === 'take_profit' ? raw.first_touch : null,
+      trade_date: typeof raw.trade_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.trade_date) ? raw.trade_date : '',
+      entry_time: typeof raw.entry_time === 'string' && /^\d{2}:\d{2}$/.test(raw.entry_time) ? raw.entry_time : '',
       confidence: typeof raw.confidence === 'number' ? raw.confidence : 0,
       analysis: raw.analysis || '',
     }
