@@ -334,12 +334,19 @@ body:has(.app-modal-overlay) .page-header-row {
 }
 
 /* ── Header ── */
+.dashboard-header {
+  background: rgba(7,10,15,0.82) !important;
+  border-bottom-color: rgba(255,255,255,0.08) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
 [data-theme="light"] .dashboard-header {
-  background: transparent !important;
-  border-bottom-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background: rgba(255,255,255,0.86) !important;
+  border-bottom-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
 }
 [data-theme="light"] .dashboard-header.dashboard-header-scrolled {
   background: rgba(255,255,255,0.86) !important;
