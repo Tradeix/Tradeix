@@ -1340,6 +1340,110 @@ export default function WeeklyReportPage() {
           font-weight: 750;
           white-space: normal;
         }
+        [data-theme="light"] .weekly-notebook {
+          border-color: rgba(15,23,42,.1);
+          background: #fff;
+          box-shadow: 0 18px 44px rgba(15,23,42,.08);
+        }
+        [data-theme="light"] .weekly-toolbar {
+          border-bottom-color: rgba(15,23,42,.08);
+          background: #fff;
+        }
+        [data-theme="light"] .weekly-title-block h3,
+        [data-theme="light"] .section-heading,
+        [data-theme="light"] .metric strong,
+        [data-theme="light"] .daily-row strong,
+        [data-theme="light"] .daily-row b,
+        [data-theme="light"] .highlight-head b,
+        [data-theme="light"] .journal-field label,
+        [data-theme="light"] .journal-export-value,
+        [data-theme="light"] .reports-month-title span {
+          color: #111827;
+        }
+        [data-theme="light"] .weekly-screenshot-btn,
+        [data-theme="light"] .reports-month-nav button,
+        [data-theme="light"] .report-list button {
+          border-color: rgba(15,23,42,.12);
+          background: #fff;
+          color: #374151;
+          box-shadow: 0 8px 20px rgba(15,23,42,.05);
+        }
+        [data-theme="light"] .weekly-screenshot-btn:hover:not(:disabled),
+        [data-theme="light"] .reports-month-nav button:hover:not(:disabled),
+        [data-theme="light"] .report-list button:hover,
+        [data-theme="light"] .report-list button[data-active="1"] {
+          border-color: rgba(15,141,99,.32);
+          background: #ecfdf5;
+          color: #0f8d63;
+        }
+        [data-theme="light"] .weekly-metrics {
+          border-bottom-color: rgba(15,23,42,.08);
+          background: linear-gradient(90deg, rgba(236,253,245,.8), #fff 38%, #fff);
+        }
+        [data-theme="light"] .metric {
+          border-inline-end-color: rgba(15,23,42,.08);
+        }
+        [data-theme="light"] .metric span,
+        [data-theme="light"] .daily-row span,
+        [data-theme="light"] .daily-row > div:nth-child(2),
+        [data-theme="light"] .highlight-row small,
+        [data-theme="light"] .highlight-head span,
+        [data-theme="light"] .highlight-bar-labels small,
+        [data-theme="light"] .journal-field textarea::placeholder,
+        [data-theme="light"] .reports-month-title strong,
+        [data-theme="light"] .report-list p,
+        [data-theme="light"] .report-list button small {
+          color: #64748b;
+        }
+        [data-theme="light"] .notebook-content-grid {
+          border-bottom-color: rgba(15,23,42,.08);
+          background:
+            linear-gradient(180deg, #fff, #f8fafc),
+            repeating-linear-gradient(90deg, rgba(15,23,42,.035) 0 1px, transparent 1px 86px);
+        }
+        [data-theme="light"] .daily-sheet {
+          border-inline-end-color: rgba(15,23,42,.08);
+          background: #fff;
+        }
+        [data-theme="light"] .highlight-sheet {
+          background: linear-gradient(135deg, #fff, #f8fafc);
+        }
+        [data-theme="light"] .daily-row,
+        [data-theme="light"] .highlight-row {
+          border: 1px solid rgba(15,23,42,.09);
+          background: #fff;
+          box-shadow: 0 10px 24px rgba(15,23,42,.055);
+        }
+        [data-theme="light"] .daily-row > div:nth-child(2),
+        [data-theme="light"] .highlight-row small,
+        [data-theme="light"] .highlight-icon,
+        [data-theme="light"] .highlight-chips i {
+          background: #f1f5f9;
+        }
+        [data-theme="light"] .highlight-icon {
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+        }
+        [data-theme="light"] .highlight-gauge-track {
+          stroke: #e2e8f0;
+        }
+        [data-theme="light"] .highlight-performance-bar {
+          background: #e2e8f0;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+        }
+        [data-theme="light"] .journal-area {
+          background:
+            linear-gradient(180deg, #fff, #f8fafc),
+            repeating-linear-gradient(0deg, transparent 0 31px, rgba(15,23,42,.055) 31px 32px);
+        }
+        [data-theme="light"] .journal-field {
+          border-bottom-color: rgba(15,23,42,.09);
+        }
+        [data-theme="light"] .journal-field textarea {
+          color: #111827;
+        }
+        [data-theme="light"] .reports-month-card {
+          border-bottom-color: rgba(15,23,42,.1);
+        }
         @media (max-width: 980px) {
           .weekly-report-shell {
             grid-template-columns: 1fr;
