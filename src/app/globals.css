@@ -342,25 +342,25 @@ body:has(.app-modal-overlay) .page-header-row {
   -webkit-backdrop-filter: none !important;
 }
 [data-theme="light"] .dashboard-header.dashboard-header-scrolled {
-  background: rgba(7,10,15,0.82) !important;
-  border-bottom-color: rgba(255,255,255,0.08) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22) !important;
+  background: rgba(255,255,255,0.86) !important;
+  border-bottom-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
 }
 [data-theme="light"] .dashboard-header .hamburger-btn,
 [data-theme="light"] .dashboard-header .active-portfolio-badge {
-  background: rgba(12,17,24,0.86) !important;
-  border-color: rgba(255,255,255,0.1) !important;
-  color: #b8c1d1 !important;
-  box-shadow: 0 12px 30px rgba(15,23,42,0.16) !important;
+  background: rgba(255,255,255,0.82) !important;
+  border-color: rgba(15,23,42,0.1) !important;
+  color: #475569 !important;
+  box-shadow: 0 12px 30px rgba(15,23,42,0.08) !important;
 }
 [data-theme="light"] .dashboard-header .active-portfolio-badge > div:first-child {
-  background: rgba(255,255,255,0.055) !important;
-  border-color: rgba(255,255,255,0.1) !important;
+  background: rgba(15,23,42,0.04) !important;
+  border-color: rgba(15,23,42,0.1) !important;
 }
 [data-theme="light"] .dashboard-header .active-portfolio-badge > div:last-child {
-  border-inline-start-color: rgba(255,255,255,0.1) !important;
+  border-inline-start-color: rgba(15,23,42,0.1) !important;
 }
 
 /* ── Dashboard welcome panel ── */
